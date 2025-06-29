@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel='stylesheet' type='text/css' media='screen' href='resbuilder.css'>
+    <script src='resbuilder.js'></script>
+</head>
+<body>
+    <div class="container" id="cv-form">
+    <h1 class="text-center my-2">Resume Builder</h1>
+    <p class="text-center">gago ka ba</p>
+
+        <div class="row">
+            <div class="col-md-6">
+                <!---first col-->
+                <h3>Personal information</h3>
+                <div class="form-group">
+                    <label for="nameField">Your Name</label>
+                    <input type="text" id="nameField" placeholder="Type Here" class="form-control">
+                </div>
+            </div>
+                <div class="form-group mt-2">
+                    <label for="contactField">Your Contact</label>
+                    <input type="text" id="contactField" placeholder="Type Here" class="form-control">
+                </div>
+                <div class="form-group mt-2">
+                    <label for="addressField">Your Address</label>
+                    <textarea rows="5" id="addressField" placeholder="Type Here" class="form-control"></textarea>
+                </div>
+                <div>
+                <p class="text-secondary my-3">Important Links</p>
+                    <div class="form-group">
+                    <label for="nameField">Facebook</label>
+                    <input type="text" id="fbField" placeholder="Type Here" class="form-control">
+                </div>
+            </div>
+                <div class="form-group mt-2">
+                    <label for="contactField">Linkedin</label>
+                    <input type="text" id="linkedinField" placeholder="Type Here" class="form-control">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <!---second col-->
+                <h3>Professional information</h3>
+                 <div class="form-group mt-2">
+                    <label for="">Objectives</label>
+                    <textarea id="objectiveField" placeholder="Type Here" class="form-control weField"></textarea>
+                </div>
+                <div class="form-group mt-2" id="we">
+                    <label for="addressField">Work Experience</label>
+                    <textarea placeholder="Type Here" class="form-control weField"></textarea>
+                    <div class="container text center mt-2" id="weAddButton">
+                        <button onclick="addNewWField1()" class="btn btn-primary btn-sm">Add</button>
+                    </div>
+
+                    
+
+                    <div class="form-group mt-2" id="aq">
+                    <label for="addressField">Academic Qualification</label>
+                    <textarea placeholder="Type Here" class="form-control aqField"></textarea>
+                    <div class="container text center mt-2" id="aqAddButton">
+                        <button onclick="addNewWField2()" class="btn btn-primary btn-sm">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="containern text-center mt-3">
+          <button onclick="generateCV()" class="btn btn-primary btn-lg">Generate CV</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" 
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" 
+            crossorigin="anonymous"></script>
+    <script src="resbuilder.js"></script>
+</body>
+</html>
