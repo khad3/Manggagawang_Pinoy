@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manggagawang Pinoy</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700">
+  <style>
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      background: #fff;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      padding: 20px 40px 10px 40px;
+      border-bottom: 1px solid #eee;
+      justify-content: space-between;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      font-size: 2rem;
+      font-weight: bold;
+      color: #1739c6;
+      letter-spacing: 1px;
+    }
+    .logo img {
+      height: 35px;
+      margin-left: 8px;
+    }
+    .search-bar {
+      flex: 1;
+      margin: 0 40px;
+      position: relative;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 10px 40px 10px 16px;
+      border-radius: 22px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    .search-bar .icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.2rem;
+      color: #888;
+      cursor: pointer;
+    }
+    .header-icons {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+    .header-icons .icon, .header-icons .profile {
+      font-size: 1.5rem;
+      color: #222;
+      cursor: pointer;
+    }
+    .header-icons .profile {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #eee;
+    }
+    .preference {
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+      margin: 28px 0 10px 0;
+    }
+    .preference .pref-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #222;
+      font-weight: 500;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+    .preference .pref-item .icon {
+      font-size: 2rem;
+      margin-bottom: 6px;
+    }
+    .jobs-section {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 24px 0 0 0;
+    }
+    .jobs-section h3 {
+      color: #888;
+      font-weight: 500;
+      margin-bottom: 18px;
+    }
+    .job-card {
+      background: #fff;
+      border: 4px solid #ddd;
+      border-radius: 12px;
+      padding: 28px 24px 18px 24px;
+      margin-bottom: 22px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.02);
+      position: relative;
+    }
+    .job-card .date {
+      position: absolute;
+      top: 18px;
+      right: 22px;
+      color: #888;
+      font-size: 0.95rem;
+    }
+    .job-title {
+      font-size: 1.6rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .job-user {
+      display: flex;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .job-user img {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      margin-right: 12px;
+      object-fit: cover;
+    }
+    .job-user-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .job-user-info .name {
+      font-weight: bold;
+      font-size: 1.05rem;
+    }
+    .job-user-info .role {
+      color: #888;
+      font-size: 0.97rem;
+    }
+    .job-desc {
+      margin: 12px 0 7px 0;
+      font-size: 1.07rem;
+      color: #222;
+    }
+    .job-location {
+      font-weight: bold;
+      margin-top: 8px;
+      font-size: 1.02rem;
+    }
+    .job-location span {
+      font-weight: normal;
+      color: #555;
+      margin-left: 5px;
+      font-style: italic;
+    }
+    .watermark {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      width: 55vw;
+      opacity: 0.09;
+      z-index: 0;
+      pointer-events: none;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      MANGGAGAWANG PINOY
+      <!-- Replace with actual magnifying glass SVG or icon -->
+      <img src="https://img.icons8.com/ios-filled/50/000000/search--v1.png" alt="Search Icon" style="height:28px;margin-left:6px;">
+    </div>
+    <div class="search-bar">
+      <input type="text" placeholder="Search">
+      <span class="icon">&#128269;</span>
+    </div>
+    <div class="header-icons">
+      <span class="icon">&#128101;</span> <!-- group icon -->
+      <span class="icon">&#128172;</span> <!-- chat bubble icon -->
+      <span class="icon">&#128276;</span> <!-- bell/notification icon -->
+      <img class="profile" src="https://randomuser.me/api/portraits/women/44.jpg" alt="Profile">
+    </div>
+  </header>
+  <div class="preference">
+    <div class="pref-item">
+      <span class="icon">&#128188;</span>
+      Industry
+    </div>
+    <div class="pref-item">
+      <span class="icon">&#128205;</span>
+      Location
+    </div>
+    <div class="pref-item">
+      <span class="icon">&#128100;</span>
+      Employer
+    </div>
+  </div>
+  <div class="jobs-section">
+    <h3>Jobs Based on your profile</h3>
+    <div class="job-card">
+      <div class="date">3d ago</div>
+      <div class="job-title">Refrigerator Repair</div>
+      <div class="job-user">
+        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Ernesto Magcanta">
+        <div class="job-user-info">
+          <span class="name">Ernesto Magcanta</span>
+          <span class="role">Individual</span>
+        </div>
+      </div>
+      <div class="job-desc">
+        <strong>Job Description</strong><br>
+        Kailangan ko ng ref repairman dahil lagi nagloloko ang akin ref, sa interview na tayo makipag usap regarding sa commision mo.
+      </div>
+      <div class="job-location">
+        Location
+        <span>manggahan, langkaan, mansanas, buko</span>
+      </div>
+    </div>
+    <div class="job-card">
+      <div class="date">3d ago</div>
+      <div class="job-title">Refrigerator Repair</div>
+      <div class="job-user">
+        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Ernesto Magcanta">
+        <div class="job-user-info">
+          <span class="name">Ernesto Magcanta</span>
+          <span class="role">Individual</span>
+        </div>
+      </div>
+      <div class="job-desc">
+        <strong>Job Description</strong><br>
+        Kailangan ko ng ref repairman dahil lagi nagloloko ang akin ref, sa interview na tayo makipag usap regarding sa commision mo.
+      </div>
+      <div class="job-location">
+        Location
+        <span>manggahan, langkaan, mansanas, buko</span>
+      </div>
+    </div>
+  </div>
+  <img src="https://i.imgur.com/8vZlqvO.png" class="watermark" alt="Watermark">
+  <!-- Replace the watermark src with your actual watermark image -->
+</body>
+</html>
