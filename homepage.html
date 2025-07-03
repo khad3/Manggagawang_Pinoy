@@ -3,48 +3,69 @@
 <head>
   <meta charset="UTF-8">
   <title>Manggagawang Pinoy</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Segoe+UI:400,700&display=swap">
   <style>
-    body {
-      font-family: 'Roboto', Arial, sans-serif;
-      background: #fff;
-      margin: 0;
+    * {
       padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9fafb;
+      color: #222;
+      margin: 0;
     }
     header {
       display: flex;
       align-items: center;
-      padding: 20px 40px 10px 40px;
-      border-bottom: 1px solid #eee;
+      padding: 18px 36px 8px 36px;
+      border-bottom: 1px solid #e5e7eb;
       justify-content: space-between;
+      background: #fff;
+      box-shadow: 0 2px 8px rgb(0 0 0 / 0.07);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      min-height: 70px;
     }
     .logo {
       display: flex;
       align-items: center;
-      font-size: 2rem;
+      font-size: 1.7rem;
       font-weight: bold;
       color: #1739c6;
       letter-spacing: 1px;
+      gap: 8px;
     }
     .logo img {
-      height: 35px;
-      margin-left: 8px;
+      height: 32px;
+      margin-left: 6px;
+      filter: invert(45%) sepia(84%) saturate(10058%) hue-rotate(247deg) brightness(47%) contrast(121%);
     }
     .search-bar {
       flex: 1;
-      margin: 0 40px;
+      margin: 0 36px;
       position: relative;
+      max-width: 400px;
     }
     .search-bar input {
       width: 100%;
       padding: 10px 40px 10px 16px;
       border-radius: 22px;
-      border: 1px solid #ccc;
+      border: 1.5px solid #dbeafe;
       font-size: 1rem;
+      background: #f3f4f6;
+      transition: border 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    .search-bar input:focus {
+      border: 1.5px solid #020180;
+      outline: none;
+      background: #fff;
     }
     .search-bar .icon {
       position: absolute;
-      right: 12px;
+      right: 14px;
       top: 50%;
       transform: translateY(-50%);
       font-size: 1.2rem;
@@ -54,19 +75,27 @@
     .header-icons {
       display: flex;
       align-items: center;
-      gap: 22px;
+      gap: 20px;
     }
     .header-icons .icon, .header-icons .profile {
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       color: #222;
       cursor: pointer;
+      transition: color 0.2s;
+    }
+    .header-icons .icon:hover {
+      color: #020180;
     }
     .header-icons .profile {
       width: 38px;
       height: 38px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid #eee;
+      border: 2px solid #e5e7eb;
+      transition: box-shadow 0.2s;
+    }
+    .header-icons .profile:hover {
+      box-shadow: 0 4px 12px rgba(2,1,128,0.12);
     }
     .preference {
       display: flex;
@@ -82,10 +111,19 @@
       font-weight: 500;
       font-size: 1.1rem;
       cursor: pointer;
+      transition: color 0.2s;
     }
     .preference .pref-item .icon {
       font-size: 2rem;
       margin-bottom: 6px;
+      color: #020180;
+      transition: color 0.2s;
+    }
+    .preference .pref-item:hover {
+      color: #020180;
+    }
+    .preference .pref-item:hover .icon {
+      color: #678FFF;
     }
     .jobs-section {
       max-width: 800px;
@@ -96,27 +134,34 @@
       color: #888;
       font-weight: 500;
       margin-bottom: 18px;
+      font-size: 1.2rem;
     }
     .job-card {
       background: #fff;
-      border: 4px solid #ddd;
-      border-radius: 12px;
-      padding: 28px 24px 18px 24px;
-      margin-bottom: 22px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.02);
+      border: 1.5px solid #dbeafe;
+      border-radius: 18px;
+      padding: 32px 24px 20px 24px;
+      margin-bottom: 28px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.06);
       position: relative;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .job-card:hover {
+      box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+      transform: translateY(-4px) scale(1.01);
     }
     .job-card .date {
       position: absolute;
       top: 18px;
       right: 22px;
       color: #888;
-      font-size: 0.95rem;
+      font-size: 1rem;
     }
     .job-title {
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       font-weight: bold;
       margin-bottom: 10px;
+      color: #020180;
     }
     .job-user {
       display: flex;
@@ -129,6 +174,7 @@
       border-radius: 50%;
       margin-right: 12px;
       object-fit: cover;
+      border: 2px solid #e0e7ef;
     }
     .job-user-info {
       display: flex;
@@ -151,6 +197,7 @@
       font-weight: bold;
       margin-top: 8px;
       font-size: 1.02rem;
+      color: #020180;
     }
     .job-location span {
       font-weight: normal;
@@ -168,23 +215,48 @@
       pointer-events: none;
       user-select: none;
     }
+    /* Responsive */
+    @media (max-width: 900px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 12px 12px 8px 12px;
+      }
+      .search-bar {
+        margin: 12px 0;
+        width: 100%;
+      }
+      .jobs-section {
+        padding: 12px 0 0 0;
+      }
+    }
+    @media (max-width: 600px) {
+      .preference {
+        gap: 18px;
+      }
+      .jobs-section {
+        padding: 8px 0 0 0;
+      }
+      .job-card {
+        padding: 18px 10px 12px 10px;
+      }
+    }
   </style>
 </head>
 <body>
   <header>
     <div class="logo">
       MANGGAGAWANG PINOY
-      <!-- Replace with actual magnifying glass SVG or icon -->
-      <img src="https://img.icons8.com/ios-filled/50/000000/search--v1.png" alt="Search Icon" style="height:28px;margin-left:6px;">
+      <img src="https://img.icons8.com/ios-filled/50/000000/search--v1.png" alt="Search Icon">
     </div>
     <div class="search-bar">
       <input type="text" placeholder="Search">
       <span class="icon">&#128269;</span>
     </div>
     <div class="header-icons">
-      <span class="icon">&#128101;</span> <!-- group icon -->
-      <span class="icon">&#128172;</span> <!-- chat bubble icon -->
-      <span class="icon">&#128276;</span> <!-- bell/notification icon -->
+      <span class="icon">&#128101;</span>
+      <span class="icon">&#128172;</span>
+      <span class="icon">&#128276;</span>
       <img class="profile" src="https://randomuser.me/api/portraits/women/44.jpg" alt="Profile">
     </div>
   </header>
@@ -244,6 +316,5 @@
     </div>
   </div>
   <img src="https://i.imgur.com/8vZlqvO.png" class="watermark" alt="Watermark">
-  <!-- Replace the watermark src with your actual watermark image -->
 </body>
 </html>
