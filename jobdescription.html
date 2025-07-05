@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Job List Example</title>
+  <style>
+    .container {
+      display: flex;
+      width: 80vw;
+      height: 400px;
+      border: 1px solid #ddd;
+      margin: 40px auto;
+      font-family: Arial, sans-serif;
+    }
+    .job-list {
+      width: 35%;
+      border-right: 1px solid #eee;
+      padding: 20px;
+      background: #fafafa;
+    }
+    .job-card {
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #fff;
+      border: 1px solid #eee;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .job-card:hover {
+      background: #f0f8ff;
+    }
+    .job-description {
+      width: 65%;
+      padding: 24px;
+      background: #fff;
+      overflow-y: auto;
+    }
+    .job-title {
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="job-list">
+      <div class="job-card" onclick="showDescription(0)">
+        <div class="job-title">Frontend Developer</div>
+        <div>Acme Corp</div>
+      </div>
+      <div class="job-card" onclick="showDescription(1)">
+        <div class="job-title">Backend Engineer</div>
+        <div>Beta Inc</div>
+      </div>
+      <div class="job-card" onclick="showDescription(2)">
+        <div class="job-title">UI/UX Designer</div>
+        <div>Designify</div>
+      </div>
+    </div>
+    <div class="job-description" id="jobDescription">
+      <em>Select a job to see its description.</em>
+    </div>
+  </div>
+
+  <script>
+    // Array of job descriptions
+    const descriptions = [
+      `<h2>Frontend Developer</h2>
+       <p><strong>Company:</strong> Acme Corp</p>
+       <p>We are looking for a skilled frontend developer proficient in React and CSS. Responsibilities include building responsive web interfaces and collaborating with backend teams.</p>
+       <ul>
+         <li>3+ years experience</li>
+         <li>Remote-friendly</li>
+         <li>Competitive salary</li>
+       </ul>`,
+
+      `<h2>Backend Engineer</h2>
+       <p><strong>Company:</strong> Beta Inc</p>
+       <p>Join our backend team to design scalable APIs and work with databases. Experience with Node.js and PostgreSQL is a plus.</p>
+       <ul>
+         <li>2+ years experience</li>
+         <li>Flexible hours</li>
+         <li>Health insurance</li>
+       </ul>`,
+
+      `<h2>UI/UX Designer</h2>
+       <p><strong>Company:</strong> Designify</p>
+       <p>Seeking a creative UI/UX designer to craft engaging user experiences. Portfolio required.</p>
+       <ul>
+         <li>1+ years experience</li>
+         <li>On-site position</li>
+         <li>Team environment</li>
+       </ul>`
+    ];
+
+    function showDescription(index) {
+      document.getElementById('jobDescription').innerHTML = descriptions[index];
+    }
+  </script>
+</body>
+</html>

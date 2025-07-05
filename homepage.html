@@ -1,263 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Manggagawang Pinoy</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Segoe+UI:400,700&display=swap">
-  <style>
-    * {
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f9fafb;
-      color: #222;
-      margin: 0;
-    }
-    header {
-      display: flex;
-      align-items: center;
-      padding: 18px 36px 8px 36px;
-      border-bottom: 1px solid #e5e7eb;
-      justify-content: space-between;
-      background: #fff;
-      box-shadow: 0 2px 8px rgb(0 0 0 / 0.07);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      min-height: 70px;
-    }
-    .logo {
-      display: flex;
-      align-items: center;
-      font-size: 1.7rem;
-      font-weight: bold;
-      color: #1739c6;
-      letter-spacing: 1px;
-      gap: 8px;
-    }
-    .logo img {
-      height: 32px;
-      margin-left: 6px;
-      filter: invert(45%) sepia(84%) saturate(10058%) hue-rotate(247deg) brightness(47%) contrast(121%);
-    }
-    .search-bar {
-      flex: 1;
-      margin: 0 36px;
-      position: relative;
-      max-width: 400px;
-    }
-    .search-bar input {
-      width: 100%;
-      padding: 10px 40px 10px 16px;
-      border-radius: 22px;
-      border: 1.5px solid #dbeafe;
-      font-size: 1rem;
-      background: #f3f4f6;
-      transition: border 0.2s;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-    }
-    .search-bar input:focus {
-      border: 1.5px solid #020180;
-      outline: none;
-      background: #fff;
-    }
-    .search-bar .icon {
-      position: absolute;
-      right: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 1.2rem;
-      color: #888;
-      cursor: pointer;
-    }
-    .header-icons {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-    .header-icons .icon, .header-icons .profile {
-      font-size: 1.4rem;
-      color: #222;
-      cursor: pointer;
-      transition: color 0.2s;
-    }
-    .header-icons .icon:hover {
-      color: #020180;
-    }
-    .header-icons .profile {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #e5e7eb;
-      transition: box-shadow 0.2s;
-    }
-    .header-icons .profile:hover {
-      box-shadow: 0 4px 12px rgba(2,1,128,0.12);
-    }
-    .preference {
-      display: flex;
-      justify-content: center;
-      gap: 60px;
-      margin: 28px 0 10px 0;
-    }
-    .preference .pref-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: #222;
-      font-weight: 500;
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: color 0.2s;
-    }
-    .preference .pref-item .icon {
-      font-size: 2rem;
-      margin-bottom: 6px;
-      color: #020180;
-      transition: color 0.2s;
-    }
-    .preference .pref-item:hover {
-      color: #020180;
-    }
-    .preference .pref-item:hover .icon {
-      color: #678FFF;
-    }
-    .jobs-section {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 24px 0 0 0;
-    }
-    .jobs-section h3 {
-      color: #888;
-      font-weight: 500;
-      margin-bottom: 18px;
-      font-size: 1.2rem;
-    }
-    .job-card {
-      background: #fff;
-      border: 1.5px solid #dbeafe;
-      border-radius: 18px;
-      padding: 32px 24px 20px 24px;
-      margin-bottom: 28px;
-      box-shadow: 0 2px 16px rgba(0,0,0,0.06);
-      position: relative;
-      transition: box-shadow 0.2s, transform 0.2s;
-    }
-    .job-card:hover {
-      box-shadow: 0 8px 32px rgba(0,0,0,0.10);
-      transform: translateY(-4px) scale(1.01);
-    }
-    .job-card .date {
-      position: absolute;
-      top: 18px;
-      right: 22px;
-      color: #888;
-      font-size: 1rem;
-    }
-    .job-title {
-      font-size: 1.5rem;
-      font-weight: bold;
-      margin-bottom: 10px;
-      color: #020180;
-    }
-    .job-user {
-      display: flex;
-      align-items: center;
-      margin-bottom: 6px;
-    }
-    .job-user img {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      margin-right: 12px;
-      object-fit: cover;
-      border: 2px solid #e0e7ef;
-    }
-    .job-user-info {
-      display: flex;
-      flex-direction: column;
-    }
-    .job-user-info .name {
-      font-weight: bold;
-      font-size: 1.05rem;
-    }
-    .job-user-info .role {
-      color: #888;
-      font-size: 0.97rem;
-    }
-    .job-desc {
-      margin: 12px 0 7px 0;
-      font-size: 1.07rem;
-      color: #222;
-    }
-    .job-location {
-      font-weight: bold;
-      margin-top: 8px;
-      font-size: 1.02rem;
-      color: #020180;
-    }
-    .job-location span {
-      font-weight: normal;
-      color: #555;
-      margin-left: 5px;
-      font-style: italic;
-    }
-    .watermark {
-      position: fixed;
-      right: 0;
-      bottom: 0;
-      width: 55vw;
-      opacity: 0.09;
-      z-index: 0;
-      pointer-events: none;
-      user-select: none;
-    }
-    /* Responsive */
-    @media (max-width: 900px) {
-      header {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 12px 12px 8px 12px;
-      }
-      .search-bar {
-        margin: 12px 0;
-        width: 100%;
-      }
-      .jobs-section {
-        padding: 12px 0 0 0;
-      }
-    }
-    @media (max-width: 600px) {
-      .preference {
-        gap: 18px;
-      }
-      .jobs-section {
-        padding: 8px 0 0 0;
-      }
-      .job-card {
-        padding: 18px 10px 12px 10px;
-      }
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <title>Manggagawang Pinoy - Job Board</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css?family=Segoe+UI:400,700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="homepage.css">
 </head>
 <body>
   <header>
     <div class="logo">
-      MANGGAGAWANG PINOY
-      <img src="https://img.icons8.com/ios-filled/50/000000/search--v1.png" alt="Search Icon">
+      <img src="imgs/MPtext.png" style="height: 60px; object-fit: cover;">
+      <img src="imgs/MPlogo.png" alt="Search Icon" style="height: 50px;"/>
     </div>
     <div class="search-bar">
-      <input type="text" placeholder="Search">
-      <span class="icon">&#128269;</span>
+      <input type="text" placeholder="Search" />
+      <span class="icon">&#10005;</span>
     </div>
     <div class="header-icons">
       <span class="icon">&#128101;</span>
       <span class="icon">&#128172;</span>
       <span class="icon">&#128276;</span>
-      <img class="profile" src="https://randomuser.me/api/portraits/women/44.jpg" alt="Profile">
+      <img class="profile" src="https://randomuser.me/api/portraits/women/44.jpg" alt="Profile" />
     </div>
   </header>
   <div class="preference">
@@ -274,47 +38,238 @@
       Employer
     </div>
   </div>
-  <div class="jobs-section">
-    <h3>Jobs Based on your profile</h3>
-    <div class="job-card">
-      <div class="date">3d ago</div>
-      <div class="job-title">Refrigerator Repair</div>
-      <div class="job-user">
-        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Ernesto Magcanta">
-        <div class="job-user-info">
-          <span class="name">Ernesto Magcanta</span>
-          <span class="role">Individual</span>
+  <div class="job-container">
+    <div class="job-list">
+      <h3>Jobs Based on your profile</h3>
+      <!-- Repeat job-card as needed, with unique data-job-id -->
+      <div class="job-card" data-job-id="1">
+        <div class="job-title">Refrigerator Repair</div>
+        <div class="date">3d ago</div>
+        <div class="job-user">
+          <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Ernesto Magcanta" />
+          <div class="job-user-info">
+            <span class="name">Ernesto Magcanta</span>
+            <span class="role">Individual</span>
+          </div>
         </div>
+        <span class="desc-label">Job Description</span>
+        <span class="job-desc">Kailangan ko ng ref repairman dahil lagi nagloloko ang akin ref, sa interview na tayo makipag usap regarding sa commision mo.</span>
+        <br />
+        <span class="location-label">Location</span>
+        <span class="job-location">manggahan, langkaan, mansanas, buko</span>
       </div>
-      <div class="job-desc">
-        <strong>Job Description</strong><br>
-        Kailangan ko ng ref repairman dahil lagi nagloloko ang akin ref, sa interview na tayo makipag usap regarding sa commision mo.
+      <div class="job-card" data-job-id="2">
+        <div class="job-title">Refrigerator Repair</div>
+        <div class="date">3d ago</div>
+        <div class="job-user">
+          <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Ernesto Magcanta" />
+          <div class="job-user-info">
+            <span class="name">Ernesto Magcanta</span>
+            <span class="role">Individual</span>
+          </div>
+        </div>
+        <span class="desc-label">Job Description</span>
+        <span class="job-desc">Kailangan ko ng ref repairman dahil lagi nagloloko ang akin ref, sa interview na tayo makipag usap regarding sa commision mo.</span>
+        <br />
+        <span class="location-label">Location</span>
+        <span class="job-location">manggahan, langkaan, mansanas, buko</span>
       </div>
-      <div class="job-location">
-        Location
-        <span>manggahan, langkaan, mansanas, buko</span>
+      <div class="job-card" data-job-id="3">
+        <div class="job-title">Refrigerator Repair</div>
+        <div class="date">3d ago</div>
+        <div class="job-user">
+          <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Ernesto Magcanta" />
+          <div class="job-user-info">
+            <span class="name">Ernesto Magcanta</span>
+            <span class="role">Individual</span>
+          </div>
+        </div>
+        <span class="desc-label">Job Description</span>
+        <span class="job-desc">Kailangan ko ng ref repairman dahil lagi nagloloko ang akin ref, sa interview na tayo makipag usap regarding sa commision mo.</span>
+        <br />
+        <span class="location-label">Location</span>
+        <span class="job-location">manggahan, langkaan, mansanas, buko</span>
+      </div>
+      <div class="job-card" data-job-id="4">
+        <div class="job-title">Refrigerator Repair</div>
+        <div class="date">3d ago</div>
+        <div class="job-user">
+          <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Ernesto Magcanta" />
+          <div class="job-user-info">
+            <span class="name">Ernesto Magcanta</span>
+            <span class="role">Individual</span>
+          </div>
+        </div>
+        <span class="desc-label">Job Description</span>
+        <span class="job-desc">Kailangan ko ng ref repairman dahil lagi nagloloko ang akin ref, sa interview na tayo makipag usap regarding sa commision mo.</span>
+        <br />
+        <span class="location-label">Location</span>
+        <span class="job-location">manggahan, langkaan, mansanas, buko</span>
       </div>
     </div>
-    <div class="job-card">
-      <div class="date">3d ago</div>
-      <div class="job-title">Refrigerator Repair</div>
-      <div class="job-user">
-        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Ernesto Magcanta">
-        <div class="job-user-info">
-          <span class="name">Ernesto Magcanta</span>
-          <span class="role">Individual</span>
-        </div>
+    <div class="job-description-panel" id="descPanel">
+      <div class="default-logo-panel">
+        <img src="https://img.icons8.com/ios-filled/250/000000/search--v1.png" alt="Logo" />
       </div>
-      <div class="job-desc">
-        <strong>Job Description</strong><br>
-        Kailangan ko ng ref repairman dahil lagi nagloloko ang akin ref, sa interview na tayo makipag usap regarding sa commision mo.
-      </div>
-      <div class="job-location">
-        Location
-        <span>manggahan, langkaan, mansanas, buko</span>
-      </div>
+      <div class="desc-content" tabindex="0"></div>
     </div>
   </div>
-  <img src="https://i.imgur.com/8vZlqvO.png" class="watermark" alt="Watermark">
+  <script>
+    // Example job details data (could be fetched from server in real app)
+    const jobDetails = {
+      1: {
+        name: "Ernesto Magcanta",
+        role: "Individual",
+        avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+        title: "Refrigerator Repair",
+        level: "NC Level II",
+        type: "Part Time",
+        desc: "Kailangan ko ng ref repairman dahil lagi nagloloko ang akin ref, sa interview na tayo makipag usap regarding sa commision mo.",
+        responsibilities: [
+          "Develop, test, and maintain websites and web applications using HTML, CSS, JavaScript, and relevant framework.",
+          "Optimize web pages for maximum speed, scalability, and SEO performance."
+        ],
+        pay: "300 - 400 per hour",
+        requirements: [
+          "Barangay Clearance",
+          "Valid ID",
+          "SSS"
+        ],
+        location: "manggahan, langkaan, mansanas, buko"
+      },
+      2: {
+        name: "Ernesto Magcanta",
+        role: "Individual",
+        avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+        title: "Refrigerator Repair",
+        level: "NC Level II",
+        type: "Part Time",
+        desc: "Kailangan ko ng ref repairman dahil lagi nagloloko ang akin ref, sa interview na tayo makipag usap regarding sa commision mo.",
+        responsibilities: [
+          "Develop, test, and maintain websites and web applications using HTML, CSS, JavaScript, and relevant framework.",
+          "Optimize web pages for maximum speed, scalability, and SEO performance."
+        ],
+        pay: "300 - 400 per hour",
+        requirements: [
+          "Barangay Clearance",
+          "Valid ID",
+          "SSS"
+        ],
+        location: "manggahan, langkaan, mansanas, buko"
+      },
+      3: {
+        name: "Ernesto Magcanta",
+        role: "Individual",
+        avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+        title: "Refrigerator Repair",
+        level: "NC Level II",
+        type: "Part Time",
+        desc: "Kailangan ko ng ref repairman dahil lagi nagloloko ang akin ref, sa interview na tayo makipag usap regarding sa commision mo.",
+        responsibilities: [
+          "Develop, test, and maintain websites and web applications using HTML, CSS, JavaScript, and relevant framework.",
+          "Optimize web pages for maximum speed, scalability, and SEO performance."
+        ],
+        pay: "300 - 400 per hour",
+        requirements: [
+          "Barangay Clearance",
+          "Valid ID",
+          "SSS"
+        ],
+        location: "manggahan, langkaan, mansanas, buko"
+      },
+      4: {
+        name: "Ernesto Magcanta",
+        role: "Individual",
+        avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+        title: "Refrigerator Repair",
+        level: "NC Level II",
+        type: "Part Time",
+        desc: "Kailangan ko ng ref repairman dahil lagi nagloloko ang akin ref, sa interview na tayo makipag usap regarding sa commision mo.",
+        responsibilities: [
+          "Develop, test, and maintain websites and web applications using HTML, CSS, JavaScript, and relevant framework.",
+          "Optimize web pages for maximum speed, scalability, and SEO performance."
+        ],
+        pay: "300 - 400 per hour",
+        requirements: [
+          "Barangay Clearance",
+          "Valid ID",
+          "SSS"
+        ],
+        location: "manggahan, langkaan, mansanas, buko"
+      }
+    };
+
+    const jobCards = document.querySelectorAll('.job-card');
+    const descPanel = document.getElementById('descPanel');
+    const descContent = descPanel.querySelector('.desc-content');
+
+    function renderJobDetail(job) {
+      return `
+        <div class="desc-header">
+          <img src="${job.avatar}" alt="${job.name}" />
+          <div class="desc-user-info">
+            <span class="name">${job.name}</span>
+            <span class="role">${job.role}</span>
+          </div>
+        </div>
+        <div class="desc-img-banner">
+          <svg viewBox="0 0 100 40">
+            <rect x="5" y="5" width="25" height="25" rx="5" fill="#bbb"/>
+            <circle cx="55" cy="20" r="15" fill="#bbb"/>
+            <rect x="75" y="10" width="18" height="18" rx="4" fill="#bbb"/>
+          </svg>
+        </div>
+        <div class="desc-title">${job.title}</div>
+        <div class="desc-subtitle">${job.level}</div>
+        <div class="desc-section-label">Job type</div>
+        <div class="desc-section-content">${job.type}</div>
+        <div class="desc-section-label">Job Description</div>
+        <div class="desc-section-content">${job.desc}</div>
+        <div class="desc-section-label">Responsibilities</div>
+        <div class="desc-section-content">
+          <ul>
+            ${job.responsibilities.map(r => `<li>${r}</li>`).join('')}
+          </ul>
+        </div>
+        <div class="desc-section-label">Pay Range</div>
+        <div class="desc-section-content">${job.pay}</div>
+        <div class="desc-section-label">Requirements</div>
+        <div class="desc-section-content">
+          <ul>
+            ${job.requirements.map(r => `<li>${r}</li>`).join('')}
+          </ul>
+        </div>
+        <div class="desc-section-label">Location</div>
+        <div class="desc-section-content">${job.location}</div>
+        <div class="desc-buttons">
+          <button class="fav">Add to Favorites</button>
+          <button class="apply">Apply</button>
+        </div>
+      `;
+    }
+
+    jobCards.forEach(card => {
+      card.addEventListener('click', () => {
+        jobCards.forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        const jobId = card.getAttribute('data-job-id');
+        const job = jobDetails[jobId];
+        if (job) {
+          descContent.innerHTML = renderJobDetail(job);
+          descPanel.classList.add('active');
+          descContent.focus();
+        }
+      });
+    });
+
+    // Clicking outside job cards resets description to logo
+    document.body.addEventListener('click', e => {
+      if (!e.target.closest('.job-card')) {
+        jobCards.forEach(c => c.classList.remove('active'));
+        descPanel.classList.remove('active');
+        descContent.innerHTML = '';
+      }
+    });
+  </script>
 </body>
 </html>
