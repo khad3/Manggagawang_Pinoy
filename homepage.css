@@ -26,13 +26,15 @@
       letter-spacing: 1px;
       gap: 8px;
       user-select: none;
+      align-self: flex-start;
     }
 
     .search-bar {
       flex: 1;
       margin: 0 36px;
       position: relative;
-      max-width: 400px;
+      max-width: 700px;
+      
     }
     .search-bar input {
       width: 100%;
@@ -63,7 +65,9 @@
       display: flex;
       align-items: center;
       gap: 20px;
+      color: #020180;
     }
+
     .header-icons .icon,
     .header-icons .profile {
       font-size: 1.4rem;
@@ -239,8 +243,8 @@
       opacity: 0.13;
     }
     .job-description-panel .default-logo-panel img {
-      max-width: 240px;
-      max-height: 200px;
+      max-width: 440px;
+      max-height: 400px;
     }
     .job-description-panel .desc-content {
       display: none;
