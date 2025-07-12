@@ -21,12 +21,18 @@
   display: flex;
   align-items: center;
   width: 100%;
-  max-width: 900px;
+  max-width: 1400px;   /* Increased max-width */
   margin-bottom: 40px;
   justify-content: center;
-  gap: 24px;
+  gap: 10px;
 }
-
+.carousel-image {
+  width: 900px;        /* Wider image */
+  height: 450px;       /* Taller image */
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
 .carousel-arrow {
   background: none;
   border: none;
@@ -43,16 +49,18 @@
 
 .carousel-preview {
   flex: 1 1 0;
-  min-width: 300px;
-  max-width: 600px;
-  height: 220px;
+  min-width: 900px;    /* Wider minimum width */
+  max-width: 1200px;   /* Wider maximum width */
+  height: 500px;       /* Taller for aspect ratio */
   background: #f1f1f1;
-  border-radius: 16px;
+  border-radius: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
 }
+
+
 
 .carousel-image-placeholder {
   width: 100%;
@@ -66,12 +74,31 @@
   color: #b1bad1;
 }
 
+.services-main {
+  margin-top: 100px;
+  padding: 0 24px 48px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.services-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
 .services-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 28px;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;  /* Match carousel width */
   margin-top: 32px;
 }
 

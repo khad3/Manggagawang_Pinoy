@@ -142,9 +142,7 @@ nav {
   transition: opacity 0.3s ease;
   filter: invert(45%) sepia(84%) saturate(10058%) hue-rotate(247deg) brightness(47%) contrast(121%);
 }
-.nav-logo #home{
-  height: 120px;
-}
+
 
 .nav-logo img:hover {
   opacity: 0.8; /* subtle hover effect */
