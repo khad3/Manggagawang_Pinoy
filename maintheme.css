@@ -143,7 +143,7 @@ nav {
   filter: invert(45%) sepia(84%) saturate(10058%) hue-rotate(247deg) brightness(47%) contrast(121%);
 }
 .nav-logo #home{
-  height: 120px;
+  height: 70px;
 }
 
 .nav-logo img:hover {
@@ -471,8 +471,8 @@ nav {
 }
 
 .logo-placeholder {
-  width: 100px;
-  height: 100px;
+  width: 70px;
+  height: 70px;
   /* Add your logo as background-image or <img> here */
 }
 
