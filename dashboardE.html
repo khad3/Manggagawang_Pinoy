@@ -4,26 +4,108 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="topworkers.css"/>
+    <link rel="stylesheet" href="dashboardE.css"/>
     <link rel="stylesheet" href="maintheme.css">
 </head>
 <body>
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <img src="logo.png" alt="Logo" style="width:38px; margin:18px 0;">
+  </div>
+  <nav class="sidebar-links">
+    <a class="sidebar-link active" href="#"><i class="fa-solid fa-briefcase"></i><span>Jobs</span></a>
+    <a class="sidebar-link" href="#"><i class="fa-solid fa-magnifying-glass"></i><span>Find Applicants</span></a>
+    <a class="sidebar-link" href="#"><i class="fa-solid fa-users"></i><span>Applicants</span></a>
+    <a class="sidebar-link" href="#"><i class="fa-solid fa-comments"></i><span>Messages</span></a>
+    <a class="sidebar-link" href="#"><i class="fa-solid fa-bell"></i><span>Notifications</span></a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <!-- All your header, search bar, job cards, etc. here -->
+</div>
+
+
     <nav>
   <div class="navbar-container">
     <div class="nav-logo">
+      <span class="nav-overlap">Employer Side</span>
       <img src="imgs/MPtext.png" alt="MP Logo" id="home" />
       <img src="imgs/MPlogo.png" alt="MP Logo" id="home2" />
-      <h7>Employer Site</h7>
     </div>
     <ul class="nav-links" id="navLinks">
       <li><a href="#">Services</a></li>
       <li><a href="#">Top Workers</a></li>
-
+     <img class="profile-icon" src="https://randomuser.me/api/portraits/men/11.jpg" alt="Profile">
     </ul>
     <div class="hamburger" id="hamburger">
       <div></div><div></div><div></div>
     </div>
   </div>
+
+       <div class="jobs-title">Jobs</div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <button class="create-btn">Create Job Post</button>
+        <input type="text" class="search-bar" id="searchBar" placeholder="Search" oninput="filterJobs()">
+      </div>
+
+      <!-- Job Listings -->
+      <div class="jobs-list" id="jobsList">
+
+        <!-- JOB CARD (Repeat as needed, data-driven) -->
+        <div class="job-card" data-title="Refrigerator Repair">
+          <img src="https://images.pexels.com/photos/3961829/pexels-photo-3961829.jpeg?auto=compress&w=70&h=100" class="job-img" alt="Fridge">
+          <div class="job-info">
+            <div class="job-title">Refrigerator Repair</div>
+            <div class="job-level">NC II level</div>
+            <div class="job-desc">
+              <b>Job type</b>: Part time<br>
+              <b>Job Description</b>: Kailangan ko ng ref repairman dahil lagi nagloloko ang akin ref, sa interview na tayo...
+            </div>
+            <div class="job-meta">
+              <div><b>Category:</b> Information Technology</div>
+              <div><b>Pay Type:</b> Daily</div>
+              <div><b>Requirements:</b> Barangay Clearance, Valid ID, SSS</div>
+            </div>
+          </div>
+          <button class="more-info-btn">More Info</button>
+        </div>
+
+        <!-- Clone the JOB CARD block above to match your actual dataset, e.g.: -->
+        <div class="job-card" data-title="Refrigerator Repair">
+          <img src="https://images.pexels.com/photos/3961829/pexels-photo-3961829.jpeg?auto=compress&w=70&h=100" class="job-img" alt="Fridge">
+          <div class="job-info">
+            <div class="job-title">Refrigerator Repair</div>
+            <div class="job-level">NC II level</div>
+            <div class="job-desc">
+              <b>Job type</b>: Part time<br>
+              <b>Job Description</b>: Kailangan ko ng ref repairman dahil lagi nagloloko ang akin ref, sa interview na tayo...
+            </div>
+            <div class="job-meta">
+              <div><b>Category:</b> Information Technology</div>
+              <div><b>Pay Type:</b> Daily</div>
+              <div><b>Requirements:</b> Barangay Clearance, Valid ID, SSS</div>
+            </div>
+          </div>
+          <button class="more-info-btn">More Info</button>
+        </div>
+
+      </div>
+    </main>
+  </div>
+  <!-- JavaScript for search filter -->
+  <script>
+    function filterJobs() {
+      const input = document.getElementById('searchBar').value.toLowerCase();
+      const cards = document.querySelectorAll('.job-card');
+      cards.forEach(card => {
+        const title = card.querySelector('.job-title').textContent.toLowerCase();
+        card.style.display = title.includes(input) ? 'flex' : 'none';
+      });
+    }
+  </script>
 </nav>
 </body>
 </html>
