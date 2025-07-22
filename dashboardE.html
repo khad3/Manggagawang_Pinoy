@@ -10,11 +10,12 @@
 
 </head>
 <body>
-  <!-- SIDEBAR -->
-  <nav class="sidebar" tabindex="0">
+ 
+      <!-- SIDEBAR -->
+  <div class="sidebar" tabindex="0">
     <div class="sidebar-logo-wrapper">
       <div class="sidebar-logo">
-        <img src="https://i.imgur.com/IR1DEPP.png" alt="MP Logo" />
+        <img src="MPlogo.png" alt="MP Logo" />
         <span class="nav-overlap">Employer Side</span>
       </div>
     </div>
@@ -25,23 +26,26 @@
       <a class="sidebar-link" href="#"><i class="fa-solid fa-comments"></i><span>Messages</span></a>
       <a class="sidebar-link" href="#"><i class="fa-solid fa-bell"></i><span>Notifications</span></a>
     </div>
-  </nav>
-  
+  </div>
   <!-- MAIN CONTENT -->
-  <main class="main-content">
+  <main class="main-content"> 
     <!-- HEADER -->
-    <div class="header">
-      <div> <div class="nav-logo">
-      <span class="nav-overlap">Employer Side</span>
+     <nav>
+     <div class="navbar-container">
+    <div class="nav-logo">
       <img src="imgs/MPtext.png" alt="MP Logo" id="home" />
       <img src="imgs/MPlogo.png" alt="MP Logo" id="home2" />
-    </div></div>
-      <div class="header-right">
-        <a href="#">Services</a>
-        <a href="#">Top Workers</a>
-        <img class="profile-icon" src="https://randomuser.me/api/portraits/men/13.jpg" alt="Profile">
-      </div>
     </div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#">Services</a></li>
+      <li><a href="#">Top Workers</a></li>
+      <li><img class="profile-icon" src="https://randomuser.me/api/portraits/men/13.jpg" alt="Profile"></li>
+    </ul>
+    <div class="hamburger" id="hamburger">
+      <div></div><div></div><div></div>
+    </div>
+  </div>
+</nav>
     
     <!-- TITLE -->
     <div class="jobs-title">Jobs</div>
