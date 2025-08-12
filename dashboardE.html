@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manggagawang Pinoy | Employer Side</title>
+  <meta name="viewport" content="width=1024">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <link rel="stylesheet" href="maintheme.css" />
+  <link rel="stylesheet" href="dashboardE.css" />
+
+</head>
+<body>
+ 
+      <!-- SIDEBAR -->
+  <div class="sidebar" tabindex="0">
+    <div class="sidebar-logo-wrapper">
+      <div class="sidebar-logo">
+        <img src="MPlogo.png" alt="MP Logo" />
+        <span class="nav-overlap">Employer Side</span>
+      </div>
+    </div>
+    <div class="sidebar-links">
+      <a class="sidebar-link active" href="#"><i class="fa-solid fa-briefcase"></i><span>Jobs</span></a>
+      <a class="sidebar-link" href="#"><i class="fa-solid fa-magnifying-glass"></i><span>Find Applicants</span></a>
+      <a class="sidebar-link" href="#"><i class="fa-solid fa-users"></i><span>Applicants</span></a>
+      <a class="sidebar-link" href="#"><i class="fa-solid fa-comments"></i><span>Messages</span></a>
+      <a class="sidebar-link" href="#"><i class="fa-solid fa-bell"></i><span>Notifications</span></a>
+    </div>
+  </div>
+  <!-- MAIN CONTENT -->
+  <main class="main-content"> 
+    <!-- HEADER -->
+     <nav>
+     <div class="navbar-container">
+    <div class="nav-logo">
+      <img src="imgs/MPtext.png" alt="MP Logo" id="home" />
+      <img src="imgs/MPlogo.png" alt="MP Logo" id="home2" />
+    </div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#">Services</a></li>
+      <li><a href="#">Top Workers</a></li>
+      <li><img class="profile-icon" src="https://randomuser.me/api/portraits/men/13.jpg" alt="Profile"></li>
+    </ul>
+    <div class="hamburger" id="hamburger">
+      <div></div><div></div><div></div>
+    </div>
+  </div>
+</nav>
+    
+    <!-- TITLE -->
+    <div class="jobs-title">Jobs</div>
+    <!-- CONTROL ROW -->
+    <div class="controls">
+      <button class="create-btn">Create Job Post</button>
+      <input type="text" class="search-bar" id="searchBar" placeholder="Search" oninput="filterJobs()">
+    </div>
+    <!-- JOBS LIST -->
+    <div class="jobs-list" id="jobsList">
+      <!-- -- JOB CARD 1 -- -->
+      <div class="job-card">
+        <div class="job-row">
+          <img class="job-img" src="https://images.pexels.com/photos/3961829/pexels-photo-3961829.jpeg?auto=compress&w=70&h=100" alt="Fridge">
+          <div class="job-info">
+            <div class="job-title">Refrigerator Repair</div>
+            <div class="job-level">NC II level</div>
+            <div class="job-desc">
+              <b>Job type:</b> Part time<br>
+              <b>Job Description:</b> Kailangan ko ng ref repairman dahil lagi nagloloko ang akin ref, sa interview na tayo...
+            </div>
+          </div>
+          <div class="job-meta-box">
+              <div><b>Category:</b> Information Technology</div>
+              <div><b>Pay Type:</b> Daily</div>
+              <div><b>Requirements:</b> Barangay Clearance, Valid ID, SSS</div>
+          </div>
+          <button class="more-info-btn">More Info</button>
+        </div>
+        <div class="job-expanded-details">
+          <div>
+            <b>Job type</b><br>Part time
+            <br><br>
+            <b>Job Description</b><br>
+            Kailangan ko ng ref repairman dahil lagi nagloloko ang akin ref, sa interview na tayo makipag usap regarding sa commision mo.
+          </div>
+          <div>
+            <b>Responsibilities</b>
+            <ul>
+              <li>Develop, test, and maintain websites and web applications using HTML, CSS, JavaScript, and relevant frameworks</li>
+              <li>Optimize web pages for maximum speed, scalability, and SEO performance.</li>
+            </ul>
+            <b>Pay Range</b><br>
+            300 - 400 per hour...
+          </div>
+          <div>
+            <b>Requirements</b>
+            <ul>
+              <li>Barangay Clearance</li>
+              <li>Valid ID</li>
+              <li>SSS</li>
+            </ul>
+            <b>Location</b><br>
+            manggahan, langkaan, mansanas, buko
+          </div>
+          <div class="card-actions-row">
+            <button class="delete-btn">Delete Job</button>
+            <button class="edit-btn">Edit Job</button>
+          </div>
+        </div>
+      </div>
+      <!-- -- JOB CARD 2 (COPY) -- -->
+      <div class="job-card">
+        <div class="job-row">
+          <img class="job-img" src="https://images.pexels.com/photos/3961829/pexels-photo-3961829.jpeg?auto=compress&w=70&h=100" alt="Fridge">
+          <div class="job-info">
+            <div class="job-title">Refrigerator Repair</div>
+            <div class="job-level">NC II level</div>
+            <div class="job-desc">
+              <b>Job type:</b> Part time<br>
+              <b>Job Description:</b> Kailangan ko ng ref repairman dahil lagi nagloloko ang akin ref, sa interview na tayo...
+            </div>
+          </div>
+          <div class="job-meta-box">
+              <div><b>Category:</b> Information Technology</div>
+              <div><b>Pay Type:</b> Daily</div>
+              <div><b>Requirements:</b> Barangay Clearance, Valid ID, SSS</div>
+          </div>
+          <button class="more-info-btn">More Info</button>
+        </div>
+        <div class="job-expanded-details">
+          <div>
+            <b>Job type</b><br>Part time
+            <br><br>
+            <b>Job Description</b><br>
+            Kailangan ko ng ref repairman dahil lagi nagloloko ang akin ref, sa interview na tayo makipag usap regarding sa commision mo.
+          </div>
+          <div>
+            <b>Responsibilities</b>
+            <ul>
+              <li>Develop, test, and maintain websites and web applications using HTML, CSS, JavaScript, and relevant frameworks</li>
+              <li>Optimize web pages for maximum speed, scalability, and SEO performance.</li>
+            </ul>
+            <b>Pay Range</b><br>
+            300 - 400 per hour...
+          </div>
+          <div>
+            <b>Requirements</b>
+            <ul>
+              <li>Barangay Clearance</li>
+              <li>Valid ID</li>
+              <li>SSS</li>
+            </ul>
+            <b>Location</b><br>
+            manggahan, langkaan, mansanas, buko
+          </div>
+          <div class="card-actions-row">
+            <button class="delete-btn">Delete Job</button>
+            <button class="edit-btn">Edit Job</button>
+          </div>
+        </div>
+      </div>
+    </div> <!-- jobs-list END -->
+  </main>
+  <script>
+    // The sidebar keeps input focus using tabindex above
+
+    // More Info toggle logic
+    document.querySelectorAll('.more-info-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        const card = button.closest('.job-card');
+        card.classList.toggle('expanded');
+        button.textContent = card.classList.contains('expanded') ? 'Less Info' : 'More Info';
+      });
+    });
+
+    // Simple filter by job title
+    function filterJobs() {
+      var input = document.getElementById('searchBar').value.toLowerCase();
+      document.querySelectorAll('.jobs-list .job-card').forEach(card => {
+        var title = card.querySelector('.job-title').textContent.toLowerCase();
+        card.style.display = title.includes(input) ? '' : 'none';
+      });
+    }
+  </script>
+</body>
+</html>
