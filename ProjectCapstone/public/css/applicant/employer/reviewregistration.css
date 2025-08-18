@@ -1,0 +1,150 @@
+
+      :root {
+        --primary-orange: #ea580c;
+        --primary-red: #dc2626;
+        --light-orange: #fed7aa;
+        --light-red: #fef2f2;
+      }
+
+      body {
+        background: linear-gradient(
+          135deg,
+          #fff7ed 0%,
+          #ffffff 50%,
+          #fef2f2 100%
+        );
+        min-height: 100vh;
+      }
+
+      .registration-container {
+        padding: 60px 0;
+      }
+
+      .step-indicator {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        border: 2px solid;
+      }
+
+      .step-active {
+        background: var(--primary-orange);
+        border-color: var(--primary-orange);
+        color: white;
+      }
+
+      .step-inactive {
+        background: white;
+        border-color: #d1d5db;
+        color: #6b7280;
+      }
+
+      .step-completed {
+        background: var(--primary-orange);
+        border-color: var(--primary-orange);
+        color: white;
+      }
+
+      .step-line {
+        height: 2px;
+        background: #d1d5db;
+        flex: 1;
+        margin: 0 20px;
+        transition: all 0.3s ease;
+      }
+
+      .step-line-completed {
+        background: var(--primary-orange);
+      }
+
+      .review-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border: none;
+        margin-bottom: 1.5rem;
+      }
+
+      .btn-primary-custom {
+        background: linear-gradient(
+          45deg,
+          var(--primary-orange),
+          var(--primary-red)
+        );
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary-custom:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+      }
+
+      .btn-success-custom {
+        background: linear-gradient(45deg, #16a34a, #22c55e);
+        border: none;
+        padding: 15px 40px;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .btn-success-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(22, 163, 74, 0.3);
+      }
+
+      .summary-item {
+        padding: 1rem;
+        border-left: 4px solid var(--primary-orange);
+        background: var(--light-red);
+        margin: 0.5rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+
+      .skill-badge {
+        background: var(--light-orange);
+        color: var(--primary-orange);
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        margin: 2px;
+        display: inline-block;
+      }
+
+      .tesda-highlight {
+        background: linear-gradient(45deg, #fef3c7, #fed7aa);
+        border: 2px solid var(--primary-orange);
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+      }
+
+      .edit-link {
+        color: var(--primary-orange);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+
+      .edit-link:hover {
+        color: var(--primary-red);
+        text-decoration: underline;
+      }
+
+      .final-checklist {
+        background: #f8f9fa;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin: 2rem 0;
+      }

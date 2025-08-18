@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage</title>
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- fav icon -->
+    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
+    <link rel="stylesheet" href="{{ asset('css/applicant/homepage.css') }}">
+</head>
+<body>
+
+
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="container">
+            <div class="d-flex align-items-center justify-content-between">
+                <!-- Brand -->
+                <a href="" class="navbar-brand">
+                    <div class="brand-logo"><img src="{{ asset('img/logo.png') }}" alt="Logo" width="40" height="40"></div>
+                    <span class="brand-name">MP</span>
+                </a>
+
+                <!-- Search -->
+                <div class="nav-search d-none d-md-block">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text" id="navSearch" placeholder="Search companies, industries, employers...">
+                </div>
+
+                <!-- Navigation Actions -->
+                <div class="nav-actions">
+                  <a href="{{ route('applicant.forum.display') }}">
+                    <button class="nav-icon">
+                        <i class="bi bi-people"></i>
+                    </button></a>
+
+                    <!-- Messages Dropdown -->
+                    <div class="nav-dropdown">
+                        <button class="nav-icon" onclick="toggleDropdown('messagesDropdown')">
+                            <i class="bi bi-chat-dots"></i>
+                            <span class="nav-badge" id="messagesBadge">3</span>
+                        </button>
+                        <div class="dropdown-menu" id="messagesDropdown">
+                            <div class="dropdown-header">
+                                <h6>Messages</h6>
+                                <button class="mark-all-read" onclick="markAllAsRead('messages')">Mark all as read</button>
+                            </div>
+                            <div class="dropdown-content">
+                                <div class="message-item unread" data-id="1">
+                                    <div class="message-avatar">
+                                        <img src="https://via.placeholder.com/40x40/667eea/white?text=TC" alt="TechCorp">
+                                    </div>
+                                    <div class="message-content">
+                                        <div class="message-header">
+                                            <span class="sender-name">Sarah Johnson</span>
+                                            <span class="company-name">TechCorp Solutions</span>
+                                            <span class="message-time">2 min ago</span>
+                                        </div>
+                                        <div class="message-preview">Your application for Senior Developer position has been reviewed...</div>
+                                    </div>
+                                    <button class="message-actions" onclick="showMessageModal(1)">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="message-item unread" data-id="2">
+                                    <div class="message-avatar">
+                                        <img src="https://via.placeholder.com/40x40/764ba2/white?text=GE" alt="GreenEnergy">
+                                    </div>
+                                    <div class="message-content">
+                                        <div class="message-header">
+                                            <span class="sender-name">Mike Chen</span>
+                                            <span class="company-name">GreenEnergy Innovations</span>
+                                            <span class="message-time">1 hour ago</span>
+                                        </div>
+                                        <div class="message-preview">We'd like to schedule an interview for the Environmental Engineer role...</div>
+                                    </div>
+                                    <button class="message-actions" onclick="showMessageModal(2)">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="message-item" data-id="3">
+                                    <div class="message-avatar">
+                                        <img src="https://via.placeholder.com/40x40/2563eb/white?text=FF" alt="FinanceFirst">
+                                    </div>
+                                    <div class="message-content">
+                                        <div class="message-header">
+                                            <span class="sender-name">Lisa Wang</span>
+                                            <span class="company-name">FinanceFirst Bank</span>
+                                            <span class="message-time">3 hours ago</span>
+                                        </div>
+                                        <div class="message-preview">Thank you for your interest in our Financial Analyst position...</div>
+                                    </div>
+                                    <button class="message-actions" onclick="showMessageModal(3)">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="dropdown-footer">
+                                <a href="#" class="view-all-link">View All Messages</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notifications Dropdown -->
+                    <div class="nav-dropdown">
+                        <button class="nav-icon" onclick="toggleDropdown('notificationsDropdown')">
+                            <i class="bi bi-bell"></i>
+                            <span class="nav-badge" id="notificationsBadge">5</span>
+                        </button>
+                        <div class="dropdown-menu" id="notificationsDropdown">
+                            <div class="dropdown-header">
+                                <h6>Notifications</h6>
+                                <button class="mark-all-read" onclick="markAllAsRead('notifications')">Mark all as read</button>
+                            </div>
+                            <div class="dropdown-content">
+                                <div class="notification-item unread" data-id="1">
+                                    <div class="notification-icon success">
+                                        <i class="bi bi-check-circle"></i>
+                                    </div>
+                                    <div class="notification-content">
+                                        <div class="notification-title">Application Submitted Successfully</div>
+                                        <div class="notification-message">Your application to TechCorp Solutions has been submitted</div>
+                                        <div class="notification-time">5 min ago</div>
+                                    </div>
+                                </div>
+                                <div class="notification-item unread" data-id="2">
+                                    <div class="notification-icon info">
+                                        <i class="bi bi-info-circle"></i>
+                                    </div>
+                                    <div class="notification-content">
+                                        <div class="notification-title">Profile Update Required</div>
+                                        <div class="notification-message">Please update your work experience section</div>
+                                        <div class="notification-time">2 hours ago</div>
+                                    </div>
+                                </div>
+                                <div class="notification-item unread" data-id="3">
+                                    <div class="notification-icon warning">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                    </div>
+                                    <div class="notification-content">
+                                        <div class="notification-title">Application Deadline Approaching</div>
+                                        <div class="notification-message">HealthTech Medical application closes in 2 days</div>
+                                        <div class="notification-time">4 hours ago</div>
+                                    </div>
+                                </div>
+                                <div class="notification-item unread" data-id="4">
+                                    <div class="notification-icon primary">
+                                        <i class="bi bi-eye"></i>
+                                    </div>
+                                    <div class="notification-content">
+                                        <div class="notification-title">Profile Viewed</div>
+                                        <div class="notification-message">DataFlow Analytics viewed your profile</div>
+                                        <div class="notification-time">6 hours ago</div>
+                                    </div>
+                                </div>
+                                <div class="notification-item unread" data-id="5">
+                                    <div class="notification-icon danger">
+                                        <i class="bi bi-x-circle"></i>
+                                    </div>
+                                    <div class="notification-content">
+                                        <div class="notification-title">Application Status Update</div>
+                                        <div class="notification-message">Your application requires additional documents</div>
+                                        <div class="notification-time">1 day ago</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dropdown-footer">
+                                <a href="#" class="view-all-link">View All Notifications</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Dropdown -->
+                    <div class="nav-dropdown">
+                        <button class="profile-pic" onclick="toggleDropdown('profileDropdown')">
+                            {{ strtoupper(substr($retrievePersonal->personal_info->first_name, 0, 1)) }}
+                            {{ strtoupper(substr($retrievePersonal->personal_info->last_name, 0, 1)) }}
+                        </button>
+                        <div class="dropdown-menu profile-menu" id="profileDropdown">
+                            <div class="profile-header">
+                                <div class="profile-avatar">
+                                     @if ($retrievePersonal->personal_info)
+                                         @if(!empty($retrievePersonal->work_background) && !empty($retrievePersonal->work_background->profileimage_path))
+                                            <img src="{{ asset('storage/' . $retrievePersonal->work_background->profileimage_path) }}" 
+                                                alt="Profile Picture" 
+                                                width="50" 
+                                                height="50" 
+                                                style="border-radius: 50%;">
+                                        @else
+                                            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
+                                                 style="width: 50px; height: 50px;">
+                                                {{ strtoupper(substr($retrievePersonal->first_name ?? 'U', 0, 1)) }}
+                                            </div>
+                                         @endif
+                                         
+                                        @else
+                                            ??
+                                    @endif
+                                </div>
+                                <div class="profile-info">
+                                     <div class="profile-name">
+                                        {{ $retrievePersonal->personal_info->first_name ?? 'Unknown' }}
+                                        {{ $retrievePersonal->personal_info->last_name ?? '' }}
+                                    </div>
+                                    <div class="profile-email">
+                                         {{ $retrievePersonal->email ?? 'Not Provided' }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="dropdown-content">
+                                <a href="{{ route('applicant.profile.display') }}" class="dropdown-item">
+                                    <i class="bi bi-person"></i>
+                                    My Profile
+                                </a>
+                                 <a href="{{ route('applicant.callingcard.display') }}" class="dropdown-item">
+                                    <i class="bi bi-person-badge"></i>
+                                    Ar calling card
+                                </a>
+                                <a href="{{ route('applicant.resume.display') }}" class="dropdown-item">
+                                    <i class="bi bi-file-text"></i>
+                                    Resume Generator
+                                </a>
+                                <a href="{{ route('applicant.application.status.display') }}" class="dropdown-item">
+                                    <i class="bi bi-file-text"></i>
+                                    My Applications
+                                </a>
+                                <!-- <a href="#" class="dropdown-item">
+                                    <i class="bi bi-bookmark"></i>
+                                    Saved Jobs
+                                </a> -->
+                                <a href="#" class="dropdown-item">
+                                    <i class="bi bi-gear"></i>
+                                    Settings
+                                </a>
+                                <hr class="dropdown-divider">
+                                <form method="POST" action="{{ route('applicant.logout.store') }}">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="bi bi-box-arrow-right me-2"></i> Logout
+                                    </button>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Search -->
+            <div class="nav-search d-md-none mt-3">
+                <i class="bi bi-search search-icon"></i>
+                <input type="text" id="mobileNavSearch" placeholder="Search companies, industries, employers...">
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="main-section">
+            <!-- Hero Banner -->
+            <section class="hero-banner">
+                <div class="hero-content">
+                    <h1 class="hero-title">Discover Amazing <br>Career Opportunities</h1>
+                    <p class="hero-subtitle">Connect with top employers and find your perfect job match</p>
+
+                    <div class="hero-stats">
+                        <div class="stat-card">
+                            @if($applicantCounts == 1)
+                            <span class="stat-number">{{ $applicantCounts }}+</span>
+                             <div class="stat-label">Skilled Workers Registered</div>
+                             @else
+                             <span class="stat-number">{{ $applicantCounts }}+</span>
+                             <div class="stat-label">Skilled Workers Registered</div>
+                             @endif
+                        </div>
+                        <div class="stat-card">
+                            @if($publishedCounts == 1)
+                            <span class="stat-number">{{  $publishedCounts }} </span>
+                            <div class="stat-label">Job Openings Available</div>
+                            @else
+                            <span class="stat-number">{{  $publishedCounts }}+</span>
+                            <div class="stat-label">Job Openings Available</div>
+                            @endif
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">150+</span>
+                            <div class="stat-label">TESDA-Certified Employers</div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- Filter Section -->
+            <section class="filter-section">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label class="filter-label">Search Companies</label>
+                        <input type="text" id="searchFilter" class="filter-input" placeholder="Type company name or keyword...">
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Industry</label>
+                        <select id="industryFilter" class="filter-select">
+                            <option value="">All TESDA Industries</option>
+                            @foreach ($JobPostRetrieved as $job)
+                                @if ($job->status_post === 'published')
+                                    <option value="{{ $job->department }}">{{ $job->department }}</option>
+                                @endif
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Location</label>
+                            <select id="locationFilter" class="filter-select">
+                                <option value="">All Locations in Cavite</option>
+                                <!-- Cities -->
+                                <option value="Bacoor">Bacoor City</option>
+                                <option value="Cavite City">Cavite City</option>
+                                <option value="Dasmariñas">Dasmariñas City</option>
+                                <option value="Imus">Imus City</option>
+                                <option value="Tagaytay">Tagaytay City</option>
+                                <option value="Trece Martires">Trece Martires City</option>
+
+                                <!-- Municipalities -->
+                                <option value="Alfonso">Alfonso</option>
+                                <option value="Amadeo">Amadeo</option>
+                                <option value="Carmona">Carmona</option>
+                                <option value="General Emilio Aguinaldo">General Emilio Aguinaldo</option>
+                                <option value="General Mariano Alvarez">General Mariano Alvarez (GMA)</option>
+                                <option value="General Trias">General Trias</option>
+                                <option value="Indang">Indang</option>
+                                <option value="Kawit">Kawit</option>
+                                <option value="Magallanes">Magallanes</option>
+                                <option value="Maragondon">Maragondon</option>
+                                <option value="Mendez">Mendez</option>
+                                <option value="Naic">Naic</option>
+                                <option value="Noveleta">Noveleta</option>
+                                <option value="Rosario">Rosario</option>
+                                <option value="Silang">Silang</option>
+                                <option value="Tanza">Tanza</option>
+                                <option value="Ternate">Ternate</option>
+                            </select>
+                        </div>
+                    <button class="clear-filters" onclick="clearAllFilters()">Clear All</button>
+                </div>
+
+                <!-- Filter Chips -->
+                <div class="filter-chips">
+                    <div class="filter-chip" data-filter="hiring" onclick="toggleChip(this, 'hiring')">
+                        <i class="bi bi-lightning"></i> Actively Hiring
+                    </div>
+                    <div class="filter-chip" data-filter="urgent" onclick="toggleChip(this, 'urgent')">
+                        <i class="bi bi-lightning"></i> Urgent Hiring
+                    </div>
+
+                    <!-- <div class="filter-chip" data-filter="remote" onclick="toggleChip(this, 'remote')">
+                        <i class="bi bi-house"></i> Remote Work
+                    </div>
+                    <div class="filter-chip" data-filter="featured" onclick="toggleChip(this, 'featured')">
+                        <i class="bi bi-star"></i> Featured
+                    </div>
+                    <div class="filter-chip" data-filter="startup" onclick="toggleChip(this, 'startup')">
+                        <i class="bi bi-rocket"></i> Startup
+                    </div> -->
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section">
+            <div class="results-header">
+                    <h2 class="results-count">
+                        <span class="count" id="resultsCount">8</span> Companies Found
+                    </h2>
+
+                    <select class="sort-dropdown" id="sortDropdown" onchange="sortEmployers()">
+                        <option value="name">Sort by Name</option>
+                        <option value="rating">Sort by Rating</option>
+                        <option value="location">Sort by Location</option>
+                        <option value="industry">Sort by Industry</option>
+                    </select>
+                </div>
+
+           
+               <!-- Employer Grid -->
+<div class="employer-grid" id="employerGrid">
+    @foreach($JobPostRetrieved as $jobDetail)
+        @if($jobDetail->status_post === 'published')
+            <div class="employer-card"
+                data-name="{{ $jobDetail->company_name ?? 'N/A' }}"
+                data-industry="{{ $jobDetail->department }}"
+                data-location="{{ $jobDetail->location }}"
+                data-hiring="true"
+                data-remote="false"
+                data-featured="false"
+                data-rating="4.5">
+
+                <!-- Card Header -->
+                <div class="card-header">
+                    <div class="company-info">
+                        @php
+                            $company = $retrievedAddressCompany->first();
+                        @endphp
+
+                        @if($company)
+                            <div class="company-avatar">
+                                {{ Str::limit($company->company_name ?? 'BC', 2, '') }}
+                            </div>
+                        @endif
+
+                        <div class="company-details">
+                            <h3>{{ $jobDetail->title }}</h3>
+                            <div class="company-industry">
+                                {{ $jobDetail->department }} • {{ $jobDetail->job_type }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="company-badges">
+                        <span class="status-badge status-active">
+                            <i class="bi bi-lightning"></i> Hiring
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Job Description -->
+                <div class="card-body">
+                    <p class="company-description">{{ $jobDetail->job_description }}</p>
+
+                    @if($jobDetail->benefits)
+                        <p class="company-description"><strong>Benefits:</strong> {{ $jobDetail->benefits }}</p>
+                    @endif
+                    <p class="company-description"><strong>Experience Level:</strong> {{ $jobDetail->experience_level }} </p>
+                    <p class="company-description"><strong>Salary range: ₱</strong> {{ $jobDetail->job_salary }} Monthly</p>
+                </div>
+
+                <!-- Card Footer -->
+                <div class="card-footer">
+                    <div class="company-stats">
+                        <div class="stat-item">
+                            <i class="bi bi-geo-alt"></i>
+                            <span>{{ $jobDetail->location }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="card-actions d-flex gap-2 mt-2">
+                        <!-- View Details -->
+                        <button 
+                            class="btn btn-primary btn-sm view-details-btn"
+                            data-title="{{ $jobDetail->title }}"
+                            data-company="{{ $retrievedAddressCompany->first()->company_name ?? 'Unknown Company' }}"
+                            data-industry="{{ $jobDetail->department }}"
+                            data-location="{{ $jobDetail->location }}"
+                            data-description="{{ $jobDetail->job_description }}"
+                            data-benefits="{{ $jobDetail->benefits ?? 'None' }}"
+                            data-salary="{{ $jobDetail->job_salary }}"
+                            data-experience="{{ $jobDetail->experience_level ?? 'N/A' }}"
+                            @if (Str::contains($jobDetail->tesda_certification, 'Other'))
+                                data-tesda="{{ $jobDetail->other_certifications ?? 'N/A' }}"
+                                data-none="N/A"
+                            @else
+                                data-tesda="{{ $jobDetail->tesda_certification ?? 'N/A' }}"
+                                data-none="{{ $jobDetail->none_certifications_qualification ?? 'N/A' }}"
+                            @endif
+                            data-bs-toggle="modal"
+                            data-bs-target="#viewDetailsModal">
+                                View Details
+                        </button>
+
+                        <!-- Save/Unsave Job -->
+                        <form action="{{ route('jobs.toggleSave', $jobDetail->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @if(in_array($jobDetail->id, $savedJobIds))
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-bookmark-dash"></i> Unsave Job
+                                </button>
+                            @else
+                                <button type="submit" class="btn btn-warning btn-sm">
+                                    <i class="bi bi-bookmark-plus"></i> Save Job
+                                </button>
+                            @endif
+                        </form>
+
+                        <!-- Apply Job -->
+                        <button 
+                            class="btn btn-success btn-sm apply-btn"
+                            data-title="{{ $jobDetail->title }}"
+                            data-company="{{ $jobDetail->company_name ?? 'N/A' }}"
+                            data-location="{{ $jobDetail->location }}"
+                            data-bs-toggle="modal"
+                            data-bs-target="#applyJobModal">
+                                <i class="bi bi-send-check"></i> Apply Job
+                        </button>
+                    </div>
+                </div>
+            </div>
+        @endif
+    @endforeach
+</div>
+
+
+
+
+
+                <!-- No Results Message -->
+                <div class="no-results hidden" id="noResults">
+                    <i class="bi bi-search"></i>
+                    <h3>No employers found</h3>
+                    <p>Try adjusting your filters or search terms</p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Message Modal -->
+    <div class="modal-overlay" id="messageModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Message Details</h5>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Message content will be inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-reply" onclick="replyToMessage()">Reply</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.querySelectorAll('.apply-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const jobTitle = button.getAttribute('data-title');
+            const companyName = button.getAttribute('data-company');
+            const location = button.getAttribute('data-location');
+
+            document.getElementById('applyJobTitle').value = jobTitle;
+            document.getElementById('applyCompanyName').value = companyName;
+            document.getElementById('applyJobLocation').value = location;
+        });
+    });
+</script>
+
+
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const buttons = document.querySelectorAll('.view-details-btn');
+
+    buttons.forEach(btn => {
+        btn.addEventListener('click', function () {
+            document.getElementById('modalJobTitle').textContent = btn.dataset.title;
+            document.getElementById('modalCompanyName').textContent = btn.dataset.company;
+            document.getElementById('modalIndustry').textContent = btn.dataset.industry;
+            document.getElementById('modalLocation').textContent = btn.dataset.location;
+            document.getElementById('modalDescription').textContent = btn.dataset.description;
+            document.getElementById('modalSalary').textContent = btn.dataset.salary;
+            document.getElementById('modalBenefits').textContent = btn.dataset.benefits;
+            document.getElementById('modalExperienceLevel').textContent = btn.dataset.experience;
+            document.getElementById('modalTESDACertification').textContent = btn.dataset.tesda;
+            document.getElementById('modalNoneCertificationsQualification').textContent = btn.dataset.none;
+            
+        });
+    });
+});
+</script>
+
+
+    <!-- Messaging and Notification JavaScript -->
+    <script>
+        // Sample message data
+        const messagesData = {
+            1: {
+                sender: "Sarah Johnson",
+                company: "TechCorp Solutions",
+                time: "2 min ago",
+                subject: "Application Status Update",
+                content: "Dear John,\n\nThank you for your application for the Senior Developer position at TechCorp Solutions. We have reviewed your application and are impressed with your qualifications.\n\nWe would like to schedule a technical interview with you next week. Please let us know your availability for the following time slots:\n\n- Monday, 2:00 PM - 4:00 PM\n- Tuesday, 10:00 AM - 12:00 PM\n- Wednesday, 3:00 PM - 5:00 PM\n\nPlease reply with your preferred time slot, and we'll send you the meeting details.\n\nBest regards,\nSarah Johnson\nHR Manager, TechCorp Solutions"
+            },
+            2: {
+                sender: "Mike Chen",
+                company: "GreenEnergy Innovations",
+                time: "1 hour ago",
+                subject: "Interview Invitation",
+                content: "Hello John,\n\nWe are excited to inform you that you have been selected for the next round of interviews for the Environmental Engineer position at GreenEnergy Innovations.\n\nThe interview will consist of:\n1. Technical discussion about renewable energy systems\n2. Project portfolio review\n3. Team culture fit assessment\n\nThe interview is scheduled for 90 minutes and will be conducted via video call. We'll send you the meeting link 24 hours before the interview.\n\nPlease confirm your attendance and let us know if you have any questions.\n\nLooking forward to speaking with you!\n\nBest regards,\nMike Chen\nEngineering Manager"
+            },
+            3: {
+                sender: "Lisa Wang",
+                company: "FinanceFirst Bank",
+                time: "3 hours ago",
+                subject: "Application Received",
+                content: "Dear John,\n\nThank you for your interest in the Financial Analyst position at FinanceFirst Bank. We have successfully received your application.\n\nOur hiring team will review your application over the next 5-7 business days. If your qualifications match our requirements, we will contact you to schedule an initial phone screening.\n\nIn the meantime, feel free to explore our company culture and values on our website. We believe in fostering an inclusive and innovative work environment.\n\nThank you for considering FinanceFirst Bank as your next career opportunity.\n\nBest regards,\nLisa Wang\nTalent Acquisition Specialist"
+            }
+        };
+
+        // Dropdown functionality
+        function toggleDropdown(dropdownId) {
+            // Close all other dropdowns
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                if (menu.id !== dropdownId) {
+                    menu.classList.remove('show');
+                }
+            });
+
+            // Toggle the clicked dropdown
+            const dropdown = document.getElementById(dropdownId);
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.nav-dropdown')) {
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    menu.classList.remove('show');
+                });
+            }
+        });
+
+        // Mark all as read functionality
+        function markAllAsRead(type) {
+            if (type === 'messages') {
+                document.querySelectorAll('#messagesDropdown .message-item').forEach(item => {
+                    item.classList.remove('unread');
+                });
+                document.getElementById('messagesBadge').textContent = '0';
+                document.getElementById('messagesBadge').style.display = 'none';
+                showToast('All messages marked as read', 'success');
+            } else if (type === 'notifications') {
+                document.querySelectorAll('#notificationsDropdown .notification-item').forEach(item => {
+                    item.classList.remove('unread');
+                });
+                document.getElementById('notificationsBadge').textContent = '0';
+                document.getElementById('notificationsBadge').style.display = 'none';
+                showToast('All notifications marked as read', 'success');
+            }
+        }
+
+        // Show message modal
+        function showMessageModal(messageId) {
+            const message = messagesData[messageId];
+            if (!message) return;
+
+            document.getElementById('modalTitle').textContent = message.subject;
+            document.getElementById('modalBody').innerHTML = `
+                <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f0f0f0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <strong style="color: #333;">${message.sender}</strong>
+                        <span style="color: #888; font-size: 12px;">${message.time}</span>
+                    </div>
+                    <div style="color: #667eea; font-size: 14px; margin-bottom: 4px;">${message.company}</div>
+                </div>
+                <div style="white-space: pre-line; line-height: 1.6; color: #333;">${message.content}</div>
+            `;
+
+            document.getElementById('messageModal').classList.add('show');
+
+            // Mark message as read
+            const messageItem = document.querySelector(`[data-id="${messageId}"]`);
+            if (messageItem && messageItem.classList.contains('unread')) {
+                messageItem.classList.remove('unread');
+                updateMessageBadge();
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('messageModal').classList.remove('show');
+        }
+
+        // Reply to message
+        function replyToMessage() {
+            showToast('Reply feature will be available soon!', 'info');
+            closeModal();
+        }
+
+        // Update message badge count
+        function updateMessageBadge() {
+            const unreadCount = document.querySelectorAll('#messagesDropdown .message-item.unread').length;
+            const badge = document.getElementById('messagesBadge');
+            badge.textContent = unreadCount;
+            if (unreadCount === 0) {
+                badge.style.display = 'none';
+            } else {
+                badge.style.display = 'flex';
+            }
+        }
+
+        // Toast notification system
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+
+            let borderColor = '#667eea';
+            if (type === 'success') borderColor = '#22c55e';
+            if (type === 'warning') borderColor = '#fbbf24';
+            if (type === 'error') borderColor = '#ef4444';
+
+            toast.style.borderLeftColor = borderColor;
+
+            toast.innerHTML = `
+                <div class="toast-header">
+                    <div class="toast-title">${type.charAt(0).toUpperCase() + type.slice(1)}</div>
+                    <button class="toast-close" onclick="this.parentElement.parentElement.remove()">&times;</button>
+                </div>
+                <div class="toast-body">${message}</div>
+            `;
+
+            document.getElementById('toastContainer').appendChild(toast);
+
+            // Show toast
+            setTimeout(() => toast.classList.add('show'), 100);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
+        // Notification click handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click handlers for notification items
+            document.querySelectorAll('.notification-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    if (this.classList.contains('unread')) {
+                        this.classList.remove('unread');
+                        updateNotificationBadge();
+                        showToast('Notification marked as read', 'success');
+                    }
+                });
+            });
+
+            // Add click handlers for message items
+            document.querySelectorAll('.message-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const messageId = this.dataset.id;
+                    showMessageModal(messageId);
+                });
+            });
+        });
+
+        // Update notification badge count
+        function updateNotificationBadge() {
+            const unreadCount = document.querySelectorAll('#notificationsDropdown .notification-item.unread').length;
+            const badge = document.getElementById('notificationsBadge');
+            badge.textContent = unreadCount;
+            if (unreadCount === 0) {
+                badge.style.display = 'none';
+            } else {
+                badge.style.display = 'flex';
+            }
+        }
+
+        // Close modal when clicking overlay
+        document.getElementById('messageModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    menu.classList.remove('show');
+                });
+            }
+        });
+    </script>
+
+    <!-- Filter JavaScript -->
+    <script>
+        // Filter state
+        let activeFilters = {
+            search: '',
+            industry: '',
+            location: '',
+            chips: []
+        };
+
+        // Initialize filters
+        document.addEventListener('DOMContentLoaded', function() {
+            // Search input listeners
+            const searchFilter = document.getElementById('searchFilter');
+            const navSearch = document.getElementById('navSearch');
+            const mobileNavSearch = document.getElementById('mobileNavSearch');
+
+            searchFilter.addEventListener('input', applyFilters);
+            navSearch.addEventListener('input', function() {
+                searchFilter.value = this.value;
+                applyFilters();
+            });
+            mobileNavSearch.addEventListener('input', function() {
+                searchFilter.value = this.value;
+                navSearch.value = this.value;
+                applyFilters();
+            });
+
+            // Dropdown listeners
+            document.getElementById('industryFilter').addEventListener('change', applyFilters);
+            document.getElementById('locationFilter').addEventListener('change', applyFilters);
+
+            // Initial count
+            updateResultsCount();
+        });
+
+        // Apply all filters
+        function applyFilters() {
+            const searchValue = document.getElementById('searchFilter').value.toLowerCase();
+            const industryValue = document.getElementById('industryFilter').value;
+            const locationValue = document.getElementById('locationFilter').value;
+
+            const cards = document.querySelectorAll('.employer-card');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                let isVisible = true;
+
+                // Search filter
+                if (searchValue) {
+                    const name = card.dataset.name.toLowerCase();
+                    const industry = card.dataset.industry.toLowerCase();
+                    const description = card.querySelector('.company-description').textContent.toLowerCase();
+
+                    if (!name.includes(searchValue) &&
+                        !industry.includes(searchValue) &&
+                        !description.includes(searchValue)) {
+                        isVisible = false;
+                    }
+                }
+
+                // Industry filter
+                if (industryValue && card.dataset.industry !== industryValue) {
+                    isVisible = false;
+                }
+
+                // Location filter
+                if (locationValue && !card.dataset.location.includes(locationValue)) {
+                    isVisible = false;
+                }
+
+                // Chip filters
+                activeFilters.chips.forEach(chip => {
+                    if (chip === 'hiring' && card.dataset.hiring !== 'true') {
+                        isVisible = false;
+                    }
+                    if (chip === 'remote' && card.dataset.remote !== 'true') {
+                        isVisible = false;
+                    }
+                    if (chip === 'featured' && card.dataset.featured !== 'true') {
+                        isVisible = false;
+                    }
+                    if (chip === 'startup' && card.dataset.startup !== 'true') {
+                        isVisible = false;
+                    }
+                });
+
+                // Show/hide card
+                if (isVisible) {
+                    card.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            updateResultsCount(visibleCount);
+            toggleNoResults(visibleCount === 0);
+        }
+
+        // Toggle filter chip
+        function toggleChip(chipElement, filterType) {
+            chipElement.classList.toggle('active');
+
+            if (chipElement.classList.contains('active')) {
+                if (!activeFilters.chips.includes(filterType)) {
+                    activeFilters.chips.push(filterType);
+                }
+            } else {
+                activeFilters.chips = activeFilters.chips.filter(chip => chip !== filterType);
+            }
+
+            applyFilters();
+        }
+
+        // Clear all filters
+        function clearAllFilters() {
+            // Clear search inputs
+            document.getElementById('searchFilter').value = '';
+            document.getElementById('navSearch').value = '';
+            document.getElementById('mobileNavSearch').value = '';
+
+            // Clear dropdowns
+            document.getElementById('industryFilter').value = '';
+            document.getElementById('locationFilter').value = '';
+
+            // Clear chips
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+
+            // Reset filter state
+            activeFilters = {
+                search: '',
+                industry: '',
+                location: '',
+                chips: []
+            };
+
+            // Show all cards
+            document.querySelectorAll('.employer-card').forEach(card => {
+                card.classList.remove('hidden');
+            });
+
+            updateResultsCount();
+            toggleNoResults(false);
+        }
+
+        // Sort employers
+        function sortEmployers() {
+            const sortBy = document.getElementById('sortDropdown').value;
+            const grid = document.getElementById('employerGrid');
+            const cards = Array.from(grid.querySelectorAll('.employer-card:not(.hidden)'));
+
+            cards.sort((a, b) => {
+                let aValue, bValue;
+
+                switch (sortBy) {
+                    case 'name':
+                        aValue = a.dataset.name;
+                        bValue = b.dataset.name;
+                        break;
+                    case 'rating':
+                        aValue = parseFloat(a.dataset.rating);
+                        bValue = parseFloat(b.dataset.rating);
+                        return bValue - aValue; // Descending order for rating
+                    case 'location':
+                        aValue = a.dataset.location;
+                        bValue = b.dataset.location;
+                        break;
+                    case 'industry':
+                        aValue = a.dataset.industry;
+                        bValue = b.dataset.industry;
+                        break;
+                    default:
+                        return 0;
+                }
+
+                return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+            });
+
+            // Re-append sorted cards
+            cards.forEach(card => grid.appendChild(card));
+        }
+
+        // Update results count
+        function updateResultsCount(count = null) {
+            const resultsCount = document.getElementById('resultsCount');
+            if (count === null) {
+                count = document.querySelectorAll('.employer-card:not(.hidden)').length;
+            }
+            resultsCount.textContent = count;
+        }
+
+        // Toggle no results message
+        function toggleNoResults(show) {
+            const noResults = document.getElementById('noResults');
+            const employerGrid = document.getElementById('employerGrid');
+
+            if (show) {
+                noResults.classList.remove('hidden');
+                employerGrid.style.display = 'none';
+            } else {
+                noResults.classList.add('hidden');
+                employerGrid.style.display = 'grid';
+            }
+        }
+    </script>
+</body>
+</html>
