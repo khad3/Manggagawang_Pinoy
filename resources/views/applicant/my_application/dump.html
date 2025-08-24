@@ -1,0 +1,1757 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>JobTracker - Application Dashboard</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+            rel="stylesheet"
+        />
+        <style>
+            :root {
+                --primary-color: #2563eb;
+                --secondary-color: #f1f5f9;
+                --success-color: #059669;
+                --warning-color: #d97706;
+                --danger-color: #dc2626;
+                --info-color: #7c3aed;
+                --dark-color: #1e293b;
+                --light-color: #f8fafc;
+                --border-color: #e2e8f0;
+                --text-muted: #64748b;
+                --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+                --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+                font-family: "Inter", -apple-system, BlinkMacSystemFont,
+                    "Segoe UI", "Roboto", sans-serif;
+                color: var(--dark-color);
+                line-height: 1.6;
+                min-height: 100vh;
+            }
+
+            .dashboard-container {
+                padding: 2rem 0 4rem 0;
+            }
+
+            .back-button {
+                background: linear-gradient(
+                    135deg,
+                    var(--primary-color) 0%,
+                    #1d4ed8 100%
+                );
+                border: none;
+                box-shadow: var(--shadow-md);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .back-button:hover {
+                transform: translateY(-2px);
+                box-shadow: var(--shadow-lg);
+                background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+            }
+
+            .stat-card {
+                background: white;
+                border-radius: 16px;
+                box-shadow: var(--shadow-sm);
+                border: 1px solid var(--border-color);
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .stat-card::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(
+                    90deg,
+                    var(--primary-color) 0%,
+                    var(--info-color) 100%
+                );
+                transform: scaleX(0);
+                transition: transform 0.3s ease;
+            }
+
+            .stat-card:hover {
+                transform: translateY(-4px);
+                box-shadow: var(--shadow-lg);
+            }
+
+            .stat-card:hover::before {
+                transform: scaleX(1);
+            }
+
+            .stat-icon {
+                width: 56px;
+                height: 56px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+                background: linear-gradient(
+                    135deg,
+                    var(--primary-color),
+                    var(--info-color)
+                );
+                color: white;
+            }
+
+            .stat-number {
+                font-size: 2.5rem;
+                font-weight: 700;
+                line-height: 1;
+                background: linear-gradient(
+                    135deg,
+                    var(--dark-color) 0%,
+                    var(--text-muted) 100%
+                );
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .tab-container {
+                background: white;
+                border-radius: 20px;
+                box-shadow: var(--shadow-md);
+                border: 1px solid var(--border-color);
+                overflow: hidden;
+                backdrop-filter: blur(10px);
+            }
+
+            .custom-tabs {
+                border-bottom: 1px solid var(--border-color);
+                background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+                padding: 0.5rem 0.5rem 0 0.5rem;
+            }
+
+            .custom-tabs .nav-link {
+                border: none;
+                color: var(--text-muted);
+                font-weight: 600;
+                padding: 1rem 2rem;
+                border-radius: 12px;
+                margin-right: 0.5rem;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                position: relative;
+            }
+
+            .custom-tabs .nav-link:hover {
+                background-color: rgba(37, 99, 235, 0.1);
+                color: var(--primary-color);
+            }
+
+            .custom-tabs .nav-link.active {
+                background: linear-gradient(
+                    135deg,
+                    var(--primary-color) 0%,
+                    #1d4ed8 100%
+                );
+                color: white;
+                box-shadow: var(--shadow-md);
+            }
+
+            .application-card,
+            .job-card {
+                background: white;
+                border: 1px solid var(--border-color);
+                border-radius: 16px;
+                padding: 2rem;
+                margin-bottom: 1.5rem;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .application-card::before,
+            .job-card::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 4px;
+                height: 100%;
+                background: linear-gradient(
+                    180deg,
+                    var(--primary-color),
+                    var(--info-color)
+                );
+                transform: scaleY(0);
+                transition: transform 0.3s ease;
+            }
+
+            .application-card:hover,
+            .job-card:hover {
+                box-shadow: var(--shadow-lg);
+                transform: translateY(-2px);
+                border-color: var(--primary-color);
+            }
+
+            .application-card:hover::before,
+            .job-card:hover::before {
+                transform: scaleY(1);
+            }
+
+            .status-badge {
+                padding: 0.6rem 1.2rem;
+                border-radius: 25px;
+                font-size: 0.875rem;
+                font-weight: 600;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                box-shadow: var(--shadow-sm);
+            }
+
+            .status-pending {
+                background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+                color: #92400e;
+                border: 1px solid #f59e0b;
+            }
+
+            .status-reviewed {
+                background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+                color: #1e40af;
+                border: 1px solid #3b82f6;
+            }
+
+            .status-interview {
+                background: linear-gradient(135deg, #e9d5ff 0%, #ddd6fe 100%);
+                color: #7c3aed;
+                border: 1px solid #8b5cf6;
+            }
+
+            .status-accepted {
+                background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+                color: #065f46;
+                border: 1px solid #10b981;
+            }
+
+            .status-rejected {
+                background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+                color: #991b1b;
+                border: 1px solid #ef4444;
+            }
+
+            .search-container {
+                position: relative;
+            }
+
+            .search-icon {
+                position: absolute;
+                left: 16px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: var(--text-muted);
+                font-size: 18px;
+            }
+
+            .search-input {
+                padding-left: 3rem;
+                border-radius: 12px;
+                border: 2px solid var(--border-color);
+                transition: all 0.3s ease;
+                background: white;
+                font-size: 16px;
+                height: 48px;
+            }
+
+            .search-input:focus {
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            }
+
+            .form-select {
+                border-radius: 12px;
+                border: 2px solid var(--border-color);
+                transition: all 0.3s ease;
+                font-weight: 500;
+                height: 48px;
+            }
+
+            .form-select:focus {
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            }
+
+            .btn-primary {
+                background: linear-gradient(
+                    135deg,
+                    var(--primary-color) 0%,
+                    #1d4ed8 100%
+                );
+                border: none;
+                border-radius: 10px;
+                font-weight: 600;
+                padding: 0.6rem 1.5rem;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: var(--shadow-sm);
+            }
+
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: var(--shadow-md);
+                background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+            }
+
+            .btn-outline-primary {
+                border: 2px solid var(--primary-color);
+                color: var(--primary-color);
+                border-radius: 10px;
+                font-weight: 600;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .btn-outline-primary:hover {
+                background: var(--primary-color);
+                transform: translateY(-1px);
+                box-shadow: var(--shadow-md);
+            }
+
+            .btn-success {
+                background: linear-gradient(
+                    135deg,
+                    var(--success-color) 0%,
+                    #047857 100%
+                );
+                border: none;
+                border-radius: 10px;
+                font-weight: 600;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .btn-success:hover {
+                transform: translateY(-1px);
+                box-shadow: var(--shadow-md);
+            }
+
+            .btn-danger {
+                background: linear-gradient(
+                    135deg,
+                    var(--danger-color) 0%,
+                    #b91c1c 100%
+                );
+                border: none;
+                border-radius: 10px;
+                font-weight: 600;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .btn-danger:hover {
+                transform: translateY(-1px);
+                box-shadow: var(--shadow-md);
+            }
+
+            .company-name {
+                color: var(--text-muted);
+                font-weight: 600;
+                font-size: 1.1rem;
+            }
+
+            .job-title {
+                color: var(--dark-color);
+                font-weight: 700;
+                margin-bottom: 0.5rem;
+                font-size: 1.25rem;
+            }
+
+            .job-details {
+                color: var(--text-muted);
+                font-size: 0.95rem;
+                font-weight: 500;
+            }
+
+            .job-details span {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .job-details i {
+                color: var(--primary-color);
+                font-size: 14px;
+            }
+
+            .modal-content {
+                border-radius: 20px;
+                border: none;
+                box-shadow: var(--shadow-lg);
+            }
+
+            .modal-header {
+                border-bottom: 1px solid var(--border-color);
+                padding: 2rem 2rem 1rem 2rem;
+                background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+                border-radius: 20px 20px 0 0;
+            }
+
+            .modal-title {
+                font-weight: 700;
+                font-size: 1.5rem;
+                color: var(--dark-color);
+            }
+
+            .modal-body {
+                padding: 2rem;
+            }
+
+            .modal-detail-item {
+                padding: 1rem 0;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .modal-detail-item:last-child {
+                border-bottom: none;
+            }
+
+            .detail-label {
+                font-weight: 700;
+                color: var(--dark-color);
+                margin-bottom: 0.5rem;
+                font-size: 0.95rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .detail-value {
+                color: var(--text-muted);
+                font-weight: 500;
+            }
+
+            .detail-value a {
+                color: var(--primary-color);
+                text-decoration: none;
+                font-weight: 600;
+            }
+
+            .detail-value a:hover {
+                text-decoration: underline;
+            }
+
+            .badge {
+                background: linear-gradient(
+                    135deg,
+                    var(--text-muted) 0%,
+                    #475569 100%
+                );
+                color: white;
+                font-weight: 600;
+                padding: 0.5rem 1rem;
+                border-radius: 20px;
+            }
+
+            .page-title {
+                font-size: 2.5rem;
+                font-weight: 800;
+                background: linear-gradient(
+                    135deg,
+                    var(--dark-color) 0%,
+                    var(--primary-color) 100%
+                );
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                margin-bottom: 0.5rem;
+            }
+
+            .page-subtitle {
+                color: var(--text-muted);
+                font-size: 1.1rem;
+                font-weight: 500;
+                margin-bottom: 3rem;
+            }
+
+            /* Job Requirements and Benefits Styling */
+            .requirements-list,
+            .benefits-list {
+                background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+                border-radius: 12px;
+                padding: 1.5rem;
+                margin-top: 1rem;
+            }
+
+            .requirements-list ul,
+            .benefits-list ul {
+                margin: 0;
+                padding-left: 1.5rem;
+            }
+
+            .requirements-list li,
+            .benefits-list li {
+                margin-bottom: 0.5rem;
+                color: var(--text-muted);
+            }
+
+            .requirements-list li:last-child,
+            .benefits-list li:last-child {
+                margin-bottom: 0;
+            }
+
+            /* Status indicators for different job types */
+            .job-type-badge {
+                background: linear-gradient(
+                    135deg,
+                    var(--info-color) 0%,
+                    #8b5cf6 100%
+                );
+                color: white;
+                padding: 0.4rem 1rem;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            @media (max-width: 768px) {
+                .dashboard-container {
+                    padding: 1rem 0 2rem 0;
+                }
+
+                .application-card,
+                .job-card {
+                    padding: 1.5rem;
+                }
+
+                .custom-tabs .nav-link {
+                    padding: 0.75rem 1rem;
+                    font-size: 0.9rem;
+                    margin-right: 0.25rem;
+                }
+
+                .stat-number {
+                    font-size: 2rem;
+                }
+
+                .page-title {
+                    font-size: 2rem;
+                }
+
+                .modal-header,
+                .modal-body {
+                    padding: 1.5rem;
+                }
+            }
+
+            @media (max-width: 576px) {
+                .job-details {
+                    flex-direction: column !important;
+                    align-items: flex-start !important;
+                    gap: 0.5rem !important;
+                }
+
+                .status-badge {
+                    font-size: 0.75rem;
+                    padding: 0.4rem 0.8rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container-fluid p-4">
+            <a
+                href="#"
+                class="btn btn-primary back-button d-inline-flex align-items-center shadow rounded-pill px-4 py-3"
+            >
+                <i class="fas fa-arrow-left me-2 fs-5"></i>
+                Back to Homepage
+            </a>
+        </div>
+
+        <div class="container-fluid dashboard-container">
+            <div class="container">
+                <!-- Page Header -->
+                <div class="text-center mb-5">
+                    <h1 class="page-title">Job Application Dashboard</h1>
+                    <p class="page-subtitle">
+                        Track your applications and manage your career journey
+                    </p>
+                </div>
+
+                <!-- Dashboard Stats -->
+                <div class="row g-4 mb-5">
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <div class="stat-card p-4">
+                            <div
+                                class="d-flex justify-content-between align-items-center"
+                            >
+                                <div>
+                                    <p class="text-muted mb-2 fw-semibold">
+                                        Total Applications
+                                    </p>
+                                    <h3 class="stat-number mb-0">4</h3>
+                                </div>
+                                <div class="stat-icon">
+                                    <i class="fas fa-briefcase"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <div class="stat-card p-4">
+                            <div
+                                class="d-flex justify-content-between align-items-center"
+                            >
+                                <div>
+                                    <p class="text-muted mb-2 fw-semibold">
+                                        Pending Review
+                                    </p>
+                                    <h3
+                                        class="stat-number mb-0"
+                                        style="color: var(--warning-color)"
+                                    >
+                                        1
+                                    </h3>
+                                </div>
+                                <div
+                                    class="stat-icon"
+                                    style="
+                                        background: linear-gradient(
+                                            135deg,
+                                            var(--warning-color),
+                                            #f59e0b
+                                        );
+                                    "
+                                >
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <div class="stat-card p-4">
+                            <div
+                                class="d-flex justify-content-between align-items-center"
+                            >
+                                <div>
+                                    <p class="text-muted mb-2 fw-semibold">
+                                        Interviews
+                                    </p>
+                                    <h3
+                                        class="stat-number mb-0"
+                                        style="color: var(--info-color)"
+                                    >
+                                        1
+                                    </h3>
+                                </div>
+                                <div
+                                    class="stat-icon"
+                                    style="
+                                        background: linear-gradient(
+                                            135deg,
+                                            var(--info-color),
+                                            #8b5cf6
+                                        );
+                                    "
+                                >
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <div class="stat-card p-4">
+                            <div
+                                class="d-flex justify-content-between align-items-center"
+                            >
+                                <div>
+                                    <p class="text-muted mb-2 fw-semibold">
+                                        Accepted
+                                    </p>
+                                    <h3
+                                        class="stat-number mb-0"
+                                        style="color: var(--success-color)"
+                                    >
+                                        0
+                                    </h3>
+                                </div>
+                                <div
+                                    class="stat-icon"
+                                    style="
+                                        background: linear-gradient(
+                                            135deg,
+                                            var(--success-color),
+                                            #10b981
+                                        );
+                                    "
+                                >
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Tabs -->
+                <div class="tab-container">
+                    <ul
+                        class="nav nav-tabs custom-tabs"
+                        id="mainTabs"
+                        role="tablist"
+                    >
+                        <li class="nav-item" role="presentation">
+                            <button
+                                class="nav-link active"
+                                id="applications-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#applications"
+                                type="button"
+                                role="tab"
+                            >
+                                <i class="fas fa-file-alt me-2"></i>My
+                                Applications
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button
+                                class="nav-link"
+                                id="saved-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#saved"
+                                type="button"
+                                role="tab"
+                            >
+                                <i class="fas fa-heart me-2"></i>Saved Jobs
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="mainTabsContent">
+                        <!-- Applications Tab -->
+                        <div
+                            class="tab-pane fade show active"
+                            id="applications"
+                            role="tabpanel"
+                        >
+                            <div class="p-4">
+                                <div class="row mb-4">
+                                    <div class="col-12 col-md-8">
+                                        <h4 class="mb-0 fw-bold">
+                                            Application Status
+                                        </h4>
+                                        <p class="text-muted mt-1">
+                                            Monitor your job application
+                                            progress
+                                        </p>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <div
+                                            class="d-flex flex-column flex-md-row gap-3"
+                                        >
+                                            <div
+                                                class="search-container flex-grow-1"
+                                            >
+                                                <i
+                                                    class="fas fa-search search-icon"
+                                                ></i>
+                                                <input
+                                                    type="text"
+                                                    class="form-control search-input"
+                                                    placeholder="Search applications..."
+                                                />
+                                            </div>
+                                            <select
+                                                class="form-select"
+                                                style="min-width: 140px"
+                                            >
+                                                <option value="all">
+                                                    All Status
+                                                </option>
+                                                <option value="pending">
+                                                    Pending
+                                                </option>
+                                                <option value="reviewed">
+                                                    Reviewed
+                                                </option>
+                                                <option value="interview">
+                                                    Interview
+                                                </option>
+                                                <option value="accepted">
+                                                    Accepted
+                                                </option>
+                                                <option value="rejected">
+                                                    Rejected
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Static Application Examples -->
+                                <div class="application-card">
+                                    <div class="row align-items-center">
+                                        <div class="col-12 col-lg-8">
+                                            <div
+                                                class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3 mb-2"
+                                            >
+                                                <h5 class="job-title mb-0">
+                                                    Construction Foreman
+                                                </h5>
+                                                <span
+                                                    class="status-badge status-interview"
+                                                >
+                                                    <i
+                                                        class="fas fa-chart-line"
+                                                    ></i>
+                                                    Interview
+                                                </span>
+                                            </div>
+                                            <p class="company-name mb-3">
+                                                Metro Construction LLC
+                                            </p>
+                                            <div
+                                                class="job-details d-flex flex-column flex-md-row gap-3"
+                                            >
+                                                <span
+                                                    ><i
+                                                        class="fas fa-map-marker-alt"
+                                                    ></i
+                                                    >Houston, TX</span
+                                                >
+                                                <span
+                                                    ><i
+                                                        class="fas fa-calendar"
+                                                    ></i
+                                                    >Applied: 1/15/2024</span
+                                                >
+                                                <span
+                                                    ><i
+                                                        class="fas fa-dollar-sign"
+                                                    ></i
+                                                    >$55,000 - $70,000</span
+                                                >
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="col-12 col-lg-4 text-lg-end mt-3 mt-lg-0"
+                                        >
+                                            <button
+                                                class="btn btn-outline-primary btn-sm"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#viewApplicationDetailsModal"
+                                            >
+                                                <i class="fas fa-eye me-2"></i
+                                                >View Details
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="application-card">
+                                    <div class="row align-items-center">
+                                        <div class="col-12 col-lg-8">
+                                            <div
+                                                class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3 mb-2"
+                                            >
+                                                <h5 class="job-title mb-0">
+                                                    Journeyman Electrician
+                                                </h5>
+                                                <span
+                                                    class="status-badge status-reviewed"
+                                                >
+                                                    <i
+                                                        class="fas fa-file-alt"
+                                                    ></i>
+                                                    Reviewed
+                                                </span>
+                                            </div>
+                                            <p class="company-name mb-3">
+                                                City Electric Services
+                                            </p>
+                                            <div
+                                                class="job-details d-flex flex-column flex-md-row gap-3"
+                                            >
+                                                <span
+                                                    ><i
+                                                        class="fas fa-map-marker-alt"
+                                                    ></i
+                                                    >Phoenix, AZ</span
+                                                >
+                                                <span
+                                                    ><i
+                                                        class="fas fa-calendar"
+                                                    ></i
+                                                    >Applied: 1/12/2024</span
+                                                >
+                                                <span
+                                                    ><i
+                                                        class="fas fa-dollar-sign"
+                                                    ></i
+                                                    >$60,000 - $75,000</span
+                                                >
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="col-12 col-lg-4 text-lg-end mt-3 mt-lg-0"
+                                        >
+                                            <button
+                                                class="btn btn-outline-primary btn-sm"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#viewApplicationDetailsModal"
+                                            >
+                                                <i class="fas fa-eye me-2"></i
+                                                >View Details
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="application-card">
+                                    <div class="row align-items-center">
+                                        <div class="col-12 col-lg-8">
+                                            <div
+                                                class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3 mb-2"
+                                            >
+                                                <h5 class="job-title mb-0">
+                                                    Plumber
+                                                </h5>
+                                                <span
+                                                    class="status-badge status-pending"
+                                                >
+                                                    <i class="fas fa-clock"></i>
+                                                    Pending
+                                                </span>
+                                            </div>
+                                            <p class="company-name mb-3">
+                                                Ace Plumbing Solutions
+                                            </p>
+                                            <div
+                                                class="job-details d-flex flex-column flex-md-row gap-3"
+                                            >
+                                                <span
+                                                    ><i
+                                                        class="fas fa-map-marker-alt"
+                                                    ></i
+                                                    >Denver, CO</span
+                                                >
+                                                <span
+                                                    ><i
+                                                        class="fas fa-calendar"
+                                                    ></i
+                                                    >Applied: 1/18/2024</span
+                                                >
+                                                <span
+                                                    ><i
+                                                        class="fas fa-dollar-sign"
+                                                    ></i
+                                                    >$50,000 - $65,000</span
+                                                >
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="col-12 col-lg-4 text-lg-end mt-3 mt-lg-0"
+                                        >
+                                            <button
+                                                class="btn btn-outline-primary btn-sm"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#viewApplicationDetailsModal"
+                                            >
+                                                <i class="fas fa-eye me-2"></i
+                                                >View Details
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="application-card">
+                                    <div class="row align-items-center">
+                                        <div class="col-12 col-lg-8">
+                                            <div
+                                                class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3 mb-2"
+                                            >
+                                                <h5 class="job-title mb-0">
+                                                    Maintenance Technician
+                                                </h5>
+                                                <span
+                                                    class="status-badge status-rejected"
+                                                >
+                                                    <i
+                                                        class="fas fa-times-circle"
+                                                    ></i>
+                                                    Rejected
+                                                </span>
+                                            </div>
+                                            <p class="company-name mb-3">
+                                                Industrial Maintenance Corp
+                                            </p>
+                                            <div
+                                                class="job-details d-flex flex-column flex-md-row gap-3"
+                                            >
+                                                <span
+                                                    ><i
+                                                        class="fas fa-map-marker-alt"
+                                                    ></i
+                                                    >Detroit, MI</span
+                                                >
+                                                <span
+                                                    ><i
+                                                        class="fas fa-calendar"
+                                                    ></i
+                                                    >Applied: 1/8/2024</span
+                                                >
+                                                <span
+                                                    ><i
+                                                        class="fas fa-dollar-sign"
+                                                    ></i
+                                                    >$45,000 - $58,000</span
+                                                >
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="col-12 col-lg-4 text-lg-end mt-3 mt-lg-0"
+                                        >
+                                            <button
+                                                class="btn btn-outline-primary btn-sm"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#viewApplicationDetailsModal"
+                                            >
+                                                <i class="fas fa-eye me-2"></i
+                                                >View Details
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Saved Jobs Tab -->
+                        <div class="tab-pane fade" id="saved" role="tabpanel">
+                            <div class="p-4">
+                                <div class="d-flex align-items-center mb-4">
+                                    <h4 class="mb-0 fw-bold">Saved Jobs (3)</h4>
+                                    <p class="text-muted mt-1 ms-3">
+                                        Jobs you've bookmarked for later
+                                    </p>
+                                </div>
+
+                                <!-- Sample Saved Jobs -->
+                                <div class="job-card">
+                                    <div class="row align-items-center">
+                                        <div class="col-12 col-lg-8">
+                                            <div
+                                                class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3 mb-2"
+                                            >
+                                                <h5 class="job-title mb-0">
+                                                    Senior Software Engineer
+                                                </h5>
+                                                <span class="job-type-badge"
+                                                    >Full-time</span
+                                                >
+                                            </div>
+                                            <p class="company-name mb-3">
+                                                TechCorp Solutions
+                                            </p>
+                                            <div
+                                                class="job-details d-flex flex-column flex-md-row gap-3"
+                                            >
+                                                <span
+                                                    ><i
+                                                        class="fas fa-map-marker-alt"
+                                                    ></i
+                                                    >San Francisco, CA</span
+                                                >
+                                                <span
+                                                    ><i class="fas fa-coins"></i
+                                                    >₱120,000 - ₱150,000</span
+                                                >
+                                                <span
+                                                    ><i
+                                                        class="fas fa-calendar"
+                                                    ></i
+                                                    >Posted: Jan 20, 2024</span
+                                                >
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="col-12 col-lg-4 text-lg-end mt-3 mt-lg-0"
+                                        >
+                                            <div
+                                                class="d-flex gap-2 justify-content-lg-end flex-wrap"
+                                            >
+                                                <button
+                                                    class="btn btn-outline-primary btn-sm"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#viewSavedJobModal"
+                                                    onclick="loadJobDetails('Senior Software Engineer', 'TechCorp Solutions', 'San Francisco, CA', '₱120,000 - ₱150,000', 'Jan 20, 2024', 'Full-time')"
+                                                >
+                                                    <i
+                                                        class="fas fa-eye me-1"
+                                                    ></i
+                                                    >View Details
+                                                </button>
+                                                <button
+                                                    class="btn btn-success btn-sm"
+                                                >
+                                                    <i
+                                                        class="fas fa-paper-plane me-1"
+                                                    ></i
+                                                    >Apply Now
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="job-card">
+                                    <div class="row align-items-center">
+                                        <div class="col-12 col-lg-8">
+                                            <div
+                                                class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3 mb-2"
+                                            >
+                                                <h5 class="job-title mb-0">
+                                                    Marketing Manager
+                                                </h5>
+                                                <span class="job-type-badge"
+                                                    >Remote</span
+                                                >
+                                            </div>
+                                            <p class="company-name mb-3">
+                                                Digital Marketing Pro
+                                            </p>
+                                            <div
+                                                class="job-details d-flex flex-column flex-md-row gap-3"
+                                            >
+                                                <span
+                                                    ><i
+                                                        class="fas fa-map-marker-alt"
+                                                    ></i
+                                                    >Manila, Philippines</span
+                                                >
+                                                <span
+                                                    ><i class="fas fa-coins"></i
+                                                    >₱80,000 - ₱100,000</span
+                                                >
+                                                <span
+                                                    ><i
+                                                        class="fas fa-calendar"
+                                                    ></i
+                                                    >Posted: Jan 18, 2024</span
+                                                >
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="col-12 col-lg-4 text-lg-end mt-3 mt-lg-0"
+                                        >
+                                            <div
+                                                class="d-flex gap-2 justify-content-lg-end flex-wrap"
+                                            >
+                                                <button
+                                                    class="btn btn-outline-primary btn-sm"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#viewSavedJobModal"
+                                                    onclick="loadJobDetails('Marketing Manager', 'Digital Marketing Pro', 'Manila, Philippines', '₱80,000 - ₱100,000', 'Jan 18, 2024', 'Remote')"
+                                                >
+                                                    <i
+                                                        class="fas fa-eye me-1"
+                                                    ></i
+                                                    >View Details
+                                                </button>
+                                                <button
+                                                    class="btn btn-success btn-sm"
+                                                >
+                                                    <i
+                                                        class="fas fa-paper-plane me-1"
+                                                    ></i
+                                                    >Apply Now
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="job-card">
+                                    <div class="row align-items-center">
+                                        <div class="col-12 col-lg-8">
+                                            <div
+                                                class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3 mb-2"
+                                            >
+                                                <h5 class="job-title mb-0">
+                                                    Data Analyst
+                                                </h5>
+                                                <span class="job-type-badge"
+                                                    >Part-time</span
+                                                >
+                                            </div>
+                                            <p class="company-name mb-3">
+                                                Analytics Hub Inc.
+                                            </p>
+                                            <div
+                                                class="job-details d-flex flex-column flex-md-row gap-3"
+                                            >
+                                                <span
+                                                    ><i
+                                                        class="fas fa-map-marker-alt"
+                                                    ></i
+                                                    >Cebu City,
+                                                    Philippines</span
+                                                >
+                                                <span
+                                                    ><i class="fas fa-coins"></i
+                                                    >₱60,000 - ₱75,000</span
+                                                >
+                                                <span
+                                                    ><i
+                                                        class="fas fa-calendar"
+                                                    ></i
+                                                    >Posted: Jan 15, 2024</span
+                                                >
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="col-12 col-lg-4 text-lg-end mt-3 mt-lg-0"
+                                        >
+                                            <div
+                                                class="d-flex gap-2 justify-content-lg-end flex-wrap"
+                                            >
+                                                <button
+                                                    class="btn btn-outline-primary btn-sm"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#viewSavedJobModal"
+                                                    onclick="loadJobDetails('Data Analyst', 'Analytics Hub Inc.', 'Cebu City, Philippines', '₱60,000 - ₱75,000', 'Jan 15, 2024', 'Part-time')"
+                                                >
+                                                    <i
+                                                        class="fas fa-eye me-1"
+                                                    ></i
+                                                    >View Details
+                                                </button>
+                                                <button
+                                                    class="btn btn-success btn-sm"
+                                                >
+                                                    <i
+                                                        class="fas fa-paper-plane me-1"
+                                                    ></i
+                                                    >Apply Now
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Application Details Modal -->
+        <div
+            class="modal fade"
+            id="viewApplicationDetailsModal"
+            tabindex="-1"
+            aria-labelledby="viewApplicationDetailsModalLabel"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5
+                            class="modal-title"
+                            id="viewApplicationDetailsModalLabel"
+                        >
+                            <i class="fas fa-info-circle me-2"></i>Application
+                            Details
+                        </h5>
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                        ></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">Position</div>
+                                    <div class="detail-value">
+                                        Construction Foreman
+                                    </div>
+                                </div>
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">Company</div>
+                                    <div class="detail-value">
+                                        Metro Construction LLC
+                                    </div>
+                                </div>
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">Location</div>
+                                    <div class="detail-value">Houston, TX</div>
+                                </div>
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">Salary Range</div>
+                                    <div class="detail-value">
+                                        $55,000 - $70,000
+                                    </div>
+                                </div>
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">
+                                        Application Date
+                                    </div>
+                                    <div class="detail-value">1/15/2024</div>
+                                </div>
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">Status</div>
+                                    <div class="detail-value">
+                                        <span
+                                            class="status-badge status-interview"
+                                        >
+                                            <i class="fas fa-chart-line"></i>
+                                            Interview
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">
+                                        Contact Person
+                                    </div>
+                                    <div class="detail-value">
+                                        Mike Rodriguez
+                                    </div>
+                                </div>
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">
+                                        Contact Email
+                                    </div>
+                                    <div class="detail-value">
+                                        <a
+                                            href="mailto:mike.rodriguez@metroconstruction.com"
+                                            >mike.rodriguez@metroconstruction.com</a
+                                        >
+                                    </div>
+                                </div>
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">
+                                        Application Notes
+                                    </div>
+                                    <div class="detail-value">
+                                        Interview scheduled for January 25th at
+                                        10:00 AM
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">
+                                        Job Description
+                                    </div>
+                                    <div class="detail-value">
+                                        Lead construction teams on residential
+                                        and commercial projects. Oversee daily
+                                        operations, ensure safety compliance,
+                                        and manage project timelines.
+                                    </div>
+                                </div>
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">Requirements</div>
+                                    <div class="detail-value">
+                                        <div class="requirements-list">
+                                            <ul>
+                                                <li>
+                                                    5+ years construction
+                                                    experience
+                                                </li>
+                                                <li>OSHA certification</li>
+                                                <li>
+                                                    Team leadership experience
+                                                </li>
+                                                <li>Valid driver's license</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">Benefits</div>
+                                    <div class="detail-value">
+                                        <div class="benefits-list">
+                                            <ul>
+                                                <li>Health insurance</li>
+                                                <li>Dental coverage</li>
+                                                <li>Retirement plan</li>
+                                                <li>Paid time off</li>
+                                                <li>Tool allowance</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal"
+                        >
+                            <i class="fas fa-times me-2"></i>Close
+                        </button>
+                        <button type="button" class="btn btn-primary">
+                            <i class="fas fa-edit me-2"></i>Update Application
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Saved Job Details Modal -->
+        <div
+            class="modal fade"
+            id="viewSavedJobModal"
+            tabindex="-1"
+            aria-labelledby="viewSavedJobModalLabel"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="viewSavedJobModalLabel">
+                            <i class="fas fa-briefcase me-2"></i>Job Details
+                        </h5>
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                        ></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">Position</div>
+                                    <div
+                                        class="detail-value"
+                                        id="modal-job-title"
+                                    >
+                                        Senior Software Engineer
+                                    </div>
+                                </div>
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">Company</div>
+                                    <div
+                                        class="detail-value"
+                                        id="modal-company-name"
+                                    >
+                                        TechCorp Solutions
+                                    </div>
+                                </div>
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">Location</div>
+                                    <div
+                                        class="detail-value"
+                                        id="modal-job-location"
+                                    >
+                                        San Francisco, CA
+                                    </div>
+                                </div>
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">Salary Range</div>
+                                    <div
+                                        class="detail-value"
+                                        id="modal-job-salary"
+                                    >
+                                        ₱120,000 - ₱150,000
+                                    </div>
+                                </div>
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">Posted Date</div>
+                                    <div
+                                        class="detail-value"
+                                        id="modal-posted-date"
+                                    >
+                                        Jan 20, 2024
+                                    </div>
+                                </div>
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">Job Type</div>
+                                    <div class="detail-value">
+                                        <span
+                                            class="job-type-badge"
+                                            id="modal-job-type"
+                                            >Full-time</span
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">
+                                        Contact Person
+                                    </div>
+                                    <div class="detail-value">
+                                        Sarah Johnson
+                                    </div>
+                                </div>
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">
+                                        Contact Email
+                                    </div>
+                                    <div class="detail-value">
+                                        <a
+                                            href="mailto:sarah.johnson@techcorp.com"
+                                            >sarah.johnson@techcorp.com</a
+                                        >
+                                    </div>
+                                </div>
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">
+                                        Application Deadline
+                                    </div>
+                                    <div class="detail-value">
+                                        February 15, 2024
+                                    </div>
+                                </div>
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">
+                                        Experience Level
+                                    </div>
+                                    <div class="detail-value">
+                                        Senior Level (5+ years)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">
+                                        Job Description
+                                    </div>
+                                    <div class="detail-value">
+                                        We are seeking a highly skilled Senior
+                                        Software Engineer to join our dynamic
+                                        team. You will be responsible for
+                                        designing, developing, and maintaining
+                                        scalable software solutions that drive
+                                        our business forward. This role offers
+                                        the opportunity to work with
+                                        cutting-edge technologies and
+                                        collaborate with cross-functional teams
+                                        to deliver high-quality products.
+                                    </div>
+                                </div>
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">Requirements</div>
+                                    <div class="detail-value">
+                                        <div class="requirements-list">
+                                            <ul>
+                                                <li>
+                                                    Bachelor's degree in
+                                                    Computer Science or related
+                                                    field
+                                                </li>
+                                                <li>
+                                                    5+ years of software
+                                                    development experience
+                                                </li>
+                                                <li>
+                                                    Proficiency in modern
+                                                    programming languages
+                                                    (JavaScript, Python, Java)
+                                                </li>
+                                                <li>
+                                                    Experience with cloud
+                                                    platforms (AWS, Azure, GCP)
+                                                </li>
+                                                <li>
+                                                    Strong understanding of
+                                                    software architecture and
+                                                    design patterns
+                                                </li>
+                                                <li>
+                                                    Experience with version
+                                                    control systems (Git)
+                                                </li>
+                                                <li>
+                                                    Excellent problem-solving
+                                                    and communication skills
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">
+                                        Benefits & Perks
+                                    </div>
+                                    <div class="detail-value">
+                                        <div class="benefits-list">
+                                            <ul>
+                                                <li>
+                                                    Competitive salary and
+                                                    performance bonuses
+                                                </li>
+                                                <li>
+                                                    Comprehensive health,
+                                                    dental, and vision insurance
+                                                </li>
+                                                <li>
+                                                    Flexible work arrangements
+                                                    and remote work options
+                                                </li>
+                                                <li>
+                                                    Professional development
+                                                    opportunities
+                                                </li>
+                                                <li>
+                                                    401(k) retirement plan with
+                                                    company matching
+                                                </li>
+                                                <li>
+                                                    Generous paid time off and
+                                                    holidays
+                                                </li>
+                                                <li>
+                                                    Modern office environment
+                                                    with latest technology
+                                                </li>
+                                                <li>
+                                                    Team building activities and
+                                                    company events
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-detail-item">
+                                    <div class="detail-label">
+                                        Company Culture
+                                    </div>
+                                    <div class="detail-value">
+                                        At TechCorp Solutions, we foster an
+                                        innovative and collaborative work
+                                        environment where creativity thrives. We
+                                        believe in work-life balance and provide
+                                        our employees with the tools and support
+                                        they need to succeed. Our diverse team
+                                        is passionate about technology and
+                                        committed to making a positive impact in
+                                        the industry.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal"
+                        >
+                            <i class="fas fa-times me-2"></i>Close
+                        </button>
+                        <button type="button" class="btn btn-danger">
+                            <i class="fas fa-heart-broken me-2"></i>Remove from
+                            Saved
+                        </button>
+                        <button type="button" class="btn btn-success">
+                            <i class="fas fa-paper-plane me-2"></i>Apply Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            // Function to load job details into the modal
+            function loadJobDetails(
+                jobTitle,
+                companyName,
+                location,
+                salary,
+                postedDate,
+                jobType
+            ) {
+                document.getElementById("modal-job-title").textContent =
+                    jobTitle;
+                document.getElementById("modal-company-name").textContent =
+                    companyName;
+                document.getElementById("modal-job-location").textContent =
+                    location;
+                document.getElementById("modal-job-salary").textContent =
+                    salary;
+                document.getElementById("modal-posted-date").textContent =
+                    postedDate;
+                document.getElementById("modal-job-type").textContent = jobType;
+            }
+
+            // Search functionality for applications
+            document
+                .querySelector(".search-input")
+                .addEventListener("input", function (e) {
+                    const searchTerm = e.target.value.toLowerCase();
+                    const applicationCards =
+                        document.querySelectorAll(".application-card");
+
+                    applicationCards.forEach((card) => {
+                        const jobTitle = card
+                            .querySelector(".job-title")
+                            .textContent.toLowerCase();
+                        const companyName = card
+                            .querySelector(".company-name")
+                            .textContent.toLowerCase();
+
+                        if (
+                            jobTitle.includes(searchTerm) ||
+                            companyName.includes(searchTerm)
+                        ) {
+                            card.style.display = "block";
+                        } else {
+                            card.style.display = "none";
+                        }
+                    });
+                });
+
+            // Status filter functionality
+            document
+                .querySelector(".form-select")
+                .addEventListener("change", function (e) {
+                    const filterValue = e.target.value;
+                    const applicationCards =
+                        document.querySelectorAll(".application-card");
+
+                    applicationCards.forEach((card) => {
+                        if (filterValue === "all") {
+                            card.style.display = "block";
+                        } else {
+                            const statusBadge =
+                                card.querySelector(".status-badge");
+                            const statusClass = statusBadge.className;
+
+                            if (statusClass.includes(`status-${filterValue}`)) {
+                                card.style.display = "block";
+                            } else {
+                                card.style.display = "none";
+                            }
+                        }
+                    });
+                });
+        </script>
+    </body>
+</html>

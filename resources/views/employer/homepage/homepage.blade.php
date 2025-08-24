@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employer Dashboard - MangagawangPinoy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+   
+    <link rel="stylesheet" href="{{ asset('css/applicant/employer/homepage.css') }}">
+
+    <style>
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-container {
+    background: white;
+    width: 95%;
+    max-width: 1200px;
+    max-height: 90vh;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    background: #007bff;
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.modal-body {
+    padding: 20px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.summary-section {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.summary-stats {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.stat-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.stat-badge.total { background: #007bff; color: white; }
+.stat-badge.pending { background: #ffc107; color: #000; }
+.stat-badge.reviewed { background: #17a2b8; color: white; }
+
+.applications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.application-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 20px;
+}
+
+.applicant-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.profile-pic {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #007bff;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.applicant-details h4 {
+    margin: 0 0 5px 0;
+    color: #333;
+}
+
+.status-badge {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.status-badge.pending { background: #ffc107; color: #000; }
+.status-badge.reviewed { background: #17a2b8; color: white; }
+
+.contact-info {
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.contact-info i {
+    width: 15px;
+    margin-right: 5px;
+}
+
+.section {
+    margin-bottom: 20px;
+}
+
+.section h5 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.section h5 i {
+    margin-right: 8px;
+    color: #007bff;
+}
+
+.skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.skill-tag {
+    background: #e9ecef;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    color: #495057;
+}
+
+.cover-letter {
+    font-style: italic;
+    color: #555;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.application-actions h5 {
+    color: #333;
+    font-size: 0.9rem;
+    margin: 15px 0 8px 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.action-btn {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    margin-bottom: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    text-align: left;
+    transition: all 0.2s;
+}
+
+.action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.action-btn.primary { background: #007bff; color: white; }
+.action-btn.success { background: #28a745; color: white; }
+.action-btn.warning { background: #ffc107; color: #000; }
+.action-btn.danger { background: #dc3545; color: white; }
+.action-btn.info { background: #17a2b8; color: white; }
+.action-btn.secondary { background: #6c757d; color: white; }
+
+.modal-footer {
+    background: #f8f9fa;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    border-top: 1px solid #ddd;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.btn-secondary { background: #6c757d; color: white; }
+.btn-primary { background: #007bff; color: white; }
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+    .modal-container {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+    }
+    
+    .application-card {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .summary-stats {
+        justify-content: center;
+    }
+}
+</style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="btn btn-primary mobile-menu-toggle" id="toggleSidebar">
+        <i class="fas fa-bars" id="menuIcon"></i>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <!-- Brand Section -->
+        <div class="brand-section">
+            <div class="d-flex align-items-center gap-3">
+                <div class="brand-logo">MP</div>
+                <div>
+                    <h5 class="mb-0 fw-bold">Employer Portal</h5>
+                    <p class="text-muted small mb-0">MangagawangPinoy</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="nav-section">
+            <div class="nav-item">
+                <a href="#" class="nav-link active" data-target="dashboard-section">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#" class="nav-link" data-target="applicants-section">
+                    <i class="fas fa-users"></i>
+                    Applicants
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#" class="nav-link" data-target="jobposts-section">
+                    <i class="fas fa-briefcase"></i>
+                    Job Posts
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#" class="nav-link" data-target="messages-section">
+                    <i class="fas fa-comments"></i>
+                    Messages
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#" class="nav-link" data-target="analytics-section">
+                    <i class="fas fa-chart-line"></i>
+                    Analytics
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#" class="nav-link" data-target="settings-section">
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#" class="nav-link" data-target="reports-section">
+                    <i class="fas fa-flag"></i>
+                    Reports
+                </a>
+            </div>
+            <div class="nav-item mt-4">
+                <a href="#" class="nav-link text-danger" onclick="event.preventDefault(); if(confirm('Are you sure you want to logout?')) { document.getElementById('logout-form').submit(); }">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+                <form id="logout-form" action="{{ route('employer.logout.store') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Welcome Section -->
+        <div class="welcome-header">
+            <div class="welcome-title">Welcome back, {{ $retrievePersonal->first_name ?? 'Employer' }} {{ $retrievePersonal->last_name ?? '' }}! 👋</div>
+            <div class="welcome-subtitle">Here's what's happening with your job postings today</div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div class="page-section active" id="dashboard-section">
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">128</div>
+                            <div class="stat-label">Total Applicants Hired</div>
+                        </div>
+                        <div class="stat-icon primary">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">{{ $JobPostRetrieved->where('status_post', 'published')->count() }}</div>
+                            <div class="stat-label">Active Job Posts</div>
+                        </div>
+                        <div class="stat-icon success">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Unread Messages</div>
+                        </div>
+                        <div class="stat-icon warning">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Applicants Section -->
+            <div class="content-section">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="fas fa-clock"></i>
+                        Recent Applicants
+                    </div>
+                    <div class="section-actions">
+                        <button class="btn-modern btn-primary-modern">
+                            <i class="fas fa-plus"></i> View All
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table modern-table">
+                        <thead>
+                            <tr>
+                                <th>Applicant</th>
+                                <th>Position</th>
+                                <th>Status</th>
+                                <th>Applied Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="applicant-info">
+                                        <div class="applicant-avatar">JD</div>
+                                        <div class="applicant-details">
+                                            <h6>Juan Dela Cruz</h6>
+                                            <p>juan.delacruz@email.com</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Electrician</td>
+                                <td><span class="status-badge status-approved">Approved</span></td>
+                                <td>July 7, 2025</td>
+                                <td>
+                                    <button class="action-btn primary" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="applicant-info">
+                                        <div class="applicant-avatar">AS</div>
+                                        <div class="applicant-details">
+                                            <h6>Ana Santos</h6>
+                                            <p>ana.santos@email.com</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Cook</td>
+                                <td><span class="status-badge status-pending">Pending</span></td>
+                                <td>July 6, 2025</td>
+                                <td>
+                                    <button class="action-btn primary" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="applicant-info">
+                                        <div class="applicant-avatar">MR</div>
+                                        <div class="applicant-details">
+                                            <h6>Mark Reyes</h6>
+                                            <p>mark.reyes@email.com</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Construction Worker</td>
+                                <td><span class="status-badge status-rejected">Rejected</span></td>
+                                <td>July 5, 2025</td>
+                                <td>
+                                    <button class="action-btn primary" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Applicants Section -->
+        <div class="page-section" id="applicants-section">
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div>
+                    <h2 class="mb-2 fw-bold">Applicant Management</h2>
+                    <p class="text-muted mb-0">Review and manage job applications</p>
+                </div>
+            </div>
+
+            <!-- Filter Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">{{ isset($retrievedApplicants) ? $retrievedApplicants->count() : '0' }}</div>
+                            <div class="stat-label">Total Applicants</div>
+                        </div>
+                        <div class="stat-icon primary">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">156</div>
+                            <div class="stat-label">Pending Review</div>
+                        </div>
+                        <div class="stat-icon warning">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">89</div>
+                            <div class="stat-label">Approved</div>
+                        </div>
+                        <div class="stat-icon success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Applicants Table -->
+            <div class="content-section">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="fas fa-users"></i>
+                        All Applicants
+                    </div>
+                    <div class="section-actions">
+                        <div class="search-input">
+                            <i class="fas fa-search"></i>
+                            <input type="text" class="form-control" placeholder="Search by name or location..." id="searchApplicants">
+                        </div>
+                        <select class="form-select" id="positionFilter" style="width: auto;">
+                            <option value="">Filter by Position</option>
+                            @if(isset($retrievedApplicants))
+                                @foreach ($retrievedApplicants->pluck('work_background.position')->filter()->unique() as $position)
+                                    <option value="{{ $position }}">{{ $position }}</option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table modern-table" id="applicantsTable">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="form-check-input"></th>
+                                <th>Applicant</th>
+                                <th>Position Applied</th>
+                                <th>Experience</th>
+                                <th>Rating</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(isset($retrievedApplicants))
+                                @foreach ($retrievedApplicants as $applicant)
+                                <tr>
+                                    <td><input type="checkbox" class="form-check-input"></td>
+                                    <td>
+                                        <div class="applicant-info">
+                                            <div class="applicant-avatar">
+                                                {{ strtoupper(substr($applicant->personal_info->first_name ?? 'N', 0, 1)) }}{{ strtoupper(substr($applicant->personal_info->last_name ?? 'A', 0, 1)) }}
+                                            </div>
+                                            <div class="applicant-details">
+                                                <h6>{{ $applicant->personal_info->first_name ?? 'N/A' }} {{ $applicant->personal_info->last_name ?? '' }}</h6>
+                                                <p>{{ $applicant->email ?? 'N/A' }}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>
+                                            @if(isset($applicant->work_background->position) || isset($applicant->work_background->other_position))
+                                                {{ $applicant->work_background->position ?? '' }} {{ $applicant->work_background->other_position ?? '' }}
+                                            @else
+                                                N/A
+                                            @endif
+                                        </strong><br>
+                                        <small class="text-muted">
+                                            {{ isset($applicant->work_background->employed) && $applicant->work_background->employed ? 'Employed' : 'Not Employed' }} •
+                                            {{ $applicant->personal_info->city ?? '' }} {{ $applicant->personal_info->province ?? '' }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">
+                                            {{ $applicant->work_background->work_duration ?? 'N/A' }}
+                                            {{ $applicant->work_background->work_duration_unit ?? '' }}
+                                        </span>
+                                    <td>
+                                        @php
+                                             $averageRating = $applicant->rating ?? 0;
+                                        @endphp
+                                        <div class="stars d-flex align-items-center">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                @if($i <= floor($averageRating))
+                                                    <i class="fas fa-star text-warning"></i>
+                                                @elseif($i - $averageRating < 1)
+                                                    <i class="fas fa-star-half-alt text-warning"></i>
+                                                @else
+                                                    <i class="far fa-star text-warning"></i>
+                                                @endif
+                                            @endfor
+                                                <small class="ms-1 text-muted">{{ number_format($averageRating, 1) }}</small>
+                                        </div>
+                                    </td>
+
+
+                                    <td>
+                                       <a href="{{ route('employer.applicantsprofile.display', $applicant->id) }}" class="action-btn primary" title="View Profile">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+
+
+                                        <button class="action-btn success" title="Approve">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <button class="action-btn danger" title="Reject">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                        <button class="action-btn" title="Message">
+                                            <i class="fas fa-envelope"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                                        <p class="text-muted">No applicants found</p>
+                                    </td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                @if(isset($retrievedApplicants) && method_exists($retrievedApplicants, 'links'))
+                    <div class="d-flex justify-content-between align-items-center p-3">
+                        <div class="text-muted">
+                            Showing {{ $retrievedApplicants->firstItem() }} to {{ $retrievedApplicants->lastItem() }} out of {{ $retrievedApplicants->total() }} applicants
+                        </div>
+                        <div>
+                            {{ $retrievedApplicants->links('pagination::bootstrap-5') }}
+                        </div>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+      <!-- Job Posts Section -->
+<div class="page-section" id="jobposts-section">
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h2 class="mb-2 fw-bold">Job Posts Management</h2>
+            <p class="text-muted mb-0">Create and manage your job postings</p>
+        </div>
+        <button class="btn-modern btn-primary-modern" data-bs-toggle="modal" data-bs-target="#newJobModal">
+            <i class="fas fa-plus"></i> Post New Job
+        </button>
+    </div>
+
+    <!-- Job Stats Cards -->
+    <div class="stats-grid">
+        <!-- Repeat this structure for each stat -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <div>
+                    <div class="stat-value">{{ $JobPostRetrieved->where('status_post', 'published')->count() }}</div>
+                    <div class="stat-label">Active Jobs</div>
+                    <!-- <small class="text-success mt-1">↗ 12% this month</small> -->
+                </div>
+                <div class="stat-icon primary">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-header">
+                <div>
+                    <div class="stat-value">{{ $JobPostRetrieved->where('status_post', 'draft')->count() }}</div>
+                    <div class="stat-label">Draft Jobs</div>
+                    <small class="text-warning mt-1">⏱ Pending review</small>
+                </div>
+                <div class="stat-icon warning">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+            </div>
+        </div>
+        <!-- <div class="stat-card">
+            <div class="stat-header">
+                <div>
+                    <div class="stat-value">89</div>
+                    <div class="stat-label">Expired Jobs</div>
+                    <small class="text-danger mt-1">⚠ Need renewal</small>
+                </div>
+                <div class="stat-icon danger">
+                    <i class="fas fa-calendar-times"></i>
+                </div>
+            </div>
+        </div> -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <div>
+                    <div class="stat-value">2,456</div>
+                    <div class="stat-label">Total Applications</div>
+                    <small class="text-primary mt-1">📈 This quarter</small>
+                </div>
+                <div class="stat-icon success">
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Posts Grid -->
+   @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+            <i class="fas fa-check-circle me-1"></i> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    @if (session('deleted'))
+        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+            <i class="fas fa-trash-alt me-1"></i> {{ session('deleted') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    <div class="job-cards-grid">
+        @forelse ($JobPostRetrieved as $jobDetail)
+            <div class="job-card">
+                <div class="job-card-header">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="status-badge {{ $jobDetail->status_post === 'published' ? 'status-active' : 'status-draft' }}">
+                            {{ ucfirst($jobDetail->status_post) }}
+                        </span>
+
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                
+                                @if ($jobDetail->status_post !== 'draft')
+                                    <li>
+                                        <form action="{{ route('employer.updatejobpost.store', ['id' => $jobDetail->id]) }}" method="POST">
+                                            @csrf
+                                            @method('PUT')
+                                            <input type="hidden" name="status_post" value="draft">
+                                            <button class="dropdown-item text-warning" type="submit">
+                                                <i class="fas fa-file-alt me-2"></i> Save as Draft
+                                            </button>
+                                        </form>
+                                    </li>
+                                @endif
+
+                                @if ($jobDetail->status_post !== 'published')
+                                    <li>
+                                        <form action="{{ route('employer.updatejobpost.store', ['id' => $jobDetail->id]) }}" method="POST">
+                                            @csrf
+                                            @method('PUT')
+                                            <input type="hidden" name="status_post" value="published">
+                                            <button class="dropdown-item text-success" type="submit">
+                                                <i class="fas fa-bullhorn me-2"></i> Publish
+                                            </button>
+                                        </form>
+                                    </li>
+                                @endif
+
+                                <li>
+                                    <form action="{{ route('employer.deletejobpost.store', ['id' => $jobDetail->id]) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this job post?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="dropdown-item text-danger" type="submit">
+                                            <i class="fas fa-trash-alt me-2"></i> Delete
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+
+                    <h5 class="job-title">{{ $jobDetail->title }}</h5>
+                    <p class="mb-1 text-muted small">
+                         <i class="fas fa-briefcase me-1"></i> Category: {{ $jobDetail->department }}
+                    </p>
+                    <div class="job-meta">
+                        <span><i class="fas fa-map-marker-alt me-1"></i> {{ $jobDetail->location }}</span>
+                        <span><i class="fas fa-clock me-1"></i> {{ $jobDetail->job_type }}</span>
+                        <span><i class="fas fa-peso-sign me-1"></i> ₱{{$jobDetail->job_salary ?? 'N/A' }} / month</span>
+                    </div>
+                </div>
+
+                <div class="job-body">
+                    <p class="job-description">
+                        {{ Str::limit($jobDetail->job_description, 150) }}
+                    </p>
+
+                    <div class="requirement-tags">
+                        <span class="requirement-tag">{{ $jobDetail->experience_level }}</span>
+                        @if($jobDetail->tesda_certification)
+                            <span class="requirement-tag">TESDA: {{ $jobDetail->tesda_certification }}</span>
+                        @elseif($jobDetail->none_certifications_qualification)
+                            <span class="requirement-tag">Other Cert: {{ $jobDetail->none_certifications_qualification }}</span>
+                        @endif
+                    </div>
+
+                    <div class="job-stats mt-3">
+                        <div class="job-stat">
+                            <strong>89</strong>
+                            <small>Applications</small>
+                        </div>
+                        <div class="job-stat">
+                            <strong>12</strong>
+                            <small>Shortlisted</small>
+                        </div>
+                        <div class="job-stat">
+                            <strong>3</strong>
+                            <small>Hired</small>
+                        </div>
+                    </div>
+
+                   {{-- Button to open modal --}}
+<button class="btn btn-outline-primary w-100 mt-3" onclick="openApplicationsModal()">
+    <i class="fas fa-users me-2"></i> View Applications (3)
+</button>
+
+                    <small class="text-muted d-block mt-2">Posted {{ $jobDetail->created_at->diffForHumans() }}</small>
+                </div>
+            </div>
+        @empty
+            <p class="text-muted">No job posts available.</p>
+        @endforelse
+    </div>
+</div>
+
+
+        <!-- Messages Section -->
+        <div class="page-section" id="messages-section">
+            <div class="content-section">
+                <div class="text-center py-5">
+                    <i class="fas fa-comments fa-4x text-muted mb-3"></i>
+                    <h3 class="mb-2">Messages</h3>
+                    <p class="text-muted">Message management will appear here...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Section -->
+        <div class="page-section" id="analytics-section">
+            <div class="content-section">
+                <div class="text-center py-5">
+                    <i class="fas fa-chart-line fa-4x text-muted mb-3"></i>
+                    <h3 class="mb-2">Analytics</h3>
+                    <p class="text-muted">Analytics dashboard will appear here...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div class="page-section" id="settings-section">
+            <div class="content-section">
+                <div class="text-center py-5">
+                    <i class="fas fa-cog fa-4x text-muted mb-3"></i>
+                    <h3 class="mb-2">Settings</h3>
+                    <p class="text-muted">Settings panel will appear here...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Section -->
+        <div class="page-section" id="reports-section">
+            <div class="content-section">
+                <div class="text-center py-5">
+                    <i class="fas fa-flag fa-4x text-muted mb-3"></i>
+                    <h3 class="mb-2">Reports</h3>
+                    <p class="text-muted">Reports section will appear here...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+    <!-- New Job Modal -->
+    <div class="modal fade" id="newJobModal" tabindex="-1" aria-labelledby="newJobModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newJobModalLabel">Post New Job</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                 {{-- Show global error (invalid login) --}}
+                @if($errors->has('email'))
+                    <div class="alert alert-danger">
+                        {{ $errors->first('email') }}
+                    </div>
+                @endif
+
+                {{-- Show success message --}}
+                @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                @endif
+                <div class="modal-body">
+                    <form action="{{ route('employer.jobsposts.store') }}" method="POST">
+                        @csrf
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="jobTitle" class="form-label">Job Title</label>
+                                <input type="text" class="form-control" id="jobTitle" name="job_title" placeholder="e.g. Senior Electrician">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="jobCategory" class="form-label">Category</label>
+                               <select class="form-select" id="jobCategory" name="job_department">
+                                    <option selected disabled>Choose category...</option>
+                                    <option value="Construction">Construction</option>
+                                    <option value="Electrical">Electrical</option>
+                                    <option value="Plumbing">Plumbing</option>
+                                    <option value="Culinary">Culinary</option>
+                                    <option value="Maintenance">Maintenance</option>
+                                    <option value="Housekeeping">Housekeeping</option>
+                                    <option value="Caregiving">Caregiving</option>
+                                    <option value="IT / Tech Support">IT / Tech Support</option>
+                                    <option value="Customer Service">Customer Service</option>
+                                    <option value="Teaching / Tutoring">Teaching / Tutoring</option>
+                                    <option value="Driving / Delivery">Driving / Delivery</option>
+                                    <option value="Laundry Services">Laundry Services</option>
+                                    <option value="Beauty / Wellness">Beauty / Wellness</option>
+                                    <option value="Administrative / Office Work">Administrative / Office Work</option>
+                                    <option value="Carpentry">Carpentry</option>
+                                    <option value="Welding">Welding</option>
+                                    <option value="Gardening / Landscaping">Gardening / Landscaping</option>
+                                    <option value="Repair Services">Repair Services</option>
+                                    <option value="Security Services">Security Services</option>
+                                    <option value="Other">Others</option>
+                                </select>
+
+                                <div id="otherCategory" style="display: none; ">
+                                    <label for="otherCategoryInput" class="form-label">Other Category</label>
+                                    <input type="text" class="form-control" id="otherCategoryInput" name="other_department" placeholder="Enter other category">
+                                </div>
+
+                            </div>
+                            <div class="col-md-6">
+                                <label for="jobType" class="form-label">Job Type</label>
+                                <select class="form-select" id="jobType" name="job_type">
+                                    <option selected>Choose type...</option>
+                                    <option>Full-time</option>
+                                    <option>Part-time</option>
+                                    <option>Contract</option>
+                                    <option>Temporary</option>
+                                    
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="workType" class="form-label">Work Type </label>
+                                    <select class="form-select" name="job_work_type" id="workType" required>
+                                        <option value="">Select work type</option>
+                                        <option value="Onsite">On-site</option>
+                                        <option value="Project-based">Project-based</option>
+                                        <option value="Contract">Contract Work</option>
+                                        <option value="Seasonal">Seasonal</option>
+                                    </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="jobLocation" class="form-label">Location</label>
+                                <input type="text" class="form-control" name="job_location" id="jobLocation" placeholder="e.g. Silang, Cavite">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="jobSalary" class="form-label">Salary Range</label>
+                                <input type="text" class="form-control" id="jobSalary" name="job_salary_range" placeholder="e.g. 35,000 to 45,000 month">
+                            </div>
+                            <div class="col-md-6">
+                                        <label for="experience" class="form-label">Experience Level *</label>
+                                        <select class="form-select" id="experience" name="job_experience" required>
+                                            <option value="">Select experience</option>
+                                            <option value="Apprentice Level (0-1 years)">Apprentice Level (0-1 years)</option>
+                                            <option value="Skilled Worker (2-5 years)">Skilled Worker (2-5 years)</option>
+                                            <option value="Experienced Craftsman (6-10 years)">Experienced Craftsman (6-10 years)</option>
+                                            <option value="Master Craftsman (10+ years)">Master Craftsman (10+ years)</option>
+                                            <option value="Supervisor/Foreman">Supervisor/Foreman</option>
+                                        </select>
+                            </div>
+                            
+                            <div class="col-12">
+                                <label for="jobDescription" class="form-label">Job Description</label>
+                                <textarea class="form-control" name="job_description" id="jobDescription" rows="4" placeholder="Describe the job requirements, responsibilities, and qualifications..."></textarea>
+                            </div>
+                            <div class="col-12">
+                                <label for="jobRequirements" class="form-label">Additional Requirements (comma-separated)</label>
+                                <input type="text" class="form-control" name="job_additional_requirements" id="jobRequirements" placeholder="e.g. 5+ years experience, Licensed, Safety Certified">
+                            </div>
+                            <!--- Tesda certification ---->
+                            <!-- TESDA Certification Requirements -->
+                                <div class="tesda-section">
+                                    <h5 class="text-warning mb-3">
+                                        <i class="fas fa-certificate me-2"></i>TESDA Certification Requirements
+                                    </h5>
+                                    <p class="mb-3">Select the required TESDA certifications for this position:</p>
+                                    
+                                   <!-- None Certification Toggle -->
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" name="none_certifications" value="on" type="checkbox" id="nonecertification" onchange="toggleTesdaCerts(this)">
+                                                <label class="form-check-label fw-bold" for="nonecertification"> None Certification </label>
+                                                <small class="text-muted d-block">Check this if no TESDA certificate is required</small>
+                                        </div>
+                                    </div>
+
+
+                                    <!-- TESDA Certifications Section -->
+                                    <div id="tesdacertifications"  class="tesda-certification-section p-4 rounded shadow-sm mb-4">
+                                        <h5 class="text-warning mb-3">
+                                            <i class="fas fa-certificate me-2"></i>TESDA Certification Requirements
+                                        </h5>
+
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <label class="form-check-label" for="welding">Welding (SMAW/GMAW/GTAW)</label>
+                                                    <input class="form-check-input" name="job_tesda_certification[]" value="Welding (SMAW/GMAW/GTAW)" type="checkbox" id="welding">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                     <input class="form-check-input" name="job_tesda_certification[]" value="Electrical Installation & Maintenance" type="checkbox" id="electrical">
+                                                     <label class="form-check-label" for="electrical">Electrical Installation & Maintenance</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" name="job_tesda_certification[]" value="Plumbing Installation & Maintenance" type="checkbox" id="plumbing">
+                                                    <label class="form-check-label" for="plumbing">Plumbing Installation & Maintenance</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" name="job_tesda_certification[]" value="Carpentry & Joinery" type="checkbox" id="carpentry">
+                                                    <label class="form-check-label" for="carpentry">Carpentry & Joinery</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" name="job_tesda_certification[]" value="Automotive Servicing" type="checkbox" id="automotive">
+                                                    <label class="form-check-label" for="automotive">Automotive Servicing</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" name="job_tesda_certification[]" value="HVAC Installation & Servicing" type="checkbox" id="hvac">
+                                                    <label class="form-check-label" for="hvac">HVAC Installation & Servicing</label>
+                                                </div>
+                                            </div>
+
+                                            <!-- OTHER Certification Option -->
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" name="job_tesda_certification[]" value="Other" type="checkbox" id="otherCertCheckbox" onchange="toggleOtherCertInput()">
+                                                    <label class="form-check-label fw-bold" for="otherCertCheckbox">Other Certification</label>
+                                                    <small class="text-muted d-block">Check this if the desired certification is not listed</small>
+                                                </div>
+                                            </div>
+
+                                            <!-- Input for custom cert (hidden by default) -->
+                                            <div class="col-md-6" id="otherCertInput" style="display: none;">
+                                                <input type="text" class="form-control" name="other_certification" id="otherCertification" placeholder="Enter specific certification name">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Non-TESDA Certification Section (Initially Hidden) -->
+                                    <div id="nonTesdaCertifications" style="display: none;">
+                                        <h5 class="text-success mt-4 mb-3">
+                                            <i class="fas fa-clipboard-check me-2"></i> Non-Certification Requirements
+                                        </h5>
+                                        <p class="mb-3">Select non-certification qualifications required for this position:</p>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" name="job_non_tesda_certification[]" value="At least 1 year work experience" type="checkbox" id="experience">
+                                                    <label class="form-check-label fw-bold" for="experience">At least 1 year work experience</label>
+                                                    <small class="text-muted d-block">In any related job or trade</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" name="job_non_tesda_certification[]" value="Strong teamwork and collaboration" type="checkbox" id="teamwork">
+                                                    <label class="form-check-label fw-bold" for="teamwork">Strong teamwork and collaboration</label>
+                                                    <small class="text-muted d-block">Ability to work well with others</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" name="job_non_tesda_certification[]" value="Good communication skills" type="checkbox" id="communication">
+                                                    <label class="form-check-label fw-bold" for="communication">Good communication skills</label>
+                                                    <small class="text-muted d-block">Verbal and written</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" name="job_non_tesda_certification[]" value="Flexible and adaptable" type="checkbox" id="flexibility">
+                                                    <label class="form-check-label fw-bold" for="flexibility">Flexible and adaptable</label>
+                                                    <small class="text-muted d-block">Can adjust to various working conditions</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Benefits & Compensation -->
+                                <div class="mb-4">
+                                    <label class="form-label">Benefits & Compensation Offered</label>
+                                    <p class="text-muted small mb-3">Select benefits you offer:</p>
+                                    <div id="benefits-container">
+                                        <span class="skill-badge" onclick="toggleSkill(this)">SSS Contribution</span>
+                                        <span class="skill-badge" onclick="toggleSkill(this)">PhilHealth</span>
+                                        <span class="skill-badge" onclick="toggleSkill(this)">Pag-IBIG</span>
+                                        <span class="skill-badge" onclick="toggleSkill(this)">13th Month Pay</span>
+                                        <span class="skill-badge" onclick="toggleSkill(this)">Overtime Pay</span>
+                                        <span class="skill-badge" onclick="toggleSkill(this)">Holiday Pay</span>
+                                        <span class="skill-badge" onclick="toggleSkill(this)">Free Meals</span>
+                                        <span class="skill-badge" onclick="toggleSkill(this)">Transportation Allowance</span>
+                                        <span class="skill-badge" onclick="toggleSkill(this)">Safety Equipment Provided</span>
+                                        <span class="skill-badge" onclick="toggleSkill(this)">Skills Training</span>
+                                        <span class="skill-badge" onclick="toggleSkill(this)">Performance Bonus</span>
+                                        <span class="skill-badge" onclick="toggleSkill(this)">Health Insurance</span>
+                                    </div>
+
+                                    <input type="hidden" name="job_benefits[]" id="benefits" value="">
+                                </div>
+
+                            <hr>
+                              <!-- Communication Preferences -->
+                            <div class="section-divider">
+                                <h5 class="fw-bold mb-3">
+                                    <i class="fas fa-comments text-success me-2"></i>Communication Preferences
+                                </h5>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label">Preferred Contact Method *</label>
+                                        <div class="form-check mb-2">
+                                            <input
+                                                class="form-check-input"
+                                                type="radio"
+                                                name="contact_method"
+                                                id="contactEmail"
+                                                value="email"
+                                                required
+                                            />
+                                            <label class="form-check-label" for="contactEmail">
+                                                <i class="fas fa-envelope me-2"></i>Email
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input
+                                                class="form-check-input"
+                                                type="radio"
+                                                name="contact_method"
+                                                id="contactPhone"
+                                                value="phone"
+                                            />
+                                            <label class="form-check-label" for="contactPhone">
+                                                <i class="fas fa-phone me-2"></i>Phone Call
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input
+                                                class="form-check-input"
+                                                type="radio"
+                                                name="contact_method"
+                                                id="contactSMS"
+                                                value="sms"
+                                            />
+                                            <label class="form-check-label" for="contactSMS">
+                                                <i class="fas fa-sms me-2"></i>SMS/Text Message
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Best Time to Contact</label>
+                                            <select class="form-select" id="contactTime" name="contact_time">
+                                                <option value="">Select best time</option>
+                                                <option value="morning">Morning (8AM - 12PM)</option>
+                                                <option value="afternoon">Afternoon (12PM - 5PM)</option>
+                                                <option value="evening">Evening (5PM - 8PM)</option>
+                                                <option value="anytime">Anytime during business hours</option>
+                                            </select>
+
+                                        <label class="form-label mt-3">Language Preference</label>
+                                            <select class="form-select" id="language" name="language_preference">
+                                                <option value="english">English</option>
+                                                <option value="filipino">Filipino/Tagalog</option>
+                                                <option value="cebuano">Cebuano</option>
+                                                <option value="ilocano">Ilocano</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            
+                             <!-- Interview & Screening Preferences -->
+                            <div class="preference-card">
+                                <h5 class="fw-bold mb-3">
+                                    <i class="fas fa-clipboard-check text-warning me-2"></i>Interview & Screening Preferences
+                                </h5>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Preferred Screening Methods</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="preferred_screening_method[]" value="Phone/Video interview" id="phoneInterview" />
+                                                <label class="form-check-label" for="phoneInterview">Phone/Video interview</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="preferred_screening_method[]" value="In-person interview" id="inPersonInterview" />
+                                                <label class="form-check-label" for="inPersonInterview">In-person interview</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="preferred_screening_method[]" value="Skills demonstration/test" id="skillsDemo" />
+                                                <label class="form-check-label" for="skillsDemo">Skills demonstration/test</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="preferred_screening_method[]" value="Reference check" id="referenceCheck" />
+                                                <label class="form-check-label" for="referenceCheck">Reference check</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="preferred_screening_method[]" value="Background verification" id="backgroundCheck" />
+                                                <label class="form-check-label" for="backgroundCheck">Background verification</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="preferred_screening_method[]" value="Drug testing" id="drugTest" />
+                                                <label class="form-check-label" for="drugTest">Drug testing</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="interviewLocation" class="form-label">Preferred Interview Location</label>
+                                    <select class="form-select" id="interviewLocation" name="preferred_interview_location">
+                                        <option value="">Select location</option>
+                                        <option value="Our office/headquarters">Our office/headquarters</option>
+                                        <option value="Job site/project location">Job site/project location</option>
+                                        <option value="Neutral location (cafe, etc.)">Neutral location (cafe, etc.)</option>
+                                        <option value="Online/Video call only">Online/Video call only</option>
+                                        <option value="Flexible - worker's choice">Flexible - worker's choice</option>
+                                    </select>
+                                </div>
+                            </div><hr>
+
+                            <!-- Special Requirements -->
+                            <div class="preference-card">
+                                <h5 class="fw-bold mb-3">
+                                    <i class="fas fa-exclamation-triangle text-danger me-2"></i>Special Requirements
+                                </h5>
+
+                                <div class="switch-container">
+                                    <div>
+                                        <strong>Safety Training Required</strong>
+                                            <div class="text-muted small">
+                                                Workers must have safety training certificates
+                                            </div>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        <input
+                                            class="form-check-input"
+                                            name="special_requirements[]"
+                                            value="Workers must have safety training certificates"
+                                            type="checkbox"
+                                            id="safetyTraining"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div class="switch-container">
+                                    <div>
+                                        <strong>Own Tools Required</strong>
+                                        <div class="text-muted small">
+                                            Workers must bring their own basic tools
+                                        </div>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        <input
+                                            class="form-check-input"
+                                            name="special_requirements[]"
+                                            value="Workers must bring their own basic tools"
+                                            type="checkbox"
+                                            id="ownTools"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div class="switch-container">
+                                    <div>
+                                        <strong>Transportation Assistance</strong>
+                                        <div class="text-muted small">
+                                            Provide transportation or allowance
+                                        </div>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        <input
+                                            class="form-check-input"
+                                            name="special_requirements[]"
+                                            value="Provide Transportation or allowance"
+                                            type="checkbox"
+                                            id="transportation"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div class="mt-3">
+                                    <label for="additionalRequirements" class="form-label">Additional Requirements or Notes</label>
+                                    <textarea
+                                        class="form-control"
+                                        name="additional_requirements"
+                                        id="additionalRequirements"
+                                        rows="3"
+                                        placeholder="Any specific requirements, work conditions, or special instructions..."
+                                    ></textarea>
+                                </div>
+                            </div>
+  
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" name="action" value="draft" class="btn btn-secondary" data-bs-dismiss="modal">Save as Draft</button>
+                            <button type="submit" name="action" value="publish" class="btn btn-primary">Publish Job</button>
+                        </div>
+                    </form>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Modal for the view application statius -->
+<!-- Modal for viewing job applications -->
+<div id="applicationsModalOverlay" class="modal-overlay" style="display: none;">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3><i class="fas fa-hard-hat me-2"></i>Applications for "Construction Worker"</h3>
+            <button class="close-btn" onclick="closeApplicationsModal()">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+            {{-- Application Summary --}}
+            <div class="summary-section">
+                <div class="summary-stats">
+                    <span class="stat-badge total">Total: 3</span>
+                    <span class="stat-badge pending">Pending: 2</span>
+                    <span class="stat-badge reviewed">Reviewed: 1</span>
+                </div>
+            </div>
+
+            {{-- Applications List --}}
+            <div class="applications-list">
+                
+                {{-- Application 1 --}}
+                <div class="application-card">
+                    <div class="applicant-info">
+                        <div class="applicant-header">
+                            <div class="profile-pic">JD</div>
+                            <div class="applicant-details">
+                                <h4>Juan Dela Cruz</h4>
+                                <span class="status-badge pending">Pending</span>
+                                <p class="contact-info">
+                                    <i class="fas fa-envelope"></i> juan.delacruz@email.com<br>
+                                    <i class="fas fa-phone"></i> +63 917 123 4567<br>
+                                    <i class="fas fa-map-marker-alt"></i> Taguig City, Metro Manila
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="application-content">
+                        <div class="section">
+                            <h5><i class="fas fa-tools"></i>  Experience</h5>
+                            <p><strong>Experience:</strong> 5 years in construction</p>
+                            <!-- <div class="skills">
+                                <span class="skill-tag">Masonry</span>
+                                <span class="skill-tag">Carpentry</span>
+                                <span class="skill-tag">Heavy Equipment</span>
+                                <span class="skill-tag">Safety Protocols</span>
+                            </div> -->
+                        </div>
+
+                        <div class="section">
+                            <h5><i class="fas fa-certificate"></i> TESDA Certification</h5>
+                            <p><strong>Course:</strong> Construction Painting NC II</p>
+                            <p><strong>Date Completed:</strong> March 2023</p>
+                        </div>
+
+                        <div class="section">
+                            <h5><i class="fas fa-comment"></i> Application Message</h5>
+                            <p class="cover-letter">I have 5 years of experience in construction work including masonry, carpentry, and painting. I am hardworking, reliable, and always follow safety protocols. I can work in teams and handle physical demands of construction work.</p>
+                        </div>
+                    </div>
+
+                    <div class="application-actions">
+                        <h5>Documents</h5>
+                        <button class="action-btn primary" onclick="viewDocument('resume', 1)">
+                            <i class="fas fa-file"></i> View Resume
+                        </button>
+                        <button class="action-btn warning" onclick="viewDocument('tesda', 1)">
+                            <i class="fas fa-certificate"></i> TESDA Certificate
+                        </button>
+                        
+                        <h5>Actions</h5>
+                        <button class="action-btn success" onclick="approveApplication(1)">
+                            <i class="fas fa-check"></i> Approve
+                        </button>
+                        <button class="action-btn info" onclick="scheduleInterview(1)">
+                            <i class="fas fa-calendar"></i> Interview
+                        </button>
+                        <button class="action-btn danger" onclick="rejectApplication(1)">
+                            <i class="fas fa-times"></i> Reject
+                        </button>
+                        <button class="action-btn secondary" onclick="contactApplicant('juan.delacruz@email.com')">
+                            <i class="fas fa-envelope"></i> Contact
+                        </button>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeApplicationsModal()">Close</button>
+            <button class="btn btn-primary" onclick="exportApplications()">Export All</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+ {{-- JavaScript Functions --}}
+<script>
+function openApplicationsModal() {
+    document.getElementById('applicationsModalOverlay').style.display = 'flex';
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+}
+
+function closeApplicationsModal() {
+    document.getElementById('applicationsModalOverlay').style.display = 'none';
+    document.body.style.overflow = 'auto'; // Restore scrolling
+}
+
+function viewDocument(type, applicationId) {
+    if (type === 'resume') {
+        alert(`Opening resume for application ${applicationId}`);
+        // In real implementation: window.open('/storage/resumes/applicant_${applicationId}_resume.pdf', '_blank');
+    } else if (type === 'tesda') {
+        alert(`Opening TESDA certificate for application ${applicationId}`);
+        // In real implementation: window.open('/storage/certificates/applicant_${applicationId}_tesda.pdf', '_blank');
+    }
+}
+
+function approveApplication(applicationId) {
+    if (confirm('Are you sure you want to approve this application?')) {
+        alert(`Application ${applicationId} approved!`);
+        // Update status visually
+        updateApplicationStatus(applicationId, 'approved', '#28a745');
+        
+        // In real implementation:
+        // fetch('/applications/' + applicationId + '/approve', { method: 'POST' })
+    }
+}
+
+function rejectApplication(applicationId) {
+    if (confirm('Are you sure you want to reject this application?')) {
+        alert(`Application ${applicationId} rejected!`);
+        // Update status visually
+        updateApplicationStatus(applicationId, 'rejected', '#dc3545');
+        
+        // In real implementation:
+        // fetch('/applications/' + applicationId + '/reject', { method: 'POST' })
+    }
+}
+
+function scheduleInterview(applicationId) {
+    alert(`Schedule interview for application ${applicationId}`);
+    // In real implementation: open interview scheduling modal
+}
+
+function contactApplicant(email) {
+    window.location.href = `mailto:${email}`;
+}
+
+function updateApplicationStatus(applicationId, status, color) {
+    // Find the application card and update status badge
+    const cards = document.querySelectorAll('.application-card');
+    cards.forEach((card, index) => {
+        if (index + 1 === applicationId) {
+            const statusBadge = card.querySelector('.status-badge');
+            statusBadge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+            statusBadge.style.background = color;
+            statusBadge.style.color = 'white';
+        }
+    });
+}
+
+function exportApplications() {
+    alert('Exporting all applications to CSV...');
+    // In real implementation: generate and download CSV file
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(event) {
+    const modal = document.getElementById('applicationsModalOverlay');
+    if (event.target === modal) {
+        closeApplicationsModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeApplicationsModal();
+    }
+});
+</script>
+
+    <!-- Scripts -->
+     
+     <script>
+    const jobCategorySelect = document.getElementById('jobCategory');
+    const jobSubcategorySelect = document.getElementById('otherCategory');
+
+    jobCategorySelect.addEventListener('change', function () {
+        if (this.value === 'Other') {
+            jobSubcategorySelect.style.display = 'block';
+        } else {
+            jobSubcategorySelect.style.display = 'none';
+        }
+
+    });
+
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const benefitBadges = document.querySelectorAll('.benefit-option');
+        const hiddenInput = document.getElementById('benefits');
+
+        benefitBadges.forEach(badge => {
+            badge.addEventListener('click', () => {
+                badge.classList.toggle('selected');
+
+                // Collect all selected benefits
+                const selectedBenefits = Array.from(document.querySelectorAll('.benefit-option.selected'))
+                    .map(el => el.dataset.benefit);
+
+                // Update the hidden input value (you can split this later on the server)
+                hiddenInput.value = selectedBenefits.join(',');
+            });
+        });
+    });
+
+
+            function toggleTesdaCerts(checkbox) {
+            const tesda = document.getElementById('tesdacertifications');
+            const nonTesda = document.getElementById('nonTesdaCertifications');
+
+            if (checkbox.checked) {
+                 tesda.style.display = 'none';
+                 nonTesda.style.display = 'block';
+            } else {
+                tesda.style.display = 'block';
+                nonTesda.style.display = 'none';
+            }
+
+
+            }
+
+            function toggleOtherCertInput() {
+                const input = document.getElementById('otherCertInput');
+                const checkbox = document.getElementById('otherCertCheckbox');
+                input.style.display = checkbox.checked ? 'block' : 'none';
+            
+            }
+
+</script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sidebar toggle functionality
+        const toggleBtn = document.getElementById('toggleSidebar');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const menuIcon = document.getElementById('menuIcon');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+            
+            if (sidebar.classList.contains('show')) {
+                menuIcon.classList.remove('fa-bars');
+                menuIcon.classList.add('fa-times');
+            } else {
+                menuIcon.classList.remove('fa-times');
+                menuIcon.classList.add('fa-bars');
+            }
+        }
+
+        toggleBtn.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', toggleSidebar);
+
+        // Navigation functionality
+        const navLinks = document.querySelectorAll('.nav-link[data-target]');
+        const sections = document.querySelectorAll('.page-section');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Remove active class from all links
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                
+                // Hide all sections
+                sections.forEach(section => section.classList.remove('active'));
+                
+                // Show target section
+                const targetId = link.getAttribute('data-target');
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                }
+                
+                // Auto-close sidebar on mobile
+                if (window.innerWidth <= 991) {
+                    sidebar.classList.remove('show');
+                    overlay.classList.remove('show');
+                    menuIcon.classList.remove('fa-times');
+                    menuIcon.classList.add('fa-bars');
+                }
+            });
+        });
+
+        // Search and filter functionality for applicants
+        const searchInput = document.getElementById('searchApplicants');
+        const positionFilter = document.getElementById('positionFilter');
+        const applicantRows = document.querySelectorAll('#applicantsTable tbody tr');
+
+        function filterApplicants() {
+            const searchValue = searchInput ? searchInput.value.toLowerCase() : '';
+            const selectedPosition = positionFilter ? positionFilter.value : '';
+
+            applicantRows.forEach(row => {
+                const nameCell = row.querySelector('.applicant-details h6');
+                const positionCell = row.querySelector('td:nth-child(3) strong');
+                const locationCell = row.querySelector('td:nth-child(3) small');
+                
+                const name = nameCell ? nameCell.textContent.toLowerCase() : '';
+                const position = positionCell ? positionCell.textContent.trim() : '';
+                const location = locationCell ? locationCell.textContent.toLowerCase() : '';
+
+                const matchesSearch = name.includes(searchValue) || location.includes(searchValue);
+                const matchesPosition = !selectedPosition || position === selectedPosition;
+
+                row.style.display = (matchesSearch && matchesPosition) ? '' : 'none';
+            });
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', filterApplicants);
+        }
+        if (positionFilter) {
+            positionFilter.addEventListener('change', filterApplicants);
+        }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 991) {
+                if (!sidebar.contains(e.target) && !toggleBtn.contains(e.target) && sidebar.classList.contains('show')) {
+                    toggleSidebar();
+                }
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 991) {
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
+                menuIcon.classList.remove('fa-times');
+                menuIcon.classList.add('fa-bars');
+            }
+        });
+
+        function updateBenefits() {
+    const selected = document.querySelectorAll('.skill-badge-selected');
+    const benefits = Array.from(selected).map(el => el.textContent.trim());
+    document.getElementById('benefits').value = selected.join(',');
+}
+    </script>
+
+    <script>
+    const selectedBenefits = [];
+
+    function toggleSkill(el) {
+        const benefit = el.innerText.trim();
+        const index = selectedBenefits.indexOf(benefit);
+
+        if (index > -1) {
+            selectedBenefits.splice(index, 1);
+            el.classList.remove("selected");
+        } else {
+            selectedBenefits.push(benefit);
+            el.classList.add("selected");
+        }
+
+        // Update the hidden input
+        document.getElementById('benefits').value = selectedBenefits.join(',');
+    }
+</script>
+
+    
+</body>
+</html>

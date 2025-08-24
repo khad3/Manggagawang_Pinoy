@@ -1,0 +1,40 @@
+body {
+      background: linear-gradient(to right, #d4e3ff, #f4f7ff);
+      font-family: 'Inter', sans-serif;
+      padding: 40px 0;
+    }
+
+    .card {
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      animation: fadeSlideUp 0.8s ease forwards;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    @keyframes fadeSlideUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .form-floating input:focus,
+    .form-floating select:focus,
+    textarea:focus {
+      border-color: #0d6efd;
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+      transition: all 0.3s ease;
+    }
+
+    #otherPositionContainer {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: all 0.4s ease;
+    }
+
+    #otherPositionContainer.show {
+      max-height: 100px;
+      opacity: 1;
+    }
