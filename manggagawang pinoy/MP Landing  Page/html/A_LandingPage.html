@@ -35,28 +35,6 @@
         <h1>Building the Future <br />One Skill at a Time</h1>
         <p>Partnership With <span>TESDA</span></p>
         <button class="sign-up-b" id="wideb">Get Started</button>
-
-  <div class="modal" id="roleModal">
-    <div class="modal-content">
-      <h2>SELECT YOUR ROLE</h2>
-      <div class="role-container">
-        <!-- Employer Card -->
-        <div class="role-card" onclick="window.location.href='employer.html'">
-          <img id="workeroremployer" src="https://img.icons8.com/ios-filled/100/000000/manager.png" alt="Employer">
-          <h3>Employer</h3>
-          <button class="select-btn">Select</button>
-        </div>
-
-        <!-- Worker Card -->
-        <div class="role-card" onclick="window.location.href='worker.html'">
-          <img id="workeroremployer" src="https://img.icons8.com/ios-filled/100/000000/worker-male.png" alt="Worker">
-          <h3>Worker</h3>
-          <button class="select-btn">Select</button>
-        </div>
-      </div>
-      <button class="close-btn" id="closeModal">Cancel</button>
-    </div>
-  </div>
         <button class="sign-up-b" id="wideb2">Tutorial</button>
       </div>
       <div>
@@ -155,7 +133,7 @@
 <section id="tutorial">
   <h1>Tutorial</h1><br>
   <video controls autoplay muted loop>
-    <source src="https://youtu.be/tBm8RhC3-Dw?si=RYlTRtGsFAlFolyd" type="video/mp4" />
+    <source src="https://youtu.be/PNkDdNU9rXQ?si=DXzB6QkkBCL5PDja" type="video/mp4" />
     Your browser does not support the video tag.
   </video>
 </section>
@@ -273,26 +251,6 @@ document.getElementById('hamburger').addEventListener('click', function() {
   const navLinks = document.getElementById('nav-links');
   navLinks.classList.toggle('active'); // Toggle the 'active' class
 });
-    const modal = document.getElementById("roleModal");
-    const getStartedBtn = document.getElementById("wideb");
-    const closeBtn = document.getElementById("closeModal");
-
-    // Open modal
-    getStartedBtn.onclick = () => {
-      modal.style.display = "flex";
-    }
-
-    // Close modal
-    closeBtn.onclick = () => {
-      modal.style.display = "none";
-    }
-
-    // Close if clicking outside content
-    window.onclick = (event) => {
-      if (event.target === modal) {
-        modal.style.display = "none";
-      }
-    }
 
   </script>
 </body>
