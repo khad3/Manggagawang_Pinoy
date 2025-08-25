@@ -228,11 +228,17 @@ Route::prefix('admin')->group(function () {
 
 Route::prefix('tesda-officer')->group(function () {
     
+     Route::get('login', [TesdaOfficerController::class, 'loginDisplay'])->name('tesda-officer.login.display');
+     Route::post('login', [TesdaOfficerController::class, 'login'])->name('tesda-officer.login.store');
+
+});
+
+Route::middleware(['tesda-officer.authenticate'])->prefix('tesda-officer')->group(function () {
 
     Route::get('homepage' , [TesdaOfficerController::class, 'homepage'])->name('homepage.display');
-    
-    Route::get('login', [TesdaOfficerController::class, 'loginDisplay'])->name('tesda-officer.login.display');
-    Route::post('login', [TesdaOfficerController::class, 'login'])->name('tesda-officer.login.store');
+
+    Route::post('sent-review', [TesdaOfficerController::class, 'approvedOfficer'])->name('tesda-officer.approved.store');
+    Route::delete('delete-certificate', [TesdaOfficerController::class, 'deleteOfficerReview'])->name('tesda-officer.delete');
     
     Route::post('logout', [TesdaOfficerController::class, 'logout'])->name('tesda-officer.logout.store');
-});
+ });

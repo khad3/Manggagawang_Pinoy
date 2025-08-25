@@ -326,10 +326,10 @@
                                         <i class="bi bi-trash"></i> Delete
                                     </button>
 
-                                    <!-- Delete Confirmation Modal -->
+                                    <!-- Delete Confirmation Modal (no backdrop) -->
                                     <div class="modal fade" id="deleteYoutubeModal{{ $youtube->id }}"
                                         tabindex="-1" aria-labelledby="deleteYoutubeModalLabel{{ $youtube->id }}"
-                                        aria-hidden="true">
+                                        aria-hidden="true" data-bs-backdrop="false">
                                         <div class="modal-dialog modal-dialog-centered">
                                             <div class="modal-content">
                                                 <div class="modal-header">
@@ -348,7 +348,6 @@
                                                     <button type="button" class="btn btn-secondary"
                                                         data-bs-dismiss="modal">Cancel</button>
 
-                                                    <!-- FIX: Added action to delete route -->
                                                     <form
                                                         action="{{ route('applicant.youtubevideo.delete', ['id' => $youtube->id]) }}"
                                                         method="POST">
@@ -400,13 +399,25 @@
                                         {{ \Carbon\Carbon::parse($certification->certification_date_obtained)->format('F d, Y') }}
                                     </small>
                                     <br>
+
+                                    {{-- Status Badge --}}
                                     <span
-                                        class="badge 
-                                          @if ($certification->status == 'pending') bg-warning 
-                                          @elseif($certification->status == 'approved') bg-success 
-                                          @else bg-danger @endif mt-1">
-                                        {{ ucfirst($certification->status) }}
+                                        class="badge mt-1 
+                                             @if ($certification->status === 'pending') bg-warning
+                                            @elseif ($certification->status === 'approved') bg-success
+                                            @elseif ($certification->status === 'rejected') bg-danger
+                                            @else bg-dark @endif">
+                                        {{ $certification->status === 'request_revision' ? 'Request Revision' : ucfirst($certification->status) }}
                                     </span>
+
+                                    {{-- Show officer comment if status is request_revision and comment exists --}}
+                                    @if ($certification->status === 'request_revision' && $certification->officer_comment)
+                                        <div class="mt-2 p-2 border rounded bg-light">
+                                            <strong>Reason for Revision:</strong>
+                                            <p class="mb-0">{{ $certification->officer_comment }}</p>
+                                        </div>
+                                    @endif
+
                                 </div>
 
                                 {{-- Actions --}}

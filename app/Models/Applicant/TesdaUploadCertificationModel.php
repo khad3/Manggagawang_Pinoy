@@ -3,6 +3,7 @@
 namespace App\Models\Applicant;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Admin\AddTesdaOfficerModel as TesdaOfficer;
 
 class TesdaUploadCertificationModel extends Model
 {
@@ -18,5 +19,24 @@ class TesdaUploadCertificationModel extends Model
         'certification_program_other',
         'certification_date_obtained',
         'status',
+        'approved_by',
+        'officer_comment'
     ];
+
+
+    public function applicant()
+    {
+        return $this->belongsTo(RegisterModel::class, 'applicant_id');
+    }
+
+    public function personal_info()
+    {
+        return $this->belongsTo(PersonalModel::class, 'applicant_id');
+    }
+
+
+    public function tesda_officer()
+    {
+        return $this->belongsTo(TesdaOfficer::class, 'approved_by');
+    }
 }

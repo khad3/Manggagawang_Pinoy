@@ -1854,7 +1854,8 @@ public function addTesdaCertificate(Request $request)
     // Handle file upload
     if ($request->hasFile('certificate_file')) {
         $path = $request->file('certificate_file')->store('tesda_certificates', 'public');
-        $tesda_certificate->file_path = $path; // store path in DB
+        $tesda_certificate->file_path = $path;
+        $tesda_certificate->save(); // store path in DB
     }
 
     $tesda_certificate->save();

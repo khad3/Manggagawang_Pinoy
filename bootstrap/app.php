@@ -15,7 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'applicant.authenticate' => App\Http\Middleware\ApplicantAuthenticate::class,
         ]);
 
-     
+        $middleware->alias([
+            'tesda-officer.authenticate' => App\Http\Middleware\TesdaOfficer\TesdaOfficerAuthenticate::class,
+        ]);
 
 
     })
