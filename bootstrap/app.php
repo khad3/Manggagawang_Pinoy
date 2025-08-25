@@ -13,11 +13,14 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'applicant.authenticate' => App\Http\Middleware\ApplicantAuthenticate::class,
+             'tesda-officer.authenticate' => App\Http\Middleware\TesdaOfficer\TesdaOfficerAuthenticate::class,
+             'employer.authenticate' => App\Http\Middleware\EmployerAuthenticate::class,
+             'admin.authenticate' => App\Http\Middleware\Admin\AdminAuthenticate::class,
         ]);
 
-        $middleware->alias([
-            'tesda-officer.authenticate' => App\Http\Middleware\TesdaOfficer\TesdaOfficerAuthenticate::class,
-        ]);
+        
+           
+       
 
 
     })

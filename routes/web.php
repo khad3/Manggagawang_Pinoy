@@ -162,14 +162,24 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
     });
 });
 
-//For Employer
+//Public routes for employer
 Route::group(['prefix' => 'employer'], function () {
     
     //View registration form step 1 
     Route::get('register', [EmployerController::class, 'ShowRegistrationForm'])->name('employer.register.display');
     Route::post('register', [EmployerController::class, 'addJobDetails'])->name('employer.jobdetails.store');
     //View contact form  2
-    Route::get('contact', [EmployerController::class, 'ShowContactForm'])->name('employer.contact.display');
+   
+    
+    //Display the login form
+    Route::get('login', [EmployerController::class, 'ShowLoginForm'])->name('employer.login.display');
+    Route::post('login', [EmployerController::class, 'login'])->name('employer.login.store');
+
+});
+
+//Protected routes for employer
+Route::middleware(['employer.authenticate'])->prefix('employer')->group(function () {
+     Route::get('contact', [EmployerController::class, 'ShowContactForm'])->name('employer.contact.display');
     Route::post('contact', [EmployerController::class, 'addContactDetails'])->name('employer.contact.store');
     //View hiring preference form 3
     Route::get('hiring-preference', [EmployerController::class, 'ShowHiringPreferenceForm'])->name('employer.hiringpreference.display');
@@ -182,12 +192,8 @@ Route::group(['prefix' => 'employer'], function () {
     //Send and display email
     Route::post('/employer/send-verification-email', [EmployerController::class, 'sendVerificationEmail'])->name('employer.sendVerificationEmail');
     Route::get('/employer/verify/{email}', [EmployerController::class, 'verifyEmail'])->name('employer.verify');
-    
-    //Display the login form
-    Route::get('login', [EmployerController::class, 'ShowLoginForm'])->name('employer.login.display');
-    Route::post('login', [EmployerController::class, 'login'])->name('employer.login.store');
 
-    //Homepage display
+       //Homepage display
     Route::get('homepage', [EmployerController::class, 'ShowHomepage'])->name('employer.info.homepage.display');
 
     //Logout
@@ -204,8 +210,6 @@ Route::group(['prefix' => 'employer'], function () {
     //Send rating 
     Route::post('employer/send-rating', [EmployerController::class, 'sendReview'])->name('employer.sendrating.store');
 
-   
-
     
 });
 
@@ -213,10 +217,19 @@ Route::group(['prefix' => 'employer'], function () {
 
 Route::prefix('admin')->group(function () {
     
-    Route::get('homepage', [AdminController::class, 'homepageDisplay'])->name('admin.homepage.display');
+    
     Route::get('login', [AdminController::class, 'loginDisplay'])->name('admin.login.display');
     Route::post('login', [AdminController::class, 'login'])->name('admin.login.store');
-    Route::post('logout', [AdminController::class, 'logout'])->name('admin.logout.store');
+    
+
+
+  
+});
+
+Route::middleware(['admin.authenticate'])->prefix('admin')->group(function () {
+     Route::get('homepage', [AdminController::class, 'homepageDisplay'])->name('admin.homepage.display');
+
+      Route::post('logout', [AdminController::class, 'logout'])->name('admin.logout.store');
 
 
     //Officer
@@ -225,20 +238,23 @@ Route::prefix('admin')->group(function () {
 });
 
 
-
+//Public routes for tesda officer
 Route::prefix('tesda-officer')->group(function () {
     
-     Route::get('login', [TesdaOfficerController::class, 'loginDisplay'])->name('tesda-officer.login.display');
-     Route::post('login', [TesdaOfficerController::class, 'login'])->name('tesda-officer.login.store');
-
+    Route::get('login', [TesdaOfficerController::class, 'loginDisplay'])->name('tesda-officer.login.display');
+    Route::post('login', [TesdaOfficerController::class, 'login'])->name('tesda-officer.login.store');
+    
 });
 
-Route::middleware(['tesda-officer.authenticate'])->prefix('tesda-officer')->group(function () {
+//Protected routes for tesda officer
+ Route::middleware(['tesda-officer.authenticate'])->prefix('tesda-officer')->group(function () {
 
     Route::get('homepage' , [TesdaOfficerController::class, 'homepage'])->name('homepage.display');
 
     Route::post('sent-review', [TesdaOfficerController::class, 'approvedOfficer'])->name('tesda-officer.approved.store');
-    Route::delete('delete-certificate', [TesdaOfficerController::class, 'deleteOfficerReview'])->name('tesda-officer.delete');
-    
+    Route::delete('delete-review', [TesdaOfficerController::class, 'deleteOfficerReview'])->name('tesda-officer.delete');
+
     Route::post('logout', [TesdaOfficerController::class, 'logout'])->name('tesda-officer.logout.store');
- });
+
+});
+

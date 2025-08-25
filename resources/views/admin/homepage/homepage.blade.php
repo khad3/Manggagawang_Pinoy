@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,31 +12,33 @@
     <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
     <link rel="stylesheet" href="{{ asset('css/applicant/admin/homepage.css') }}">
 
-    <style>.badge {
-    display: inline-block;
-    padding: 0.4rem 0.75rem;
-    font-size: 0.85rem;
-    font-weight: 600;
-    border-radius: 20px;
-    text-transform: capitalize;
-    color: #fff;
-    letter-spacing: 0.5px;
-}
+    <style>
+        .badge {
+            display: inline-block;
+            padding: 0.4rem 0.75rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 20px;
+            text-transform: capitalize;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
 
-/* Active badge */
-.badge-active {
-    background: linear-gradient(135deg, #28a745, #218838);
-    box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
-}
+        /* Active badge */
+        .badge-active {
+            background: linear-gradient(135deg, #28a745, #218838);
+            box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
+        }
 
-/* Inactive badge */
-.badge-inactive {
-    background: linear-gradient(135deg, #6c757d, #495057);
-    box-shadow: 0 2px 6px rgba(108, 117, 125, 0.3);
-}
-</style>
-    
+        /* Inactive badge */
+        .badge-inactive {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            box-shadow: 0 2px 6px rgba(108, 117, 125, 0.3);
+        }
+    </style>
+
 </head>
+
 <body>
     <div class="dashboard-container">
         <!-- Sidebar -->
@@ -84,7 +87,7 @@
 
                 <button class="menu-item" data-bs-toggle="modal" data-bs-target="#logoutModal">
                     <i class="fas fa-sign-out-alt"></i>
-                        <span>Logout</span>
+                    <span>Logout</span>
                     <i class="fas fa-chevron-right chevron"></i>
                 </button>
             </div>
@@ -97,6 +100,14 @@
             <div id="alertContainer"></div>
 
             <!-- Header -->
+            <!-- Officers Management Section -->
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
             <div class="header-bar">
                 <div>
                     <h1>TESDA Super Admin Dashboard</h1>
@@ -110,7 +121,8 @@
                         @endphp
 
                         <div class="admin-last-login">
-                            Last login:{{ $last_login ? Carbon::parse($last_login)->format('F j, Y - g:i A') : 'No record' }}
+                            Last
+                            login:{{ $last_login ? Carbon::parse($last_login)->format('F j, Y - g:i A') : 'No record' }}
                         </div>
 
                     </div>
@@ -131,7 +143,7 @@
                                 <i class="fas fa-users"></i>
                             </div>
                         </div>
-                       <div class="stat-change">
+                        <div class="stat-change">
                             <i class="fas fa-trending-up"></i>
                             {{ round($percentageGrowth, 1) }}% this month
                         </div>
@@ -147,9 +159,10 @@
                                 <i class="fas fa-building"></i>
                             </div>
                         </div>
-                         <div class="stat-change {{ $employersTrendingUp ? 'text-success' : 'text-danger' }}">
+                        <div class="stat-change {{ $employersTrendingUp ? 'text-success' : 'text-danger' }}">
                             <i class="fas {{ $employersTrendingUp ? 'fa-trending-up' : 'fa-trending-down' }}"></i>
-                            {{ $employersTrendingUp ? '+' : '-' }}{{ number_format(abs($employerChange), 1) }}% this month
+                            {{ $employersTrendingUp ? '+' : '-' }}{{ number_format(abs($employerChange), 1) }}% this
+                            month
                         </div>
                     </div>
 
@@ -229,13 +242,7 @@
             </section>
 
             <!-- Officers Management Section -->
-             @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle me-2"></i> 
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
+
             <section id="officers" class="content-section">
                 <div class="section-header">
                     <h2 class="section-title">
@@ -249,55 +256,63 @@
                 </div>
 
                 <div id="officersList">
-                    @foreach($retrieveTesdaOfficers as $officer)
+                    @foreach ($retrieveTesdaOfficers as $officer)
                         <div class="card officer-card mb-3 p-3 shadow-sm">
                             <div class="officer-info d-flex align-items-center">
-                                <div class="officer-avatar rounded-circle bg-primary text-white fw-bold d-flex justify-content-center align-items-center" style="width:50px; height:50px; font-size:18px;">
+                                <div class="officer-avatar rounded-circle bg-primary text-white fw-bold d-flex justify-content-center align-items-center"
+                                    style="width:50px; height:50px; font-size:18px;">
                                     {{ strtoupper(substr($officer->first_name, 0, 1)) }}{{ strtoupper(substr($officer->last_name, 0, 1)) }}
                                 </div>
                                 <div class="officer-details ms-3">
                                     <h5 class="mb-1">{{ $officer->first_name }} {{ $officer->last_name }}</h5>
-                                        <p class="email text-muted mb-0">
-                                            <i class="fas fa-envelope"></i> {{ $officer->email }}
-                                        </p>
+                                    <p class="email text-muted mb-0">
+                                        <i class="fas fa-envelope"></i> {{ $officer->email }}
+                                    </p>
                                 </div>
                             </div>
 
                             <div class="officer-actions mt-3 d-flex justify-content-between align-items-center">
-                                <span class="badge {{ $officer->status === 'active' ? 'badge-active' : 'badge-inactive' }}">
+                                <span
+                                    class="badge {{ $officer->status === 'active' ? 'badge-active' : 'badge-inactive' }}">
                                     {{ ucfirst($officer->status) }}
                                 </span>
                                 <div class="action-buttons">
                                     <!-- Edit Button opens modal -->
-                                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editOfficerModal{{ $officer->id }}">
+                                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                        data-bs-target="#editOfficerModal{{ $officer->id }}">
                                         <i class="fas fa-edit"></i> Edit
                                     </button>
                                     <!-- Delete Button -->
                                     <form action="" method="POST" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this officer?')">
-                                                <i class="fas fa-trash"></i> Delete
-                                            </button>
+                                        <button type="submit" class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Are you sure you want to delete this officer?')">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
                                     </form>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="modal fade" id="editOfficerModal{{ $officer->id }}" tabindex="-1" aria-labelledby="editOfficerModalLabel{{ $officer->id }}" aria-hidden="true">
+                        <div class="modal fade" id="editOfficerModal{{ $officer->id }}" tabindex="-1"
+                            aria-labelledby="editOfficerModalLabel{{ $officer->id }}" aria-hidden="true">
                             <div class="modal-dialog modal-lg modal-dialog-centered d-flex justify-content-center">
                                 <div class="modal-content custom-modal mx-auto">
-            
-                                    <form action="{{ route('admin.updateofficer', ['id' => $officer->id]) }}" method="POST">
+
+                                    <form action="{{ route('admin.updateofficer', ['id' => $officer->id]) }}"
+                                        method="POST">
                                         @csrf
                                         @method('PUT')
 
                                         <!-- Header -->
                                         <div class="modal-header border-0 pb-0">
-                                            <h5 class="modal-title fw-bold text-dark" id="editOfficerModalLabel{{ $officer->id }}">
+                                            <h5 class="modal-title fw-bold text-dark"
+                                                id="editOfficerModalLabel{{ $officer->id }}">
                                                 <i class="fas fa-user-edit me-2 text-primary"></i> Edit Officer
                                             </h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
                                         </div>
 
                                         <!-- Body -->
@@ -305,25 +320,36 @@
                                             <div class="row g-3">
                                                 <div class="col-md-6">
                                                     <label class="form-label">First Name</label>
-                                                    <input type="text" name="first_name" value="{{ $officer->first_name }}" class="form-control" required>
+                                                    <input type="text" name="first_name"
+                                                        value="{{ $officer->first_name }}" class="form-control"
+                                                        required>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label class="form-label">Last Name</label>
-                                                    <input type="text" name="last_name" value="{{ $officer->last_name }}" class="form-control" required>
+                                                    <input type="text" name="last_name"
+                                                        value="{{ $officer->last_name }}" class="form-control"
+                                                        required>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <label class="form-label">Email</label>
-                                                    <input type="email" name="email" value="{{ $officer->email }}" class="form-control" required>
+                                                    <input type="email" name="email"
+                                                        value="{{ $officer->email }}" class="form-control" required>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <label class="form-label">password</label>
-                                                    <input type="password" id="password" name="password" value="{{ $officer->password }}" class="form-control" required>
+                                                    <input type="password" id="password" name="password"
+                                                        value="{{ $officer->password }}" class="form-control"
+                                                        required>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label class="form-label">Status</label>
                                                     <select name="status" class="form-select">
-                                                        <option value="active" {{ $officer->status == 'active' ? 'selected' : '' }}>Active</option>
-                                                        <option value="inactive" {{ $officer->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                                        <option value="active"
+                                                            {{ $officer->status == 'active' ? 'selected' : '' }}>Active
+                                                        </option>
+                                                        <option value="inactive"
+                                                            {{ $officer->status == 'inactive' ? 'selected' : '' }}>
+                                                            Inactive</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -331,7 +357,8 @@
 
                                         <!-- Footer -->
                                         <div class="modal-footer border-0 pt-0">
-                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                            <button type="button" class="btn btn-outline-secondary"
+                                                data-bs-dismiss="modal">
                                                 Cancel
                                             </button>
                                             <button type="submit" class="btn btn-primary px-4">
@@ -388,7 +415,7 @@
                             <p>Chart visualization</p>
                         </div>
                     </div>
-                    
+
                     <div class="chart-container">
                         <h4 class="chart-title">User Registration Growth</h4>
                         <div class="chart-placeholder">
@@ -521,7 +548,7 @@
                         System Settings
                     </h2>
                 </div>
-                
+
                 <div class="card" style="padding: 24px;">
                     <div class="form-grid">
                         <div class="form-group">
@@ -577,7 +604,8 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label class="form-label">First Name</label>
-                            <input type="text" class="form-input" name="first_name" id="officerFirstName" required>
+                            <input type="text" class="form-input" name="first_name" id="officerFirstName"
+                                required>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Last Name</label>
@@ -627,7 +655,8 @@
                         </div> -->
                         <div class="form-group">
                             <label class="form-label">Temporary Password</label>
-                            <input type="password" class="form-input" name="temporary_password" id="officerPassword" required>
+                            <input type="password" class="form-input" name="temporary_password" id="officerPassword"
+                                required>
                         </div>
                         <!-- <div class="form-group">
                             <label class="form-label">Access Level</label>
@@ -649,14 +678,15 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-cancel" onclick="closeModal('addOfficerModal')">Cancel</button>
-                        <button type="submit" class="btn btn-primary" >
+                        <button type="button" class="btn btn-cancel"
+                            onclick="closeModal('addOfficerModal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
                             <i class="fas fa-plus"></i> Create Officer Account
                         </button>
                     </div>
                 </form>
             </div>
-            
+
         </div>
     </div>
 
@@ -742,7 +772,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-cancel" onclick="closeModal('editOfficerModal')">Cancel</button>
+                <button type="button" class="btn btn-cancel"
+                    onclick="closeModal('editOfficerModal')">Cancel</button>
                 <button type="submit" class="btn btn-primary" onclick="updateOfficer()">
                     <i class="fas fa-save"></i> Update Officer
                 </button>
@@ -764,11 +795,13 @@
                 <form id="addAnnouncementForm">
                     <div class="form-group">
                         <label class="form-label">Announcement Title</label>
-                        <input type="text" class="form-input" id="announcementTitle" required placeholder="Enter announcement title">
+                        <input type="text" class="form-input" id="announcementTitle" required
+                            placeholder="Enter announcement title">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Content</label>
-                        <textarea class="form-input form-textarea" id="announcementContent" required placeholder="Enter announcement content..."></textarea>
+                        <textarea class="form-input form-textarea" id="announcementContent" required
+                            placeholder="Enter announcement content..."></textarea>
                     </div>
                     <div class="form-grid">
                         <div class="form-group">
@@ -808,12 +841,14 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Tags (Optional)</label>
-                        <input type="text" class="form-input" id="announcementTags" placeholder="Enter tags separated by commas">
+                        <input type="text" class="form-input" id="announcementTags"
+                            placeholder="Enter tags separated by commas">
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-cancel" onclick="closeModal('addAnnouncementModal')">Cancel</button>
+                <button type="button" class="btn btn-cancel"
+                    onclick="closeModal('addAnnouncementModal')">Cancel</button>
                 <button type="submit" class="btn btn-primary" onclick="submitAnnouncementForm()">
                     <i class="fas fa-bullhorn"></i> Create Announcement
                 </button>
@@ -874,7 +909,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-cancel" onclick="closeModal('editAnnouncementModal')">Cancel</button>
+                <button type="button" class="btn btn-cancel"
+                    onclick="closeModal('editAnnouncementModal')">Cancel</button>
                 <button type="submit" class="btn btn-primary" onclick="updateAnnouncement()">
                     <i class="fas fa-save"></i> Update Announcement
                 </button>
@@ -883,36 +919,36 @@
     </div>
 
     <!-- Logout Confirmation Modal -->
-<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 rounded-3 shadow-lg" style="max-width: 400px; margin: auto;">
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title" id="logoutModalLabel">
-          <i class="fas fa-sign-out-alt me-2"></i>Confirm Logout
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body text-center">
-        Are you sure you want to logout?
-      </div>
-      <div class="modal-footer justify-content-center">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <form action="{{ route('admin.logout.store') }}" method="POST" class="d-inline">
-          @csrf
-          <button type="submit" class="btn btn-danger">Logout</button>
-        </form>
-      </div>
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-3 shadow-lg" style="max-width: 400px; margin: auto;">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="logoutModalLabel">
+                        <i class="fas fa-sign-out-alt me-2"></i>Confirm Logout
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    Are you sure you want to logout?
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="{{ route('admin.logout.store') }}" method="POST" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-danger">Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 
-    
+
 
     <script>
         // Global Data Storage
-        
-        let announcements = [
-            {
+
+        let announcements = [{
                 id: 1,
                 title: 'New TESDA Scholarship Program 2025',
                 content: 'TESDA is now accepting applications for the 2025 scholarship program. Eligible applicants can apply for various technical courses throughout the country. The program aims to provide free technical education to qualified Filipino citizens.',
@@ -952,10 +988,10 @@
             // Hide all sections
             const sections = document.querySelectorAll('.content-section');
             sections.forEach(section => section.classList.remove('active'));
-            
+
             // Show selected section
             document.getElementById(sectionId).classList.add('active');
-            
+
             // Update menu items
             const menuItems = document.querySelectorAll('.menu-item');
             menuItems.forEach(item => item.classList.remove('active'));
@@ -978,7 +1014,7 @@
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('active');
             document.body.style.overflow = 'auto';
-            
+
             // Clear form data
             const form = document.querySelector(`#${modalId} form`);
             if (form) {
@@ -990,7 +1026,7 @@
         function showAlert(message, type = 'success') {
             const alertContainer = document.getElementById('alertContainer');
             const alertId = 'alert-' + Date.now();
-            
+
             const alert = document.createElement('div');
             alert.id = alertId;
             alert.className = `alert alert-${type}`;
@@ -1001,14 +1037,14 @@
                     <i class="fas fa-times"></i>
                 </button>
             `;
-            
+
             alertContainer.appendChild(alert);
-            
+
             // Show alert
             setTimeout(() => {
                 alert.classList.add('show');
             }, 100);
-            
+
             // Auto-hide after 5 seconds
             setTimeout(() => {
                 hideAlert(alertId);
@@ -1025,7 +1061,7 @@
             }
         }
 
-       
+
 
         function openAddOfficerModal() {
             // Set current date/time for password generation hint
@@ -1047,7 +1083,7 @@
                 document.getElementById('editOfficerEmployeeId').value = officer.employeeId;
                 document.getElementById('editOfficerAccessLevel').value = officer.accessLevel;
                 document.getElementById('editOfficerStatus').value = officer.status;
-                
+
                 openModal('editOfficerModal');
             }
         }
@@ -1083,7 +1119,7 @@
         function updateOfficer() {
             const officerId = parseInt(document.getElementById('editOfficerId').value);
             const officerIndex = officers.findIndex(o => o.id === officerId);
-            
+
             if (officerIndex !== -1) {
                 officers[officerIndex] = {
                     ...officers[officerIndex],
@@ -1106,7 +1142,9 @@
 
         function deleteOfficer(officerId) {
             const officer = officers.find(o => o.id === officerId);
-            if (officer && confirm(`Are you sure you want to delete ${officer.firstName} ${officer.lastName}'s account? This action cannot be undone.`)) {
+            if (officer && confirm(
+                    `Are you sure you want to delete ${officer.firstName} ${officer.lastName}'s account? This action cannot be undone.`
+                )) {
                 officers = officers.filter(o => o.id !== officerId);
                 renderOfficers();
                 updateStats();
@@ -1160,7 +1198,7 @@
                 document.getElementById('editAnnouncementPriority').value = announcement.priority;
                 document.getElementById('editAnnouncementAudience').value = announcement.audience;
                 document.getElementById('editAnnouncementStatus').value = announcement.status;
-                
+
                 openModal('editAnnouncementModal');
             }
         }
@@ -1176,7 +1214,8 @@
                     audience: document.getElementById('announcementAudience').value,
                     status: document.getElementById('announcementStatus').value,
                     date: document.getElementById('announcementDate').value.slice(0, 10),
-                    tags: document.getElementById('announcementTags').value.split(',').map(tag => tag.trim()).filter(tag => tag),
+                    tags: document.getElementById('announcementTags').value.split(',').map(tag => tag.trim()).filter(
+                        tag => tag),
                     author: 'Admin User'
                 };
 
@@ -1193,7 +1232,7 @@
         function updateAnnouncement() {
             const announcementId = parseInt(document.getElementById('editAnnouncementId').value);
             const announcementIndex = announcements.findIndex(a => a.id === announcementId);
-            
+
             if (announcementIndex !== -1) {
                 announcements[announcementIndex] = {
                     ...announcements[announcementIndex],
@@ -1303,7 +1342,7 @@
         // Report Functions
         function generateReport() {
             showAlert('Generating comprehensive system report...', 'info');
-            
+
             // Simulate report generation
             setTimeout(() => {
                 const reportData = {
@@ -1323,7 +1362,7 @@
 
         function exportUsers() {
             showAlert('Exporting user data to CSV...', 'info');
-            
+
             // Simulate CSV export
             setTimeout(() => {
                 showAlert('User data exported successfully!');
@@ -1338,11 +1377,22 @@
 
         // Real-time statistics simulation
         function simulateRealTimeStats() {
-            const statsElements = [
-                { id: 'totalUsers', increment: Math.floor(Math.random() * 5) },
-                { id: 'totalEmployers', increment: Math.floor(Math.random() * 3) },
-                { id: 'totalApplicants', increment: Math.floor(Math.random() * 8) },
-                { id: 'totalCertificates', increment: Math.floor(Math.random() * 6) }
+            const statsElements = [{
+                    id: 'totalUsers',
+                    increment: Math.floor(Math.random() * 5)
+                },
+                {
+                    id: 'totalEmployers',
+                    increment: Math.floor(Math.random() * 3)
+                },
+                {
+                    id: 'totalApplicants',
+                    increment: Math.floor(Math.random() * 8)
+                },
+                {
+                    id: 'totalCertificates',
+                    increment: Math.floor(Math.random() * 6)
+                }
             ];
 
             statsElements.forEach(stat => {
@@ -1377,7 +1427,7 @@
 
             // Navigation shortcuts
             if (e.ctrlKey || e.metaKey) {
-                switch(e.key) {
+                switch (e.key) {
                     case '1':
                         e.preventDefault();
                         document.querySelector('[onclick*="dashboard"]').click();
@@ -1401,12 +1451,12 @@
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
             console.log('TESDA Super Admin Dashboard loaded successfully!');
-            
+
             // Load initial data
             renderOfficers();
             renderAnnouncements();
             updateStats();
-            
+
             // Load saved settings
             const savedSettings = localStorage.getItem('tesdaSettings');
             if (savedSettings) {
@@ -1416,10 +1466,10 @@
                 document.getElementById('registrationStatus').value = settings.registrationStatus || 'open';
                 document.getElementById('maintenanceMode').value = settings.maintenanceMode || 'disabled';
             }
-            
+
             // Start real-time stats simulation
             setInterval(simulateRealTimeStats, 45000); // Update every 45 seconds
-            
+
             // Welcome message
             setTimeout(() => {
                 showAlert('Welcome to TESDA Super Admin Dashboard! All systems are operational.', 'info');
@@ -1427,4 +1477,5 @@
         });
     </script>
 </body>
+
 </html>

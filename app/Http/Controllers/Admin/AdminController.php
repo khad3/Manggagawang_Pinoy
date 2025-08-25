@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Admin\AccountAdminModel as Admin;
 use App\Models\Admin\AddTesdaOfficerModel as AddTesdaOfficer;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
@@ -23,11 +24,11 @@ class AdminController extends Controller
 
    public function homepageDisplay()
 {
-    if (!session()->has('id')) {
+       if (!Auth::guard('admin')->check()) {
         return redirect()->route('admin.login.display');
     }
 
-    $retrieveAdmin = Admin::where('id', session('id'))->first();
+    $retrieveAdmin = Auth::guard('admin')->user();
 
     // Total counts
     $employerCount = Employer::count();
@@ -154,53 +155,43 @@ public function updateTesdaOfficer(Request $request , $officer_id) {
 
 public function login(Request $request)
 {
-    $request->validate([
+    $credentials = $request->validate([
         'email' => 'required|email',
         'password' => 'required|string',
     ]);
 
-    // Find the admin by email
-    $admin = Admin::where('email', $request->email)->first();
+    // Attempt login using 'admin' guard
+    if (Auth::guard('admin')->attempt($credentials)) {
+        // Regenerate session
+        $request->session()->regenerate();
 
-    // Check if admin exists and password matches
-    if (!$admin || !Hash::check($request->password, $admin->password)) {
-        return back()->withErrors([
-            'email' => 'Invalid email or password.',
-        ])->onlyInput('email');
+        // Update last login
+        $admin = Auth::guard('admin')->user();
+        $admin->last_login = Carbon::now();
+        $admin->save();
+
+         // Try direct URL instead of named route
+        return redirect('/admin/homepage')
+            ->with('success', 'Welcome, Admin!');
     }
 
-    //insert the login time
-    $admin->last_login = Carbon::now();
-    $admin->save();
-    
-
-    // Store admin session manually
-    session([
-        'id' => $admin->id,
-        'name' => $admin->name, 
-    ]);
-
-    return redirect()->route('admin.homepage.display')->with('success', 'Welcome, Admin!');
+    return back()->withErrors([
+        'email' => 'The provided credentials do not match our records.',
+    ])->onlyInput('email');
 }
 
 
-public function logout()
+
+
+
+public function logout(Request $request)
 {
-    // If you want to update the last_login to null (or current timestamp)
-    if (auth()->check()) {
-        $admin = auth('admin'); // or use auth('admin')->user() if you use guards
-        $admin->last_login = null; // or now() if you want to log the current time
-        $admin->save();
-    }
+    Auth::guard('admin')->logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
 
-    // Clear all session data
-    session()->flush();
-
-    // Logout the admin from guard (optional if you're using guard)
-    auth('admin')->logout(); // or auth('admin')->logout();
-
-    // Redirect to login page
-    return redirect()->route('admin.login.display');
+    return redirect()->route('admin.login.display')
+        ->with('success', 'You have been logged out successfully.');
 }
 
 
