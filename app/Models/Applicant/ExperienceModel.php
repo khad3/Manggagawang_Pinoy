@@ -16,6 +16,7 @@ class ExperienceModel extends Model
         'work_duration_unit',
         'employed',
         'profileimage_path',
+        'cover_photo_path',
     ];
 
     public function applicant()

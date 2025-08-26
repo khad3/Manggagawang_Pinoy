@@ -25,6 +25,7 @@ use App\Models\Applicant\ApplicantFriendModel as AddFriend;
 use App\Models\Applicant\SendMessageModel as SendMessage;
 use App\Models\Applicant\SavedJobModel as SavedJob;
 use App\Models\Applicant\TesdaUploadCertificationModel as TesdaCertification;
+use App\Models\Applicant\ApplicantPostLikeModel as PostLike;
 use App\Notifications\Applicant\FriendRequestNotification;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -35,6 +36,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Employer\JobDetailModel;
 
 use App\Mail\Applicant\VerifyEmail as VerifyEmail;
+use App\Models\Applicant\ApplicantPostCommentModel;
 use App\Models\Applicant\ApplicantPostModel;
 use App\Models\Applicant\ApplicantUrlModel;
 use App\Models\Applicant\ExperienceModel;
@@ -368,6 +370,8 @@ public function ShowHomepage()
         ->pluck('job_id')
         ->toArray();
 
+    //Retrieved the tesda certified
+    $tesdaCertifiedCounts = \App\Models\Applicant\TesdaUploadCertificationModel::where('status', 'approved')->count();
     
 
     return view('applicant.homepage.homepage', compact(
@@ -376,7 +380,8 @@ public function ShowHomepage()
         'JobPostRetrieved',
         'publishedCounts',
         'retrievedAddressCompany',
-        'savedJobIds' 
+        'savedJobIds',
+        'tesdaCertifiedCounts'
     ));
 }
 
@@ -1294,13 +1299,17 @@ public function ViewProfilePage() {
 
     $retrievedProfile = RegisterModel::with('personal_info' , 'work_background' , 'template')->find($applicantID);
 
-    $retrievedPosts = ApplicantPostModel::with('personalInfo' , 'workBackground')->where('applicant_id' , $applicantID)->get()->reverse();
+    $retrievedPosts = ApplicantPostModel::with('personalInfo' , 'workBackground' ,'likes' , 'comments')->where('applicant_id' , $applicantID)->get()->reverse();
 
     $retrievedPortfolio = ApplicantPortfolioModel::with('personalInfo' , 'workExperience')->where('applicant_id' , $applicantID)->get()->reverse();
 
     $retrievedYoutube = ApplicantUrlModel::with('personalInfo' , 'workExperience')->where('applicant_id' , $applicantID)->get()->reverse();
 
     $retrievedTesdaCertifacation = TesdaCertification::where('applicant_id' , $applicantID)->get()->reverse();
+
+
+    
+
 
     return view('applicant.profile.profile' , compact('retrievedProfile' , 'retrievedPosts' , 'retrievedPortfolio' , 'retrievedYoutube' , 'retrievedTesdaCertifacation'));
 }
@@ -1345,7 +1354,131 @@ public function updateProfile(Request $request)
 }
 
 
+//Add the edit profile page 
+public function EditProfile(Request $request, $applicant_id)
+{
+    $request->validate([
+        'first_name' => 'required|string',
+        'last_name'  => 'required|string',
+        'position'   => 'required|string',
+        'other_position' => 'nullable|string',
+        'work_duration' => 'required|numeric',
+        'work_duration_unit' => 'required|string',
+        'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
 
+    // ✅ Update Personal Info
+    $applicant = PersonalInfo::findOrFail($applicant_id);
+    $applicant->first_name = $request->first_name;
+    $applicant->last_name  = $request->last_name;
+    $applicant->save();
+
+    // ✅ Update or Create Work Background
+    $workBackground = WorkBackground::firstOrNew(['applicant_id' => $applicant_id]);
+
+    // ✅ If "Other" is selected, use the custom input
+    if ($request->position === 'Other') {
+        $workBackground->position = $request->other_position; 
+    } else {
+        $workBackground->position = $request->position;
+    }
+
+    $workBackground->work_duration = $request->work_duration;
+    $workBackground->work_duration_unit = $request->work_duration_unit;
+
+    // ✅ Handle Profile Picture (stored under storage/app/public/profile_picture)
+    if ($request->hasFile('profile_picture')) {
+        $imagePath = $request->file('profile_picture')->store('profile_picture', 'public');
+        $workBackground->profileimage_path = $imagePath;
+    }
+
+    $workBackground->save();
+
+    return redirect()->back()->with('success', 'Profile updated successfully.');
+}
+
+
+//add cover photo
+public function AddCoverPhoto(Request $request)
+{
+    $request->validate([
+        'cover_photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+
+    // ✅ Handle Cover Photo (stored under storage/app/public/cover_photo)
+    $imagePath = $request->file('cover_photo')->store('cover_photo', 'public');
+    $workBackground = WorkBackground::firstOrNew(['applicant_id' => session('applicant_id')]);
+    $workBackground->cover_photo_path = $imagePath;
+    $workBackground->save();
+
+    return redirect()->back()->with('success', 'Cover photo updated successfully.');
+}
+
+//delete cover photo
+public function DeleteCoverPhoto()
+{
+    $workBackground = WorkBackground::where('applicant_id', session('applicant_id'))->first();
+    $workBackground->cover_photo_path = null;
+    $workBackground->save();
+    return redirect()->back()->with('success', 'Cover photo deleted successfully.');
+}
+
+
+//Add like button to applicant post on profile
+public function toggleLike( $postId)
+{
+    $applicantId = session('applicant_id'); // or auth()->guard('applicant')->id();
+
+    $like = PostLike::where('post_id', $postId)
+                    ->where('applicant_id', $applicantId)
+                    ->first();
+
+    if ($like) {
+        //Unlike
+        $like->delete();
+        return redirect()->back()->with('success', 'You unliked the post!');
+    } else {
+        // Like
+        PostLike::create([
+            'post_id' => $postId,
+            'applicant_id' => $applicantId,
+            'likes' => 1, 
+        ]);
+        return redirect()->back()->with('success', 'You liked the post!');
+    }
+}
+
+
+//add comment on applicant post
+public function ApplicantAddComments(Request $request)
+{
+    $applicantId = session('applicant_id');
+
+    $request->validate([
+        'post_id' => 'required|exists:applicant_posts,id',
+        'comment' => 'required|string',
+    ]);
+
+    $comment = new ApplicantPostCommentModel();
+    $comment->post_id = $request->input('post_id');
+    $comment->applicant_id = $applicantId;
+    $comment->comment = $request->input('comment');
+    $comment->save();
+
+    return redirect()->back()->with('success', 'Comment added successfully.');
+
+}
+
+
+//delete comment on applicant post
+public function ApplicantDeleteComments($postId)
+{
+
+    $comment = ApplicantPostCommentModel::findOrFail($postId);
+    $comment->delete();
+
+    return redirect()->back()->with('success', 'Comment deleted successfully.');
+}
 
 //add applicant post 
 public function ApplicantPost(Request $request) 
@@ -1379,6 +1512,42 @@ public function ApplicantPost(Request $request)
     }
 }
 
+//edit the applicant post
+public function ApplicantEditPost(Request $request, $id)
+{
+     $request->validate([
+        'content' => 'required|string',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+
+    $post = ApplicantPostModel::findOrFail($id);
+
+    // Update content
+    $post->content = $request->input('content');
+
+    // Only update image if a new one is uploaded
+    if ($request->hasFile('image')) {
+        $image = $request->file('image');
+        $filename = time() . '.' . $image->getClientOriginalExtension();
+        $path = $image->storeAs('applicant_post', $filename, 'public');
+        $post->image_path = $path;
+    }
+
+    $post->save();
+
+    return redirect()->back()->with('success', 'Post updated successfully.');
+}
+
+
+
+
+//Delete the applicant post
+public function ApplicantDeletePost($id)
+{
+    $post = ApplicantPostModel::findOrFail($id);
+    $post->delete();
+    return redirect()->back()->with('success', 'Post deleted successfully.');
+}
 
 //Add portfolio picture and url
 public function AddPortfolio(Request $request)
@@ -1683,23 +1852,17 @@ public function updateLastSeen()
 
 
 //resume builder
-public function ViewResume()
-{
+public function ViewResume(){
 
 
     //retrieve all the personal information
     $retrievedProfiles = RegisterModel::with('personal_info' , 'work_background' , 'template')->where('id' , session('applicant_id'))->first();
 
-
-    
     if(!$retrievedProfiles) {
         return back()->withErrors('No profile found');
     }
 
-  
-
-
-    return view('applicant.resumebuilder.resume', compact('retrievedProfiles', 'JobPostRetrieved'));
+    return view('applicant.resumebuilder.resume', compact('retrievedProfiles'));
 
 
 }

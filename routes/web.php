@@ -90,14 +90,21 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
 
     // Profile
     Route::get('profile', [ApplicantController::class, 'ViewProfilePage'])->name('applicant.profile.display');
+    Route::post('add-cover-photo', [ApplicantController::class, 'AddCoverPhoto'])->name('applicant.coverphoto.store');
+    Route::delete('delete-cover-photo', [ApplicantController::class, 'DeleteCoverPhoto'])->name('applicant.coverphoto.delete');
+    Route::put('profile/update/{id}', [ApplicantController::class, 'EditProfile'])->name('applicant.profile.update');
     Route::post('profile/add-post', [ApplicantController::class, 'ApplicantPost'])->name('applicant.applicantposts.store');
+    Route::put('profile/update-post/{id}', [ApplicantController::class, 'ApplicantEditPost'])->name('applicant.applicantposts.update');
+    Route::delete('profile/delete-post/{id}', [ApplicantController::class, 'ApplicantDeletePost'])->name('applicant.applicantposts.delete');
     Route::post('profile/add-portfolio', [ApplicantController::class, 'AddPortfolio'])->name('applicant.portfolio.store');
     Route::delete('profile/delete-portfolio/{id}', [ApplicantController::class, 'DeletePortfolio'])->name('applicant.portfolio.delete');
     Route::post('profile/add-youtube-video', [ApplicantController::class, 'AddYoutubeVideo'])->name('applicant.youtubevideo.store');
     Route::delete('profile/delete-youtube-video/{id}', [ApplicantController::class, 'DeleteYoutubeVideo'])->name('applicant.youtubevideo.delete');
     Route::get('profile/{id}', [ApplicantController::class, 'getApplicantProfile'])->name('applicant.getprofile.display');
     Route::put('profile/update', [ApplicantController::class, 'updateProfile'])->name('applicant.editprofile');
-
+    Route::post('profile/like-post/{id}', [ApplicantController::class, 'toggleLike'])->name('applicant.likepost.store');
+    Route::post('profile/comment-post/{id}', [ApplicantController::class, 'ApplicantAddComments'])->name('applicantaddcomments.store');
+    Route::delete('profile/delete-comment/{id}', [ApplicantController::class, 'ApplicantDeleteComments'])->name('applicant.comment.delete');
     //Tesda certification
     Route::post('add-certification', [ApplicantController::class, 'addTesdaCertificate'])->name('applicant.certification.store');
     Route::delete('delete-certification/{id}', [ApplicantController::class, 'deleteTesdaCertificate'])->name('applicant.certification.delete');

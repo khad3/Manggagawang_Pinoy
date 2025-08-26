@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,11 +11,13 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <!-- fav icon -->
     <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
     <link rel="stylesheet" href="{{ asset('css/applicant/homepage.css') }}">
 </head>
+
 <body>
 
 
@@ -24,7 +27,8 @@
             <div class="d-flex align-items-center justify-content-between">
                 <!-- Brand -->
                 <a href="" class="navbar-brand">
-                    <div class="brand-logo"><img src="{{ asset('img/logo.png') }}" alt="Logo" width="40" height="40"></div>
+                    <div class="brand-logo"><img src="{{ asset('img/logo.png') }}" alt="Logo" width="40"
+                            height="40"></div>
                     <span class="brand-name">MP</span>
                 </a>
 
@@ -36,10 +40,10 @@
 
                 <!-- Navigation Actions -->
                 <div class="nav-actions">
-                  <a href="{{ route('applicant.forum.display') }}">
-                    <button class="nav-icon">
-                        <i class="bi bi-people"></i>
-                    </button></a>
+                    <a href="{{ route('applicant.forum.display') }}">
+                        <button class="nav-icon">
+                            <i class="bi bi-people"></i>
+                        </button></a>
 
                     <!-- Messages Dropdown -->
                     <div class="nav-dropdown">
@@ -50,12 +54,14 @@
                         <div class="dropdown-menu" id="messagesDropdown">
                             <div class="dropdown-header">
                                 <h6>Messages</h6>
-                                <button class="mark-all-read" onclick="markAllAsRead('messages')">Mark all as read</button>
+                                <button class="mark-all-read" onclick="markAllAsRead('messages')">Mark all as
+                                    read</button>
                             </div>
                             <div class="dropdown-content">
                                 <div class="message-item unread" data-id="1">
                                     <div class="message-avatar">
-                                        <img src="https://via.placeholder.com/40x40/667eea/white?text=TC" alt="TechCorp">
+                                        <img src="https://via.placeholder.com/40x40/667eea/white?text=TC"
+                                            alt="TechCorp">
                                     </div>
                                     <div class="message-content">
                                         <div class="message-header">
@@ -63,7 +69,8 @@
                                             <span class="company-name">TechCorp Solutions</span>
                                             <span class="message-time">2 min ago</span>
                                         </div>
-                                        <div class="message-preview">Your application for Senior Developer position has been reviewed...</div>
+                                        <div class="message-preview">Your application for Senior Developer position has
+                                            been reviewed...</div>
                                     </div>
                                     <button class="message-actions" onclick="showMessageModal(1)">
                                         <i class="bi bi-eye"></i>
@@ -71,7 +78,8 @@
                                 </div>
                                 <div class="message-item unread" data-id="2">
                                     <div class="message-avatar">
-                                        <img src="https://via.placeholder.com/40x40/764ba2/white?text=GE" alt="GreenEnergy">
+                                        <img src="https://via.placeholder.com/40x40/764ba2/white?text=GE"
+                                            alt="GreenEnergy">
                                     </div>
                                     <div class="message-content">
                                         <div class="message-header">
@@ -79,7 +87,8 @@
                                             <span class="company-name">GreenEnergy Innovations</span>
                                             <span class="message-time">1 hour ago</span>
                                         </div>
-                                        <div class="message-preview">We'd like to schedule an interview for the Environmental Engineer role...</div>
+                                        <div class="message-preview">We'd like to schedule an interview for the
+                                            Environmental Engineer role...</div>
                                     </div>
                                     <button class="message-actions" onclick="showMessageModal(2)">
                                         <i class="bi bi-eye"></i>
@@ -87,7 +96,8 @@
                                 </div>
                                 <div class="message-item" data-id="3">
                                     <div class="message-avatar">
-                                        <img src="https://via.placeholder.com/40x40/2563eb/white?text=FF" alt="FinanceFirst">
+                                        <img src="https://via.placeholder.com/40x40/2563eb/white?text=FF"
+                                            alt="FinanceFirst">
                                     </div>
                                     <div class="message-content">
                                         <div class="message-header">
@@ -95,7 +105,8 @@
                                             <span class="company-name">FinanceFirst Bank</span>
                                             <span class="message-time">3 hours ago</span>
                                         </div>
-                                        <div class="message-preview">Thank you for your interest in our Financial Analyst position...</div>
+                                        <div class="message-preview">Thank you for your interest in our Financial
+                                            Analyst position...</div>
                                     </div>
                                     <button class="message-actions" onclick="showMessageModal(3)">
                                         <i class="bi bi-eye"></i>
@@ -117,7 +128,8 @@
                         <div class="dropdown-menu" id="notificationsDropdown">
                             <div class="dropdown-header">
                                 <h6>Notifications</h6>
-                                <button class="mark-all-read" onclick="markAllAsRead('notifications')">Mark all as read</button>
+                                <button class="mark-all-read" onclick="markAllAsRead('notifications')">Mark all as
+                                    read</button>
                             </div>
                             <div class="dropdown-content">
                                 <div class="notification-item unread" data-id="1">
@@ -126,7 +138,8 @@
                                     </div>
                                     <div class="notification-content">
                                         <div class="notification-title">Application Submitted Successfully</div>
-                                        <div class="notification-message">Your application to TechCorp Solutions has been submitted</div>
+                                        <div class="notification-message">Your application to TechCorp Solutions has
+                                            been submitted</div>
                                         <div class="notification-time">5 min ago</div>
                                     </div>
                                 </div>
@@ -136,7 +149,8 @@
                                     </div>
                                     <div class="notification-content">
                                         <div class="notification-title">Profile Update Required</div>
-                                        <div class="notification-message">Please update your work experience section</div>
+                                        <div class="notification-message">Please update your work experience section
+                                        </div>
                                         <div class="notification-time">2 hours ago</div>
                                     </div>
                                 </div>
@@ -146,7 +160,8 @@
                                     </div>
                                     <div class="notification-content">
                                         <div class="notification-title">Application Deadline Approaching</div>
-                                        <div class="notification-message">HealthTech Medical application closes in 2 days</div>
+                                        <div class="notification-message">HealthTech Medical application closes in 2
+                                            days</div>
                                         <div class="notification-time">4 hours ago</div>
                                     </div>
                                 </div>
@@ -166,7 +181,8 @@
                                     </div>
                                     <div class="notification-content">
                                         <div class="notification-title">Application Status Update</div>
-                                        <div class="notification-message">Your application requires additional documents</div>
+                                        <div class="notification-message">Your application requires additional
+                                            documents</div>
                                         <div class="notification-time">1 day ago</div>
                                     </div>
                                 </div>
@@ -186,31 +202,28 @@
                         <div class="dropdown-menu profile-menu" id="profileDropdown">
                             <div class="profile-header">
                                 <div class="profile-avatar">
-                                     @if ($retrievePersonal->personal_info)
-                                         @if(!empty($retrievePersonal->work_background) && !empty($retrievePersonal->work_background->profileimage_path))
-                                            <img src="{{ asset('storage/' . $retrievePersonal->work_background->profileimage_path) }}" 
-                                                alt="Profile Picture" 
-                                                width="50" 
-                                                height="50" 
+                                    @if ($retrievePersonal->personal_info)
+                                        @if (!empty($retrievePersonal->work_background) && !empty($retrievePersonal->work_background->profileimage_path))
+                                            <img src="{{ asset('storage/' . $retrievePersonal->work_background->profileimage_path) }}"
+                                                alt="Profile Picture" width="50" height="50"
                                                 style="border-radius: 50%;">
                                         @else
                                             <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
-                                                 style="width: 50px; height: 50px;">
+                                                style="width: 50px; height: 50px;">
                                                 {{ strtoupper(substr($retrievePersonal->first_name ?? 'U', 0, 1)) }}
                                             </div>
-                                         @endif
-                                         
-                                        @else
-                                            ??
+                                        @endif
+                                    @else
+                                        ??
                                     @endif
                                 </div>
                                 <div class="profile-info">
-                                     <div class="profile-name">
+                                    <div class="profile-name">
                                         {{ $retrievePersonal->personal_info->first_name ?? 'Unknown' }}
                                         {{ $retrievePersonal->personal_info->last_name ?? '' }}
                                     </div>
                                     <div class="profile-email">
-                                         {{ $retrievePersonal->email ?? 'Not Provided' }}
+                                        {{ $retrievePersonal->email ?? 'Not Provided' }}
                                     </div>
                                 </div>
                             </div>
@@ -220,7 +233,7 @@
                                     <i class="bi bi-person"></i>
                                     My Profile
                                 </a>
-                                 <a href="{{ route('applicant.callingcard.display') }}" class="dropdown-item">
+                                <a href="{{ route('applicant.callingcard.display') }}" class="dropdown-item">
                                     <i class="bi bi-person-badge"></i>
                                     Ar calling card
                                 </a>
@@ -273,26 +286,31 @@
 
                     <div class="hero-stats">
                         <div class="stat-card">
-                            @if($applicantCounts == 1)
-                            <span class="stat-number">{{ $applicantCounts }}+</span>
-                             <div class="stat-label">Skilled Workers Registered</div>
-                             @else
-                             <span class="stat-number">{{ $applicantCounts }}+</span>
-                             <div class="stat-label">Skilled Workers Registered</div>
-                             @endif
-                        </div>
-                        <div class="stat-card">
-                            @if($publishedCounts == 1)
-                            <span class="stat-number">{{  $publishedCounts }} </span>
-                            <div class="stat-label">Job Openings Available</div>
+                            @if ($applicantCounts == 1)
+                                <span class="stat-number">{{ $applicantCounts }}+</span>
+                                <div class="stat-label">Skilled Workers Registered</div>
                             @else
-                            <span class="stat-number">{{  $publishedCounts }}+</span>
-                            <div class="stat-label">Job Openings Available</div>
+                                <span class="stat-number">{{ $applicantCounts }}+</span>
+                                <div class="stat-label">Skilled Workers Registered</div>
                             @endif
                         </div>
                         <div class="stat-card">
-                            <span class="stat-number">150+</span>
-                            <div class="stat-label">TESDA-Certified Employers</div>
+                            @if ($publishedCounts == 1)
+                                <span class="stat-number">{{ $publishedCounts }} </span>
+                                <div class="stat-label">Job Openings Available</div>
+                            @else
+                                <span class="stat-number">{{ $publishedCounts }}+</span>
+                                <div class="stat-label">Job Openings Available</div>
+                            @endif
+                        </div>
+                        <div class="stat-card">
+                            @if ($tesdaCertifiedCounts == 1)
+                                <span class="stat-number">{{ $tesdaCertifiedCounts }}</span>
+                                <div class="stat-label">TESDA-Certified Employees</div>
+                            @else
+                                <span class="stat-number">{{ $tesdaCertifiedCounts }}+</span>
+                                <div class="stat-label">TESDA-Certified Employees</div>
+                            @endif
                         </div>
 
                     </div>
@@ -304,7 +322,8 @@
                 <div class="filter-row">
                     <div class="filter-group">
                         <label class="filter-label">Search Companies</label>
-                        <input type="text" id="searchFilter" class="filter-input" placeholder="Type company name or keyword...">
+                        <input type="text" id="searchFilter" class="filter-input"
+                            placeholder="Type company name or keyword...">
                     </div>
 
                     <div class="filter-group">
@@ -321,36 +340,36 @@
 
                     <div class="filter-group">
                         <label class="filter-label">Location</label>
-                            <select id="locationFilter" class="filter-select">
-                                <option value="">All Locations in Cavite</option>
-                                <!-- Cities -->
-                                <option value="Bacoor">Bacoor City</option>
-                                <option value="Cavite City">Cavite City</option>
-                                <option value="Dasmariñas">Dasmariñas City</option>
-                                <option value="Imus">Imus City</option>
-                                <option value="Tagaytay">Tagaytay City</option>
-                                <option value="Trece Martires">Trece Martires City</option>
+                        <select id="locationFilter" class="filter-select">
+                            <option value="">All Locations in Cavite</option>
+                            <!-- Cities -->
+                            <option value="Bacoor">Bacoor City</option>
+                            <option value="Cavite City">Cavite City</option>
+                            <option value="Dasmariñas">Dasmariñas City</option>
+                            <option value="Imus">Imus City</option>
+                            <option value="Tagaytay">Tagaytay City</option>
+                            <option value="Trece Martires">Trece Martires City</option>
 
-                                <!-- Municipalities -->
-                                <option value="Alfonso">Alfonso</option>
-                                <option value="Amadeo">Amadeo</option>
-                                <option value="Carmona">Carmona</option>
-                                <option value="General Emilio Aguinaldo">General Emilio Aguinaldo</option>
-                                <option value="General Mariano Alvarez">General Mariano Alvarez (GMA)</option>
-                                <option value="General Trias">General Trias</option>
-                                <option value="Indang">Indang</option>
-                                <option value="Kawit">Kawit</option>
-                                <option value="Magallanes">Magallanes</option>
-                                <option value="Maragondon">Maragondon</option>
-                                <option value="Mendez">Mendez</option>
-                                <option value="Naic">Naic</option>
-                                <option value="Noveleta">Noveleta</option>
-                                <option value="Rosario">Rosario</option>
-                                <option value="Silang">Silang</option>
-                                <option value="Tanza">Tanza</option>
-                                <option value="Ternate">Ternate</option>
-                            </select>
-                        </div>
+                            <!-- Municipalities -->
+                            <option value="Alfonso">Alfonso</option>
+                            <option value="Amadeo">Amadeo</option>
+                            <option value="Carmona">Carmona</option>
+                            <option value="General Emilio Aguinaldo">General Emilio Aguinaldo</option>
+                            <option value="General Mariano Alvarez">General Mariano Alvarez (GMA)</option>
+                            <option value="General Trias">General Trias</option>
+                            <option value="Indang">Indang</option>
+                            <option value="Kawit">Kawit</option>
+                            <option value="Magallanes">Magallanes</option>
+                            <option value="Maragondon">Maragondon</option>
+                            <option value="Mendez">Mendez</option>
+                            <option value="Naic">Naic</option>
+                            <option value="Noveleta">Noveleta</option>
+                            <option value="Rosario">Rosario</option>
+                            <option value="Silang">Silang</option>
+                            <option value="Tanza">Tanza</option>
+                            <option value="Ternate">Ternate</option>
+                        </select>
+                    </div>
                     <button class="clear-filters" onclick="clearAllFilters()">Clear All</button>
                 </div>
 
@@ -377,7 +396,7 @@
 
             <!-- Results Section -->
             <section class="results-section">
-            <div class="results-header">
+                <div class="results-header">
                     <h2 class="results-count">
                         <span class="count" id="resultsCount">8</span> Companies Found
                     </h2>
@@ -390,137 +409,137 @@
                     </select>
                 </div>
 
-           
-               <!-- Employer Grid -->
-<div class="employer-grid" id="employerGrid">
-    @foreach($JobPostRetrieved as $jobDetail)
-        @if($jobDetail->status_post === 'published')
-            <div class="employer-card"
-                data-name="{{ $jobDetail->company_name ?? 'N/A' }}"
-                data-industry="{{ $jobDetail->department }}"
-                data-location="{{ $jobDetail->location }}"
-                data-hiring="true"
-                data-remote="false"
-                data-featured="false"
-                data-rating="4.5">
 
-                <!-- Card Header -->
-                <div class="card-header">
-                    <div class="company-info">
-                        @php
-                            $company = $retrievedAddressCompany->first();
-                        @endphp
+                <!-- Employer Grid -->
+                <div class="employer-grid" id="employerGrid">
+                    @foreach ($JobPostRetrieved as $jobDetail)
+                        @if ($jobDetail->status_post === 'published')
+                            <div class="employer-card" data-name="{{ $jobDetail->company_name ?? 'N/A' }}"
+                                data-industry="{{ $jobDetail->department }}"
+                                data-location="{{ $jobDetail->location }}" data-hiring="true" data-remote="false"
+                                data-featured="false" data-rating="4.5">
 
-                        @if($company)
-                            <div class="company-avatar">
-                                {{ Str::limit($company->company_name ?? 'BC', 2, '') }}
-                            </div>
-                        @endif
+                                <!-- Card Header -->
+                                <div class="card-header">
+                                    <div class="company-info">
+                                        @php
+                                            $company = $retrievedAddressCompany->first();
+                                        @endphp
 
-                        <div class="company-details">
-                            <h3>{{ $jobDetail->title }}</h3>
-                            <div class="company-industry">
-                                {{ $jobDetail->department }} • {{ $jobDetail->job_type }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="company-badges">
-                        <span class="status-badge status-active">
-                            <i class="bi bi-lightning"></i> Hiring
-                        </span>
-                    </div>
-                </div>
+                                        @if ($company)
+                                            <div class="company-avatar">
+                                                {{ Str::limit($company->company_name ?? 'BC', 2, '') }}
+                                            </div>
+                                        @endif
 
-                <!-- Job Description -->
-                <div class="card-body">
-                    <p class="company-description">{{ $jobDetail->job_description }}</p>
+                                        <div class="company-details">
+                                            <h3>{{ $jobDetail->title }}</h3>
+                                            <div class="company-industry">
+                                                {{ $jobDetail->department }} • {{ $jobDetail->job_type }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="company-badges">
+                                        <span class="status-badge status-active">
+                                            <i class="bi bi-lightning"></i> Hiring
+                                        </span>
+                                    </div>
+                                </div>
 
-                    @if($jobDetail->benefits)
-                        <p class="company-description"><strong>Benefits:</strong> {{ $jobDetail->benefits }}</p>
-                    @endif
-                    <p class="company-description"><strong>Experience Level:</strong> {{ $jobDetail->experience_level }} </p>
-                    <p class="company-description"><strong>Salary range: ₱</strong> {{ $jobDetail->job_salary }} Monthly</p>
-                </div>
+                                <!-- Job Description -->
+                                <div class="card-body">
+                                    <p class="company-description">{{ $jobDetail->job_description }}</p>
 
-                <!-- Card Footer -->
-                <div class="card-footer">
-                    <div class="company-stats">
-                        <div class="stat-item">
-                            <i class="bi bi-geo-alt"></i>
-                            <span>{{ $jobDetail->location }}</span>
-                        </div>
-                    </div>
+                                    @if ($jobDetail->benefits)
+                                        <p class="company-description"><strong>Benefits:</strong>
+                                            {{ $jobDetail->benefits }}</p>
+                                    @endif
+                                    <p class="company-description"><strong>Experience Level:</strong>
+                                        {{ $jobDetail->experience_level }} </p>
+                                    <p class="company-description"><strong>Salary range: ₱</strong>
+                                        {{ $jobDetail->job_salary }} Monthly</p>
+                                </div>
 
-                    <!-- Action Buttons -->
-                    <div class="card-actions d-flex gap-2 mt-2">
-                        <!-- View Details -->
-                        <button 
-                            class="btn btn-primary btn-sm view-details-btn"
-                            data-title="{{ $jobDetail->title }}"
-                            data-company="{{ $retrievedAddressCompany->first()->company_name ?? 'Unknown Company' }}"
-                            data-industry="{{ $jobDetail->department }}"
-                            data-location="{{ $jobDetail->location }}"
-                            data-description="{{ $jobDetail->job_description }}"
-                            data-benefits="{{ $jobDetail->benefits ?? 'None' }}"
-                            data-salary="{{ $jobDetail->job_salary }}"
-                            data-experience="{{ $jobDetail->experience_level ?? 'N/A' }}"
-                            @if (Str::contains($jobDetail->tesda_certification, 'Other'))
-                                data-tesda="{{ $jobDetail->other_certifications ?? 'N/A' }}"
+                                <!-- Card Footer -->
+                                <div class="card-footer">
+                                    <div class="company-stats">
+                                        <div class="stat-item">
+                                            <i class="bi bi-geo-alt"></i>
+                                            <span>{{ $jobDetail->location }}</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Action Buttons -->
+                                    <div class="card-actions d-flex gap-2 mt-2">
+                                        <!-- View Details -->
+                                        <button class="btn btn-primary btn-sm view-details-btn"
+                                            data-title="{{ $jobDetail->title }}"
+                                            data-company="{{ $retrievedAddressCompany->first()->company_name ?? 'Unknown Company' }}"
+                                            data-industry="{{ $jobDetail->department }}"
+                                            data-location="{{ $jobDetail->location }}"
+                                            data-description="{{ $jobDetail->job_description }}"
+                                            data-benefits="{{ $jobDetail->benefits ?? 'None' }}"
+                                            data-salary="{{ $jobDetail->job_salary }}"
+                                            data-experience="{{ $jobDetail->experience_level ?? 'N/A' }}"
+                                            @if (Str::contains($jobDetail->tesda_certification, 'Other')) data-tesda="{{ $jobDetail->other_certifications ?? 'N/A' }}"
                                 data-none="N/A"
                             @else
                                 data-tesda="{{ $jobDetail->tesda_certification ?? 'N/A' }}"
-                                data-none="{{ $jobDetail->none_certifications_qualification ?? 'N/A' }}"
-                            @endif
-                            data-bs-toggle="modal"
-                            data-bs-target="#viewDetailsModal">
-                                View Details
-                        </button>
+                                data-none="{{ $jobDetail->none_certifications_qualification ?? 'N/A' }}" @endif
+                                            data-bs-toggle="modal" data-bs-target="#viewDetailsModal">
+                                            View Details
+                                        </button>
 
-                        <!-- Save/Unsave Job -->
-                        <form action="{{ route('jobs.toggleSave', $jobDetail->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @if(in_array($jobDetail->id, $savedJobIds))
-                                <button type="submit" class="btn btn-danger btn-sm">
-                                    <i class="bi bi-bookmark-dash"></i> Unsave Job
-                                </button>
-                            @else
-                                <button type="submit" class="btn btn-warning btn-sm">
-                                    <i class="bi bi-bookmark-plus"></i> Save Job
-                                </button>
-                            @endif
-                        </form>
+                                        <!-- Save/Unsave Job -->
+                                        <form action="{{ route('jobs.toggleSave', $jobDetail->id) }}" method="POST"
+                                            style="display:inline;">
+                                            @csrf
+                                            @if (in_array($jobDetail->id, $savedJobIds))
+                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                    <i class="bi bi-bookmark-dash"></i> Unsave Job
+                                                </button>
+                                            @else
+                                                <button type="submit" class="btn btn-warning btn-sm">
+                                                    <i class="bi bi-bookmark-plus"></i> Save Job
+                                                </button>
+                                            @endif
+                                        </form>
 
-                        <!-- Apply Job -->
-                        <button 
-                            class="btn btn-success btn-sm apply-btn"
-                            data-title="{{ $jobDetail->title }}"
-                            data-company="{{ $jobDetail->company_name ?? 'N/A' }}"
-                            data-location="{{ $jobDetail->location }}"
-                            data-bs-toggle="modal"
-                            data-bs-target="#applyJobModal">
-                                <i class="bi bi-send-check"></i> Apply Job
-                        </button>
-                    </div>
-                </div>
-            </div>
-        @endif
-    @endforeach
+                                        <!-- Apply Job -->
+                                        <button class="btn btn-success btn-sm apply-btn"
+                                            data-title="{{ $jobDetail->title }}"
+                                            data-company="{{ $jobDetail->company_name ?? 'N/A' }}"
+                                            data-location="{{ $jobDetail->location }}" data-bs-toggle="modal"
+                                            data-bs-target="#applyJobModal">
+                                            <i class="bi bi-send-check"></i> Apply Job
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    @endforeach
 
-      <!-- Apply Job Modal -->
-                    <div class="modal fade" id="applyJobModal" tabindex="-1" aria-labelledby="applyJobModalLabel" aria-hidden="true">
+                    <!-- Apply Job Modal -->
+                    <div class="modal fade" id="applyJobModal" tabindex="-1" aria-labelledby="applyJobModalLabel"
+                        aria-hidden="true">
                         <div class="modal-dialog modal-lg modal-dialog-centered">
-                            <form action="" method="POST" enctype="multipart/form-data" class="modal-content" shadow-lg rounded-4 border-0>
-                             @csrf
+                            <form action="" method="POST" enctype="multipart/form-data" class="modal-content"
+                                shadow-lg rounded-4 border-0>
+                                @csrf
                                 <div class="modal-header bg-success text-white">
                                     <h5 class="modal-title" id="applyJobModalLabel">
-                                        <i class="bi bi-briefcase-fill me-2"></i>Apply for <span id="applyCompanyNameText">{{  $retrievedAddressCompany->first()->company_name ?? 'Unknown Company' }}</span>
+                                        <i class="bi bi-briefcase-fill me-2"></i>Apply for <span
+                                            id="applyCompanyNameText">{{ $retrievedAddressCompany->first()->company_name ?? 'Unknown Company' }}</span>
                                     </h5>
-                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
                                 </div>
 
                                 <div class="modal-body px-4">
                                     <div class="alert alert-info" role="alert">
-                                        <strong>Instructions:</strong> Please complete the form below and upload your resume and write some cover letter. Ensure your documents are in PDF or DOC format.
+                                        <strong>Instructions:</strong> Please complete the form below and upload your
+                                        resume and write some cover letter. Ensure your documents are in PDF or DOC
+                                        format.
                                     </div>
 
                                     <!-- Hidden Inputs -->
@@ -531,25 +550,31 @@
                                     <!-- Contact Number -->
                                     <div class="mb-3">
                                         <label for="contact" class="form-label">Contact Number</label>
-                                        <input type="text" name="contact" class="form-control" placeholder="e.g., 09xxxxxxxxx" required>
+                                        <input type="text" name="contact" class="form-control"
+                                            placeholder="e.g., 09xxxxxxxxx" required>
                                     </div>
 
                                     <!-- Cover Letter Textarea -->
                                     <div class="mb-3">
-                                        <label for="cover_letter_text" class="form-label">Short Cover Letter (Optional)</label>
-                                        <textarea name="cover_letter_text" class="form-control" rows="4" placeholder="Why are you a good fit for this job?"></textarea>
+                                        <label for="cover_letter_text" class="form-label">Short Cover Letter
+                                            (Optional)</label>
+                                        <textarea name="cover_letter_text" class="form-control" rows="4"
+                                            placeholder="Why are you a good fit for this job?"></textarea>
                                     </div>
 
                                     <!-- Upload Resume -->
                                     <div class="mb-3">
                                         <label for="resume" class="form-label">Upload Resume (PDF, DOC)</label>
-                                        <input type="file" name="resume" class="form-control" accept=".pdf,.doc,.docx" required>
+                                        <input type="file" name="resume" class="form-control"
+                                            accept=".pdf,.doc,.docx" required>
                                     </div>
 
                                     <!----- Upload tesda certi -->
                                     <div class="mb-3">
-                                        <label for="certi" class="form-label">Upload TESDA Certificate (PDF, DOC)</label>
-                                        <input type="file" name="certificate" class="form-control" accept=".pdf,.doc,.docx" required>
+                                        <label for="certi" class="form-label">Upload TESDA Certificate (PDF,
+                                            DOC)</label>
+                                        <input type="file" name="certificate" class="form-control"
+                                            accept=".pdf,.doc,.docx" required>
                                     </div>
                                 </div>
 
@@ -564,12 +589,14 @@
 
 
                     <!-- View Details Modal -->
-                    <div class="modal fade" id="viewDetailsModal" tabindex="-1" aria-labelledby="viewDetailsModalLabel" aria-hidden="true">
+                    <div class="modal fade" id="viewDetailsModal" tabindex="-1"
+                        aria-labelledby="viewDetailsModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-lg">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="viewDetailsModalLabel">Job Details</h5>
-                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
                                     <h4 id="modalJobTitle"></h4>
@@ -578,16 +605,18 @@
                                     <p><strong>Location:</strong> <span id="modalLocation"></span></p>
                                     <p><strong>Description:</strong></p>
                                     <p id="modalDescription"></p>
-                                     <p><strong>Salary:</strong> ₱<span id="modalSalary"></span> Monthly</p>
+                                    <p><strong>Salary:</strong> ₱<span id="modalSalary"></span> Monthly</p>
                                     <p><strong>Benefits:</strong> <span id="modalBenefits"></span></p>
                                     <p><strong>Experience Level:</strong> <span id="modalExperienceLevel"></span></p>
-                                    <p><strong>TESDA Certification:</strong> <span id="modalTESDACertification"></span></p>
-                                    <p><strong>Other Certifications:</strong> <span id="modalNoneCertificationsQualification"></span></p>
+                                    <p><strong>TESDA Certification:</strong> <span id="modalTESDACertification"></span>
+                                    </p>
+                                    <p><strong>Other Certifications:</strong> <span
+                                            id="modalNoneCertificationsQualification"></span></p>
                                 </div>
                             </div>
                         </div>
                     </div>
-    </div>
+                </div>
 
 
 
@@ -626,41 +655,45 @@
     </div>
 
     <script>
-    document.querySelectorAll('.apply-btn').forEach(button => {
-        button.addEventListener('click', () => {
-            const jobTitle = button.getAttribute('data-title');
-            const companyName = button.getAttribute('data-company');
-            const location = button.getAttribute('data-location');
+        document.querySelectorAll('.apply-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const jobTitle = button.getAttribute('data-title');
+                const companyName = button.getAttribute('data-company');
+                const location = button.getAttribute('data-location');
 
-            document.getElementById('applyJobTitle').value = jobTitle;
-            document.getElementById('applyCompanyName').value = companyName;
-            document.getElementById('applyJobLocation').value = location;
+                document.getElementById('applyJobTitle').value = jobTitle;
+                document.getElementById('applyCompanyName').value = companyName;
+                document.getElementById('applyJobLocation').value = location;
+            });
         });
-    });
-</script>
+    </script>
 
 
     <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const buttons = document.querySelectorAll('.view-details-btn');
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('.view-details-btn');
 
-    buttons.forEach(btn => {
-        btn.addEventListener('click', function () {
-            document.getElementById('modalJobTitle').textContent = btn.dataset.title;
-            document.getElementById('modalCompanyName').textContent = btn.dataset.company;
-            document.getElementById('modalIndustry').textContent = btn.dataset.industry;
-            document.getElementById('modalLocation').textContent = btn.dataset.location;
-            document.getElementById('modalDescription').textContent = btn.dataset.description;
-            document.getElementById('modalSalary').textContent = btn.dataset.salary;
-            document.getElementById('modalBenefits').textContent = btn.dataset.benefits;
-            document.getElementById('modalExperienceLevel').textContent = btn.dataset.experience;
-            document.getElementById('modalTESDACertification').textContent = btn.dataset.tesda;
-            document.getElementById('modalNoneCertificationsQualification').textContent = btn.dataset.none;
-            
+            buttons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.getElementById('modalJobTitle').textContent = btn.dataset.title;
+                    document.getElementById('modalCompanyName').textContent = btn.dataset.company;
+                    document.getElementById('modalIndustry').textContent = btn.dataset.industry;
+                    document.getElementById('modalLocation').textContent = btn.dataset.location;
+                    document.getElementById('modalDescription').textContent = btn.dataset
+                        .description;
+                    document.getElementById('modalSalary').textContent = btn.dataset.salary;
+                    document.getElementById('modalBenefits').textContent = btn.dataset.benefits;
+                    document.getElementById('modalExperienceLevel').textContent = btn.dataset
+                        .experience;
+                    document.getElementById('modalTESDACertification').textContent = btn.dataset
+                        .tesda;
+                    document.getElementById('modalNoneCertificationsQualification').textContent =
+                        btn.dataset.none;
+
+                });
+            });
         });
-    });
-});
-</script>
+    </script>
 
 
     <!-- Messaging and Notification JavaScript -->
@@ -1075,4 +1108,5 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     </script>
 </body>
+
 </html>

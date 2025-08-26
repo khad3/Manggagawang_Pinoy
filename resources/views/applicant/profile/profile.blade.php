@@ -10,9 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('css/applicant/profile.css') }}" />
-    <style>
 
-    </style>
 </head>
 
 <body>
@@ -37,41 +35,122 @@
         </div>
     </div>
     @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert" id="success-alert">
             <center>{{ session('success') }}</center>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
+
+        <script>
+            // Hide the alert after 5 seconds (5000 ms)
+            setTimeout(() => {
+                let alert = document.getElementById('success-alert');
+                if (alert) {
+                    alert.classList.remove('show'); // fade out
+                    alert.classList.add('fade'); // keep bootstrap fade animation
+                    setTimeout(() => alert.remove(), 500); // remove from DOM after fade
+                }
+            }, 2000); // change to 2000 for 2 seconds
+        </script>
     @endif
 
     <br>
     <!-- Main Content -->
+    <br>
     <div class="profile-container animate-fade-in">
         <!-- Profile Card -->
         <div class="profile-card">
             <!-- Cover Section -->
+            <!-- Cover Section -->
             <div class="cover-section">
-                <img src="https://images.unsplash.com/photo-1493244040629-496f6d136cc3?auto=format&fit=crop&w=1350&q=80"
-                    alt="Cover Photo" class="cover-image" />
-                <div class="cover-overlay"></div>
-                <div class="cover-pattern"></div>
+                <div class="cover-section position-relative">
 
-                <div class="dropdown">
-                    <button class="settings-btn dropdown-toggle" data-bs-toggle="dropdown">
-                        <i class="bi bi-gear"></i>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                data-bs-target="#uploadCoverModal">
-                                <i class="bi bi-upload me-2"></i>Upload Cover Photo</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item text-danger" href="#">
-                                <i class="bi bi-trash me-2"></i>Delete Cover Photo</a>
-                        </li>
-                    </ul>
+                    <!-- Cover Photo -->
+                    <img src="{{ asset('storage/' . $retrievedProfile->work_background->cover_photo_path) }}"
+                        alt="Cover Photo" class="cover-image w-100 d-block"
+                        style="max-height: 350px; object-fit: cover;">
+
+                    <div class="cover-overlay"></div>
+                    <div class="cover-pattern"></div>
+
+                    <!-- Gear Button -->
+                    <div class="dropdown position-absolute top-0 end-0 m-3" style="z-index: 10;">
+                        <button class="settings-btn dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="bi bi-gear"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                    data-bs-target="#uploadCoverModal">
+                                    <i class="bi bi-upload me-2"></i>Upload Cover Photo
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="#" data-bs-toggle="modal"
+                                    data-bs-target="#deleteCoverModal">
+                                    <i class="bi bi-trash me-2"></i>Delete Cover Photo
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
                 </div>
 
+
+
+                <!-- Upload Cover Photo Modal -->
+                <div class="modal fade" id="uploadCoverModal" tabindex="-1" aria-labelledby="uploadCoverModalLabel"
+                    aria-hidden="true" data-bs-backdrop="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form action="{{ route('applicant.coverphoto.store') }}" method="POST"
+                                enctype="multipart/form-data">
+                                @csrf
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="uploadCoverModalLabel">Upload Cover Photo</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <input type="file" name="cover_photo" class="form-control" accept="image/*"
+                                        required>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Upload</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Delete Cover Photo Modal -->
+                <div class="modal fade" id="deleteCoverModal" tabindex="-1" aria-labelledby="deleteCoverModalLabel"
+                    aria-hidden="true" data-bs-backdrop="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form action="{{ route('applicant.coverphoto.delete') }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteCoverModalLabel">Delete Cover Photo</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Are you sure you want to delete your cover photo?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Photo -->
                 <div class="profile-photo-container">
                     <div class="profile-photo">
                         @if ($retrievedProfile->personal_info)
@@ -87,6 +166,7 @@
                 </div>
             </div>
 
+
             <!-- Profile Info -->
             <div class="profile-info">
                 <div class="row align-items-center">
@@ -97,10 +177,38 @@
                                 {{ $retrievedProfile->personal_info->last_name }}
                             </h1>
                             <p class="profile-title">
-                                {{ $retrievedProfile->work_background->position }} |
-                                {{ $retrievedProfile->work_background->work_duration }}
+                                @if (in_array($retrievedProfile->work_background->position, [
+                                        'Automotive Servicing',
+                                        'Bartender',
+                                        'Barista',
+                                        'Beauty Care Specialist',
+                                        'Carpenter',
+                                        'Cook',
+                                        'Customer Service Representative',
+                                        'Dressmaker/Tailor',
+                                        'Electrician',
+                                        'Food and Beverage Server',
+                                        'Hairdresser',
+                                        'Heavy Equipment Operator',
+                                        'Housekeeping',
+                                        'Mason',
+                                        'Massage Therapist',
+                                        'Mechanic',
+                                        'Plumber',
+                                        'Security Guard',
+                                        'SMAW Welder',
+                                        'Tile Setter',
+                                        'Tourism Services Staff',
+                                        'Waiter/Waitress',
+                                    ]))
+                                    {{ $retrievedProfile->work_background->position }}
+                                @else
+                                    {{ $retrievedProfile->work_background->position }}
+                                @endif
+                                | {{ $retrievedProfile->work_background->work_duration }}
                                 {{ $retrievedProfile->work_background->work_duration_unit }}
                             </p>
+
                         @endif
 
                         @foreach ($retrievedTesdaCertifacation as $certification)
@@ -131,6 +239,256 @@
                 </div>
             </div>
         </div>
+        <!-- Edit Profile Modal -->
+        <!-- Edit Profile Modal -->
+        <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+
+                    <!-- Header -->
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Profile</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+
+                    <!-- Body -->
+                    <form action="{{ route('applicant.profile.update', ['id' => $retrievedProfile->id]) }}"
+                        method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-body">
+
+                            <!-- Profile Image -->
+                            <div class="text-center mb-3">
+                                <!-- Profile Image Preview -->
+                                <img id="profilePreview"
+                                    src="{{ asset('storage/' . $retrievedProfile->work_background->profileimage_path) }}"
+                                    class="rounded-circle" alt="Profile Image" width="120" height="120"
+                                    style="object-fit: cover;">
+
+                                <div class="mt-2">
+                                    <input type="file" class="form-control" name="profile_picture"
+                                        id="profileInput" accept="image/*">
+                                </div>
+                            </div>
+
+                            <!-- Live Preview Script -->
+                            <script>
+                                document.getElementById('profileInput').addEventListener('change', function(event) {
+                                    const file = event.target.files[0];
+                                    if (file) {
+                                        const reader = new FileReader();
+                                        reader.onload = function(e) {
+                                            document.getElementById('profilePreview').src = e.target.result;
+                                        }
+                                        reader.readAsDataURL(file);
+                                    }
+                                });
+                            </script>
+
+                            <!-- Name -->
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">First Name</label>
+                                    <input type="text" class="form-control" name="first_name"
+                                        value="{{ $retrievedProfile->personal_info->first_name ?? '' }}" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" name="last_name"
+                                        value="{{ $retrievedProfile->personal_info->last_name ?? '' }}" required>
+                                </div>
+                            </div>
+
+                            <!-- Work Info -->
+                            <div class="mb-3">
+                                <label class="form-label">Position</label>
+                                <select class="form-select" id="position" name="position" required
+                                    onchange="toggleOtherPosition()">
+                                    <option value="" disabled
+                                        {{ empty($retrievedProfile->work_background->position) ? 'selected' : '' }}>
+                                        Select job position
+                                    </option>
+                                    <option value="Automotive Servicing"
+                                        {{ $retrievedProfile->work_background->position == 'Automotive Servicing' ? 'selected' : '' }}>
+                                        Automotive Servicing</option>
+                                    <option value="Bartender"
+                                        {{ $retrievedProfile->work_background->position == 'Bartender' ? 'selected' : '' }}>
+                                        Bartender</option>
+                                    <option value="Barista"
+                                        {{ $retrievedProfile->work_background->position == 'Barista' ? 'selected' : '' }}>
+                                        Barista</option>
+                                    <option value="Beauty Care Specialist"
+                                        {{ $retrievedProfile->work_background->position == 'Beauty Care Specialist' ? 'selected' : '' }}>
+                                        Beauty Care Specialist</option>
+                                    <option value="Carpenter"
+                                        {{ $retrievedProfile->work_background->position == 'Carpenter' ? 'selected' : '' }}>
+                                        Carpenter</option>
+                                    <option value="Cook"
+                                        {{ $retrievedProfile->work_background->position == 'Cook' ? 'selected' : '' }}>
+                                        Cook</option>
+                                    <option value="Customer Service Representative"
+                                        {{ $retrievedProfile->work_background->position == 'Customer Service Representative' ? 'selected' : '' }}>
+                                        Customer Service Representative</option>
+                                    <option value="Dressmaker/Tailor"
+                                        {{ $retrievedProfile->work_background->position == 'Dressmaker/Tailor' ? 'selected' : '' }}>
+                                        Dressmaker/Tailor</option>
+                                    <option value="Electrician"
+                                        {{ $retrievedProfile->work_background->position == 'Electrician' ? 'selected' : '' }}>
+                                        Electrician</option>
+                                    <option value="Food and Beverage Server"
+                                        {{ $retrievedProfile->work_background->position == 'Food and Beverage Server' ? 'selected' : '' }}>
+                                        Food and Beverage Server</option>
+                                    <option value="Hairdresser"
+                                        {{ $retrievedProfile->work_background->position == 'Hairdresser' ? 'selected' : '' }}>
+                                        Hairdresser</option>
+                                    <option value="Heavy Equipment Operator"
+                                        {{ $retrievedProfile->work_background->position == 'Heavy Equipment Operator' ? 'selected' : '' }}>
+                                        Heavy Equipment Operator</option>
+                                    <option value="Housekeeping"
+                                        {{ $retrievedProfile->work_background->position == 'Housekeeping' ? 'selected' : '' }}>
+                                        Housekeeping</option>
+                                    <option value="Mason"
+                                        {{ $retrievedProfile->work_background->position == 'Mason' ? 'selected' : '' }}>
+                                        Mason</option>
+                                    <option value="Massage Therapist"
+                                        {{ $retrievedProfile->work_background->position == 'Massage Therapist' ? 'selected' : '' }}>
+                                        Massage Therapist</option>
+                                    <option value="Mechanic"
+                                        {{ $retrievedProfile->work_background->position == 'Mechanic' ? 'selected' : '' }}>
+                                        Mechanic</option>
+                                    <option value="Plumber"
+                                        {{ $retrievedProfile->work_background->position == 'Plumber' ? 'selected' : '' }}>
+                                        Plumber</option>
+                                    <option value="Security Guard"
+                                        {{ $retrievedProfile->work_background->position == 'Security Guard' ? 'selected' : '' }}>
+                                        Security Guard</option>
+                                    <option value="SMAW Welder"
+                                        {{ $retrievedProfile->work_background->position == 'SMAW Welder' ? 'selected' : '' }}>
+                                        SMAW Welder</option>
+                                    <option value="Tile Setter"
+                                        {{ $retrievedProfile->work_background->position == 'Tile Setter' ? 'selected' : '' }}>
+                                        Tile Setter</option>
+                                    <option value="Tourism Services Staff"
+                                        {{ $retrievedProfile->work_background->position == 'Tourism Services Staff' ? 'selected' : '' }}>
+                                        Tourism Services Staff</option>
+                                    <option value="Waiter/Waitress"
+                                        {{ $retrievedProfile->work_background->position == 'Waiter/Waitress' ? 'selected' : '' }}>
+                                        Waiter/Waitress</option>
+                                    <option value="Other"
+                                        {{ !in_array($retrievedProfile->work_background->position, [
+                                            'Automotive Servicing',
+                                            'Bartender',
+                                            'Barista',
+                                            'Beauty Care Specialist',
+                                            'Carpenter',
+                                            'Cook',
+                                            'Customer Service Representative',
+                                            'Dressmaker/Tailor',
+                                            'Electrician',
+                                            'Food and Beverage Server',
+                                            'Hairdresser',
+                                            'Heavy Equipment Operator',
+                                            'Housekeeping',
+                                            'Mason',
+                                            'Massage Therapist',
+                                            'Mechanic',
+                                            'Plumber',
+                                            'Security Guard',
+                                            'SMAW Welder',
+                                            'Tile Setter',
+                                            'Tourism Services Staff',
+                                            'Waiter/Waitress',
+                                        ]) && $retrievedProfile->work_background->position
+                                            ? 'selected'
+                                            : '' }}>
+                                        Other (Please specify)
+                                    </option>
+                                </select>
+
+                                <!-- Other Position Input -->
+                                <div class="mt-2" id="otherPositionContainer" style="display: none;">
+                                    <input type="text" class="form-control" id="other_position"
+                                        name="other_position" placeholder="Please specify your position"
+                                        value="{{ !in_array($retrievedProfile->work_background->position, [
+                                            'Automotive Servicing',
+                                            'Bartender',
+                                            'Barista',
+                                            'Beauty Care Specialist',
+                                            'Carpenter',
+                                            'Cook',
+                                            'Customer Service Representative',
+                                            'Dressmaker/Tailor',
+                                            'Electrician',
+                                            'Food and Beverage Server',
+                                            'Hairdresser',
+                                            'Heavy Equipment Operator',
+                                            'Housekeeping',
+                                            'Mason',
+                                            'Massage Therapist',
+                                            'Mechanic',
+                                            'Plumber',
+                                            'Security Guard',
+                                            'SMAW Welder',
+                                            'Tile Setter',
+                                            'Tourism Services Staff',
+                                            'Waiter/Waitress',
+                                        ])
+                                            ? $retrievedProfile->work_background->position
+                                            : '' }}">
+                                </div>
+                            </div>
+
+                            <script>
+                                function toggleOtherPosition() {
+                                    const select = document.getElementById('position');
+                                    const otherContainer = document.getElementById('otherPositionContainer');
+                                    if (select.value === 'Other') {
+                                        otherContainer.style.display = 'block';
+                                    } else {
+                                        otherContainer.style.display = 'none';
+                                        document.getElementById('other_position').value = '';
+                                    }
+                                }
+
+                                // Run on page load (to show Other if already selected)
+                                document.addEventListener('DOMContentLoaded', toggleOtherPosition);
+                            </script>
+
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Work Duration</label>
+                                    <input type="number" class="form-control" name="work_duration"
+                                        value="{{ $retrievedProfile->work_background->work_duration ?? '' }}">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Duration Unit</label>
+                                    <select class="form-select" name="work_duration_unit">
+                                        <option value="months"
+                                            {{ isset($retrievedProfile->work_background) && $retrievedProfile->work_background->work_duration_unit == 'months' ? 'selected' : '' }}>
+                                            Months</option>
+                                        <option value="years"
+                                            {{ isset($retrievedProfile->work_background) && $retrievedProfile->work_background->work_duration_unit == 'years' ? 'selected' : '' }}>
+                                            Years</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
 
         <!-- Content Grid -->
         <div class="content-grid">
@@ -473,6 +831,91 @@
                         <!-- Post Item -->
 
                         @foreach ($retrievedPosts as $post)
+                            <!-- Edit Post Modal -->
+                            <!-- Edit Post Modal -->
+                            <div class="modal fade" id="editPostModal-{{ $post->id }}" tabindex="-1"
+                                aria-hidden="true" data-bs-backdrop="false">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <form
+                                            action="{{ route('applicant.applicantposts.update', ['id' => $post->id]) }}"
+                                            method="POST" enctype="multipart/form-data">
+                                            @csrf
+                                            @method('PUT')
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Edit Post</h5>
+                                                <button type="button" class="btn-close"
+                                                    data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <!-- Post Content -->
+                                                <div class="mb-3">
+                                                    <label for="content-{{ $post->id }}" class="form-label">Post
+                                                        Content</label>
+                                                    <textarea name="content" id="content-{{ $post->id }}" class="form-control" rows="4">{{ $post->content }}</textarea>
+                                                </div>
+
+                                                <!-- Current Image Preview -->
+                                                @if ($post->image_path)
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Current Image</label>
+                                                        <div>
+                                                            <img src="{{ asset('storage/' . $post->image_path) }}"
+                                                                alt="Current Image" class="img-fluid rounded mb-2"
+                                                                style="max-height: 250px; object-fit: cover;">
+                                                        </div>
+                                                    </div>
+                                                @endif
+
+                                                <!-- Upload New Image -->
+                                                <div class="mb-3">
+                                                    <label for="image-{{ $post->id }}" class="form-label">Change
+                                                        Image</label>
+                                                    <input type="file" name="image"
+                                                        id="image-{{ $post->id }}" class="form-control">
+                                                    <small class="text-muted">Leave blank if you don't want to change
+                                                        the image.</small>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Delete Post Modal -->
+                            <div class="modal fade" id="deletePostModal-{{ $post->id }}" tabindex="-1"
+                                aria-hidden="true" data-bs-backdrop="false">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <form
+                                            action="{{ route('applicant.applicantposts.delete', ['id' => $post->id]) }}"
+                                            method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <div class="modal-header">
+                                                <h5 class="modal-title text-danger">Delete Post</h5>
+                                                <button type="button" class="btn-close"
+                                                    data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to delete this post? This action cannot be undone.
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+
                             <div class="post-item mb-4">
                                 <div class="post-header d-flex justify-content-between align-items-start">
                                     <div class="d-flex align-items-center">
@@ -504,15 +947,21 @@
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end">
                                             <li>
-                                                <a class="dropdown-item" href="#"><i
-                                                        class="bi bi-pencil me-2"></i>Edit</a>
+                                                <a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                                    data-bs-target="#editPostModal-{{ $post->id }}">
+                                                    <i class="bi bi-pencil me-2"></i>Edit
+                                                </a>
                                             </li>
                                             <li>
-                                                <a class="dropdown-item text-danger" href="#"><i
-                                                        class="bi bi-trash me-2"></i>Delete</a>
+                                                <a class="dropdown-item text-danger" href="#"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deletePostModal-{{ $post->id }}">
+                                                    <i class="bi bi-trash me-2"></i>Delete
+                                                </a>
                                             </li>
                                         </ul>
                                     </div>
+
                                 </div>
 
                                 <div class="post-content mt-2">
@@ -527,96 +976,112 @@
                                 @endif
 
                                 <div class="post-actions mt-3">
-                                    <button class="action-btn like-btn liked me-2" onclick="toggleLike(this)">
-                                        <i class="bi bi-heart"></i> <span class="like-count">12</span> Like
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-secondary" onclick="toggleComments(this)">
-                                        <i class="bi bi-chat"></i> <span class="comment-count">3</span> Comment
+                                    <!--like button-->
+                                    <form action="{{ route('applicant.likepost.store', $post->id) }}" method="POST"
+                                        class="d-inline">
+                                        @csrf
+                                        @php
+                                            $hasLiked = $post->likes
+                                                ->where('applicant_id', session('applicant_id'))
+                                                ->isNotEmpty();
+                                        @endphp
+
+                                        <button type="submit"
+                                            class="action-btn like-btn me-2 {{ $hasLiked ? 'text-danger' : '' }}">
+                                            <i class="bi {{ $hasLiked ? 'bi-heart-fill' : 'bi-heart' }}"></i>
+                                            <span class="like-count">{{ $post->likes->count() }}</span>
+                                            {{ $post->likes->count() === 1 ? 'Like' : 'Likes' }}
+                                        </button>
+                                    </form>
+
+
+
+                                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                                        onclick="toggleComments(this)">
+                                        <i class="bi bi-chat"></i>
+                                        <span class="comment-count"></span>
+                                        Comment ({{ $post->comments->count() }})
                                     </button>
                                 </div>
 
+
                                 <!-- Comments Section -->
                                 <div class="comments-section mt-3" style="display: none">
-                                    <div class="input-group mb-2">
-                                        <input type="text" class="form-control comment-input"
-                                            placeholder="Write a comment..." />
-                                        <button class="btn btn-primary" onclick="addComment(this)">
-                                            <i class="bi bi-send"></i>
-                                        </button>
-                                    </div>
-                                    <div class="comments-list">
-                                        <div class="comment-item mt-2 p-2 rounded bg-light">
-                                            <strong>Maria Santos:</strong> Congratulations! Well deserved! 🎉
+                                    <form action="{{ route('applicantaddcomments.store', $post->id) }}"
+                                        method="POST">
+                                        @csrf
+                                        <div class="mb-2">
+                                            <input type="hidden" name="post_id" value="{{ $post->id }}">
+                                            <textarea class="form-control comment-input" name="comment" rows="2" placeholder="Write a comment..."></textarea>
                                         </div>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-send"></i> Comment
+                                        </button>
+                                    </form>
+
+                                    <div class="comments-list mt-2">
+                                        @foreach ($post->comments as $comment)
+                                            <div class="comment-item p-2 mb-2 rounded bg-light position-relative">
+
+                                                {{-- Show own comment --}}
+                                                @if ($comment->applicant_id == session('applicant_id'))
+                                                    <strong>Me:</strong> {{ $comment->comment }}
+
+                                                    {{-- Inline delete button (subtle, like Facebook) --}}
+                                                    <form
+                                                        action="{{ route('applicant.comment.delete', $comment->id) }}"
+                                                        method="POST"
+                                                        class="d-inline-block position-absolute top-0 end-0 mt-1 me-2">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                            class="btn btn-sm btn-link text-muted p-0"
+                                                            style="font-size: 0.9rem;"
+                                                            onmouseover="this.style.color='red'"
+                                                            onmouseout="this.style.color='gray'">
+                                                            <i class="bi bi-x-circle"></i>
+                                                        </button>
+                                                    </form>
+                                                @else
+                                                    <strong>{{ $comment->applicant->personal_info->first_name ?? 'Unknown' }}
+                                                        {{ $comment->applicant->personal_info->last_name ?? 'Anonymous' }}:</strong>
+                                                    {{ $comment->comment }}
+                                                @endif
+
+                                                {{-- Reply button (always visible like FB) --}}
+                                                <div class="mt-1">
+                                                    <button class="btn btn-sm btn-link text-primary p-0"
+                                                        onclick="toggleReplyForm({{ $comment->id }})">
+                                                        Reply
+                                                    </button>
+                                                </div>
+
+                                                {{-- Hidden reply form --}}
+                                                <div id="reply-form-{{ $comment->id }}" class="mt-2 d-none">
+                                                    <form action="" method="POST">
+                                                        @csrf
+                                                        <textarea name="reply" class="form-control mb-2" rows="2" placeholder="Write a reply..."></textarea>
+                                                        <button type="submit" class="btn btn-sm btn-success">
+                                                            <i class="bi bi-send"></i> Reply
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        @endforeach
                                     </div>
+
+                                    <script>
+                                        function toggleReplyForm(commentId) {
+                                            let form = document.getElementById('reply-form-' + commentId);
+                                            form.classList.toggle('d-none');
+                                        }
+                                    </script>
+
+
                                 </div>
                             </div>
                         @endforeach
 
-
-                        <!-- Another Post -->
-                        <div class="post-item">
-                            <div class="post-header">
-                                <div class="post-meta">
-                                    <div class="post-avatar">
-                                        <i class="bi bi-person-circle"></i>
-                                    </div>
-                                    <div>
-                                        <div class="post-author">John Doe</div>
-                                        <div class="post-time">1 week ago</div>
-                                    </div>
-                                </div>
-                                <div class="dropdown">
-                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                                        data-bs-toggle="dropdown">
-                                        <i class="bi bi-three-dots"></i>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li>
-                                            <a class="dropdown-item" href="#"><i
-                                                    class="bi bi-pencil me-2"></i>Edit</a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item text-danger" href="#"><i
-                                                    class="bi bi-trash me-2"></i>Delete</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div class="post-content">
-                                Starting my portfolio project today! Working on a responsive
-                                website using the skills I learned from TESDA. Looking forward
-                                to showcasing my abilities.
-                            </div>
-
-                            <div class="post-actions">
-                                <button class="action-btn like-btn liked" onclick="toggleLike(this)">
-                                    <i class="bi bi-heart-fill"></i>
-                                    <span class="like-count">8</span> Like
-                                </button>
-                                <button class="action-btn comment-btn" onclick="toggleComments(this)">
-                                    <i class="bi bi-chat"></i>
-                                    <span class="comment-count">2</span> Comment
-                                </button>
-                            </div>
-
-                            <div class="comments-section mt-3" style="display: none">
-                                <div class="input-group mb-2">
-                                    <input type="text" class="form-control comment-input"
-                                        placeholder="Write a comment..."
-                                        style="border-radius: var(--border-radius-lg); border: 1px solid var(--border-color);" />
-                                    <button class="btn btn-tesda btn-primary-tesda" onclick="addComment(this)">
-                                        <i class="bi bi-send"></i>
-                                    </button>
-                                </div>
-                                <div class="comments-list">
-                                    <div class="comment-item mt-2 p-2 rounded">
-                                        <strong>Carlos Rodriguez:</strong> Can't wait to see it!
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -984,23 +1449,33 @@
 
 
     <script>
-        // Simple Interactive Functions
-        function toggleLike(btn) {
-            const icon = btn.querySelector("i");
-            const countSpan = btn.querySelector(".like-count");
-            let count = parseInt(countSpan.textContent);
+        function toggleLike(btn, postId) {
+            fetch(`profile/like-post/${id}`, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(res => res.json())
+                .then(data => {
+                    const icon = btn.querySelector("i");
+                    const countSpan = btn.querySelector(".like-count");
+                    let count = parseInt(countSpan.textContent);
 
-            if (btn.classList.contains("liked")) {
-                btn.classList.remove("liked");
-                icon.classList.remove("bi-heart-fill");
-                icon.classList.add("bi-heart");
-                countSpan.textContent = count - 1;
-            } else {
-                btn.classList.add("liked");
-                icon.classList.remove("bi-heart");
-                icon.classList.add("bi-heart-fill");
-                countSpan.textContent = count + 1;
-            }
+                    if (data.status === 'liked') {
+                        btn.classList.add("liked");
+                        icon.classList.remove("bi-heart");
+                        icon.classList.add("bi-heart-fill");
+                        countSpan.textContent = count + 1;
+                    } else {
+                        btn.classList.remove("liked");
+                        icon.classList.remove("bi-heart-fill");
+                        icon.classList.add("bi-heart");
+                        countSpan.textContent = count - 1;
+                    }
+                });
         }
 
         function toggleComments(btn) {

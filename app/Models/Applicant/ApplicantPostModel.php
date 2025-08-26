@@ -31,4 +31,14 @@ class ApplicantPostModel extends Model
     {
         return $this->belongsTo(ExperienceModel::class, 'work_experience_id');
     }
+
+    public function likes()
+    {
+        return $this->hasMany(ApplicantPostLikeModel::class, 'post_id');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(ApplicantPostCommentModel::class, 'post_id');
+    }
 }
