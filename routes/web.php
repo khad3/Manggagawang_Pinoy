@@ -138,6 +138,7 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
     Route::get('application-status', [ApplicantController::class, 'ViewApplicationStatus'])->name('applicant.application.status.display');
     Route::post('/jobs/{job}/toggle-save', [ApplicantController::class, 'toggleSaveJob'])->name('jobs.toggleSave');
     Route::delete('/jobs/unsave/{id}', [ApplicantController::class, 'unSavedJob'])->name('jobs.unsave');
+    Route::post('apply-job', [ApplicantController::class, 'applyJob'])->name('jobs.apply.store');
 
 
 

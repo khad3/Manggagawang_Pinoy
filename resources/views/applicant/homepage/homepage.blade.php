@@ -275,6 +275,25 @@
         </div>
     </header>
 
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert" id="success-alert">
+            <center>{{ session('success') }}</center>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <script>
+            // Hide the alert after 5 seconds (5000 ms)
+            setTimeout(() => {
+                let alert = document.getElementById('success-alert');
+                if (alert) {
+                    alert.classList.remove('show'); // fade out
+                    alert.classList.add('fade'); // keep bootstrap fade animation
+                    setTimeout(() => alert.remove(), 500); // remove from DOM after fade
+                }
+            }, 2000); // change to 2000 for 2 seconds
+        </script>
+    @endif
+
     <!-- Main Content -->
     <div class="container">
         <div class="main-section">
@@ -304,11 +323,11 @@
                             @endif
                         </div>
                         <div class="stat-card">
-                            @if ($tesdaCertifiedCounts == 1)
-                                <span class="stat-number">{{ $tesdaCertifiedCounts }}</span>
+                            @if ($tesdaCertificateCounts == 1)
+                                <span class="stat-number">{{ $tesdaCertificateCounts }}</span>
                                 <div class="stat-label">TESDA-Certified Employees</div>
                             @else
-                                <span class="stat-number">{{ $tesdaCertifiedCounts }}+</span>
+                                <span class="stat-number">{{ $tesdaCertificateCounts }}+</span>
                                 <div class="stat-label">TESDA-Certified Employees</div>
                             @endif
                         </div>
@@ -568,14 +587,25 @@
                                         <input type="file" name="resume" class="form-control"
                                             accept=".pdf,.doc,.docx" required>
                                     </div>
-
-                                    <!----- Upload tesda certi -->
                                     <div class="mb-3">
                                         <label for="certi" class="form-label">Upload TESDA Certificate (PDF,
                                             DOC)</label>
                                         <input type="file" name="certificate" class="form-control"
-                                            accept=".pdf,.doc,.docx" required>
+                                            accept=".pdf,.doc,.docx"
+                                            @if ($tesdaCertification && $tesdaCertification->status == 'approved') required @else disabled @endif>
+
+                                        @if ($tesdaCertification && $tesdaCertification->status == 'pending')
+                                            <p class="text-warning mt-2">Your TESDA Certificate is under review. Thank
+                                                you.</p>
+                                        @elseif (!$tesdaCertification || $tesdaCertification->status != 'approved')
+                                            <p class="text-danger mt-2">Please upload your TESDA Certificate before
+                                                applying. Thank you.</p>
+                                        @endif
                                     </div>
+
+
+
+
                                 </div>
 
                                 <div class="modal-footer bg-light">

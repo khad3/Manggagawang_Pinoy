@@ -26,6 +26,7 @@ use App\Models\Applicant\SendMessageModel as SendMessage;
 use App\Models\Applicant\SavedJobModel as SavedJob;
 use App\Models\Applicant\TesdaUploadCertificationModel as TesdaCertification;
 use App\Models\Applicant\ApplicantPostLikeModel as PostLike;
+use App\Models\Applicant\ApplyJobModel as ApplyJob;
 use App\Notifications\Applicant\FriendRequestNotification;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -318,7 +319,7 @@ public function Login(Request $request)
     ]);
 
     // Find the applicant by email
-    $applicant = RegisterModel::where('email', $request->email)->first();
+    $applicant = RegisterModel::with('personal_info')->where('email', $request->email)->first();
 
     // Check if applicant exists and password is correct
     if (!$applicant || !Hash::check($request->password, $applicant->password)) {
@@ -329,12 +330,14 @@ public function Login(Request $request)
     $applicant->last_seen = now();
     $applicant->save();
 
+    
+
     // Store applicant session (custom auth logic)
     session([
         'applicant_id' => $applicant->id,
     ]);
 
-    return redirect()->route('applicant.info.homepage.display')->with('success', 'Login successful.');
+    return redirect()->route('applicant.info.homepage.display')->with('success', 'Welcome to mangagawang pinoy, ' . $applicant->personal_info->first_name);
 }
 
 //Homepage
@@ -371,7 +374,11 @@ public function ShowHomepage()
         ->toArray();
 
     //Retrieved the tesda certified
-    $tesdaCertifiedCounts = \App\Models\Applicant\TesdaUploadCertificationModel::where('status', 'approved')->count();
+   $tesdaCertification = \App\Models\Applicant\TesdaUploadCertificationModel::where('applicant_id', $applicantId)
+    ->latest()
+    ->first();
+
+    $tesdaCertificateCounts = \App\Models\Applicant\TesdaUploadCertificationModel::where('status', 'approved')->count();
     
 
     return view('applicant.homepage.homepage', compact(
@@ -381,7 +388,8 @@ public function ShowHomepage()
         'publishedCounts',
         'retrievedAddressCompany',
         'savedJobIds',
-        'tesdaCertifiedCounts'
+        'tesdaCertification',
+        'tesdaCertificateCounts'
     ));
 }
 
@@ -1307,6 +1315,8 @@ public function ViewProfilePage() {
 
     $retrievedTesdaCertifacation = TesdaCertification::where('applicant_id' , $applicantID)->get()->reverse();
 
+    
+
 
     
 
@@ -1928,9 +1938,15 @@ public function ViewApplicationStatus()
     // Published jobs count (optional)
     $publishedCounts = JobDetailModel::where('status_post', 'published')->count();
 
+    $tesdaCertification = \App\Models\Applicant\TesdaUploadCertificationModel::where('applicant_id', $applicantId)
+    ->latest()
+    ->first();
+
+
     return view('applicant.my_application.applicantion', compact(
         'retrievedSavedJobs',
-        'publishedCounts'
+        'publishedCounts',
+        'tesdaCertification'
     ));
 }
 
@@ -2037,6 +2053,41 @@ public function deleteTesdaCertificate($id)
 
 }
 
+
+//Applying job
+public function applyJob(Request $request)
+{
+    $applicantId = session('applicant_id');
+
+    if (!$applicantId) {
+        return back()->withErrors(['error' => 'No applicant selected.']);
+    }
+
+    $request->validate([
+        'job_id' => 'required|exists:job_details_employer,id',
+        'phone_number' => 'required|string',
+        'cover_letter' => 'nullable|string',
+        'additional_info' => 'nullable|string',
+        'resume' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+        'tesda_certificate' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+    ]);
+
+    $applyJob = new ApplyJob();
+    $applyJob->job_id = $request->job_id;
+    $applyJob->applicant_id = $applicantId;
+    $applyJob->cellphone_number = $request->phone_number;
+    $applyJob->cover_letter = $request->cover_letter;
+    $applyJob->additional_information = $request->additional_info;
+    $applyJob->resume = $request->hasFile('resume') ? $request->file('resume')->store('resumes', 'public') : null;
+    $applyJob->tesda_certification = $request->hasFile('tesda_certificate') ? $request->file('tesda_certificate')->store('tesda_certificates', 'public') : null;
+
+    $applyJob->status = 'pending';
+    $applyJob->save();
+    
+
+    return back()->with('success', 'You have successfully applied for this job.');
+
+}
 
 
 
