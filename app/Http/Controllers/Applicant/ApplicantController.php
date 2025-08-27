@@ -1943,10 +1943,24 @@ public function ViewApplicationStatus()
     ->first();
 
 
+    //retrieved the applied jobs
+    $appliedJobs = ApplyJob::with([
+        'job' => function ($query) {
+            $query->with([
+                'employer.addressCompany',   // employer + company address
+                'interviewScreening',
+                'workerRequirement',
+                'specialRequirement',
+                'employer.personal_info',
+            ]);
+        }
+    ])->where('applicant_id', $applicantId)->get();
+
     return view('applicant.my_application.applicantion', compact(
         'retrievedSavedJobs',
         'publishedCounts',
-        'tesdaCertification'
+        'tesdaCertification',
+        'appliedJobs'
     ));
 }
 

@@ -1,136 +1,131 @@
- :root {
-        --primary-orange: #ea580c;
-        --primary-red: #dc2626;
-        --light-orange: #fed7aa;
-        --light-red: #fef2f2;
-      }
+:root {
+    --primary-orange: #ea580c;
+    --primary-red: #dc2626;
+    --light-orange: #fed7aa;
+    --light-red: #fef2f2;
+}
 
-      body {
-        background: linear-gradient(
-          135deg,
-          #fff7ed 0%,
-          #ffffff 50%,
-          #fef2f2 100%
-        );
-        min-height: 100vh;
-      }
+body {
+    background: linear-gradient(135deg, #fff7ed 0%, #ffffff 50%, #fef2f2 100%);
+    min-height: 100vh;
+}
 
-      .registration-container {
-        padding: 60px 0;
-      }
+.registration-container {
+    padding: 60px 0;
+}
 
-      .step-indicator {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-        font-size: 1.1rem;
-        transition: all 0.3s ease;
-        border: 2px solid;
-      }
+.step-indicator {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    border: 2px solid;
+}
 
-      .step-active {
-        background: var(--primary-orange);
-        border-color: var(--primary-orange);
-        color: white;
-      }
+.step-active {
+    background: var(--primary-orange);
+    border-color: var(--primary-orange);
+    color: white;
+}
 
-      .step-inactive {
-        background: white;
-        border-color: #d1d5db;
-        color: #6b7280;
-      }
+.step-inactive {
+    background: white;
+    border-color: #d1d5db;
+    color: #6b7280;
+}
 
-      .step-completed {
-        background: var(--primary-orange);
-        border-color: var(--primary-orange);
-        color: white;
-      }
+.step-completed {
+    background: var(--primary-orange);
+    border-color: var(--primary-orange);
+    color: white;
+}
 
-      .step-line {
-        height: 2px;
-        background: #d1d5db;
-        flex: 1;
-        margin: 0 20px;
-        transition: all 0.3s ease;
-      }
+.step-line {
+    height: 2px;
+    background: #d1d5db;
+    flex: 1;
+    margin: 0 20px;
+    transition: all 0.3s ease;
+}
 
-      .step-line-completed {
-        background: var(--primary-orange);
-      }
+.step-line-completed {
+    background: var(--primary-orange);
+}
 
-      .form-card {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        border: none;
-        max-width: 800px;
-        margin: 0 auto;
-      }
+.form-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: none;
+    max-width: 800px;
+    margin: 0 auto;
+}
 
-      .btn-primary-custom {
-        background: linear-gradient(
-          45deg,
-          var(--primary-orange),
-          var(--primary-red)
-        );
-        border: none;
-        padding: 12px 24px;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-      }
+.btn-primary-custom {
+    background: linear-gradient(
+        45deg,
+        var(--primary-orange),
+        var(--primary-red)
+    );
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
 
-      .btn-primary-custom:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
-      }
+.btn-primary-custom:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+}
 
-      .preference-card {
-        background: white;
-        border: 2px solid var(--light-orange);
-        border-radius: 8px;
-        padding: 1.5rem;
-        margin: 1rem 0;
-        transition: all 0.3s ease;
-      }
+.preference-card {
+    background: white;
+    border: 2px solid var(--light-orange);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    transition: all 0.3s ease;
+}
 
-      .preference-card:hover {
-        border-color: var(--primary-orange);
-        box-shadow: 0 2px 8px rgba(234, 88, 12, 0.1);
-      }
+.preference-card:hover {
+    border-color: var(--primary-orange);
+    box-shadow: 0 2px 8px rgba(234, 88, 12, 0.1);
+}
 
-      .switch-container {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1rem;
-        background: var(--light-red);
-        border-radius: 8px;
-        margin: 0.5rem 0;
-      }
+.switch-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: var(--light-red);
+    border-radius: 8px;
+    margin: 0.5rem 0;
+}
 
-      .tesda-priority {
-        background: linear-gradient(45deg, #fef3c7, #fed7aa);
-        border: 2px solid var(--primary-orange);
-        border-radius: 8px;
-        padding: 1.5rem;
-        margin: 1rem 0;
-      }
+.tesda-priority {
+    background: linear-gradient(45deg, #fef3c7, #fed7aa);
+    border: 2px solid var(--primary-orange);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+}
 
-      .timeline-option {
-        padding: 1rem;
-        border: 2px solid #e5e7eb;
-        border-radius: 8px;
-        margin: 0.5rem 0;
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
+.timeline-option {
+    padding: 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    margin: 0.5rem 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
 
-      .timeline-option:hover,
-      .timeline-option.selected {
-        border-color: var(--primary-orange);
-        background: var(--light-red);
-      }
+.timeline-option:hover,
+.timeline-option.selected {
+    border-color: var(--primary-orange);
+    background: var(--light-red);
+}

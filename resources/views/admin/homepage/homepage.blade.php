@@ -7,35 +7,9 @@
     <title>TESDA Super Admin Dashboard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
     <!-- fav icon -->
     <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
     <link rel="stylesheet" href="{{ asset('css/applicant/admin/homepage.css') }}">
-
-    <style>
-        .badge {
-            display: inline-block;
-            padding: 0.4rem 0.75rem;
-            font-size: 0.85rem;
-            font-weight: 600;
-            border-radius: 20px;
-            text-transform: capitalize;
-            color: #fff;
-            letter-spacing: 0.5px;
-        }
-
-        /* Active badge */
-        .badge-active {
-            background: linear-gradient(135deg, #28a745, #218838);
-            box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
-        }
-
-        /* Inactive badge */
-        .badge-inactive {
-            background: linear-gradient(135deg, #6c757d, #495057);
-            box-shadow: 0 2px 6px rgba(108, 117, 125, 0.3);
-        }
-    </style>
 
 </head>
 

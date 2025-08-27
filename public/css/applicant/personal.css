@@ -15,13 +15,13 @@ body {
 }
 
 /* Main Container */
-.work-container {
+.personal-container {
     background: white;
     border-radius: 24px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     width: 100%;
-    max-width: 600px;
+    max-width: 700px;
 }
 
 /* Progress Bar */
@@ -81,7 +81,7 @@ body {
     height: 100%;
     background: linear-gradient(135deg, #667eea, #764ba2);
     transition: width 0.3s ease;
-    width: 75%; /* Step 4 of 5 */
+    width: 50%; /* Step 3 of 5 */
 }
 
 .step-labels {
@@ -136,15 +136,15 @@ body {
 
 /* Form Groups */
 .form-group {
-    margin-bottom: 30px;
+    margin-bottom: 25px;
 }
 
 .form-label {
     font-weight: 600;
     color: #374151;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     display: block;
-    font-size: 16px;
+    font-size: 14px;
 }
 
 .form-input,
@@ -166,125 +166,69 @@ body {
     box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
 }
 
-/* Duration Input Group */
-.duration-group {
+.form-input.with-icon {
+    padding-left: 50px;
+}
+
+.input-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+    transition: color 0.3s ease;
+}
+
+.form-group:focus-within .input-icon {
+    color: #667eea;
+}
+
+/* Section Headers */
+.section-header {
     display: flex;
+    align-items: center;
     gap: 12px;
+    margin: 35px 0 25px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f1f5f9;
 }
 
-.duration-group .form-input {
-    flex: 2;
-}
-
-.duration-group .form-select {
-    flex: 1;
-}
-
-/* Employment Status Toggle */
-.employment-toggle {
-    display: flex;
-    background: #f1f5f9;
-    border-radius: 12px;
-    padding: 6px;
-    margin-top: 12px;
-}
-
-.toggle-option {
-    flex: 1;
-    padding: 12px 20px;
-    border: none;
-    background: transparent;
-    border-radius: 8px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 14px;
-}
-
-.toggle-option.active {
+.section-icon {
+    width: 35px;
+    height: 35px;
     background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-}
-
-.toggle-option:not(.active) {
-    color: #64748b;
-}
-
-.toggle-option:hover:not(.active) {
-    background: #e2e8f0;
-}
-
-/* File Upload */
-.file-upload-area {
-    border: 2px dashed #d1d5db;
-    border-radius: 12px;
-    padding: 30px;
-    text-align: center;
-    background: #f9fafb;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 12px;
-}
-
-.file-upload-area:hover {
-    border-color: #667eea;
-    background: #f0f4ff;
-}
-
-.file-upload-area.dragover {
-    border-color: #667eea;
-    background: #f0f4ff;
-    transform: scale(1.02);
-}
-
-.upload-icon {
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    border-radius: 50%;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 15px;
+    color: white;
 }
 
-.upload-text {
-    font-weight: 500;
-    color: #374151;
-    margin-bottom: 8px;
+.section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
 }
 
-.upload-subtext {
-    font-size: 14px;
-    color: #6b7280;
+/* Two Column Layout */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
 }
 
-.file-selected {
-    margin-top: 15px;
-    padding: 12px;
-    background: #ecfdf5;
-    border: 1px solid #d1fae5;
-    border-radius: 8px;
-    color: #059669;
-    font-size: 14px;
-    display: none;
-}
-
-/* Other Position Field */
-.other-position {
-    margin-top: 15px;
+/* Animated Field */
+.animated-field {
     opacity: 0;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-    max-height: 0;
-    overflow: hidden;
+    transform: translateY(20px);
+    animation: slideIn 0.5s ease forwards;
 }
 
-.other-position.show {
-    opacity: 1;
-    transform: translateY(0);
-    max-height: 100px;
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Submit Button */
@@ -299,7 +243,7 @@ body {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-top: 20px;
+    margin-top: 30px;
 }
 
 .submit-btn:hover {
@@ -307,31 +251,35 @@ body {
     box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
 }
 
-.submit-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
+/* Progress Indicator */
+.field-progress {
+    margin-top: 30px;
+    text-align: center;
 }
 
-/* Animations */
-.fade-in {
-    animation: fadeIn 0.6s ease;
+.progress-text {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 10px;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.progress-bar-container {
+    background: #e5e7eb;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    transition: width 0.3s ease;
+    width: 0%;
 }
 
 /* Responsive */
-@media (max-width: 576px) {
-    .work-container {
+@media (max-width: 768px) {
+    .personal-container {
         margin: 10px;
     }
 
@@ -339,17 +287,28 @@ body {
         padding: 30px 25px;
     }
 
-    .duration-group {
-        flex-direction: column;
+    .form-row {
+        grid-template-columns: 1fr;
         gap: 15px;
     }
 
-    .employment-toggle {
-        flex-direction: column;
-        gap: 6px;
+    .form-title {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 576px) {
+    .progress-container {
+        padding: 20px;
     }
 
-    .toggle-option {
-        padding: 14px;
+    .step {
+        width: 35px;
+        height: 35px;
+        font-size: 12px;
+    }
+
+    .step-labels {
+        font-size: 10px;
     }
 }

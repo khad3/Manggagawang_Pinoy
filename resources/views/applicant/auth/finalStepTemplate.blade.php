@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JobHub - Complete Your Profile</title>
-    
+
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -13,8 +14,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="{{ asset('css/applicant/finalStep.css') }}">
-  
+
 </head>
+
 <body>
     <!-- Profile Container -->
     <div class="profile-container">
@@ -54,29 +56,29 @@
             <!-- Profile Header -->
             <div class="profile-header">
                 <div class="profile-image-container">
-                    <img src="{{ Storage::url($workexperience->profileimage_path ?? '') ?: 'https://via.placeholder.com/100x100/667eea/ffffff?text=Avatar' }}" 
-                         alt="Profile Image" class="profile-image">
+                    <img src="{{ Storage::url($workexperience->profileimage_path ?? '') ?: 'https://via.placeholder.com/100x100/667eea/ffffff?text=Avatar' }}"
+                        alt="Profile Image" class="profile-image">
                     <div class="profile-badge">
                         <i class="bi bi-check" style="color: white; font-size: 12px;"></i>
                     </div>
                 </div>
-                
+
                 <h2 class="profile-name">
                     {{ $personalinfo->first_name ?? 'First Name' }} {{ $personalinfo->last_name ?? 'Last Name' }}
                 </h2>
-                
+
                 <div class="profile-position">
                     {{ $workexperience->position ?? 'Position' }}
                 </div>
-                
+
                 <div class="profile-experience">
-                    {{ $workexperience->work_duration ?? '0' }} 
+                    {{ $workexperience->work_duration ?? '0' }}
                     {{ $workexperience->work_duration_unit ?? 'years' }} of experience
                 </div>
             </div>
 
             <!-- Success/Error Messages -->
-            @if(session('success'))
+            @if (session('success'))
                 <div class="alert alert-success">
                     <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
                 </div>
@@ -95,7 +97,8 @@
             @endif
 
             <!-- Profile Form -->
-            <form method="POST" enctype="multipart/form-data" action="{{ route('applicant.info.template.store') }}" id="profileForm" onsubmit="return handleSubmit(event)">
+            <form method="POST" enctype="multipart/form-data" action="{{ route('applicant.info.template.store') }}"
+                id="profileForm" onsubmit="return handleSubmit(event)">
                 @csrf
 
                 <!-- Description -->
@@ -103,9 +106,9 @@
                     <label class="form-label">
                         <i class="bi bi-chat-quote me-2"></i>Describe Yourself
                     </label>
-                    <textarea name="description" class="form-textarea" rows="4" required 
-                              placeholder="Tell employers about your skills, experience, and what makes you unique..."
-                              oninput="updateCharCounter(this)" maxlength="500">{{ old('description') }}</textarea>
+                    <textarea name="description" class="form-textarea" rows="4" required
+                        placeholder="Tell employers about your skills, experience, and what makes you unique..."
+                        oninput="updateCharCounter(this)" maxlength="500">{{ old('description') }}</textarea>
                     <div class="char-counter">
                         <span id="charCount">0</span>/500 characters
                     </div>
@@ -118,8 +121,8 @@
                         <span style="font-weight: 400; color: #6b7280; font-size: 14px;">(Optional)</span>
                     </label>
                      -->
-                    <!-- Upload Tabs -->
-                    <!-- <div class="upload-tabs">
+                <!-- Upload Tabs -->
+                <!-- <div class="upload-tabs">
                         <button type="button" class="upload-tab active" onclick="switchTab('file')">
                             <i class="bi bi-cloud-upload me-1"></i>Upload File
                         </button>
@@ -128,9 +131,9 @@
                         </button>
                     </div> -->
 
-                    <!-- File Upload Content -->
-                    <!-- <div class="upload-content active" id="fileContent">
-                        <div class="file-upload-area" onclick="document.getElementById('sample_work_file').click()" 
+                <!-- File Upload Content -->
+                <!-- <div class="upload-content active" id="fileContent">
+                        <div class="file-upload-area" onclick="document.getElementById('sample_work_file').click()"
                              ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
                             <div class="upload-icon">
                                 <i class="bi bi-cloud-upload" style="color: white; font-size: 24px;"></i>
@@ -148,13 +151,13 @@
                             </div>
                         </div>
                         
-                        <input type="file" id="sample_work_file" name="sample_work" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" 
+                        <input type="file" id="sample_work_file" name="sample_work" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
                                style="display: none;" onchange="handleFileSelect(this)">
                     </div> -->
 
-                    <!-- YouTube URL Content
+                <!-- YouTube URL Content
                     <div class="upload-content" id="youtubeContent">
-                        <input type="url" name="sample_work_url" class="url-input" 
+                        <input type="url" name="sample_work_url" class="url-input"
                                placeholder="Paste your YouTube video link here (e.g., https://youtube.com/watch?v=...)"
                                value="{{ old('sample_work_url') }}" oninput="previewUrl(this)">
                         
@@ -163,16 +166,16 @@
                             <span id="urlText"></span>
                         </div>
                     </div> -->
-                </div>
-
-                <!-- Submit Button -->
-                <button type="submit" class="submit-btn" id="submitBtn">
-                    <span id="submitText">
-                        <i class="bi bi-rocket me-2"></i>Complete Registration
-                    </span>
-                </button>
-            </form>
         </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="submit-btn" id="submitBtn">
+            <span id="submitText">
+                <i class="bi bi-rocket me-2"></i>Complete Registration
+            </span>
+        </button>
+        </form>
+    </div>
     </div>
 
     <!-- Bootstrap JS -->
@@ -281,7 +284,7 @@
             return true; // Let the form submit
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const textarea = document.querySelector('textarea[name="description"]');
             if (textarea.value) {
                 updateCharCounter(textarea);
@@ -293,4 +296,5 @@
         });
     </script>
 </body>
+
 </html>

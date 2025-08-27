@@ -1,69 +1,71 @@
 body {
-      background-color: #f0f2f5;
-      font-family: 'Segoe UI', sans-serif;
-    }
+    background-color: #f0f2f5;
+    font-family: "Segoe UI", sans-serif;
+}
 
-    .container-custom {
-      max-width: 700px;
-      margin: auto;
-      padding-top: 40px;
-    }
+.container-custom {
+    max-width: 700px;
+    margin: auto;
+    padding-top: 40px;
+}
 
-    .post-form {
-      border: none;
-      border-radius: 15px;
-      background-color: #fff;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-      padding: 30px;
-    }
+.post-form {
+    border: none;
+    border-radius: 15px;
+    background-color: #fff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    padding: 30px;
+}
 
-    .form-header {
-      font-weight: bold;
-      color: #198754;
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
+.form-header {
+    font-weight: bold;
+    color: #198754;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
 
-    .text-muted {
-      font-size: 14px;
-      margin-bottom: 20px;
-    }
+.text-muted {
+    font-size: 14px;
+    margin-bottom: 20px;
+}
 
-    .form-label i {
-      margin-right: 6px;
-      color: #198754;
-    }
+.form-label i {
+    margin-right: 6px;
+    color: #198754;
+}
 
-    .form-control, .form-select {
-      border-radius: 10px;
-    }
+.form-control,
+.form-select {
+    border-radius: 10px;
+}
 
-    .form-control:focus, .form-select:focus {
-      box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
-      border-color: #198754;
-    }
+.form-control:focus,
+.form-select:focus {
+    box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+    border-color: #198754;
+}
 
-    .btn-success {
-      font-weight: bold;
-      border-radius: 10px;
-    }
+.btn-success {
+    font-weight: bold;
+    border-radius: 10px;
+}
 
-    .btn-primary {
-      border-radius: 10px;
-    }
+.btn-primary {
+    border-radius: 10px;
+}
 
-    .current-media {
-      margin-bottom: 15px;
-      border: 1px solid #ddd;
-      padding: 10px;
-      border-radius: 10px;
-      background-color: #f8f9fa;
-    }
+.current-media {
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #f8f9fa;
+}
 
-    .back-button {
-      margin-top: 30px;
-    }
+.back-button {
+    margin-top: 30px;
+}
 
-    textarea {
-      resize: none;
-    }
+textarea {
+    resize: none;
+}

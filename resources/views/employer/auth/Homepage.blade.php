@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,8 +9,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/applicant/employer/homepage.css') }}">
-    
+
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
@@ -54,7 +56,7 @@
                         Find Certified <span class="text-gradient">Blue Collar</span> Workers
                     </h1>
                     <p class="lead mb-5 text-muted">
-                        Connect with TESDA-certified skilled workers and technical professionals. 
+                        Connect with TESDA-certified skilled workers and technical professionals.
                         Find qualified craftsmen, technicians, and skilled laborers for your projects.
                     </p>
                     <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
@@ -101,7 +103,8 @@
                 <div class="col-lg-8">
                     <h2 class="display-4 fw-bold mb-4">Why Choose SkillForce?</h2>
                     <p class="lead text-muted">
-                        Our platform offers everything you need to find and hire the best blue collar talent efficiently.
+                        Our platform offers everything you need to find and hire the best blue collar talent
+                        efficiently.
                     </p>
                 </div>
             </div>
@@ -112,7 +115,8 @@
                             <i class="fas fa-crosshairs"></i>
                         </div>
                         <h4 class="fw-bold">TESDA Certified</h4>
-                        <p class="text-muted">All workers are TESDA-certified with verified skills and competencies in their respective trades.</p>
+                        <p class="text-muted">All workers are TESDA-certified with verified skills and competencies in
+                            their respective trades.</p>
                     </div>
                 </div>
                 <div class="col-lg-4 mb-4">
@@ -121,7 +125,8 @@
                             <i class="fas fa-clock"></i>
                         </div>
                         <h4 class="fw-bold">Fast Matching</h4>
-                        <p class="text-muted">Quick placement process that connects you with qualified skilled workers in days, not weeks.</p>
+                        <p class="text-muted">Quick placement process that connects you with qualified skilled workers
+                            in days, not weeks.</p>
                     </div>
                 </div>
                 <div class="col-lg-4 mb-4">
@@ -130,7 +135,8 @@
                             <i class="fas fa-shield-alt"></i>
                         </div>
                         <h4 class="fw-bold">Verified Skills</h4>
-                        <p class="text-muted">All craftsmen undergo skills verification and background checks to ensure quality and reliability.</p>
+                        <p class="text-muted">All craftsmen undergo skills verification and background checks to ensure
+                            quality and reliability.</p>
                     </div>
                 </div>
             </div>
@@ -185,7 +191,8 @@
                 <div class="col-lg-8">
                     <h2 class="display-4 fw-bold mb-4">Ready to Find Your Next Skilled Worker?</h2>
                     <p class="lead mb-4">
-                        Join hundreds of construction and manufacturing companies that have successfully hired through our platform.
+                        Join hundreds of construction and manufacturing companies that have successfully hired through
+                        our platform.
                     </p>
                     <a href="employer-registration.html" class="btn btn-light btn-lg">
                         <i class="fas fa-rocket me-2"></i>Get Started Now
@@ -242,4 +249,5 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

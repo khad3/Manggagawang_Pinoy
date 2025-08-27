@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="{{ asset('css/applicant/my_application/applicantion.css') }}" rel="stylesheet">
+
 </head>
 
 <body>
@@ -151,32 +152,70 @@
                             </div>
 
                             <!-- Static Application Examples -->
-                            <div class="application-card">
-                                <div class="row align-items-center">
-                                    <div class="col-12 col-lg-8">
-                                        <div
-                                            class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3 mb-2">
-                                            <h5 class="job-title mb-0">Construction Foreman</h5>
-                                            <span class="status-badge status-interview">
-                                                <i class="fas fa-chart-line"></i>
-                                                Interview
-                                            </span>
+                            @foreach ($appliedJobs as $job)
+                                <div class="application-card">
+                                    <div class="row align-items-center">
+                                        <div class="col-12 col-lg-8">
+                                            <div
+                                                class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3 mb-2">
+                                                <h5 class="job-title mb-0">{{ $job->job->title ?? 'No title' }}</h5>
+                                                @if ($job->status == 'pending')
+                                                    <span class="status-badge status-pending">
+                                                        <i class="fas fa-clock"></i>
+                                                        Pending
+                                                    </span>
+                                                @elseif ($job->status == 'being_reviewed')
+                                                    <span class="status-badge status-reviewed">
+                                                        <i class="fas fa-file-alt"></i>
+                                                        Being Reviewed
+                                                    </span>
+                                                @elseif ($job->status == 'interview')
+                                                    <span class="status-badge status-interview">
+                                                        <i class="fas fa-chart-line"></i>
+                                                        Interview
+                                                    </span>
+                                                @elseif ($job->status == 'approved')
+                                                    <span class="status-badge status-approved">
+                                                        <i class="fas fa-check-circle"></i>
+                                                        Approved
+                                                    </span>
+                                                @elseif ($job->status == 'rejected')
+                                                    <span class="status-badge status-rejected">
+                                                        <i class="fas fa-times-circle"></i>
+                                                        Rejected
+                                                    </span>
+                                                @else
+                                                    <span class="status-badge status-unknown">
+                                                        <i class="fas fa-question-circle"></i>
+                                                        {{ $job->status ?? 'Unknown' }}
+                                                    </span>
+                                                @endif
+
+
+                                            </div>
+                                            <p class="company-name mb-3">
+                                                {{ $job->job->employer->addressCompany->company_name ?? ('No company' ?? 'No company') }}
+                                            </p>
+                                            <div class="job-details d-flex flex-column flex-md-row gap-3">
+                                                <span><i
+                                                        class="fas fa-map-marker-alt"></i>{{ $job->job->location ?? 'No location' }}</span>
+                                                <span><i class="fas fa-calendar"></i>Applied:
+                                                    {{ $job->created_at->format('M d, Y') ?? 'No date' }}</span>
+                                                <span>
+                                                    <i class="fas fa-coins"></i>
+                                                    &#8369;{{ $job->job->job_salary ?? 'No salary' }}
+                                                </span>
+                                            </div>
                                         </div>
-                                        <p class="company-name mb-3">Metro Construction LLC</p>
-                                        <div class="job-details d-flex flex-column flex-md-row gap-3">
-                                            <span><i class="fas fa-map-marker-alt"></i>Houston, TX</span>
-                                            <span><i class="fas fa-calendar"></i>Applied: 1/15/2024</span>
-                                            <span><i class="fas fa-dollar-sign"></i>$55,000 - $70,000</span>
+                                        <div class="col-12 col-lg-4 text-lg-end mt-3 mt-lg-0">
+                                            <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
+                                                data-bs-target="#viewApplicationDetailsModal">
+                                                <i class="fas fa-eye me-2"></i>View Details
+                                            </button>
                                         </div>
-                                    </div>
-                                    <div class="col-12 col-lg-4 text-lg-end mt-3 mt-lg-0">
-                                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
-                                            data-bs-target="#viewApplicationDetailsModal">
-                                            <i class="fas fa-eye me-2"></i>View Details
-                                        </button>
                                     </div>
                                 </div>
-                            </div>
+                            @endforeach
 
                             <div class="application-card">
                                 <div class="row align-items-center">
