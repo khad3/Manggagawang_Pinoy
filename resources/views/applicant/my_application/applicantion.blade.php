@@ -314,7 +314,7 @@
                                 <p class="text-muted mt-1 ms-3">Jobs you've bookmarked for later</p>
                             </div>
 
-                            <!-- ✅ Dynamic Saved Jobs -->
+                            <!-- Dynamic Saved Jobs -->
                             @forelse ($retrievedSavedJobs as $savedJob)
                                 <div class="job-card">
                                     <div class="row align-items-center">
@@ -369,6 +369,7 @@
                                                     <i class="fas fa-eye me-1"></i>View Details
                                                 </button>
 
+                                                {{-- CHECK APPLICATION STATUS FOR EACH INDIVIDUAL JOB --}}
                                                 @php
                                                     $alreadyApplied = \App\Models\Applicant\ApplyJobModel::where(
                                                         'job_id',
@@ -379,19 +380,22 @@
                                                 @endphp
 
                                                 @if ($alreadyApplied)
-                                                    <button class="btn btn-secondary btn-sm" disabled>
-                                                        <i class="fas fa-check me-1"></i>Already Applied
+                                                    <button type="button" class="btn btn-danger btn-sm"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#cancelApplicationModal"
+                                                        data-job-id="{{ $savedJob->job->id }}">
+                                                        <i class="fas fa-times me-1"></i>Cancel Application
                                                     </button>
                                                 @else
                                                     <button class="btn btn-success btn-sm" data-bs-toggle="modal"
                                                         data-bs-target="#applyJobModal"
+                                                        data-job-id="{{ $savedJob->job->id }}"
                                                         data-job-title="{{ $savedJob->job->title ?? 'No title' }}"
                                                         data-company-name="{{ $savedJob->job->employer->addressCompany->company_name ?? 'No company' }}"
                                                         data-job-location="{{ $savedJob->job->employer->addressCompany->company_municipality ?? 'No location' }} {{ $savedJob->job->employer->addressCompany->company_province ?? '' }}">
                                                         <i class="fas fa-paper-plane me-1"></i>Apply Now
                                                     </button>
                                                 @endif
-
                                             </div>
                                         </div>
                                     </div>
@@ -410,6 +414,41 @@
                     </div>
 
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancel Application Modal -->
+    <div class="modal fade" id="cancelApplicationModal" tabindex="-1" aria-labelledby="cancelApplicationModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form method="POST" action="{{ route('jobs.cancel.delete') }}">
+                    @csrf
+                    @method('DELETE')
+                    <input type="hidden" name="job_id" id="cancelJobId">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cancelApplicationModalLabel">
+                            <i class="fas fa-exclamation-triangle text-danger me-2"></i>Cancel Application
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <p>Are you sure you want to cancel your application for this job?</p>
+                        <p class="text-muted mb-0"><small>This action cannot be undone.</small></p>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i>Close
+                        </button>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash me-1"></i>Yes, Cancel
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -591,10 +630,6 @@
                                 <div class="detail-label">Experience Level</div>
                                 <div class="detail-value" id="modal-experience-level">Loading...</div>
                             </div>
-                            <!-- <div class="modal-detail-item">
-                            <div class="detail-label">Remote Work</div>
-                            <div class="detail-value">Hybrid - 3 days in office</div>
-                        </div> -->
                         </div>
                     </div>
                     <div class="row mt-4">
@@ -621,17 +656,10 @@
                                     <div class="benefits-list" id="modal-job-benefits">
                                         <ul>
                                             <li>Loading...</li>
-
                                         </ul>
                                     </div>
                                 </div>
                             </div>
-                            <!-- <div class="modal-detail-item">
-                            <div class="detail-label">Company Culture</div>
-                            <div class="detail-value">
-                                We foster an innovative and collaborative work environment where creativity thrives. We believe in work-life balance and provide our employees with the tools and support they need to succeed. Our diverse team is passionate about technology and committed to making a positive impact in the industry. We value continuous learning, open communication, and mutual respect.
-                            </div>
-                        </div> -->
                         </div>
                     </div>
                 </div>
@@ -647,8 +675,6 @@
                             <i class="fas fa-heart-broken me-2"></i>Remove from Saved
                         </button>
                     </form>
-
-
                     <button type="button" class="btn btn-success" data-bs-dismiss="modal"
                         onclick="openApplyModal()">
                         <i class="fas fa-paper-plane me-2"></i>Apply Now
@@ -682,36 +708,41 @@
                             </div>
                         </div>
                     </div>
-                    <form action="{{ route('jobs.apply.store') }}" method="POST" enctype="multipart/form-data">
+
+                    <form action="{{ route('jobs.apply.store') }}" method="POST" enctype="multipart/form-data"
+                        id="jobApplicationForm">
                         @csrf
-                        <input type="hidden" name="job_id" value="{{ $savedJob->job_id }}">
+                        <input type="hidden" name="job_id" id="apply-job-id-input">
+
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Phone Number *</label>
                                     <input type="tel" class="form-control" name="phone_number"
-                                        placeholder="+63 912 345 6789">
+                                        placeholder="+63 912 345 6789" required>
                                 </div>
                             </div>
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Resume/CV *</label>
                             <input type="file" class="form-control" name="resume" accept=".pdf,.doc,.docx"
                                 required>
                             <div class="form-text">Accepted formats: PDF, DOC, DOCX (Max 5MB)</div>
                         </div>
-                        <div class="mb-3">
-                            <label for="certi" class="form-label">Upload TESDA Certificate (PDF,
-                                DOC)</label>
-                            <input type="file" name="tesda_certificate" class="form-control"
-                                accept=".pdf,.doc,.docx" @if ($tesdaCertification && $tesdaCertification->status == 'approved') @else disabled @endif>
 
-                            @if ($tesdaCertification && $tesdaCertification->status == 'pending')
-                                <p class="text-warning mt-2">Your TESDA Certificate is under review. Thank
+                        <div class="mb-3">
+                            <label for="certi" class="form-label">Upload TESDA Certificate (PDF, DOC)</label>
+                            <input type="file" name="tesda_certificate" class="form-control"
+                                accept=".pdf,.doc,.docx"
+                                @if (isset($tesdaCertification) && $tesdaCertification && $tesdaCertification->status == 'approved') @else 
+                                    disabled @endif>
+
+                            @if (isset($tesdaCertification) && $tesdaCertification && $tesdaCertification->status == 'pending')
+                                <p class="text-warning mt-2">Your TESDA Certificate is under review. Thank you.</p>
+                            @elseif (!isset($tesdaCertification) || !$tesdaCertification || $tesdaCertification->status != 'approved')
+                                <p class="text-danger mt-2">Please upload your TESDA Certificate before applying. Thank
                                     you.</p>
-                            @elseif (!$tesdaCertification || $tesdaCertification->status != 'approved')
-                                <p class="text-danger mt-2">Please upload your TESDA Certificate before
-                                    applying. Thank you.</p>
                             @endif
                         </div>
 
@@ -720,64 +751,44 @@
                             <textarea class="form-control" name="cover_letter" rows="4"
                                 placeholder="Tell us why you're interested in this position and what makes you a great fit..."></textarea>
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Additional Information</label>
                             <textarea class="form-control" name="additional_info" rows="3"
                                 placeholder="Any additional information you'd like to share..."></textarea>
                         </div>
-                        <!-- <div class="mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="termsCheck" name="terms_accepted" required>
-                            <label class="form-check-label" for="termsCheck">
-                                I agree to the <a href="#" target="_blank">terms and conditions</a> and <a href="#" target="_blank">privacy policy</a> *
-                            </label>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="newsletterCheck" name="newsletter_subscribe">
-                            <label class="form-check-label" for="newsletterCheck">
-                                Subscribe to our newsletter for job updates and company news
-                            </label>
-                        </div>
-                    </div> -->
+
                         <div class="modal-footer">
-
-                        </div>
-
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            <i class="fas fa-times me-2"></i>Cancel
-                        </button>
-                        @php
-                            $alreadyApplied = \App\Models\Applicant\ApplyJobModel::where('job_id', $savedJob->job_id)
-                                ->where('applicant_id', session('applicant_id'))
-                                ->exists();
-                        @endphp
-
-                        @if ($alreadyApplied)
-                            <button type="button" class="btn btn-secondary" disabled>
-                                <i class="fas fa-check me-2"></i>Already Submitted
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-2"></i>Cancel
                             </button>
-                        @else
-                            <button type="submit" class="btn btn-success">
+                            <button type="submit" class="btn btn-success" id="submitApplicationBtn">
                                 <i class="fas fa-paper-plane me-2"></i>Submit Application
                             </button>
-                        @endif
-
+                        </div>
                     </form>
                 </div>
-
             </div>
         </div>
     </div>
+
+    <!-- Scripts -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            // Handle Cancel Application Modal
+            const cancelModal = document.getElementById("cancelApplicationModal");
+            cancelModal.addEventListener("show.bs.modal", function(event) {
+                let button = event.relatedTarget;
+                let jobId = button.getAttribute("data-job-id");
+                document.getElementById("cancelJobId").value = jobId;
+            });
+
+            // Handle Unsave Job Modal
             var viewModal = document.getElementById('viewSavedJobModal');
             viewModal.addEventListener('show.bs.modal', function(event) {
                 var button = event.relatedTarget;
                 var jobId = button.getAttribute('data-job-id');
 
-                // Generate URL properly using Laravel's route helper
                 var url = "{{ route('jobs.unsave', ':id') }}";
                 url = url.replace(':id', jobId);
 
@@ -785,11 +796,7 @@
                 form.action = url;
             });
         });
-    </script>
 
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
         // Update saved job modal with data
         document.addEventListener('DOMContentLoaded', function() {
             const savedJobModal = document.getElementById('viewSavedJobModal');
@@ -818,15 +825,14 @@
                     document.getElementById('modal-job-type').textContent = jobType;
                     document.getElementById('modal-posted-date').textContent = postedDate;
                     document.getElementById('modal-first-name').textContent = firstName;
-
                     document.getElementById('modal-experience-level').textContent = experienceLevel;
                     document.getElementById('modal-job-description').textContent = jobDescription;
 
                     const reqList = document.getElementById('modal-job-additional-requirements')
                         .querySelector('ul');
-                    reqList.innerHTML = ""; // clear old list
+                    reqList.innerHTML = "";
 
-                    if (jobAdditionalRequirements && jobAdditionalRequirements !== "No requirements") {
+                    if (jobAdditionalRequirements && jobAdditionalRequirements !== "N/A") {
                         jobAdditionalRequirements.split(",").forEach(req => {
                             let li = document.createElement("li");
                             li.textContent = req.trim();
@@ -839,9 +845,9 @@
                     }
 
                     const benefitList = document.getElementById('modal-job-benefits').querySelector('ul');
-                    benefitList.innerHTML = ""; // clear old list
+                    benefitList.innerHTML = "";
 
-                    if (jobBenefits && jobBenefits !== "No benefits") {
+                    if (jobBenefits && jobBenefits !== "N/A") {
                         jobBenefits.split(",").forEach(benefit => {
                             let li = document.createElement("li");
                             li.textContent = benefit.trim();
@@ -849,12 +855,11 @@
                         });
                     } else {
                         let li = document.createElement("li");
-                        li.textContent = "No benefits";
+                        li.textContent = "No benefits listed";
                         benefitList.appendChild(li);
                     }
 
                     // Update contact email
-                    // Update modal contact email link
                     const emailLink = document.getElementById('modal-employer-email');
                     emailLink.href = `mailto:${employerEmail}`;
                     emailLink.textContent = employerEmail;
@@ -866,39 +871,20 @@
             if (applyJobModal) {
                 applyJobModal.addEventListener('show.bs.modal', function(event) {
                     const button = event.relatedTarget;
+                    const jobId = button.getAttribute('data-job-id');
                     const jobTitle = button.getAttribute('data-job-title');
                     const companyName = button.getAttribute('data-company-name');
                     const jobLocation = button.getAttribute('data-job-location');
 
                     // Update modal content
-                    document.getElementById('apply-job-title').textContent = jobTitle;
-                    document.getElementById('apply-company-name').textContent = companyName;
-                    document.getElementById('apply-job-location').textContent = jobLocation;
+                    document.getElementById('apply-job-title').textContent = jobTitle || 'Job Title';
+                    document.getElementById('apply-company-name').textContent = companyName || 'Company';
+                    document.getElementById('apply-job-location').textContent = jobLocation || 'Location';
+                    document.getElementById('apply-job-id-input').value = jobId;
 
                     // Update modal title
                     document.getElementById('applyJobModalLabel').innerHTML =
-                        `<i class="fas fa-paper-plane me-2"></i>Apply for ${jobTitle}`;
-                });
-            }
-
-            // Handle form submission
-            const applicationForm = document.getElementById('jobApplicationForm');
-            if (applicationForm) {
-                applicationForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-
-                    // Here you would typically send the form data to your Laravel backend
-                    // For now, we'll just show a success message
-
-                    // Close the modal
-                    bootstrap.Modal.getInstance(applyJobModal).hide();
-
-                    // Show success message (you can replace this with your preferred notification system)
-                    setTimeout(() => {
-                        alert(
-                            'Application submitted successfully! We will review your application and get back to you soon.'
-                        );
-                    }, 300);
+                        `<i class="fas fa-paper-plane me-2"></i>Apply for ${jobTitle || 'Position'}`;
                 });
             }
         });
@@ -920,6 +906,8 @@
             new bootstrap.Modal(document.getElementById('applyJobModal')).show();
         }
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

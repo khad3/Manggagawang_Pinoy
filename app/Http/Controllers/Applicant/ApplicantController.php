@@ -379,6 +379,19 @@ public function ShowHomepage()
     ->first();
 
     $tesdaCertificateCounts = \App\Models\Applicant\TesdaUploadCertificationModel::where('status', 'approved')->count();
+
+     //retrieved the applied jobs
+    $appliedJobs = ApplyJob::with([
+        'job' => function ($query) {
+            $query->with([
+                'employer.addressCompany',   // employer + company address
+                'interviewScreening',
+                'workerRequirement',
+                'specialRequirement',
+                'employer.personal_info',
+            ]);
+        }
+    ])->where('applicant_id', $applicantId)->get();
     
 
     return view('applicant.homepage.homepage', compact(
@@ -389,7 +402,8 @@ public function ShowHomepage()
         'retrievedAddressCompany',
         'savedJobIds',
         'tesdaCertification',
-        'tesdaCertificateCounts'
+        'tesdaCertificateCounts',
+        'appliedJobs'
     ));
 }
 
@@ -2101,6 +2115,20 @@ public function applyJob(Request $request)
 
     return back()->with('success', 'You have successfully applied for this job.');
 
+}
+
+
+//cancel job
+public function cancelApplication(Request $request)
+{
+    $applicantId = session('applicant_id');
+    $jobId = $request->input('job_id'); // ✅ get job_id from form
+
+    ApplyJob::where('job_id', $jobId)
+        ->where('applicant_id', $applicantId)
+        ->delete();
+
+    return back()->with('success', 'Application cancelled successfully.');
 }
 
 

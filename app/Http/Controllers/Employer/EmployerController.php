@@ -527,6 +527,13 @@ public function viewApplicantProfile($applicantID)
     $retrievedYoutube = ApplicantUrlModel::with('personalInfo', 'workExperience')
         ->where('applicant_id', $applicantID)->latest()->get();
 
+
+   $tesdaCertification = \App\Models\Applicant\TesdaUploadCertificationModel::where('status', 'approved')
+    ->where('applicant_id', $applicantID)
+    ->orderBy('updated_at', 'desc')
+    ->get();
+
+
     return view('employer.homepage.getprofile.getprofile', compact(
         'retrievedProfile',
         'retrievedPosts',
@@ -535,7 +542,8 @@ public function viewApplicantProfile($applicantID)
         'retrievedRating',
         'averageRating',
         'totalReviews',
-        'uniqueEmployerCount'
+        'uniqueEmployerCount',
+        'tesdaCertification'
     ));
 }
 

@@ -429,7 +429,6 @@
                 </div>
 
 
-                <!-- Employer Grid -->
                 <div class="employer-grid" id="employerGrid">
                     @foreach ($JobPostRetrieved as $jobDetail)
                         @if ($jobDetail->status_post === 'published')
@@ -501,10 +500,10 @@
                                             data-salary="{{ $jobDetail->job_salary }}"
                                             data-experience="{{ $jobDetail->experience_level ?? 'N/A' }}"
                                             @if (Str::contains($jobDetail->tesda_certification, 'Other')) data-tesda="{{ $jobDetail->other_certifications ?? 'N/A' }}"
-                                data-none="N/A"
-                            @else
-                                data-tesda="{{ $jobDetail->tesda_certification ?? 'N/A' }}"
-                                data-none="{{ $jobDetail->none_certifications_qualification ?? 'N/A' }}" @endif
+                            data-none="N/A"
+                        @else
+                            data-tesda="{{ $jobDetail->tesda_certification ?? 'N/A' }}"
+                            data-none="{{ $jobDetail->none_certifications_qualification ?? 'N/A' }}" @endif
                                             data-bs-toggle="modal" data-bs-target="#viewDetailsModal">
                                             View Details
                                         </button>
@@ -524,142 +523,251 @@
                                             @endif
                                         </form>
 
-                                        <!-- Apply Job -->
-                                        <button class="btn btn-success btn-sm apply-btn"
-                                            data-title="{{ $jobDetail->title }}"
-                                            data-company="{{ $jobDetail->company_name ?? 'N/A' }}"
-                                            data-location="{{ $jobDetail->location }}" data-bs-toggle="modal"
-                                            data-bs-target="#applyJobModal">
-                                            <i class="bi bi-send-check"></i> Apply Job
-                                        </button>
+                                        @php
+                                            $alreadyApplied = \App\Models\Applicant\ApplyJobModel::where(
+                                                'job_id',
+                                                $jobDetail->id ?? null,
+                                            )
+                                                ->where('applicant_id', session('applicant_id'))
+                                                ->exists();
+                                        @endphp
+
+                                        @if ($alreadyApplied)
+                                            <!-- Cancel Application Button -->
+                                            <button type="button" class="btn btn-danger btn-sm"
+                                                data-bs-toggle="modal" data-bs-target="#cancelApplicationModal"
+                                                data-job-id="{{ $jobDetail->id }}"
+                                                data-title="{{ $jobDetail->title }}"
+                                                data-company="{{ $retrievedAddressCompany->first()->company_name ?? 'Unknown Company' }}"
+                                                data-location="{{ $jobDetail->location }}">
+                                                <i class="fas fa-times me-1"></i> Cancel Application
+                                            </button>
+                                        @else
+                                            <!-- Apply Job Button -->
+                                            <button class="btn btn-success btn-sm apply-btn"
+                                                data-job-id="{{ $jobDetail->id }}"
+                                                data-title="{{ $jobDetail->title }}"
+                                                data-company="{{ $retrievedAddressCompany->first()->company_name ?? 'Unknown Company' }}"
+                                                data-location="{{ $jobDetail->location }}" data-bs-toggle="modal"
+                                                data-bs-target="#applyJobModal">
+                                                <i class="bi bi-send-check"></i> Apply Job
+                                            </button>
+                                        @endif
+
                                     </div>
                                 </div>
                             </div>
                         @endif
                     @endforeach
+                </div>
 
-                    <!-- Apply Job Modal -->
-                    <div class="modal fade" id="applyJobModal" tabindex="-1" aria-labelledby="applyJobModalLabel"
-                        aria-hidden="true">
-                        <div class="modal-dialog modal-lg modal-dialog-centered">
-                            <form action="" method="POST" enctype="multipart/form-data" class="modal-content"
-                                shadow-lg rounded-4 border-0>
+                <div class="modal fade" id="cancelApplicationModal" tabindex="-1"
+                    aria-labelledby="cancelApplicationModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <form method="POST" action="{{ route('jobs.cancel.delete') }}">
                                 @csrf
-                                <div class="modal-header bg-success text-white">
-                                    <h5 class="modal-title" id="applyJobModalLabel">
-                                        <i class="bi bi-briefcase-fill me-2"></i>Apply for <span
-                                            id="applyCompanyNameText">{{ $retrievedAddressCompany->first()->company_name ?? 'Unknown Company' }}</span>
+                                @method('DELETE')
+                                <input type="hidden" name="job_id" id="cancelJobId">
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="cancelApplicationModalLabel">
+                                        <i class="fas fa-exclamation-triangle text-danger me-2"></i>Cancel Application
                                     </h5>
-                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                 </div>
 
-                                <div class="modal-body px-4">
-                                    <div class="alert alert-info" role="alert">
-                                        <strong>Instructions:</strong> Please complete the form below and upload your
-                                        resume and write some cover letter. Ensure your documents are in PDF or DOC
-                                        format.
-                                    </div>
-
-                                    <!-- Hidden Inputs -->
-                                    <input type="hidden" name="job_title" id="applyJobTitle">
-                                    <input type="hidden" name="company_name" id="applyCompanyName" value="">
-                                    <input type="hidden" name="location" id="applyJobLocation">
-
-                                    <!-- Contact Number -->
-                                    <div class="mb-3">
-                                        <label for="contact" class="form-label">Contact Number</label>
-                                        <input type="text" name="contact" class="form-control"
-                                            placeholder="e.g., 09xxxxxxxxx" required>
-                                    </div>
-
-                                    <!-- Cover Letter Textarea -->
-                                    <div class="mb-3">
-                                        <label for="cover_letter_text" class="form-label">Short Cover Letter
-                                            (Optional)</label>
-                                        <textarea name="cover_letter_text" class="form-control" rows="4"
-                                            placeholder="Why are you a good fit for this job?"></textarea>
-                                    </div>
-
-                                    <!-- Upload Resume -->
-                                    <div class="mb-3">
-                                        <label for="resume" class="form-label">Upload Resume (PDF, DOC)</label>
-                                        <input type="file" name="resume" class="form-control"
-                                            accept=".pdf,.doc,.docx" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="certi" class="form-label">Upload TESDA Certificate (PDF,
-                                            DOC)</label>
-                                        <input type="file" name="certificate" class="form-control"
-                                            accept=".pdf,.doc,.docx"
-                                            @if ($tesdaCertification && $tesdaCertification->status == 'approved') required @else disabled @endif>
-
-                                        @if ($tesdaCertification && $tesdaCertification->status == 'pending')
-                                            <p class="text-warning mt-2">Your TESDA Certificate is under review. Thank
-                                                you.</p>
-                                        @elseif (!$tesdaCertification || $tesdaCertification->status != 'approved')
-                                            <p class="text-danger mt-2">Please upload your TESDA Certificate before
-                                                applying. Thank you.</p>
-                                        @endif
-                                    </div>
-
-
-
-
+                                <div class="modal-body">
+                                    <p>Are you sure you want to cancel your application for this job?</p>
+                                    <p class="text-muted mb-0"><small>This action cannot be undone.</small></p>
                                 </div>
 
-                                <div class="modal-footer bg-light">
-                                    <button type="submit" class="btn btn-success w-100">
-                                        <i class="bi bi-send-fill me-2"></i>Submit Application
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                        <i class="fas fa-times me-1"></i>Close
+                                    </button>
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="fas fa-trash me-1"></i>Yes, Cancel
                                     </button>
                                 </div>
                             </form>
                         </div>
                     </div>
+                </div>
 
+                <!-- Apply Job Modal -->
+                <div class="modal fade" id="applyJobModal" tabindex="-1" aria-labelledby="applyJobModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <form action="{{ route('jobs.apply.store') }}" method="POST"
+                                enctype="multipart/form-data">
+                                @csrf
+                                <!-- FIXED: Changed name to match what's expected -->
+                                <input type="hidden" name="job_id" id="apply-job-id-input">
 
-                    <!-- View Details Modal -->
-                    <div class="modal fade" id="viewDetailsModal" tabindex="-1"
-                        aria-labelledby="viewDetailsModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="viewDetailsModalLabel">Job Details</h5>
+                                    <h5 class="modal-title" id="applyJobModalLabel">
+                                        <i class="fas fa-paper-plane me-2"></i>Apply for Position
+                                    </h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
                                 </div>
+
                                 <div class="modal-body">
-                                    <h4 id="modalJobTitle"></h4>
-                                    <p><strong>Company:</strong> <span id="modalCompanyName"></span></p>
-                                    <p><strong>Industry:</strong> <span id="modalIndustry"></span></p>
-                                    <p><strong>Location:</strong> <span id="modalLocation"></span></p>
-                                    <p><strong>Description:</strong></p>
-                                    <p id="modalDescription"></p>
-                                    <p><strong>Salary:</strong> ₱<span id="modalSalary"></span> Monthly</p>
-                                    <p><strong>Benefits:</strong> <span id="modalBenefits"></span></p>
-                                    <p><strong>Experience Level:</strong> <span id="modalExperienceLevel"></span></p>
-                                    <p><strong>TESDA Certification:</strong> <span id="modalTESDACertification"></span>
-                                    </p>
-                                    <p><strong>Other Certifications:</strong> <span
-                                            id="modalNoneCertificationsQualification"></span></p>
+                                    <!-- Job Info -->
+                                    <div class="row mb-4">
+                                        <div class="col-12">
+                                            <div class="p-3 bg-light rounded">
+                                                <h6 class="fw-bold mb-2" id="apply-job-title">Job Title</h6>
+                                                <p class="mb-1 text-muted" id="apply-company-name">Company Name</p>
+                                                <p class="mb-0 text-muted">
+                                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                                    <span id="apply-job-location">Location</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Phone -->
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-semibold">Phone Number *</label>
+                                                <input type="tel" class="form-control" name="phone_number"
+                                                    placeholder="+63 912 345 6789" required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Resume -->
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Resume/CV *</label>
+                                        <input type="file" class="form-control" name="resume"
+                                            accept=".pdf,.doc,.docx" required>
+                                        <div class="form-text">Accepted formats: PDF, DOC, DOCX (Max 5MB)</div>
+                                    </div>
+
+                                    <!-- TESDA Cert -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Upload TESDA Certificate (PDF, DOC)</label>
+                                        <input type="file" name="tesda_certificate" class="form-control"
+                                            accept=".pdf,.doc,.docx"
+                                            @if (!$tesdaCertification || $tesdaCertification->status != 'approved') disabled @endif>
+
+                                        @if ($tesdaCertification && $tesdaCertification->status == 'pending')
+                                            <p class="text-warning mt-2">Your TESDA Certificate is under review.</p>
+                                        @elseif (!$tesdaCertification || $tesdaCertification->status != 'approved')
+                                            <p class="text-danger mt-2">Please upload your TESDA Certificate before
+                                                applying.</p>
+                                        @endif
+                                    </div>
+
+                                    <!-- Cover Letter -->
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Cover Letter</label>
+                                        <textarea class="form-control" name="cover_letter" rows="4"
+                                            placeholder="Tell us why you're interested in this position..."></textarea>
+                                    </div>
+
+                                    <!-- Additional Info -->
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Additional Information</label>
+                                        <textarea class="form-control" name="additional_info" rows="3"
+                                            placeholder="Any additional information you'd like to share..."></textarea>
+                                    </div>
                                 </div>
-                            </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                        <i class="fas fa-times me-2"></i>Cancel
+                                    </button>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-paper-plane me-2"></i>Submit Application
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
 
+                <!-- FIXED JavaScript -->
+                <script>
+                    const applyJobModal = document.getElementById('applyJobModal');
+                    if (applyJobModal) {
+                        applyJobModal.addEventListener('show.bs.modal', function(event) {
+                            const button = event.relatedTarget;
+                            const jobId = button.getAttribute('data-job-id');
+                            const jobTitle = button.getAttribute('data-title');
+                            const companyName = button.getAttribute('data-company');
+                            const jobLocation = button.getAttribute('data-location');
+
+                            // Update modal content
+                            document.getElementById('apply-job-title').textContent = jobTitle || 'Job Title';
+                            document.getElementById('apply-company-name').textContent = companyName || 'Company';
+                            document.getElementById('apply-job-location').textContent = jobLocation || 'Location';
+                            document.getElementById('apply-job-id-input').value = jobId;
+
+                            // Update modal title
+                            document.getElementById('applyJobModalLabel').innerHTML =
+                                `<i class="fas fa-paper-plane me-2"></i>Apply for ${jobTitle || 'Position'}`;
+                        });
+                    }
+
+                    // Handle Cancel Application Modal
+                    const cancelModal = document.getElementById("cancelApplicationModal");
+                    cancelModal.addEventListener("show.bs.modal", function(event) {
+                        let button = event.relatedTarget;
+                        let jobId = button.getAttribute("data-job-id");
+                        document.getElementById("cancelJobId").value = jobId;
+                    });
+                </script>
 
 
 
 
-                <!-- No Results Message -->
-                <div class="no-results hidden" id="noResults">
-                    <i class="bi bi-search"></i>
-                    <h3>No employers found</h3>
-                    <p>Try adjusting your filters or search terms</p>
+                <!-- View Details Modal -->
+                <div class="modal fade" id="viewDetailsModal" tabindex="-1" aria-labelledby="viewDetailsModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="viewDetailsModalLabel">Job Details</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <h4 id="modalJobTitle"></h4>
+                                <p><strong>Company:</strong> <span id="modalCompanyName"></span></p>
+                                <p><strong>Industry:</strong> <span id="modalIndustry"></span></p>
+                                <p><strong>Location:</strong> <span id="modalLocation"></span></p>
+                                <p><strong>Description:</strong></p>
+                                <p id="modalDescription"></p>
+                                <p><strong>Salary:</strong> ₱<span id="modalSalary"></span> Monthly</p>
+                                <p><strong>Benefits:</strong> <span id="modalBenefits"></span></p>
+                                <p><strong>Experience Level:</strong> <span id="modalExperienceLevel"></span></p>
+                                <p><strong>TESDA Certification:</strong> <span id="modalTESDACertification"></span>
+                                </p>
+                                <p><strong>Other Certifications:</strong> <span
+                                        id="modalNoneCertificationsQualification"></span></p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </section>
         </div>
+
+
+
+
+
+        <!-- No Results Message -->
+        <div class="no-results hidden" id="noResults">
+            <i class="bi bi-search"></i>
+            <h3>No employers found</h3>
+            <p>Try adjusting your filters or search terms</p>
+        </div>
+        </section>
+    </div>
     </div>
 
     <!-- Bootstrap JS -->
@@ -684,19 +792,7 @@
         </div>
     </div>
 
-    <script>
-        document.querySelectorAll('.apply-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                const jobTitle = button.getAttribute('data-title');
-                const companyName = button.getAttribute('data-company');
-                const location = button.getAttribute('data-location');
 
-                document.getElementById('applyJobTitle').value = jobTitle;
-                document.getElementById('applyCompanyName').value = companyName;
-                document.getElementById('applyJobLocation').value = location;
-            });
-        });
-    </script>
 
 
     <script>

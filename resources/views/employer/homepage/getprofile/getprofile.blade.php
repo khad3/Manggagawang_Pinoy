@@ -45,10 +45,22 @@
                     </div>
                     <div class="col-auto">
                         <div class="candidate-score-card">
-                            <div class="certification-badge">
-                                <i class="fas fa-shield-alt"></i> TESDA Certified
-                            </div>
+                            @php
+                                $hasApproved = $tesdaCertification->contains('status', 'approved');
+                            @endphp
+
+                            @if ($hasApproved)
+                                <div class="certification-badge text-success">
+                                    <i class="fas fa-shield-alt"></i> TESDA Certified
+                                </div>
+                            @else
+                                <div class="certification-badge text-muted">
+                                    <i class="fas fa-times-circle"></i> Not TESDA Certified
+                                </div>
+                            @endif
+
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -218,30 +230,43 @@
                 <div class="certifications-section mb-4">
                     <h6 class="section-title"><i class="fas fa-certificate"></i> Certifications</h6>
                     <div class="certification-grid">
-                        <div class="cert-card">
-                            <div class="cert-icon">
-                                <i class="fas fa-bolt"></i>
-                            </div>
-                            <div class="cert-info">
-                                <h6>NC II - Electrical Installation</h6>
-                                <p>TESDA • June 2024</p>
-                            </div>
-                            <div class="cert-status verified">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                        </div>
-                        <div class="cert-card">
-                            <div class="cert-icon">
-                                <i class="fas fa-fire"></i>
-                            </div>
-                            <div class="cert-info">
-                                <h6>NC I - Arc Welding</h6>
-                                <p>TESDA • March 2023</p>
-                            </div>
-                            <div class="cert-status verified">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                        </div>
+                        @if ($tesdaCertification->isNotEmpty())
+                            @foreach ($tesdaCertification as $cert)
+                                <div
+                                    class="cert-card d-flex align-items-center justify-content-between p-3 border rounded mb-2">
+                                    <!-- Left side: Icon + Info -->
+                                    <div class="d-flex align-items-center">
+                                        <div class="cert-icon me-3 text-warning">
+                                            <i class="fas fa-bolt fa-lg"></i>
+                                        </div>
+
+                                        <div class="cert-info">
+                                            <h6 class="mb-1 fw-bold">{{ $cert->certification_program }}</h6>
+                                            <p class="mb-0 text-muted small">
+                                                TESDA • {{ $cert->updated_at->format('M d, Y') }} approved
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Right side: Check + View Button -->
+                                    <div class="d-flex align-items-center">
+                                        <div class="cert-status text-success me-3">
+                                            <i class="fas fa-check-circle fa-lg"></i>
+                                        </div>
+
+                                        @if ($cert->file_path)
+                                            <a href="{{ asset('storage/' . $cert->file_path) }}" target="_blank"
+                                                class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-file-pdf me-1"></i> View
+                                            </a>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        @else
+                            <p class="text-muted">No TESDA Certifications available.</p>
+                        @endif
+
                     </div>
 
                     <!-- Portfolio Section -->
@@ -471,9 +496,19 @@
                             <div class="assessment-item">
                                 <span class="assessment-label">TESDA Certification:</span>
                                 <span class="assessment-value excellent">
-                                    {{ $retrievedProfile->template->tesda_certification ?? 'Not Certified' }}
+                                    @if ($tesdaCertification->isNotEmpty())
+                                        @foreach ($tesdaCertification as $certification)
+                                            {{ $certification->certification_program ?? 'N/A' }}
+                                            @if (!$loop->last)
+                                                ,
+                                            @endif
+                                        @endforeach
+                                    @else
+                                        N/A
+                                    @endif
                                 </span>
                             </div>
+
 
                             <div class="assessment-item">
                                 <span class="assessment-label">Employer Rating:</span>
