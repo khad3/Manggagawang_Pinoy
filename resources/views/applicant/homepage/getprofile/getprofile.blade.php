@@ -36,6 +36,16 @@
             color: transparent;
             /* hide original text */
         }
+
+        /* Zoom in animation */
+        .modal.fade .modal-dialog {
+            transform: scale(0.7);
+            transition: transform 0.3s ease-out;
+        }
+
+        .modal.fade.show .modal-dialog {
+            transform: scale(1);
+        }
     </style>
 </head>
 
@@ -116,10 +126,19 @@
                                 {{ $retrievedProfile->work_background->work_duration_unit }}
                             </p>
                         @endif
-                        <div class="certification-badge">
-                            <i class="bi bi-patch-check-fill"></i>
-                            TESDA Certified Professional
-                        </div>
+                        @if (isset($tesdaCertification) && $tesdaCertification->count() > 0)
+                            @foreach ($tesdaCertification as $certification)
+                                @if ($certification->status == 'approved')
+                                    <div class="certification-badge">
+                                        <i class="bi bi-patch-check-fill"></i>
+                                        TESDA Certified - {{ $certification->certification_program }}
+                                    </div>
+                                @endif
+                            @endforeach
+                        @else
+                            <p class="text-muted">No TESDA Certifications available.</p>
+                        @endif
+
                     </div>
                     <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
                         @if ($retrievedProfile->id != session('applicant_id'))
@@ -363,43 +382,83 @@
                         @endif
                     </div>
                     <div class="card-body-tesda">
-                        <div class="cert-item">
-                            <div class="cert-icon">
-                                <i class="bi bi-patch-check-fill"></i>
-                            </div>
-                            <div class="cert-content flex-grow-1">
-                                <h6>TESDA National Certificate II</h6>
-                                <small>Computer Systems Servicing • Issued June 2025</small>
-                            </div>
-                            <div class="dropdown">
-                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                                    data-bs-toggle="dropdown">
-                                    <i class="bi bi-three-dots-vertical"></i>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        @if (session('applicant_id') == $retrievedProfile->id)
-                                            <!-- If owner, show view and delete -->
+                        @foreach ($tesdaCertification as $cert)
+                            <div
+                                class="cert-item d-flex align-items-center justify-content-between mb-3 p-3 border rounded shadow-sm">
+
+                                {{-- Icon --}}
+                                <div class="cert-icon me-3">
+                                    <i class="bi bi-patch-check-fill text-warning fs-3"></i>
+                                </div>
+
+                                {{-- Certification Info --}}
+                                <div class="cert-content flex-grow-1">
+                                    <h6>{{ $cert->certification_program }}</h6>
+                                    <small>
+                                        Issued •
+                                        {{ \Carbon\Carbon::parse($cert->certification_date_obtained)->format('M d, Y') }}
+                                    </small>
+                                </div>
+
+                                {{-- Dropdown Actions --}}
+                                <div class="dropdown ms-3">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                                        data-bs-toggle="dropdown">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        {{-- Everyone can view the certificate --}}
+                                        <li>
                                             <button class="dropdown-item" data-bs-toggle="modal"
-                                                data-bs-target="#viewCertificationModal">
+                                                data-bs-target="#viewCertificationModal-{{ $cert->id }}">
                                                 <i class="bi bi-eye me-2"></i> View Certificate
                                             </button>
-                                    <li>
-                                        <button class="dropdown-item text-danger">
-                                            <i class="bi bi-trash me-2"></i> Delete
-                                        </button>
-                                    </li>
-                                @else
-                                    <!-- If stalker, show view only -->
-                                    <button class="dropdown-item" data-bs-toggle="modal"
-                                        data-bs-target="#viewCertificationModal">
-                                        <i class="bi bi-eye me-2"></i> View Certificate
-                                    </button>
-                                    @endif
-                                    </li>
-                                </ul>
+                                        </li>
+
+                                        {{-- Only owner can delete --}}
+                                        @if (session('applicant_id') == $retrievedProfile->id)
+                                            <li>
+                                                <form
+                                                    action="{{ route('applicant.certification.delete', ['id' => $cert->id]) }}"
+                                                    method="POST"
+                                                    onsubmit="return confirm('Are you sure you want to delete this certification?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="dropdown-item text-danger">
+                                                        <i class="bi bi-trash me-2"></i> Delete
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        @endif
+                                    </ul>
+                                </div>
                             </div>
-                        </div>
+
+                            {{-- View Certificate Modal --}}
+                            <div class="modal fade" id="viewCertificationModal-{{ $cert->id }}" tabindex="-1"
+                                aria-hidden="true" data-bs-backdrop="false" data-bs-keyboard="true">
+                                <div class="modal-dialog modal-lg modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">{{ $cert->certification_program }}</h5>
+                                            <button type="button" class="btn-close"
+                                                data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body text-center">
+                                            <iframe src="{{ asset('storage/' . $cert->file_path) }}" width="100%"
+                                                height="500px"></iframe>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                Close
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+
+
                     </div>
                 </div>
             </div>
@@ -442,35 +501,35 @@
                                         <div>
                                             <div class="post-author fw-bold">
                                                 {{ $post->personalInfo->first_name ?? 'Unknown' }}
-                                                {{ $post->personalInfo->last_name ?? '' }}</div>
+                                                {{ $post->personalInfo->last_name ?? '' }}
+                                            </div>
                                             <div class="post-time text-muted small">
-                                                {{ $post->created_at->diffForHumans() }}</div>
+                                                {{ $post->created_at->diffForHumans() }}
+                                            </div>
                                         </div>
                                     </div>
 
-                                    @if (session('applicant_id') == $retrievedProfile->id)
+                                    {{-- Edit/Delete dropdown only for **own posts** --}}
+                                    @if ($currentApplicantId == $post->applicant_id)
                                         <div class="dropdown">
                                             <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
                                                 data-bs-toggle="dropdown">
                                                 <i class="bi bi-three-dots"></i>
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-end">
-                                                <li>
-                                                    <a class="dropdown-item" href="#"><i
-                                                            class="bi bi-pencil me-2"></i>Edit</a>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item text-danger" href="#"><i
-                                                            class="bi bi-trash me-2"></i>Delete</a>
-                                                </li>
+                                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                                        data-bs-target="#editPostModal-{{ $post->id }}"><i
+                                                            class="bi bi-pencil me-2"></i>Edit</a></li>
+                                                <li><a class="dropdown-item text-danger" href="#"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#deletePostModal-{{ $post->id }}"><i
+                                                            class="bi bi-trash me-2"></i>Delete</a></li>
                                             </ul>
                                         </div>
                                     @endif
                                 </div>
 
-                                <div class="post-content mt-2">
-                                    {{ $post->content }}
-                                </div>
+                                <div class="post-content mt-2">{{ $post->content }}</div>
 
                                 @if ($post->image_path)
                                     <div class="post-image mt-3">
@@ -480,99 +539,61 @@
                                 @endif
 
                                 <div class="post-actions mt-3">
-                                    <button class="action-btn like-btn liked me-2" onclick="toggleLike(this)">
-                                        <i class="bi bi-heart"></i> <span class="like-count">12</span> Like
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-secondary" onclick="toggleComments(this)">
-                                        <i class="bi bi-chat"></i> <span class="comment-count">3</span> Comment
+                                    <!-- Like button -->
+                                    <form action="{{ route('applicant.likepost.store', $post->id) }}" method="POST"
+                                        class="d-inline">
+                                        @csrf
+                                        @php
+                                            $hasLiked = $post->likes
+                                                ->where('applicant_id', $currentApplicantId)
+                                                ->isNotEmpty();
+                                        @endphp
+                                        <button type="submit"
+                                            class="action-btn like-btn me-2 {{ $hasLiked ? 'text-danger' : '' }}">
+                                            <i class="bi {{ $hasLiked ? 'bi-heart-fill' : 'bi-heart' }}"></i>
+                                            <span class="like-count">{{ $post->likes->count() }}</span>
+                                            {{ $post->likes->count() === 1 ? 'Like' : 'Likes' }}
+                                        </button>
+                                    </form>
+
+                                    <!-- Comment toggle -->
+                                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                                        onclick="toggleComments(this)">
+                                        <i class="bi bi-chat"></i>
+                                        <span class="comment-count">{{ $post->comments->count() }}</span> Comment
                                     </button>
                                 </div>
 
                                 <!-- Comments Section -->
                                 <div class="comments-section mt-3" style="display: none">
-                                    <div class="input-group mb-2">
-                                        <input type="text" class="form-control comment-input"
-                                            placeholder="Write a comment..." />
-                                        <button class="btn btn-primary" onclick="addComment(this)">
-                                            <i class="bi bi-send"></i>
-                                        </button>
-                                    </div>
-                                    <div class="comments-list">
-                                        <div class="comment-item mt-2 p-2 rounded bg-light">
-                                            <strong>Maria Santos:</strong> Congratulations! Well deserved! 🎉
+                                    <form action="{{ route('applicantaddcomments.store', $post->id) }}"
+                                        method="POST">
+                                        @csrf
+                                        <div class="mb-2">
+                                            <input type="hidden" name="post_id" value="{{ $post->id }}">
+                                            <textarea class="form-control comment-input" name="comment" rows="2" placeholder="Write a comment..."></textarea>
                                         </div>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-send"></i> Comment
+                                        </button>
+                                    </form>
+
+                                    <div class="comments-list mt-2">
+                                        @foreach ($post->comments as $comment)
+                                            <div class="comment-item p-2 mb-2 rounded bg-light position-relative">
+                                                <strong>{{ $comment->applicant_id == $currentApplicantId ? 'Me' : $comment->applicant->personal_info->first_name ?? 'Unknown' }}:</strong>
+                                                {{ $comment->comment }}
+                                            </div>
+                                        @endforeach
                                     </div>
                                 </div>
                             </div>
                         @endforeach
 
 
-                        <!-- Another Post -->
-                        <div class="post-item">
-                            <div class="post-header">
-                                <div class="post-meta">
-                                    <div class="post-avatar">
-                                        <i class="bi bi-person-circle"></i>
-                                    </div>
-                                    <div>
-                                        <div class="post-author">John Doe</div>
-                                        <div class="post-time">1 week ago</div>
-                                    </div>
-                                </div>
-                                <div class="dropdown">
-                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                                        data-bs-toggle="dropdown">
-                                        <i class="bi bi-three-dots"></i>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li>
-                                            <a class="dropdown-item" href="#"><i
-                                                    class="bi bi-pencil me-2"></i>Edit</a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item text-danger" href="#"><i
-                                                    class="bi bi-trash me-2"></i>Delete</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
 
-                            <div class="post-content">
-                                Starting my portfolio project today! Working on a responsive
-                                website using the skills I learned from TESDA. Looking forward
-                                to showcasing my abilities.
-                            </div>
 
-                            <div class="post-actions">
-                                <button class="action-btn like-btn liked" onclick="toggleLike(this)">
-                                    <i class="bi bi-heart-fill"></i>
-                                    <span class="like-count">8</span> Like
-                                </button>
-                                <button class="action-btn comment-btn" onclick="toggleComments(this)">
-                                    <i class="bi bi-chat"></i>
-                                    <span class="comment-count">2</span> Comment
-                                </button>
-                            </div>
 
-                            <div class="comments-section mt-3" style="display: none">
-                                <div class="input-group mb-2">
-                                    <input type="text" class="form-control comment-input"
-                                        placeholder="Write a comment..."
-                                        style="
-                        border-radius: var(--border-radius-lg);
-                        border: 1px solid var(--border-color);
-                      " />
-                                    <button class="btn btn-tesda btn-primary-tesda" onclick="addComment(this)">
-                                        <i class="bi bi-send"></i>
-                                    </button>
-                                </div>
-                                <div class="comments-list">
-                                    <div class="comment-item mt-2 p-2 rounded">
-                                        <strong>Carlos Rodriguez:</strong> Can't wait to see it!
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

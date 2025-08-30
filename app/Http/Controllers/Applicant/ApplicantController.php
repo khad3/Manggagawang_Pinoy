@@ -1681,8 +1681,11 @@ public function getApplicantProfile($id)
     $retrievedProfile = RegisterModel::with(['personal_info', 'work_background', 'template'])->findOrFail($id);
 
     // Load related data
-    $retrievedPosts = ApplicantPostModel::with('personalInfo', 'workBackground')
-        ->where('applicant_id', $id)->latest()->get();
+     // Load target applicant's posts
+    $retrievedPosts = ApplicantPostModel::with(['personalInfo', 'workBackground', 'likes', 'comments.applicant.personal_info'])
+        ->where('applicant_id', $targetApplicantId)
+        ->latest()
+        ->get();
 
     $retrievedPortfolio = ApplicantPortfolioModel::with('personalInfo', 'workExperience')
         ->where('applicant_id', $id)->latest()->get();
@@ -1705,11 +1708,18 @@ public function getApplicantProfile($id)
     $retrievedProfile->friendRequestStatus = $friendRequest?->status;
     $retrievedProfile->isReceiver = $friendRequest?->receiver_id == $currentApplicantId;
 
+
+     $tesdaCertification = \App\Models\Applicant\TesdaUploadCertificationModel::where('applicant_id', $targetApplicantId)
+    ->latest()
+    ->get();
+
     return view('applicant.homepage.getprofile.getprofile', compact(
         'retrievedProfile',
         'retrievedPosts',
         'retrievedPortfolio',
-        'retrievedYoutube'
+        'retrievedYoutube',
+        'tesdaCertification',
+        'currentApplicantId'
     ));
 }
 

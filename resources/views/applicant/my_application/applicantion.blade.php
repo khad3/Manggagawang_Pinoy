@@ -675,10 +675,25 @@
                             <i class="fas fa-heart-broken me-2"></i>Remove from Saved
                         </button>
                     </form>
-                    <button type="button" class="btn btn-success" data-bs-dismiss="modal"
-                        onclick="openApplyModal()">
-                        <i class="fas fa-paper-plane me-2"></i>Apply Now
-                    </button>
+
+
+                    @php
+                        $alreadyApplied = \App\Models\Applicant\ApplyJobModel::where('job_id', $savedJob->job_id)
+                            ->where('applicant_id', session('applicant_id'))
+                            ->exists();
+                    @endphp
+
+                    @if ($alreadyApplied)
+                        <button type="button" class="btn btn-secondary" disabled>
+                            <i class="fas fa-check me-2"></i>Already Applied
+                        </button>
+                    @else
+                        <button type="button" class="btn btn-success" data-bs-dismiss="modal"
+                            onclick="openApplyModal()">
+                            <i class="fas fa-paper-plane me-2"></i>Apply Now
+                        </button>
+                    @endif
+
                 </div>
             </div>
         </div>
