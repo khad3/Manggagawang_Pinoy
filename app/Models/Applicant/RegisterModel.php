@@ -62,4 +62,10 @@ public function isOnline()
     return $this->last_seen && Carbon::parse($this->last_seen)->gt(now()->subMinutes(2));
 }
 
+public function appliedJobs()
+{
+    return $this->hasMany(ApplyJobModel::class, 'applicant_id');
+
+}
+
 }

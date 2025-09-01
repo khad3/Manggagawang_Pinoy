@@ -49,12 +49,13 @@
 
             <!-- Dashboard Stats -->
             <div class="row g-4 mb-5">
+                <!-- Total Applications -->
                 <div class="col-12 col-md-6 col-lg-3">
                     <div class="stat-card p-4">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <p class="text-muted mb-2 fw-semibold">Total Applications</p>
-                                <h3 class="stat-number mb-0">4</h3>
+                                <h3 class="stat-number mb-0">{{ $pendingInterviewsCounts['total'] }}</h3>
                             </div>
                             <div class="stat-icon">
                                 <i class="fas fa-briefcase"></i>
@@ -62,12 +63,16 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Pending -->
                 <div class="col-12 col-md-6 col-lg-3">
                     <div class="stat-card p-4">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <p class="text-muted mb-2 fw-semibold">Pending Review</p>
-                                <h3 class="stat-number mb-0" style="color: var(--warning-color)">1</h3>
+                                <h3 class="stat-number mb-0" style="color: var(--warning-color)">
+                                    {{ $pendingInterviewsCounts['pending'] }}
+                                </h3>
                             </div>
                             <div class="stat-icon"
                                 style="background: linear-gradient(135deg, var(--warning-color), #f59e0b)">
@@ -76,12 +81,16 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Interviews -->
                 <div class="col-12 col-md-6 col-lg-3">
                     <div class="stat-card p-4">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <p class="text-muted mb-2 fw-semibold">Interviews</p>
-                                <h3 class="stat-number mb-0" style="color: var(--info-color)">1</h3>
+                                <h3 class="stat-number mb-0" style="color: var(--info-color)">
+                                    {{ $pendingInterviewsCounts['interview'] }}
+                                </h3>
                             </div>
                             <div class="stat-icon"
                                 style="background: linear-gradient(135deg, var(--info-color), #8b5cf6)">
@@ -90,12 +99,16 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Accepted -->
                 <div class="col-12 col-md-6 col-lg-3">
                     <div class="stat-card p-4">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <p class="text-muted mb-2 fw-semibold">Accepted</p>
-                                <h3 class="stat-number mb-0" style="color: var(--success-color)">0</h3>
+                                <h3 class="stat-number mb-0" style="color: var(--success-color)">
+                                    {{ $pendingInterviewsCounts['approved'] }}
+                                </h3>
                             </div>
                             <div class="stat-icon"
                                 style="background: linear-gradient(135deg, var(--success-color), #10b981)">
@@ -104,7 +117,44 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Rejected -->
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="stat-card p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-muted mb-2 fw-semibold">Rejected</p>
+                                <h3 class="stat-number mb-0" style="color: var(--danger-color)">
+                                    {{ $pendingInterviewsCounts['rejected'] }}
+                                </h3>
+                            </div>
+                            <div class="stat-icon"
+                                style="background: linear-gradient(135deg, var(--danger-color), #ef4444)">
+                                <i class="fas fa-times-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Being Reviewed -->
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="stat-card p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-muted mb-2 fw-semibold">Being Reviewed</p>
+                                <h3 class="stat-number mb-0" style="color: var(--primary-color)">
+                                    {{ $pendingInterviewsCounts['being_reviewed'] }}
+                                </h3>
+                            </div>
+                            <div class="stat-icon"
+                                style="background: linear-gradient(135deg, var(--primary-color), #3b82f6)">
+                                <i class="fas fa-search"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+
 
             <!-- Main Content Tabs -->
             <div class="tab-container">
@@ -209,7 +259,20 @@
                                         </div>
                                         <div class="col-12 col-lg-4 text-lg-end mt-3 mt-lg-0">
                                             <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#viewApplicationDetailsModal">
+                                                data-bs-target="#viewApplicationDetailsModal"
+                                                data-job-id="{{ $job->job_id ?? 'No job ID' }}"
+                                                data-job-title-application="{{ $job->job->title ?? 'No title' }}"
+                                                data-job-company-application="{{ $job->job->employer->addressCompany->company_name ?? 'No company' }}"
+                                                data-job-location-application="{{ ($job->job->employer->addressCompany->company_municipality ?? 'No location') . ', ' . ($job->job->employer->addressCompany->company_province ?? '') }}"
+                                                data-job-salary-application="₱{{ $job->job->job_salary ?? 'No salary' }}"
+                                                data-job-description-application="{{ $job->job->job_description ?? 'No description' }}"
+                                                data-job-benefits-application="{{ $job->job->benefits ?? 'N/A' }}"
+                                                data-apply-job-status-application="{{ $job->status ?? 'N/A' }}"
+                                                data-employer-email-application="{{ $job->job->employer->email ?? 'No email' }}"
+                                                data-employer-first-name-application="{{ $job->job->employer->personal_info->first_name ?? 'No first name' }}"
+                                                data-employer-last-name-application="{{ $job->job->employer->personal_info->last_name ?? 'No last name' }}"
+                                                data-job-type-application="{{ $job->job->job_type ?? 'N/A' }}"
+                                                data-job-additional-requirements-application="{{ $job->job->additional_requirements ?? 'N/A' }}">
                                                 <i class="fas fa-eye me-2"></i>View Details
                                             </button>
                                         </div>
@@ -217,86 +280,9 @@
                                 </div>
                             @endforeach
 
-                            <div class="application-card">
-                                <div class="row align-items-center">
-                                    <div class="col-12 col-lg-8">
-                                        <div
-                                            class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3 mb-2">
-                                            <h5 class="job-title mb-0">Journeyman Electrician</h5>
-                                            <span class="status-badge status-reviewed">
-                                                <i class="fas fa-file-alt"></i>
-                                                Being Reviewed
-                                            </span>
-                                        </div>
-                                        <p class="company-name mb-3">City Electric Services</p>
-                                        <div class="job-details d-flex flex-column flex-md-row gap-3">
-                                            <span><i class="fas fa-map-marker-alt"></i>Phoenix, AZ</span>
-                                            <span><i class="fas fa-calendar"></i>Applied: 1/12/2024</span>
-                                            <span><i class="fas fa-dollar-sign"></i>$60,000 - $75,000</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-lg-4 text-lg-end mt-3 mt-lg-0">
-                                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
-                                            data-bs-target="#viewApplicationDetailsModal">
-                                            <i class="fas fa-eye me-2"></i>View Details
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <div class="application-card">
-                                <div class="row align-items-center">
-                                    <div class="col-12 col-lg-8">
-                                        <div
-                                            class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3 mb-2">
-                                            <h5 class="job-title mb-0">Plumber</h5>
-                                            <span class="status-badge status-pending">
-                                                <i class="fas fa-clock"></i>
-                                                Pending
-                                            </span>
-                                        </div>
-                                        <p class="company-name mb-3">Ace Plumbing Solutions</p>
-                                        <div class="job-details d-flex flex-column flex-md-row gap-3">
-                                            <span><i class="fas fa-map-marker-alt"></i>Denver, CO</span>
-                                            <span><i class="fas fa-calendar"></i>Applied: 1/18/2024</span>
-                                            <span><i class="fas fa-dollar-sign"></i>$50,000 - $65,000</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-lg-4 text-lg-end mt-3 mt-lg-0">
-                                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
-                                            data-bs-target="#viewApplicationDetailsModal">
-                                            <i class="fas fa-eye me-2"></i>View Details
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <div class="application-card">
-                                <div class="row align-items-center">
-                                    <div class="col-12 col-lg-8">
-                                        <div
-                                            class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3 mb-2">
-                                            <h5 class="job-title mb-0">Maintenance Technician</h5>
-                                            <span class="status-badge status-rejected">
-                                                <i class="fas fa-times-circle"></i>
-                                                Rejected
-                                            </span>
-                                        </div>
-                                        <p class="company-name mb-3">Industrial Maintenance Corp</p>
-                                        <div class="job-details d-flex flex-column flex-md-row gap-3">
-                                            <span><i class="fas fa-map-marker-alt"></i>Detroit, MI</span>
-                                            <span><i class="fas fa-calendar"></i>Applied: 1/8/2024</span>
-                                            <span><i class="fas fa-dollar-sign"></i>$45,000 - $58,000</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-lg-4 text-lg-end mt-3 mt-lg-0">
-                                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
-                                            data-bs-target="#viewApplicationDetailsModal">
-                                            <i class="fas fa-eye me-2"></i>View Details
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+
                         </div>
                     </div>
 
@@ -469,19 +455,19 @@
                         <div class="col-md-6">
                             <div class="modal-detail-item">
                                 <div class="detail-label">Position</div>
-                                <div class="detail-value">Construction Foreman</div>
+                                <div class="detail-value" id="modal-job-title-application"> Loading...</div>
                             </div>
                             <div class="modal-detail-item">
                                 <div class="detail-label">Company</div>
-                                <div class="detail-value">Metro Construction LLC</div>
+                                <div class="detail-value" id="modal-job-company-application">Loading...</div>
                             </div>
                             <div class="modal-detail-item">
                                 <div class="detail-label">Location</div>
-                                <div class="detail-value">Houston, TX</div>
+                                <div class="detail-value" id="modal-job-location-application">Houston, TX</div>
                             </div>
                             <div class="modal-detail-item">
                                 <div class="detail-label">Salary Range</div>
-                                <div class="detail-value">$55,000 - $70,000</div>
+                                <div class="detail-value" id="modal-job-salary-application">Loading...</div>
                             </div>
                             <div class="modal-detail-item">
                                 <div class="detail-label">Application Date</div>
@@ -492,7 +478,7 @@
                                 <div class="detail-value">
                                     <span class="status-badge status-interview">
                                         <i class="fas fa-chart-line"></i>
-                                        Interview
+                                        Loading...
                                     </span>
                                 </div>
                             </div>
@@ -500,13 +486,16 @@
                         <div class="col-md-6">
                             <div class="modal-detail-item">
                                 <div class="detail-label">Contact Person</div>
-                                <div class="detail-value">Mike Rodriguez</div>
+                                <div class="detail-value">
+                                    <span id="modal-employer-first-name-application"></span>
+                                    <span id="modal-employer-last-name-application"></span>
+                                </div>
                             </div>
                             <div class="modal-detail-item">
                                 <div class="detail-label">Contact Email</div>
-                                <div class="detail-value">
+                                <div class="detail-value" id="modal-employer-email-application">
                                     <a
-                                        href="mailto:mike.rodriguez@metroconstruction.com">mike.rodriguez@metroconstruction.com</a>
+                                        href="mailto:rogelio.cerenado@metroconstruction.com">rogelio.cerenado@metroconstruction.com</a>
                                 </div>
                             </div>
                             <div class="modal-detail-item">
@@ -524,30 +513,23 @@
                         <div class="col-12">
                             <div class="modal-detail-item">
                                 <div class="detail-label">Job Description</div>
-                                <div class="detail-value">Lead construction teams on residential and commercial
-                                    projects. Oversee daily operations, ensure safety compliance, and manage project
-                                    timelines.</div>
+                                <div class="detail-value" id="modal-job-description-application">Loading...</div>
                             </div>
                             <div class="modal-detail-item">
                                 <div class="detail-label">Requirements</div>
-                                <div class="detail-value">
+                                <div class="detail-value" id="modal-job-additional-requirements-application">
                                     <ul class="mb-0">
-                                        <li>5+ years construction experience</li>
-                                        <li>OSHA certification</li>
-                                        <li>Team leadership experience</li>
-                                        <li>Valid driver's license</li>
+                                        <li>...</li>
+
                                     </ul>
                                 </div>
                             </div>
                             <div class="modal-detail-item">
                                 <div class="detail-label">Benefits</div>
                                 <div class="detail-value">
-                                    <ul class="mb-0">
-                                        <li>Health insurance</li>
-                                        <li>Dental coverage</li>
-                                        <li>Retirement plan</li>
-                                        <li>Paid time off</li>
-                                        <li>Tool allowance</li>
+                                    <ul class="mb-0" id="modal-job-benefits-application">
+                                        <li>...</li>
+
                                     </ul>
                                 </div>
                             </div>
@@ -678,9 +660,12 @@
 
 
                     @php
-                        $alreadyApplied = \App\Models\Applicant\ApplyJobModel::where('job_id', $savedJob->job_id)
-                            ->where('applicant_id', session('applicant_id'))
-                            ->exists();
+                        $alreadyApplied = false;
+                        if (isset($savedJob)) {
+                            $alreadyApplied = \App\Models\Applicant\ApplyJobModel::where('job_id', $savedJob->job_id)
+                                ->where('applicant_id', session('applicant_id'))
+                                ->exists();
+                        }
                     @endphp
 
                     @if ($alreadyApplied)
@@ -693,6 +678,7 @@
                             <i class="fas fa-paper-plane me-2"></i>Apply Now
                         </button>
                     @endif
+
 
                 </div>
             </div>
@@ -811,6 +797,136 @@
                 form.action = url;
             });
         });
+
+        // View the status of application
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusModal = document.getElementById('viewApplicationDetailsModal');
+
+            if (statusModal) {
+                statusModal.addEventListener('show.bs.modal', function(event) {
+                    const button = event.relatedTarget; // the button that triggered the modal
+                    if (!button) return;
+
+                    // Extract values from data-* attributes
+                    const jobTitle = button.getAttribute('data-job-title-application') || 'N/A';
+                    const jobCompany = button.getAttribute('data-job-company-application') || 'N/A';
+                    const jobLocation = button.getAttribute('data-job-location-application') || 'N/A';
+                    const jobSalary = button.getAttribute('data-job-salary-application') || 'N/A';
+                    const jobDescription = button.getAttribute('data-job-description-application') || 'N/A';
+                    const employerEmail = button.getAttribute('data-employer-email-application') || 'N/A';
+                    const employerFirstName = button.getAttribute('data-employer-first-name-application') ||
+                        'N/A';
+                    const employerLastName = button.getAttribute('data-employer-last-name-application') ||
+                        'N/A';
+                    const applyStatus = button.getAttribute('data-apply-job-status-application') || 'N/A';
+                    const requirements = button.getAttribute(
+                        'data-job-additional-requirements-application') || 'N/A';
+                    const jobBenefits = button.getAttribute('data-job-benefits-application') || 'N/A';
+
+                    // Update modal content
+                    document.getElementById('modal-job-title-application').textContent = jobTitle;
+                    document.getElementById('modal-job-company-application').textContent = jobCompany;
+                    document.getElementById('modal-job-location-application').textContent = jobLocation;
+                    document.getElementById('modal-job-salary-application').textContent = jobSalary;
+                    document.getElementById('modal-job-description-application').textContent =
+                        jobDescription;
+
+                    // Contact info
+                    document.getElementById('modal-employer-first-name-application').textContent =
+                        `${employerFirstName} ${employerLastName}`;
+                    document.getElementById('modal-employer-email-application').innerHTML =
+                        `<a href="mailto:${employerEmail}">${employerEmail}</a>`;
+
+                    // Status badge (dynamic)
+                    // Status badge (dynamic)
+                    const statusEl = statusModal.querySelector('.modal-detail-item .status-badge');
+                    if (statusEl) {
+                        let statusHTML = '';
+
+                        switch (applyStatus.toLowerCase()) {
+                            case 'pending':
+                                statusHTML = `<span class="status-badge status-pending">
+                            <i class="fas fa-clock"></i> Pending
+                          </span>`;
+                                break;
+                            case 'being_reviewed':
+                                statusHTML = `<span class="status-badge status-reviewed">
+                            <i class="fas fa-file-alt"></i> Being Reviewed
+                          </span>`;
+                                break;
+                            case 'interview':
+                                statusHTML = `<span class="status-badge status-interview">
+                            <i class="fas fa-chart-line"></i> Interview
+                          </span>`;
+                                break;
+                            case 'approved':
+                                statusHTML = `<span class="status-badge status-approved">
+                            <i class="fas fa-check-circle"></i> Approved
+                          </span>`;
+                                break;
+                            case 'rejected':
+                                statusHTML = `<span class="status-badge status-rejected">
+                            <i class="fas fa-times-circle"></i> Rejected
+                          </span>`;
+                                break;
+                            default:
+                                statusHTML = `<span class="status-badge status-unknown">
+                            <i class="fas fa-question-circle"></i> ${applyStatus}
+                          </span>`;
+                                break;
+                        }
+
+                        statusEl.outerHTML = statusHTML; // replace the whole badge content
+                    }
+
+
+                    // Requirements
+                    const reqContainer = document.getElementById(
+                        'modal-job-additional-requirements-application');
+                    if (reqContainer) {
+                        reqContainer.innerHTML = requirements !== 'N/A' ?
+                            `<ul><li>${requirements.replace(/,/g, '</li><li>')}</li></ul>` :
+                            '<span>No additional requirements</span>';
+                    }
+
+                    // Benefits
+                    // Benefits
+                    const benefitList = document.getElementById('modal-job-benefits-application');
+                    benefitList.innerHTML = "";
+
+                    if (jobBenefits && jobBenefits !== "N/A") {
+                        try {
+                            // Try parse as JSON array
+                            const parsed = JSON.parse(jobBenefits);
+                            if (Array.isArray(parsed)) {
+                                parsed.forEach(benefit => {
+                                    let li = document.createElement("li");
+                                    li.textContent = benefit;
+                                    benefitList.appendChild(li);
+                                });
+                            }
+                        } catch (e) {
+                            // Fallback: comma-separated string
+                            jobBenefits.split(",").forEach(benefit => {
+                                let li = document.createElement("li");
+                                li.textContent = benefit.trim();
+                                benefitList.appendChild(li);
+                            });
+                        }
+                    } else {
+                        let li = document.createElement("li");
+                        li.textContent = "No benefits listed";
+                        benefitList.appendChild(li);
+                    }
+
+
+
+
+                });
+            }
+        });
+
+
 
         // Update saved job modal with data
         document.addEventListener('DOMContentLoaded', function() {

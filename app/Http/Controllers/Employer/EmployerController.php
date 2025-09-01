@@ -25,6 +25,7 @@ use App\Models\Applicant\ApplicantUrlModel as ApplicantUrlModel;
 use App\Models\Applicant\ApplicantPostModel as ApplicantPostModel;
 
 use App\Mail\Employer\VerifyEmail as EmployerVerificationMail;
+use App\Models\Applicant\ApplyJobModel;
 use App\Models\Applicant\RegisterModel;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
@@ -460,7 +461,7 @@ public function ShowHomepage() {
         return redirect()->route('employer.login.display');
     }
 
-    $JobPostRetrieved = JobDetails::with('employer' , 'interviewScreening' , 'workerRequirement' , 'specialRequirement')->where('employer_id', $employerId)->get()->sortDesc();
+    $JobPostRetrieved = JobDetails::with('employer' , 'interviewScreening' , 'workerRequirement' , 'specialRequirement' , 'applications.applicant')->where('employer_id', $employerId)->get()->sortDesc();
 
 
     //Rating
@@ -485,7 +486,14 @@ public function ShowHomepage() {
     // Get the logged-in employer's personal and work info
     $retrievePersonal = PersonalInformation::where('employer_id', $employerId)->first();
 
-    return view('employer.homepage.homepage' , compact('retrievePersonal' , 'retrievedApplicants' , 'JobPostRetrieved'));
+
+
+    
+  
+
+
+
+    return view('employer.homepage.homepage' , compact('retrievePersonal' , 'retrievedApplicants' , 'JobPostRetrieved' ));
 
 }
 

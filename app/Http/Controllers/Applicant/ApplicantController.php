@@ -61,6 +61,9 @@ class ApplicantController extends Controller
         return view('landingpage.topworker');
     }
 
+    public function aboutUs(){
+        return view('landingpage.aboutus');
+    }
 
 
     //Registration form
@@ -1966,6 +1969,19 @@ public function ViewApplicationStatus()
     ->latest()
     ->first();
 
+    //Retrieved the numbers of pending interview
+   $statuses = ['pending', 'interview', 'approved', 'rejected', 'being_reviewed'];
+
+$pendingInterviewsCounts = [];
+
+foreach ($statuses as $status) {
+    $pendingInterviewsCounts[$status] = ApplyJob::where('applicant_id', $applicantId)
+        ->where('status', $status)
+        ->count();
+}
+
+$pendingInterviewsCounts['total'] = ApplyJob::where('applicant_id', $applicantId)->count();
+
 
     //retrieved the applied jobs
     $appliedJobs = ApplyJob::with([
@@ -1984,7 +2000,8 @@ public function ViewApplicationStatus()
         'retrievedSavedJobs',
         'publishedCounts',
         'tesdaCertification',
-        'appliedJobs'
+        'appliedJobs',
+        'pendingInterviewsCounts'
     ));
 }
 

@@ -3,6 +3,7 @@
 namespace App\Models\Employer;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Applicant\ApplyJobModel;
 
 class JobDetailModel extends Model
 {
@@ -56,5 +57,10 @@ class JobDetailModel extends Model
     public function company(){
         return $this->belongsTo(CompanyAdressModel::class, 'job_id');
     }
+
+    public function applications()
+{
+    return $this->hasMany(ApplyJobModel::class, 'job_id');
+}
     
 }

@@ -1001,3 +1001,400 @@ body {
         justify-content: center;
     }
 }
+
+/* for the applicant applied jobs */
+
+:root {
+    --balanced-bg: #f8f9fb;
+    --balanced-secondary: #f1f3f6;
+    --balanced-tertiary: #e9ecf1;
+    --balanced-card: #ffffff;
+    --balanced-border: #d1d5db;
+    --balanced-border-light: #e5e7eb;
+    --balanced-dark: #1f2937;
+    --balanced-muted: #6b7280;
+    --balanced-light: #f9fafb;
+
+    --accent-blue: #3b82f6;
+    --accent-blue-light: #60a5fa;
+    --accent-green: #10b981;
+    --accent-green-light: #34d399;
+    --accent-orange: #f59e0b;
+    --accent-orange-light: #fbbf24;
+    --accent-purple: #8b5cf6;
+    --accent-purple-light: #a78bfa;
+    --accent-red: #ef4444;
+    --accent-red-light: #f87171;
+    --accent-slate: #64748b;
+    --accent-slate-light: #94a3b8;
+}
+
+/* Base Backgrounds */
+.bg-balanced {
+    background-color: var(--balanced-bg) !important;
+}
+
+.bg-balanced-secondary {
+    background-color: var(--balanced-secondary) !important;
+}
+
+.bg-balanced-tertiary {
+    background-color: var(--balanced-tertiary) !important;
+}
+
+.bg-balanced-card {
+    background-color: var(--balanced-card) !important;
+}
+
+/* Borders */
+.border-balanced {
+    border-color: var(--balanced-border) !important;
+}
+
+.border-balanced-light {
+    border-color: var(--balanced-border-light) !important;
+}
+
+/* Gradient Header */
+.bg-gradient-balanced {
+    background: linear-gradient(
+        135deg,
+        #4f46e5 0%,
+        #7c3aed 50%,
+        #059669 100%
+    ) !important;
+}
+
+.bg-gradient-accent {
+    background: linear-gradient(
+        135deg,
+        var(--accent-blue) 0%,
+        var(--accent-purple) 100%
+    ) !important;
+}
+
+/* Text Colors */
+.text-balanced-dark {
+    color: var(--balanced-dark) !important;
+}
+
+.text-balanced-muted {
+    color: var(--balanced-muted) !important;
+}
+
+.text-balanced-light {
+    color: var(--balanced-light) !important;
+}
+
+/* Accent Colors */
+.text-accent-blue {
+    color: var(--accent-blue) !important;
+}
+
+.text-accent-green {
+    color: var(--accent-green) !important;
+}
+
+.text-accent-orange {
+    color: var(--accent-orange) !important;
+}
+
+.text-accent-purple {
+    color: var(--accent-purple) !important;
+}
+
+.text-accent-red {
+    color: var(--accent-red) !important;
+}
+
+.border-accent-blue {
+    border-color: var(--accent-blue) !important;
+}
+
+.border-accent-green {
+    border-color: var(--accent-green) !important;
+}
+
+.border-accent-orange {
+    border-color: var(--accent-orange) !important;
+}
+
+.border-accent-purple {
+    border-color: var(--accent-purple) !important;
+}
+
+.border-accent-red {
+    border-color: var(--accent-red) !important;
+}
+
+/* Button Styles */
+.btn-accent-balanced {
+    background: linear-gradient(
+        135deg,
+        var(--accent-blue) 0%,
+        var(--accent-purple) 100%
+    );
+    border: none;
+    color: white;
+}
+
+.btn-accent-balanced:hover {
+    background: linear-gradient(
+        135deg,
+        var(--accent-blue-light) 0%,
+        var(--accent-purple-light) 100%
+    );
+    color: white;
+    transform: translateY(-1px);
+}
+
+.btn-success-balanced {
+    background-color: var(--accent-green);
+    border-color: var(--accent-green);
+    color: white;
+}
+
+.btn-success-balanced:hover {
+    background-color: var(--accent-green-light);
+    border-color: var(--accent-green-light);
+    color: white;
+}
+
+.btn-info-balanced {
+    background-color: var(--accent-purple);
+    border-color: var(--accent-purple);
+    color: white;
+}
+
+.btn-info-balanced:hover {
+    background-color: var(--accent-purple-light);
+    border-color: var(--accent-purple-light);
+    color: white;
+}
+
+.btn-outline-balanced {
+    background-color: transparent;
+    border-width: 1px;
+}
+
+.btn-outline-balanced:hover {
+    color: white !important;
+    background-color: var(--accent-blue);
+    border-color: var(--accent-blue);
+}
+
+.btn-outline-muted-balanced {
+    color: var(--balanced-muted);
+    border-color: var(--balanced-border);
+    background-color: transparent;
+}
+
+/* Badge Styles */
+.bg-success-balanced {
+    background-color: var(--accent-green) !important;
+}
+
+.bg-danger-balanced {
+    background-color: var(--accent-red) !important;
+}
+
+.bg-info-balanced {
+    background-color: var(--accent-purple) !important;
+}
+
+.bg-warning-balanced {
+    background-color: var(--accent-orange) !important;
+}
+
+/* Form Controls */
+.form-select.bg-balanced-card {
+    background-color: var(--balanced-card) !important;
+    border-color: var(--balanced-border-light) !important;
+    color: var(--balanced-dark) !important;
+}
+
+.form-select.bg-balanced-card:focus {
+    background-color: var(--balanced-card) !important;
+    border-color: var(--accent-blue) !important;
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25) !important;
+    color: var(--balanced-dark) !important;
+}
+
+.form-select.bg-balanced-card option {
+    background-color: var(--balanced-card) !important;
+    color: var(--balanced-dark) !important;
+}
+
+/* Professional Styling */
+.modal-xl {
+    max-width: 1100px;
+}
+
+.balanced-modal .modal-content {
+    background-color: var(--balanced-bg) !important;
+    color: var(--balanced-dark) !important;
+}
+
+.stat-card {
+    transition: all 0.3s ease;
+    height: 100%;
+    border: 1px solid var(--balanced-border-light);
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+    border-color: var(--accent-blue);
+}
+
+.application-item {
+    transition: all 0.3s ease;
+    background-color: var(--balanced-card);
+}
+
+.application-item:hover {
+    border-color: var(--accent-blue) !important;
+    box-shadow: 0 5px 20px rgba(59, 130, 246, 0.15) !important;
+    transform: translateY(-2px);
+}
+
+.candidate-avatar {
+    flex-shrink: 0;
+}
+
+.content-section h6 {
+    font-size: 0.875rem;
+}
+
+.btn {
+    transition: all 0.2s ease;
+    border-width: 1px;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Enhanced Shadows */
+.shadow-sm {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+}
+
+.shadow {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+.shadow-lg {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    .modal-xl {
+        max-width: 95%;
+        margin: 10px auto;
+    }
+
+    .modal-body {
+        padding: 0 !important;
+    }
+
+    .stats-dashboard {
+        padding: 1rem !important;
+    }
+
+    .applications-section {
+        padding: 1rem !important;
+    }
+
+    .modal-footer {
+        padding: 1rem !important;
+    }
+
+    .stat-card {
+        margin-bottom: 0.5rem;
+    }
+
+    .application-item .p-3 {
+        padding: 1rem !important;
+    }
+
+    .btn-sm {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.7rem;
+    }
+
+    .candidate-details h6 {
+        font-size: 0.9rem;
+    }
+
+    .content-section h6 {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .modal-xl {
+        max-width: 100%;
+        margin: 0;
+        height: 100vh;
+    }
+
+    .modal-dialog {
+        margin: 0;
+    }
+
+    .modal-content {
+        height: 100vh;
+        border-radius: 0;
+    }
+
+    .stats-dashboard .col-6 {
+        margin-bottom: 0.5rem;
+    }
+
+    .application-item {
+        margin-bottom: 1rem !important;
+    }
+
+    .text-truncate {
+        max-width: 150px !important;
+    }
+}
+
+/* Scrollbar Styling */
+.modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: var(--balanced-tertiary);
+    border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: var(--balanced-border);
+    border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-blue);
+}
+
+/* Additional Professional Touches */
+.badge {
+    font-weight: 500;
+    letter-spacing: 0.025em;
+}
+
+.fw-semibold {
+    font-weight: 600;
+}
+
+.rounded {
+    border-radius: 0.5rem !important;
+}
+
+.lh-base {
+    line-height: 1.5;
+}

@@ -21,7 +21,7 @@
                 <li><a href="#">Services</a></li>
                 <li><a href="{{ route('display.topworker') }}">Top Workers</a></li>
                 <li><a href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
-                <li><a href="#">About Us</a></li>
+                <li><a href="{{ route('display.aboutus') }}">About Us</a></li>
                 <li><button class="sign-in-b">Sign in</button></li>
                 <li><button class="sign-up-b">Sign up</button></li>
             </ul>

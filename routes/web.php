@@ -16,6 +16,8 @@ Route::get('/index', [ApplicantController::class, 'index'])->name('display.index
 
 Route::get('/top-worker', [ApplicantController::class, 'topWorkers'])->name('display.topworker');
 
+Route::get('/about-us', [ApplicantController::class, 'aboutUs'])->name('display.aboutus');
+
 Route::get('/', function () {
     return view('welcome');
 });
