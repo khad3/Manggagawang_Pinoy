@@ -124,6 +124,26 @@ body {
       color: #0a2d82;
     }
 
+    /* Add this to your CSS file or inside <style> in <head> */
+#roleModal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 9999;
+  left: 0; top: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+}
+#roleModal .modal-content {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+}
+
 /* First background */
 .section1::before {
     background-image: linear-gradient(

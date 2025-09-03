@@ -55,14 +55,14 @@
       <h2>SELECT YOUR ROLE</h2>
       <div class="role-container">
         <!-- Employer Card -->
-        <div class="role-card" onclick="window.location.href='employer.html'">
+        <div class="role-card" onclick="window.location.href='{{ route('employer.register.display') }}'">
           <img id="workeroremployer" src="https://img.icons8.com/ios-filled/100/000000/manager.png" alt="Employer">
           <h3>Employer</h3>
-          <button class="select-btn" a href="{{ route('employer.register.display') }}">Select</button>
+          <button class="select-btn">Select</button>
         </div>
 
         <!-- Worker Card -->
-        <div class="role-card" onclick="window.location.href='worker.html'">
+        <div class="role-card" onclick="window.location.href='{{ route('applicant.register.display') }}">
           <img id="workeroremployer" src="https://img.icons8.com/ios-filled/100/000000/worker-male.png" alt="Worker">
           <h3>Worker</h3>
           <button class="select-btn" a href="{{ route('applicant.register.display') }}">Select</button>
@@ -228,101 +228,105 @@
 
 
 
-    <script>
-        const hamburger = document.getElementById('hamburger');
-        const navLinks = document.getElementById('navLinks');
+  <script>
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('navLinks');
 
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            navLinks.classList.toggle('active');
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('active');
+  navLinks.classList.toggle('active');
 
-            // Toggle scroll lock on body
-            document.body.classList.toggle('noscroll');
-        });
-
-        // Close menu when clicking a link (mobile)
-        navLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                if (navLinks.classList.contains('active')) {
-                    navLinks.classList.remove('active');
-                    hamburger.classList.remove('active');
-
-                    // Remove scroll lock on body
-                    document.body.classList.remove('noscroll');
-                }
-            });
-        });
-
-
-        document.addEventListener('scroll', function() {
-            const section = document.querySelector('.section1');
-            if (!section) return;
-            const rect = section.getBoundingClientRect();
-            const windowHeight = window.innerHeight;
-            // How much of section1 is scrolled past the top of the viewport
-            const scrolled = Math.min(Math.max(-rect.top, 0), rect.height);
-            // Scale from 1 (top) to 1.15 (bottom of section)
-            const scale = 1 + (scrolled / rect.height) * 0.20;
-            section.style.setProperty('--bg-scale', scale);
-        });
-
-        document.getElementById('wideb2').addEventListener('click', function() {
-            document.getElementById('tutorial').scrollIntoView({
-                behavior: 'smooth'
-            });
-        });
-
-        // Scale navbar background on scroll
-        document.addEventListener('scroll', function() {
-            const section = document.querySelector('.navbar-container');
-            if (!section) return;
-            const rect = section.getBoundingClientRect();
-            const windowHeight = window.innerHeight;
-            // How much of section1 is scrolled past the top of the viewport
-            const scrolled = Math.min(Math.max(-rect.top, 0), rect.height);
-            // Scale from 1 (top) to 1.15 (bottom of section)
-            const scale = 1 + (scrolled / rect.height) * 0.20;
-            section.style.setProperty('--bg-scale', scale);
-        });
-
-        // Scroll to top when logo is clicked
-        document.getElementById('home').addEventListener('click', function() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth' // Smooth scroll effect
-            });
-        });
-
-        document.getElementById('home2').addEventListener('click', function() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth' // Smooth scroll effect
-            });
-        });
-
-
-document.getElementById('wideb').addEventListener('click', function() {
-    document.getElementById('roleModal').style.display = 'block';
+  // Toggle scroll lock on body
+  document.body.classList.toggle('noscroll');
 });
 
-// Hide modal when "Cancel" is clicked
-document.getElementById('closeModal').addEventListener('click', function() {
-    document.getElementById('roleModal').style.display = 'none';
-});
+// Close menu when clicking a link (mobile)
+navLinks.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => {
+    if (navLinks.classList.contains('active')) {
+      navLinks.classList.remove('active');
+      hamburger.classList.remove('active');
 
-// Optional: Hide modal when clicking outside modal content
-window.addEventListener('click', function(event) {
-    const modal = document.getElementById('roleModal');
-    if (event.target === modal) {
-        modal.style.display = 'none';
+      // Remove scroll lock on body
+      document.body.classList.remove('noscroll');
     }
+  });
 });
-        // JavaScript to toggle navigation menu
-        document.getElementById('hamburger').addEventListener('click', function() {
-            const navLinks = document.getElementById('nav-links');
-            navLinks.classList.toggle('active'); // Toggle the 'active' class
-        });
-    </script>
+
+
+    document.addEventListener('scroll', function() {
+  const section = document.querySelector('.section1');
+  if (!section) return;
+  const rect = section.getBoundingClientRect();
+  const windowHeight = window.innerHeight;
+  // How much of section1 is scrolled past the top of the viewport
+  const scrolled = Math.min(Math.max(-rect.top, 0), rect.height);
+  // Scale from 1 (top) to 1.15 (bottom of section)
+  const scale = 1 + (scrolled / rect.height) * 0.20;
+  section.style.setProperty('--bg-scale', scale);
+});
+
+  document.getElementById('wideb2').addEventListener('click', function() {
+    document.getElementById('tutorial').scrollIntoView({ behavior: 'smooth' });
+  });
+
+ // Scale navbar background on scroll
+document.addEventListener('scroll', function() {
+  const section = document.querySelector('.navbar-container');
+  if (!section) return;
+  const rect = section.getBoundingClientRect();
+  const windowHeight = window.innerHeight;
+  // How much of section1 is scrolled past the top of the viewport
+  const scrolled = Math.min(Math.max(-rect.top, 0), rect.height);
+  // Scale from 1 (top) to 1.15 (bottom of section)
+  const scale = 1 + (scrolled / rect.height) * 0.20;
+  section.style.setProperty('--bg-scale', scale);
+});
+
+// Scroll to top when logo is clicked
+document.getElementById('home2').addEventListener('click', function() {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth' // Smooth scroll effect
+  });
+});
+
+document.getElementById('home2').addEventListener('click', function() {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth' // Smooth scroll effect
+  });
+});
+
+
+
+  // JavaScript to toggle navigation menu
+document.getElementById('hamburger').addEventListener('click', function() {
+  const navLinks = document.getElementById('nav-links');
+  navLinks.classList.toggle('active'); // Toggle the 'active' class
+});
+    const modal = document.getElementById("roleModal");
+    const getStartedBtn = document.getElementById("wideb");
+    const closeBtn = document.getElementById("closeModal");
+
+    // Open modal
+    getStartedBtn.onclick = () => {
+      modal.style.display = "flex";
+    }
+
+    // Close modal
+    closeBtn.onclick = () => {
+      modal.style.display = "none";
+    }
+
+    // Close if clicking outside content
+    window.onclick = (event) => {
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    }
+
+  </script>
 </body>
 
 </html>
