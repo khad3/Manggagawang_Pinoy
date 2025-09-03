@@ -14,8 +14,8 @@
     <nav>
         <div class="navbar-container">
             <div class="nav-logo">
-
-                <a href="{{ route('display.index') }}"><img src="img/logo.png" alt="MP Logo" id="home2" /> </a>
+                <img src="img/logotext.png" alt="MP Logo" id="home" />
+                <img src="img/logo.png" alt="MP Logo" id="home2" />
             </div>
             <ul class="nav-links" id="navLinks">
                 <li><a href="#">Services</a></li>
@@ -79,7 +79,7 @@
         </div>
     </section>
 
-    <section>
+    <section id="features">
         <div class="features-section">
             <h1>FEATURES</h1><br><br><br>
             <div class="features-grid">
@@ -176,10 +176,10 @@
     </section>
     <section id="tutorial">
         <h1>Tutorial</h1><br>
-        <video controls autoplay muted loop width="100%" height="100%">
-            <source src="https://youtu.be/Yr4tx6wPVhw" type="video/mp4" />
-            Your browser does not support the video tag.
-        </video>
+        <iframe width="100%" height="550" src="https://www.youtube.com/embed/d9fL7_BP3q8" 
+    title="Tutorial Video" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
+</iframe>
+
     </section>
 
     <!-- HTML ---------------------------------------------------------------------------------------------------------------------->
@@ -190,7 +190,7 @@
                 Manggagawang Pinoy is a web-based job-matching platform designed to help blue-collar Filipino workers
                 connect with employers.
             </p>
-            <a href="#">Our Team</a>
+            <a href="{{ route('display.aboutus') }}">Our Team</a>
         </div>
         <div class="footer-col contact">
             <h4>Contact</h4>
@@ -218,10 +218,11 @@
         <div class="footer-col links">
             <h4>Links</h4>
             <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">Features</a></li>
-                <li><a href="#">Tutorial</a></li>
-                <li><a href="#">TESDA</a></li>
+                <li><a href="index">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#tutorial">Tutorial</a></li>
+                <li><a href="https://www.tesda.gov.ph/">TESDA</a>
+                </li>
             </ul>
         </div>
     </footer>
@@ -284,7 +285,7 @@ document.addEventListener('scroll', function() {
 });
 
 // Scroll to top when logo is clicked
-document.getElementById('home2').addEventListener('click', function() {
+document.getElementById('home').addEventListener('click', function() {
   window.scrollTo({
     top: 0,
     behavior: 'smooth' // Smooth scroll effect

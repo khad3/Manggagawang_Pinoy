@@ -1026,3 +1026,15 @@ nav {
 .dropdown:hover .dropdown-menu {
     display: block;
 }
+
+/* Make footer about img match nav logo img */
+.footer-col.about img {
+    height: 100px;
+    width: auto;
+    display: block;
+    cursor: pointer;
+    user-select: none;
+    transition: opacity 0.3s ease;
+    filter: invert(45%) sepia(84%) saturate(10058%) hue-rotate(247deg)
+        brightness(47%) contrast(121%);
+}
