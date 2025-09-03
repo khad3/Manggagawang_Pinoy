@@ -51,7 +51,76 @@ body {
 /* ... (rest of your background and animation code stays unchanged) ... */
 
 /* Content styles */
+  .modal {
+      display: none; 
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+    }
 
+    /* Modal Card */
+    .modal-content {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      text-align: center;
+      width: 600px;
+      max-width: 90%;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-content h2 {
+      margin-bottom: 30px;
+      font-size: 24px;
+      font-weight: 700;
+      color: #222;
+    }
+
+    /* Role Options */
+    .role-container {
+      display: flex;
+      justify-content: space-around;
+      gap: 30px;
+    }
+
+    .role-card {
+      background: #f8f9fc;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      width: 220px;
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+    }
+
+    .role-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .role-card img {
+      width: 80px;
+      margin-bottom: 15px;
+    }
+
+    .role-card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #0a2d82;
+    }
 /* First background */
 .section1::before {
     background-image: linear-gradient(
