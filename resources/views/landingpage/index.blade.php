@@ -50,6 +50,27 @@
                 <h1>Building the Future <br />One Skill at a Time</h1>
                 <p>Partnership With <span>TESDA</span></p>
                 <button class="sign-up-b" id="wideb">Get Started</button>
+                <div class="modal" id="roleModal">
+    <div class="modal-content">
+      <h2>SELECT YOUR ROLE</h2>
+      <div class="role-container">
+        <!-- Employer Card -->
+        <div class="role-card" onclick="window.location.href='employer.html'">
+          <img id="workeroremployer" src="https://img.icons8.com/ios-filled/100/000000/manager.png" alt="Employer">
+          <h3>Employer</h3>
+          <button class="select-btn" a href="{{ route('employer.register.display') }}">Select</button>
+        </div>
+
+        <!-- Worker Card -->
+        <div class="role-card" onclick="window.location.href='worker.html'">
+          <img id="workeroremployer" src="https://img.icons8.com/ios-filled/100/000000/worker-male.png" alt="Worker">
+          <h3>Worker</h3>
+          <button class="select-btn" a href="{{ route('applicant.register.display') }}">Select</button>
+        </div>
+      </div>
+      <button class="close-btn" id="closeModal">Cancel</button>
+    </div>
+  </div>
                 <button class="sign-up-b" id="wideb2">Tutorial</button>
             </div>
             <div>
@@ -280,7 +301,22 @@
         });
 
 
+document.getElementById('wideb').addEventListener('click', function() {
+    document.getElementById('roleModal').style.display = 'block';
+});
 
+// Hide modal when "Cancel" is clicked
+document.getElementById('closeModal').addEventListener('click', function() {
+    document.getElementById('roleModal').style.display = 'none';
+});
+
+// Optional: Hide modal when clicking outside modal content
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('roleModal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+});
         // JavaScript to toggle navigation menu
         document.getElementById('hamburger').addEventListener('click', function() {
             const navLinks = document.getElementById('nav-links');
