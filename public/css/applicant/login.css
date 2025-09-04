@@ -1,37 +1,216 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 body {
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    color: #fff;
-    font-family: "Segoe UI", sans-serif;
-    height: 100vh;
+  font-family: 'Montserrat', sans-serif;
+  background: linear-gradient(120deg, #ece9f7 60%, #020180 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
-.login-container {
-    max-width: 400px;
-    margin: 80px auto;
-    background-color: #ffffff11;
-    padding: 30px;
-    border-radius: 16px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+
+
+.login-wrapper {
+  width: 900px;
+  height: 600px;
+  background: #fff;
+  border-radius: 32px;
+  display: flex;
+  box-shadow: 0 2px 40px 0 rgba(111,117,193,0.16);
+  overflow: hidden;
+  position: relative;
 }
-.form-control {
-    background-color: #fff;
+.close-btnn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #ffffff;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  z-index: 10;
+  background: transparent;
+  border: none;
+  user-select: none;
 }
-.login-logo {
-    font-size: 30px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 20px;
-    color: #f8d90f;
+
+.close-btnn:hover {
+  color: #020180; /* dark blue on hover */
 }
-.btn-login {
-    background-color: #f8d90f;
-    color: #000;
-    font-weight: bold;
+
+.login-left, .login-right {
+  flex: 1 0 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px 36px;
+  box-sizing: border-box;
 }
-.btn-login:hover {
-    background-color: #e2c300;
+
+.login-left {
+  background: #fff;
+  border-top-left-radius: 32px;
+  border-bottom-left-radius: 32px;
+  align-items: flex-start;
+  min-width: 350px;
 }
-.form-text {
-    text-align: center;
-    margin-top: 15px;
-    color: #ccc;
+
+.login-right {
+  background: radial-gradient(ellipse at top left, #1a1a9e 20%, #020180 80%);
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  border-top-right-radius: 32px;
+  border-bottom-right-radius: 32px;
+}
+
+h2 {
+  margin: 0;
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.subtitle {
+  margin: 10px 0 26px 0;
+  color: #8787ab;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.login-form {
+  width: 100%;
+}
+
+.input-field {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: #f2f1fa;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  padding: 0 10px;
+  position: relative;
+}
+
+.input-icon {
+  margin-right: 6px;
+  color: #727197;
+  cursor: pointer;
+}
+
+.input-field input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 1rem;
+  padding: 12px 0;
+  width: 100%;
+  color: #333;
+  border-radius: 10px;
+}
+
+.toggle-password {
+  margin-left: auto;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.toggle-password:hover {
+  opacity: 1;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 14px 0;
+  margin: 12px 0 4px 0;
+  border: none;
+  outline: none;
+  background: #816ef8;
+  color: #fff;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 0 8px 0 #816ef82f;
+  transition: background 0.2s;
+}
+
+.login-btn:hover {
+  background: #705eda;
+}
+
+.divider {
+  border-bottom: 1px solid #ededfa;
+  margin: 22px 0 10px 0;
+  width: 100%;
+}
+
+.login-alt-label {
+  margin-bottom: 10px;
+  font-size: 1rem;
+  color: #444;
+  width: 100%;
+}
+
+.employer-btn {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 14px 0;
+  background: #f6f1ff;
+  border: 1px solid #816ef8;
+  border-radius: 10px;
+  color: #816ef8;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  box-shadow: 0 2px 10px 0 #eae7ff2e;
+}
+
+.employer-btn:hover {
+  background: #816ef8;
+  color: #fff;
+}
+
+.centered-portrait {
+  position: relative;
+  width: 290px;
+  height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(202,170,255,0.1);
+  border-radius: 24px;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.centered-portrait img {
+  width: 280px;
+  height: 340px;
+  object-fit: cover;
+  border-radius: 20px;
+  box-shadow: 0 0 24px 0 rgba(140,109,240,0.08);
+}
+
+.icon-badge {
+  position: absolute;
+  left: -18px;
+  top: 120px;
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

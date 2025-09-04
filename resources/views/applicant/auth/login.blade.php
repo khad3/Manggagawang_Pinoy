@@ -6,14 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Mangagawang Pinoy | Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/applicant/login.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/applicant/landingpage/landingpage.css') }}">
+    
 </head>
 
-<body>
+<body class="section1">
 
-    <div class="login-container">
-        <div class="login-logo">Mangagawang Pinoy</div>
-        <form method="POST" action="{{ route('applicant.login.store') }}">
+   <div class="login-wrapper">
+    <a href="{{ route('display.index') }}" class="close-btnn" title="Go to Landing Page">&times;</a>
+    <div class="login-left">
+        <h2 style="margin-top: 18px;">Manggagawang Pinoy</h2>
+        <p class="subtitle">Log in as a worker</p>
+        <form class="login-form" method="POST" action="{{ route('applicant.login.store') }}">
             @csrf
 
             {{-- Show global error (invalid login) --}}
@@ -48,11 +54,19 @@
                 @enderror
             </div>
 
-            <button type="submit" class="btn btn-login w-100">Login</button>
-            <div class="form-text">Don't have an account? <a href="{{ route('applicant.register.display') }}"
-                    class="text-warning">Register</a></div>
+            <button type="submit" class="sign-in-b login-btn w-100">Login</button>
+            <div class="form-text">Don't have an account? <a href="{{ route('applicant.register.display') }}">
+                Register</a></div>
         </form>
-
+<div class="divider"></div>
+      <div class="login-alt-label"><strong>Sign in as employer</strong></div>
+      <button class="sign-in-b employer-btn">Sign in as Employer</button>
+    </div>
+        <div class="login-right">
+      <div class="centered-portrait">
+        <img src="https://png.pngtree.com/png-clipart/20250518/original/pngtree-construction-worker-standing-on-transparent-background-png-image_21018565.png" alt="User Illustration">
+      </div>
+    </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
