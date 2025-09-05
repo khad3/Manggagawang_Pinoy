@@ -1385,13 +1385,13 @@ public function updateProfile(Request $request)
 public function EditProfile(Request $request, $applicant_id)
 {
     $request->validate([
-        'first_name' => 'required|string',
-        'last_name'  => 'required|string',
-        'position'   => 'required|string',
-        'other_position' => 'nullable|string',
-        'work_duration' => 'required|numeric',
+        'first_name'         => 'required|string',
+        'last_name'          => 'required|string',
+        'position'           => 'required|string',
+        'other_position'     => 'nullable|string',
+        'work_duration'      => 'required|numeric',
         'work_duration_unit' => 'required|string',
-        'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'profile_picture'    => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
     ]);
 
     // ✅ Update Personal Info
@@ -1404,16 +1404,14 @@ public function EditProfile(Request $request, $applicant_id)
     $workBackground = WorkBackground::firstOrNew(['applicant_id' => $applicant_id]);
 
     // ✅ If "Other" is selected, use the custom input
-    if ($request->position === 'Other') {
-        $workBackground->position = $request->other_position; 
-    } else {
-        $workBackground->position = $request->position;
-    }
+    $workBackground->position = $request->position === 'Other'
+        ? $request->other_position
+        : $request->position;
 
-    $workBackground->work_duration = $request->work_duration;
-    $workBackground->work_duration_unit = $request->work_duration_unit;
+    $workBackground->work_duration       = $request->work_duration;
+    $workBackground->work_duration_unit  = $request->work_duration_unit;
 
-    // ✅ Handle Profile Picture (stored under storage/app/public/profile_picture)
+    // ✅ Handle Profile Picture
     if ($request->hasFile('profile_picture')) {
         $imagePath = $request->file('profile_picture')->store('profile_picture', 'public');
         $workBackground->profileimage_path = $imagePath;
@@ -2127,22 +2125,29 @@ public function applyJob(Request $request)
         'tesda_certificate' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
     ]);
 
-    $applyJob = new ApplyJob();
-    $applyJob->job_id = $request->job_id;
-    $applyJob->applicant_id = $applicantId;
-    $applyJob->cellphone_number = $request->phone_number;
-    $applyJob->cover_letter = $request->cover_letter;
-    $applyJob->additional_information = $request->additional_info;
-    $applyJob->resume = $request->hasFile('resume') ? $request->file('resume')->store('resumes', 'public') : null;
-    $applyJob->tesda_certification = $request->hasFile('tesda_certificate') ? $request->file('tesda_certificate')->store('tesda_certificates', 'public') : null;
+    // ✅ Use updateOrCreate to handle re-apply
+    ApplyJob::updateOrCreate(
+        [
+            'job_id' => $request->job_id,
+            'applicant_id' => $applicantId,
+        ],
+        [
+            'cellphone_number' => $request->phone_number,
+            'cover_letter' => $request->cover_letter,
+            'additional_information' => $request->additional_info,
+            'resume' => $request->hasFile('resume')
+                ? $request->file('resume')->store('resumes', 'public')
+                : null,
+            'tesda_certification' => $request->hasFile('tesda_certificate')
+                ? $request->file('tesda_certificate')->store('tesda_certificates', 'public')
+                : null,
+            'status' => 'pending', // reset status every reapply
+        ]
+    );
 
-    $applyJob->status = 'pending';
-    $applyJob->save();
-    
-
-    return back()->with('success', 'You have successfully applied for this job.');
-
+    return back()->with('success', 'Your application has been submitted successfully.');
 }
+
 
 
 //cancel job

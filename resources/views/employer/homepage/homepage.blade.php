@@ -478,9 +478,13 @@
                 <div class="stat-card">
                     <div class="stat-header">
                         <div>
-                            <div class="stat-value">2,456</div>
-                            <div class="stat-label">Total Applications</div>
-                            <small class="text-primary mt-1">📈 This quarter</small>
+                            <div class="stat-value">{{ $retrievedApplicantApproved }}</div>
+                            @if ($retrievedApplicantApproved == 1)
+                                <div class="stat-label">Total Applicant Approved</div>
+                            @else
+                                <div class="stat-label">Total Applicants Approved</div>
+                            @endif
+                            {{-- <small class="text-primary mt-1">📈 This quarter</small> --}}
                         </div>
                         <div class="stat-icon success">
                             <i class="fas fa-users"></i>
@@ -596,7 +600,7 @@
 
                             <div class="job-stats mt-3">
                                 <div class="job-stat">
-                                    <strong>89</strong>
+                                    <strong>{{ $jobDetail->applications->count() }}</strong>
                                     <small>Applications</small>
                                 </div>
                                 <div class="job-stat">
@@ -614,6 +618,7 @@
                             <button class="btn btn-outline-primary w-100 mt-3" data-bs-toggle="modal"
                                 data-bs-target="#applicationsModal-{{ $jobDetail->id }}">
                                 <i class="fas fa-users me-2"></i> View Applications
+                                {{ $jobDetail->applications->count() }}
 
                             </button>
 
@@ -739,8 +744,8 @@
 
                                         <div class="applications-list">
                                             @forelse ($jobDetail->applications as $application)
-                                                <div
-                                                    class="application-item mb-3 bg-balanced-card rounded shadow-sm border border-balanced-light">
+                                                <div class="application-item mb-3 bg-balanced-card rounded shadow-sm border border-balanced-light"
+                                                    id="application-{{ $application->id }}">
                                                     <!-- Candidate Info Header -->
                                                     <div class="p-3 border-bottom border-balanced">
                                                         <div class="row align-items-center g-2">
@@ -780,10 +785,10 @@
                                                                     class="d-flex flex-column align-items-start align-items-sm-end gap-1">
                                                                     <span
                                                                         class="badge fw-medium px-3 py-1 rounded-pill shadow-sm
-                                                    @if ($application->status == 'approved') bg-success-balanced text-white
-                                                    @elseif($application->status == 'rejected') bg-danger-balanced text-white
-                                                    @elseif($application->status == 'interview') bg-info-balanced text-white
-                                                    @else bg-warning-balanced text-dark @endif">
+                                @if ($application->status == 'approved') bg-success-balanced text-white
+                                @elseif($application->status == 'rejected') bg-danger-balanced text-white
+                                @elseif($application->status == 'interview') bg-info-balanced text-white
+                                @else bg-warning-balanced text-dark @endif">
                                                                         <i class="fas fa-circle me-1"
                                                                             style="font-size: 6px;"></i>
                                                                         {{ ucfirst($application->status ?? 'Pending') }}
@@ -875,29 +880,47 @@
                                                             <div class="col-12 col-md-6">
                                                                 <div
                                                                     class="d-flex justify-content-start justify-content-md-end gap-1 flex-wrap">
-                                                                    <button
-                                                                        class="btn btn-success-balanced btn-sm text-white shadow-sm">
-                                                                        <i class="fas fa-check me-1"></i>
-                                                                        <span class="d-none d-sm-inline">Approve</span>
-                                                                    </button>
+                                                                    <!-- Approve Button -->
+                                                                    <form
+                                                                        action="{{ route('employer.approveapplicant.store', $application->id) }}"
+                                                                        method="POST" class="d-inline">
+                                                                        @csrf
+                                                                        @method('PUT')
+                                                                        <button type="submit"
+                                                                            class="btn btn-success-balanced btn-sm text-white shadow-sm">
+                                                                            <i class="fas fa-check me-1"></i>
+                                                                            <span
+                                                                                class="d-none d-sm-inline">Approve</span>
+                                                                        </button>
+                                                                    </form>
                                                                     <button
                                                                         class="btn btn-info-balanced btn-sm text-white shadow-sm">
                                                                         <i class="fas fa-calendar me-1"></i>
                                                                         <span
                                                                             class="d-none d-sm-inline">Interview</span>
                                                                     </button>
-                                                                    <button
-                                                                        class="btn btn-outline-balanced btn-sm text-accent-red border-accent-red">
-                                                                        <i class="fas fa-times me-1"></i>
-                                                                        <span class="d-none d-sm-inline">Reject</span>
-                                                                    </button>
+
+                                                                    <!-- Modified Reject Button with JavaScript -->
+                                                                    <form
+                                                                        action="{{ route('employer.rejectapplicant.store', $application->id) }}"
+                                                                        method="POST" class="d-inline reject-form">
+                                                                        @csrf
+                                                                        @method('PUT')
+                                                                        <button type="submit"
+                                                                            class="btn btn-outline-balanced btn-sm text-accent-red border-accent-red reject-btn"
+                                                                            data-application-id="{{ $application->id }}">
+                                                                            <i class="fas fa-times me-1"></i>
+                                                                            <span
+                                                                                class="d-none d-sm-inline">Reject</span>
+                                                                        </button>
+                                                                    </form>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             @empty
-                                                <div class="text-center py-5">
+                                                <div class="text-center py-5" id="no-applications">
                                                     <div class="mb-3">
                                                         <i
                                                             class="fas fa-inbox fa-3x text-balanced-muted opacity-50"></i>
@@ -908,6 +931,102 @@
                                                 </div>
                                             @endforelse
                                         </div>
+
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                // Handle reject button clicks
+                                                document.querySelectorAll('.reject-form').forEach(form => {
+                                                    form.addEventListener('submit', function(e) {
+                                                        e.preventDefault(); // Prevent default form submission
+
+                                                        const applicationId = this.querySelector('.reject-btn').dataset.applicationId;
+                                                        const applicationElement = document.getElementById(
+                                                            `application-${applicationId}`);
+
+                                                        // Show confirmation dialog
+                                                        if (confirm('Are you sure you want to reject this application?')) {
+                                                            // Add fade out animation
+                                                            applicationElement.style.transition =
+                                                                'opacity 0.5s ease-out, transform 0.5s ease-out';
+                                                            applicationElement.style.opacity = '0';
+                                                            applicationElement.style.transform = 'translateX(-20px)';
+
+                                                            // Submit the form via AJAX
+                                                            const formData = new FormData(this);
+
+                                                            fetch(this.action, {
+                                                                    method: 'POST',
+                                                                    body: formData,
+                                                                    headers: {
+                                                                        'X-Requested-With': 'XMLHttpRequest'
+                                                                    }
+                                                                })
+                                                                .then(response => {
+                                                                    if (response.ok) {
+                                                                        // Remove element after animation completes
+                                                                        setTimeout(() => {
+                                                                            applicationElement.remove();
+
+                                                                            // Check if no applications left, show empty state
+                                                                            const remainingApplications = document
+                                                                                .querySelectorAll('.application-item');
+                                                                            if (remainingApplications.length === 0) {
+                                                                                document.querySelector('.applications-list')
+                                                                                    .innerHTML = `
+                                    <div class="text-center py-5" id="no-applications">
+                                        <div class="mb-3">
+                                            <i class="fas fa-inbox fa-3x text-balanced-muted opacity-50"></i>
+                                        </div>
+                                        <h6 class="text-balanced-muted mb-2">No Applications Yet</h6>
+                                        <p class="text-balanced-muted small">Applications will appear here when candidates apply.</p>
+                                    </div>
+                                `;
+                                                                            }
+                                                                        }, 500);
+
+                                                                        // Show success message (optional)
+                                                                        showNotification('Application rejected successfully',
+                                                                            'success');
+                                                                    } else {
+                                                                        // Revert animation if request failed
+                                                                        applicationElement.style.opacity = '1';
+                                                                        applicationElement.style.transform = 'translateX(0)';
+                                                                        showNotification('Failed to reject application', 'error');
+                                                                    }
+                                                                })
+                                                                .catch(error => {
+                                                                    // Revert animation if request failed
+                                                                    applicationElement.style.opacity = '1';
+                                                                    applicationElement.style.transform = 'translateX(0)';
+                                                                    showNotification('An error occurred', 'error');
+                                                                });
+                                                        }
+                                                    });
+                                                });
+                                            });
+
+                                            // Optional: Simple notification function
+                                            function showNotification(message, type = 'info') {
+                                                // Create notification element
+                                                const notification = document.createElement('div');
+                                                notification.className =
+                                                    `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+                                                notification.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
+                                                notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+
+                                                document.body.appendChild(notification);
+
+                                                // Auto remove after 3 seconds
+                                                setTimeout(() => {
+                                                    if (notification.parentNode) {
+                                                        notification.remove();
+                                                    }
+                                                }, 3000);
+                                            }
+                                        </script>
                                     </div>
                                 </div>
 

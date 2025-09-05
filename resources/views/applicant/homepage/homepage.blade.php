@@ -524,16 +524,21 @@
                                         </form>
 
                                         @php
-                                            $alreadyApplied = \App\Models\Applicant\ApplyJobModel::where(
+                                            // Check if applicant has applied for this job
+                                            $applicationRecord = \App\Models\Applicant\ApplyJobModel::where(
                                                 'job_id',
                                                 $jobDetail->id ?? null,
                                             )
                                                 ->where('applicant_id', session('applicant_id'))
-                                                ->exists();
+                                                ->first(); // Use first() instead of exists() to get the actual record
+
+                                            // Determine if applicant has an active application (not rejected)
+                                            $hasActiveApplication =
+                                                $applicationRecord && $applicationRecord->status !== 'rejected';
                                         @endphp
 
-                                        @if ($alreadyApplied)
-                                            <!-- Cancel Application Button -->
+                                        @if ($hasActiveApplication)
+                                            <!-- Cancel Application Button - Show only if application is pending/approved/interview -->
                                             <button type="button" class="btn btn-danger btn-sm"
                                                 data-bs-toggle="modal" data-bs-target="#cancelApplicationModal"
                                                 data-job-id="{{ $jobDetail->id }}"
@@ -543,15 +548,30 @@
                                                 <i class="fas fa-times me-1"></i> Cancel Application
                                             </button>
                                         @else
-                                            <!-- Apply Job Button -->
+                                            <!-- Apply Job Button - Show if never applied OR application was rejected -->
                                             <button class="btn btn-success btn-sm apply-btn"
                                                 data-job-id="{{ $jobDetail->id }}"
                                                 data-title="{{ $jobDetail->title }}"
                                                 data-company="{{ $retrievedAddressCompany->first()->company_name ?? 'Unknown Company' }}"
                                                 data-location="{{ $jobDetail->location }}" data-bs-toggle="modal"
                                                 data-bs-target="#applyJobModal">
-                                                <i class="bi bi-send-check"></i> Apply Job
+                                                <i class="bi bi-send-check"></i>
+                                                @if ($applicationRecord && $applicationRecord->status === 'rejected')
+                                                    Re-apply Job
+                                                @else
+                                                    Apply Job
+                                                @endif
                                             </button>
+
+                                            @if ($applicationRecord && $applicationRecord->status === 'rejected')
+                                                <!-- Show rejection notice -->
+                                                <div class="mt-2">
+                                                    <small class="text-danger">
+                                                        <i class="fas fa-exclamation-triangle me-1"></i>
+                                                        Your previous application was rejected. You can apply again.
+                                                    </small>
+                                                </div>
+                                            @endif
                                         @endif
 
                                     </div>

@@ -94,7 +94,7 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
     Route::get('profile', [ApplicantController::class, 'ViewProfilePage'])->name('applicant.profile.display');
     Route::post('add-cover-photo', [ApplicantController::class, 'AddCoverPhoto'])->name('applicant.coverphoto.store');
     Route::delete('delete-cover-photo', [ApplicantController::class, 'DeleteCoverPhoto'])->name('applicant.coverphoto.delete');
-    Route::put('profile/update/{id}', [ApplicantController::class, 'EditProfile'])->name('applicant.profile.update');
+    Route::put('profile/edit-update/{applicant_id}', [ApplicantController::class, 'EditProfile'])->name('applicant.profile.info.update');
     Route::post('profile/add-post', [ApplicantController::class, 'ApplicantPost'])->name('applicant.applicantposts.store');
     Route::put('profile/update-post/{id}', [ApplicantController::class, 'ApplicantEditPost'])->name('applicant.applicantposts.update');
     Route::delete('profile/delete-post/{id}', [ApplicantController::class, 'ApplicantDeletePost'])->name('applicant.applicantposts.delete');
@@ -103,7 +103,7 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
     Route::post('profile/add-youtube-video', [ApplicantController::class, 'AddYoutubeVideo'])->name('applicant.youtubevideo.store');
     Route::delete('profile/delete-youtube-video/{id}', [ApplicantController::class, 'DeleteYoutubeVideo'])->name('applicant.youtubevideo.delete');
     Route::get('profile/{id}', [ApplicantController::class, 'getApplicantProfile'])->name('applicant.getprofile.display');
-    Route::put('profile/update', [ApplicantController::class, 'updateProfile'])->name('applicant.editprofile');
+    Route::put('profile/update/{id}', [ApplicantController::class, 'updateProfile'])->name('applicant.editprofile');
     Route::post('profile/like-post/{id}', [ApplicantController::class, 'toggleLike'])->name('applicant.likepost.store');
     Route::post('profile/comment-post/{id}', [ApplicantController::class, 'ApplicantAddComments'])->name('applicantaddcomments.store');
     Route::delete('profile/delete-comment/{id}', [ApplicantController::class, 'ApplicantDeleteComments'])->name('applicant.comment.delete');
@@ -217,6 +217,10 @@ Route::middleware(['employer.authenticate'])->prefix('employer')->group(function
     Route::post('employer/add-job-post', [EmployerController::class, 'addJobPost'])->name('employer.jobsposts.store');
     Route::put('employer/job-post/{id}/update', [EmployerController::class, 'updateJobStatus'])->name('employer.updatejobpost.store');
     Route::delete('employer/job-post/{id}/delete', [EmployerController::class, 'deleteJobPost'])->name('employer.deletejobpost.store');
+    //Pending applicants
+    Route::put('employer/approve-applicant{id}', [EmployerController::class, 'approveApplicant'])->name('employer.approveapplicant.store');
+    Route::put('employer/reject-applicant/{id}', [EmployerController::class, 'rejectApplicant'])->name('employer.rejectapplicant.store');
+
 
     //Send rating 
     Route::post('employer/send-rating', [EmployerController::class, 'sendReview'])->name('employer.sendrating.store');

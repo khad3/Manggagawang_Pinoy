@@ -487,13 +487,14 @@ public function ShowHomepage() {
     $retrievePersonal = PersonalInformation::where('employer_id', $employerId)->first();
 
 
-
+    //Retrieved how many applicants approved by the employer
+    $retrievedApplicantApproved = ApplyJobModel::where('status', 'approved')->count();
     
   
 
 
 
-    return view('employer.homepage.homepage' , compact('retrievePersonal' , 'retrievedApplicants' , 'JobPostRetrieved' ));
+    return view('employer.homepage.homepage' , compact('retrievePersonal' , 'retrievedApplicants' , 'JobPostRetrieved' , 'retrievedApplicantApproved'));
 
 }
 
@@ -771,4 +772,36 @@ public function deleteJobPost($id) {
     return back()->with('deleted', 'Job post deleted successfully.');
 }
 
+
+
+
+//Approve the applicant job post
+public function approveApplicant($id) {
+    $application = ApplyJobModel::findOrFail($id);
+
+    if ($application->status === 'approved') {
+        return back()->with('info', 'Application is already approved.');
+    }
+
+    $application->status = 'approved';
+    $application->save();
+
+    return back()->with('success', 'Application approved successfully.');
+
+}
+
+//Reject the applicant job post
+public function rejectApplicant($id) {
+    $application = ApplyJobModel::findOrFail($id);
+
+    if ($application->status === 'rejected') {
+        return back()->with('info', 'Application is already rejected.');
+    }
+
+    $application->status = 'rejected';
+    $application->save();
+
+    return back()->with('success', 'Application rejected successfully.');   
+
+}
 }

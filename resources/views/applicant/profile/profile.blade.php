@@ -253,7 +253,9 @@
                     </div>
 
                     <!-- Body -->
-                    <form action="{{ route('applicant.profile.update', ['id' => $retrievedProfile->id]) }}"
+
+                    <form
+                        action="{{ route('applicant.profile.info.update', ['applicant_id' => session('applicant_id')]) }}"
                         method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
@@ -485,6 +487,7 @@
                         </div>
                     </form>
 
+
                 </div>
             </div>
         </div>
@@ -630,13 +633,16 @@
                                             data-bs-dismiss="modal" id="closeModalBtn">Close</button>
 
                                         <!-- Delete Form -->
-                                        <form id="deletePortfolioForm"
-                                            action="{{ route('applicant.portfolio.delete', ['id' => $portfolio->id]) }}"
-                                            method="POST" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                        </form>
+                                        @if (isset($portfolio))
+                                            <!---Ignored--->
+                                            <form id="deletePortfolioForm"
+                                                action="{{ route('applicant.portfolio.delete', ['id' => $portfolio->id]) }}"
+                                                method="POST" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                            </form>
+                                        @endif
 
                                     </div>
                                 </div>
@@ -1439,6 +1445,7 @@
                         <button type="submit" class="btn btn-tesda btn-primary-tesda">Save Changes</button>
                     </div>
                 </div>
+
             </form>
         </div>
     </div>
