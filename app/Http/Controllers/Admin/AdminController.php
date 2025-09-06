@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Admin\AccountAdminModel as Admin;
 use App\Models\Admin\AddTesdaOfficerModel as AddTesdaOfficer;
+use App\Models\Admin\AnnouncementModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
@@ -106,6 +107,26 @@ class AdminController extends Controller
     $retrieveTesdaOfficers = AddTesdaOfficer::all();
 
 
+    //retrieved the annoucements count
+    $retrieveAnnouncementsTotal = AnnouncementModel::count();
+
+    $retrieveAnnouncements = AnnouncementModel::orderBy('created_at', 'desc')->get();
+
+    $weeklyAnnouncements = AnnouncementModel::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count();
+
+    //retrieve the publisjhed announcements
+    $publishedAnnouncementTotal = AnnouncementModel::where('status', 'published')->count();
+
+    //Retrieve the tesda officers count
+    $tesdaOfficersCount = AddTesdaOfficer::count();
+
+    // New officers added this month
+    $newTesdaOfficers = AddTesdaOfficer::whereMonth('created_at', Carbon::now()->month)
+    ->whereYear('created_at', Carbon::now()->year)
+    ->count();
+
+    
+
 
     return view('admin.homepage.homepage', compact(
         'employerCount',
@@ -120,33 +141,17 @@ class AdminController extends Controller
         'retrieveAdmin',
         'last_login',
         'retrieveTesdaOfficers',
+        'retrieveAnnouncements',
+        'weeklyAnnouncements',
+        'retrieveAnnouncementsTotal',
+        'publishedAnnouncementTotal',
+        'tesdaOfficersCount',
+        'newTesdaOfficers'
     ));
 }
 
 //update the credentials of the tesda officer
-public function updateTesdaOfficer(Request $request , $officer_id) {
 
-    $request->validate([
-        'first_name' => 'required|string',
-        'last_name' => 'required|string',
-        'email' => 'required|email',
-        'password' => 'required|string',
-        'status' => 'required|string|in:active,inactive',
-    ]);
-
-
-    $tesdaOfficer = AddTesdaOfficer::find($officer_id);
-    $tesdaOfficer->first_name = $request->first_name;
-    $tesdaOfficer->last_name = $request->last_name;
-    $tesdaOfficer->email = $request->email;
-    $tesdaOfficer->password = Hash::make($request->password);
-    $tesdaOfficer->status = $request->status;
-    $tesdaOfficer->save();
-
-    return redirect()->route('admin.homepage.display')->with('success', 'Tesda Officer updated successfully!');
-
-
-}
 
     //login page
     public function loginDisplay(){
@@ -216,6 +221,44 @@ public function addTesdaOfficer(Request $request) {
     return redirect()->route('admin.homepage.display')->with('success', 'Tesda Officer added successfully!');
 
 }
+
+public function updateTesdaOfficer(Request $request , $officer_id) {
+
+    $request->validate([
+        'first_name' => 'required|string',
+        'last_name' => 'required|string',
+        'email' => 'required|email',
+        'password' => 'required|string',
+        'status' => 'required|string|in:active,inactive',
+    ]);
+
+
+    $tesdaOfficer = AddTesdaOfficer::find($officer_id);
+    $tesdaOfficer->first_name = $request->first_name;
+    $tesdaOfficer->last_name = $request->last_name;
+    $tesdaOfficer->email = $request->email;
+    $tesdaOfficer->password = Hash::make($request->password);
+    $tesdaOfficer->status = $request->status;
+    $tesdaOfficer->save();
+
+    return redirect()->route('admin.homepage.display')->with('success', 'Tesda Officer updated successfully!');
+
+
+}
+
+
+//delete tesda officer
+public function deleteTesdaOfficer($officer_id) {
+    $tesdaOfficer = AddTesdaOfficer::find($officer_id);
+    if ($tesdaOfficer) {
+        $tesdaOfficer->delete();
+        return redirect()->back()->with('success', 'Tesda Officer deleted successfully.');
+    } else {
+        return redirect()->back()->with('error', 'Tesda Officer not found.');
+    }
+
+}
+
 
 
 }

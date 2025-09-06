@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Applicant\ApplicantController; 
 use App\Http\Controllers\Employer\EmployerController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\TesdaOfficer\TesdaOfficerController;
 use Illuminate\Support\Facades\Request;
@@ -47,6 +48,10 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
     Route::post('info/template', [ApplicantController::class, 'TemplateForm'])->name('applicant.info.template.store');
 
     Route::get('homepage', [ApplicantController::class, 'ShowHomepage'])->name('applicant.info.homepage.display');
+    Route::post('applicant/mark-read/{id}', [ApplicantController::class, 'markAsReads'])
+    ->name('applicant.mark-read');
+Route::post('applicant/mark-all-read', [ApplicantController::class, 'markAllAsReads'])
+    ->name('applicant.mark-all-read');
 
     Route::get('communityforum', [ApplicantController::class, 'ShowForum'])->name('applicant.forum.display');
     Route::post('communityforum/create', [ApplicantController::class, 'CreatePost'])->name('applicant.forum.store');
@@ -248,8 +253,16 @@ Route::middleware(['admin.authenticate'])->prefix('admin')->group(function () {
 
 
     //Officer
-    Route::post('admin/add-officer', [AdminController::class, 'addTesdaOfficer'])->name('admin.addofficer.store');
-    Route::put('admin/officer/{id}/update', [AdminController::class, 'updateTesdaOfficer'])->name('admin.updateofficer');
+    Route::post('add-officer', [AdminController::class, 'addTesdaOfficer'])->name('admin.addofficer.store');
+    Route::put('officer/{id}/update', [AdminController::class, 'updateTesdaOfficer'])->name('admin.updateofficer');
+    Route::delete('officer/{id}/delete', [AdminController::class, 'deleteTesdaOfficer'])->name('admin.deleteofficer');
+
+    //Announcement
+    Route::post('create-announcement', [AnnouncementController::class, 'createAnnouncement'])->name('admin.create-announcement');
+    Route::delete('delete-announcement/{id}', [AnnouncementController::class, 'deleteAnnouncement'])->name('admin.delete-announcement.destroy');
+    Route::put('update-announcement/{id}', [AnnouncementController::class, 'updateAnnouncement'])->name('admin.update-announcement');
+
+
 });
 
 

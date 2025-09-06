@@ -10,7 +10,416 @@
     <!-- fav icon -->
     <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
     <link rel="stylesheet" href="{{ asset('css/applicant/admin/homepage.css') }}">
+    <style>
+        .announcements-container {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            margin-top: 20px;
+        }
 
+        .announcements-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .announcements-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .filter-select,
+        .search-input {
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: white;
+            transition: all 0.3s ease;
+            min-width: 140px;
+        }
+
+        .filter-select:focus,
+        .search-input:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+
+        .search-input {
+            min-width: 200px;
+        }
+
+        .announcements-stats {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .stat-badge {
+            background: #edf2f7;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .announcements-grid {
+            padding: 20px;
+            display: grid;
+            gap: 20px;
+        }
+
+        .announcement-item {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .announcement-item:hover {
+            border-color: #cbd5e0;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .announcement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .announcement-badges {
+            display: flex;
+            gap: 8px;
+        }
+
+        .priority-badge {
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .priority-urgent {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .priority-high {
+            background: #feebc8;
+            color: #dd6b20;
+        }
+
+        .priority-medium {
+            background: #bee3f8;
+            color: #3182ce;
+        }
+
+        .priority-low {
+            background: #c6f6d5;
+            color: #38a169;
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-published {
+            background: #c6f6d5;
+            color: #2f855a;
+        }
+
+        .status-draft {
+            background: #fff5b4;
+            color: #975a16;
+        }
+
+        .status-archived {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .announcement-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+
+        .announcement-content {
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .announcement-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 0.85rem;
+            color: #718096;
+        }
+
+        .meta-info {
+            display: flex;
+            gap: 15px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .announcement-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-edit {
+            background: #edf2f7;
+            color: #4a5568;
+        }
+
+        .btn-edit:hover {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+
+        .btn-delete {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .btn-delete:hover {
+            background: #fbb6ce;
+            color: #97266d;
+        }
+
+        .btn-view {
+            background: #bee3f8;
+            color: #3182ce;
+        }
+
+        .btn-view:hover {
+            background: #90cdf4;
+            color: #2b6cb0;
+        }
+
+        .tags-container {
+            margin-top: 12px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #edf2f7;
+            color: #4a5568;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 6px;
+            margin-bottom: 4px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #718096;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #cbd5e0;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+            color: #4a5568;
+        }
+
+        .empty-state p {
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .announcements-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-group {
+                justify-content: space-between;
+            }
+
+            .announcements-stats {
+                justify-content: center;
+            }
+
+            .announcement-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .announcement-meta {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+
+            .meta-info {
+                flex-wrap: wrap;
+            }
+        }
+
+        /* General modal styling */
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Header */
+        .modal-header {
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            padding: 16px 20px;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Close button */
+        .modal-header .btn-close {
+            background: none;
+            border: none;
+        }
+
+        /* Body */
+        .modal-body {
+            padding: 20px;
+            background: #fff;
+        }
+
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #444;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 8px;
+            padding: 10px 12px;
+            border: 1px solid #ced4da;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.15);
+        }
+
+        /* Current image preview */
+        .modal-body img {
+            border: 1px solid #e1e1e1;
+            padding: 4px;
+            background: #f9f9f9;
+        }
+
+        /* Footer */
+        .modal-footer {
+            border-top: 1px solid #dee2e6;
+            background: #f8f9fa;
+            padding: 12px 20px;
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 0.95rem;
+            transition: 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+            border-color: #004a9f;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #565e64;
+            border-color: #4e555b;
+        }
+    </style>
 </head>
 
 <body>
@@ -110,7 +519,7 @@
                     <div class="stat-card users">
                         <div class="stat-card-content">
                             <div class="stat-info">
-                                <h3 id="totalUsers">{{ $totalUsers }}</h3>
+                                <h3 id="totalUsers">{{ $totalUsers ?? 0 }}</h3>
                                 <p>Total Users</p>
                             </div>
                             <div class="stat-icon">
@@ -126,7 +535,7 @@
                     <div class="stat-card employers">
                         <div class="stat-card-content">
                             <div class="stat-info">
-                                <h3 id="totalEmployers">{{ $employerCount }}</h3>
+                                <h3 id="totalEmployers">{{ $employerCount ?? 0 }}</h3>
                                 <p>Employers</p>
                             </div>
                             <div class="stat-icon">
@@ -176,7 +585,7 @@
                     <div class="stat-card officers">
                         <div class="stat-card-content">
                             <div class="stat-info">
-                                <h3 id="totalOfficers">45</h3>
+                                <h3 id="totalOfficers">{{ $tesdaOfficersCount ?? 0 }}</h3>
                                 <p>TESDA Officers</p>
                             </div>
                             <div class="stat-icon">
@@ -185,14 +594,14 @@
                         </div>
                         <div class="stat-change">
                             <i class="fas fa-trending-up"></i>
-                            +3 new
+                            +{{ $newTesdaOfficers ?? 0 }} new
                         </div>
                     </div>
 
                     <div class="stat-card announcements">
                         <div class="stat-card-content">
                             <div class="stat-info">
-                                <h3 id="totalAnnouncements">127</h3>
+                                <h3 id="totalAnnouncements">{{ $retrieveAnnouncementsTotal }}</h3>
                                 <p>Announcements</p>
                             </div>
                             <div class="stat-icon">
@@ -201,7 +610,7 @@
                         </div>
                         <div class="stat-change">
                             <i class="fas fa-trending-up"></i>
-                            +5 this week
+                            {{ $weeklyAnnouncements }}+ this week
                         </div>
                     </div>
                 </div>
@@ -257,7 +666,8 @@
                                         <i class="fas fa-edit"></i> Edit
                                     </button>
                                     <!-- Delete Button -->
-                                    <form action="" method="POST" style="display:inline;">
+                                    <form action="{{ route('admin.deleteofficer', ['id' => $officer->id]) }}"
+                                        method="POST" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-sm"
@@ -363,10 +773,437 @@
                     </button>
                 </div>
 
-                <div id="announcementsList">
-                    <!-- Announcements will be dynamically populated here -->
+                <div class="section-content">
+                    <div class="announcements-container">
+                        <!-- Filter and Search Controls -->
+                        <div class="announcements-header">
+                            <div class="announcements-controls">
+                                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                                    <div class="filter-group">
+                                        <label for="priorityFilter">Priority:</label>
+                                        <select id="priorityFilter" class="filter-select">
+                                            <option value="">All Priorities</option>
+                                            <option value="urgent">Urgent</option>
+                                            <option value="high">High</option>
+                                            <option value="medium">Medium</option>
+                                            <option value="low">Low</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="filter-group">
+                                        <label for="statusFilter">Status:</label>
+                                        <select id="statusFilter" class="filter-select">
+                                            <option value="">All Status</option>
+                                            <option value="published">Published</option>
+                                            <option value="draft">Draft</option>
+                                            <option value="archived">Archived</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="filter-group">
+                                        <label for="searchFilter">Search:</label>
+                                        <input type="text" id="searchFilter" class="search-input"
+                                            placeholder="Search announcements...">
+                                    </div>
+                                </div>
+
+                                <div class="announcements-stats">
+                                    <div class="stat-badge">
+                                        <i class="fas fa-list"></i>
+                                        <span id="totalCount">{{ count($retrieveAnnouncements) }}</span> Total
+                                    </div>
+                                    <div class="stat-badge">
+                                        <i class="fas fa-eye"></i>
+                                        <span id="publishedCount">{{ $publishedAnnouncementTotal }}</span>
+                                        Published
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Announcements List -->
+                        <div class="announcements-grid">
+                            <!-- Announcements -->
+                            @if (isset($retrieveAnnouncements) && count($retrieveAnnouncements) > 0)
+                                @foreach ($retrieveAnnouncements as $announcement)
+                                    <div class="announcement-item" data-priority="{{ $announcement->priority }}"
+                                        data-status="{{ $announcement->status }}">
+
+                                        <div class="announcement-header">
+                                            <div class="announcement-badges">
+                                                <span class="priority-badge priority-{{ $announcement->priority }}">
+                                                    {{ ucfirst($announcement->priority) }}
+                                                </span>
+                                                <span class="status-badge status-{{ $announcement->status }}">
+                                                    {{ ucfirst($announcement->status) }}
+                                                </span>
+                                            </div>
+                                            <div class="announcement-actions">
+                                                <button class="action-btn btn-view" title="View Details"
+                                                    data-bs-toggle="modal" data-bs-target="#viewAnnouncementModal">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="action-btn btn-edit" title="Edit"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#editAnnouncementModal-{{ $announcement->id }}">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+
+                                                <form
+                                                    action="{{ route('admin.delete-announcement.destroy', $announcement->id) }}"
+                                                    method="POST" style="display:inline;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="action-btn btn-delete"
+                                                        title="Delete"
+                                                        onclick="return confirm('Are you sure you want to delete this announcement?')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+
+                                        <h3 class="announcement-title">{{ $announcement->title }}</h3>
+                                        <p class="announcement-content">
+                                            {{ $announcement->content }}
+                                        </p>
+
+                                        {{-- Show image only if not null --}}
+                                        @if ($announcement->image)
+                                            <img src="{{ asset('storage/' . $announcement->image) }}"
+                                                alt="Announcement Image"
+                                                style="width:100%; border-radius:8px; margin-bottom:10px;">
+                                        @endif
+
+                                        <div class="tags-container">
+                                            @if ($announcement->tag)
+                                                @php
+                                                    $tags = explode(',', $announcement->tag);
+                                                @endphp
+                                                @foreach ($tags as $tag)
+                                                    <span class="tag">#{{ trim($tag) }}</span>
+                                                @endforeach
+                                            @endif
+                                        </div>
+
+                                        <div class="announcement-meta">
+                                            <div class="meta-info">
+                                                <div class="meta-item">
+                                                    <i class="fas fa-user"></i>
+                                                    <span>Admin User</span>
+                                                </div>
+
+                                                {{-- Created date --}}
+                                                <div class="meta-item">
+                                                    <i class="fas fa-calendar-plus"></i>
+                                                    <span>
+                                                        Created on
+                                                        ({{ $announcement->created_at->diffForHumans() }})
+                                                    </span>
+                                                </div>
+
+                                                {{-- Publication date if exists --}}
+                                                @if ($announcement->publication_date)
+                                                    <div class="meta-item">
+                                                        <i class="fas fa-calendar-check"></i>
+                                                        <span>
+                                                            Published on
+                                                            {{ \Carbon\Carbon::parse($announcement->publication_date)->format('F j, Y \a\t g:i A') }}
+                                                            ({{ \Carbon\Carbon::parse($announcement->publication_date)->diffForHumans() }})
+                                                        </span>
+                                                    </div>
+                                                @endif
+
+                                                <div class="meta-item">
+                                                    <i class="fas fa-users"></i>
+                                                    <span>{{ ucfirst($announcement->target_audience) }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endif
+                        </div>
+
+
+                        @foreach ($retrieveAnnouncements as $announcement)
+                            <!-- Edit Announcement Modal -->
+                            <div class="modal fade" id="editAnnouncementModal-{{ $announcement->id }}"
+                                tabindex="-1" aria-labelledby="editAnnouncementModalLabel-{{ $announcement->id }}"
+                                aria-hidden="true">
+                                <div class="modal-dialog modal-lg modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <form action="{{ route('admin.update-announcement', $announcement->id) }}"
+                                            method="POST">
+                                            @csrf
+                                            @method('PUT')
+
+                                            <div class="modal-header">
+                                                <h5 class="modal-title"
+                                                    id="editAnnouncementModalLabel-{{ $announcement->id }}">
+                                                    <i class="fas fa-edit me-2"></i>Edit Announcement
+                                                </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+
+                                            <div class="modal-body">
+                                                <div class="form-group mb-3">
+                                                    <label class="form-label">Title</label>
+                                                    <input type="text" name="title" class="form-control"
+                                                        value="{{ $announcement->title }}" required>
+                                                </div>
+
+                                                <div class="form-group mb-3">
+                                                    <label class="form-label">Content</label>
+                                                    <textarea name="content" class="form-control" rows="4" required>{{ $announcement->content }}</textarea>
+                                                </div>
+
+                                                {{-- Show current image --}}
+                                                @if ($announcement->image)
+                                                    <div class="mb-3">
+                                                        <label class="form-label d-block">Current Image</label>
+                                                        <img src="{{ asset('storage/' . $announcement->image) }}"
+                                                            alt="Announcement Image"
+                                                            style="width: 150px; border-radius: 8px; margin-bottom:10px;">
+                                                    </div>
+                                                @endif
+
+                                                <div class="form-group mb-3">
+                                                    <label class="form-label">Upload New Image</label>
+                                                    <input type="file" name="image" class="form-control">
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-6 mb-3">
+                                                        <label class="form-label">Priority</label>
+                                                        <select name="priority" class="form-select" required>
+                                                            <option value="low"
+                                                                {{ $announcement->priority == 'low' ? 'selected' : '' }}>
+                                                                Low</option>
+                                                            <option value="medium"
+                                                                {{ $announcement->priority == 'medium' ? 'selected' : '' }}>
+                                                                Medium</option>
+                                                            <option value="high"
+                                                                {{ $announcement->priority == 'high' ? 'selected' : '' }}>
+                                                                High</option>
+                                                            <option value="urgent"
+                                                                {{ $announcement->priority == 'urgent' ? 'selected' : '' }}>
+                                                                Urgent</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6 mb-3">
+                                                        <label class="form-label">Target Audience</label>
+                                                        <select name="target_audience" class="form-select" required>
+                                                            <option value="all"
+                                                                {{ $announcement->target_audience == 'all' ? 'selected' : '' }}>
+                                                                All</option>
+                                                            <option value="applicants"
+                                                                {{ $announcement->target_audience == 'applicants' ? 'selected' : '' }}>
+                                                                Applicants</option>
+                                                            <option value="employers"
+                                                                {{ $announcement->target_audience == 'employers' ? 'selected' : '' }}>
+                                                                Employers</option>
+                                                            <option value="tesda_officers"
+                                                                {{ $announcement->target_audience == 'tesda_officers' ? 'selected' : '' }}>
+                                                                TESDA Officers</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group mb-3">
+                                                    <label class="form-label">Publication Date</label>
+                                                    <input type="datetime-local" name="publication_date"
+                                                        class="form-control"
+                                                        value="{{ $announcement->publication_date ? \Carbon\Carbon::parse($announcement->publication_date)->format('Y-m-d\TH:i') : '' }}">
+                                                </div>
+
+                                                <div class="form-group mb-3">
+                                                    <label class="form-label">Status</label>
+                                                    <select name="status" class="form-select" required>
+                                                        <option value="draft"
+                                                            {{ $announcement->status == 'draft' ? 'selected' : '' }}>
+                                                            Draft</option>
+                                                        <option value="published"
+                                                            {{ $announcement->status == 'published' ? 'selected' : '' }}>
+                                                            Published</option>
+                                                        <option value="scheduled"
+                                                            {{ $announcement->status == 'scheduled' ? 'selected' : '' }}>
+                                                            Scheduled</option>
+                                                        <option value="archived"
+                                                            {{ $announcement->status == 'archived' ? 'selected' : '' }}>
+                                                            Archived</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group mb-3">
+                                                    <label class="form-label">Tags (optional)</label>
+                                                    <input type="text" name="tags" class="form-control"
+                                                        value="{{ $announcement->tag }}">
+                                                </div>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="fas fa-save me-1"></i> Save Changes
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+
+
+                        <!-- View Announcement Modal -->
+                        <div class="modal fade" id="viewAnnouncementModal" tabindex="-1"
+                            aria-labelledby="viewAnnouncementModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-centered">
+                                <div class="modal-content">
+
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="viewAnnouncementModalLabel">
+                                            <i class="fas fa-bullhorn me-2"></i> Announcement Details
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <div class="announcement-details">
+                                            <h3 id="modalAnnouncementTitle">New Training Facilities Opening</h3>
+                                            <p id="modalAnnouncementContent">
+                                                We are excited to announce the opening of three new TESDA training
+                                                facilities in
+                                                Metro Manila. These facilities will offer expanded course offerings and
+                                                state-of-the-art equipment for hands-on learning. Grand opening ceremony
+                                                scheduled
+                                                for February 2025.
+                                            </p>
+
+                                            <div class="tags-container" id="modalAnnouncementTags">
+                                                <span class="tag">#facilities</span>
+                                                <span class="tag">#training</span>
+                                                <span class="tag">#expansion</span>
+                                                <span class="tag">#manila</span>
+                                            </div>
+
+                                            <div class="announcement-meta mt-3">
+                                                <div class="meta-item">
+                                                    <i class="fas fa-user"></i> <span
+                                                        id="modalAnnouncementAuthor">Admin User</span>
+                                                </div>
+                                                <div class="meta-item">
+                                                    <i class="fas fa-calendar"></i> <span
+                                                        id="modalAnnouncementDate">Jan 20, 2025</span>
+                                                </div>
+                                                <div class="meta-item">
+                                                    <i class="fas fa-users"></i> <span
+                                                        id="modalAnnouncementAudience">All Users</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <script>
+                        document.querySelectorAll('.btn-view').forEach(button => {
+                            button.addEventListener('click', function() {
+                                let parent = this.closest('.announcement-item');
+
+                                document.getElementById('modalAnnouncementTitle').textContent = parent.querySelector(
+                                    '.announcement-title').textContent;
+                                document.getElementById('modalAnnouncementContent').textContent = parent.querySelector(
+                                    '.announcement-content').textContent;
+                                document.getElementById('modalAnnouncementAuthor').textContent = parent.querySelector(
+                                    '.meta-item:nth-child(1) span').textContent;
+                                document.getElementById('modalAnnouncementDate').textContent = parent.querySelector(
+                                    '.meta-item:nth-child(2) span').textContent;
+                                document.getElementById('modalAnnouncementAudience').textContent = parent.querySelector(
+                                    '.meta-item:nth-child(3) span').textContent;
+
+                                // For tags
+                                document.getElementById('modalAnnouncementTags').innerHTML = parent.querySelector(
+                                    '.tags-container').innerHTML;
+                            });
+                        });
+
+                        // Filter functionality
+                        function filterAnnouncements() {
+                            const priorityFilter = document.getElementById('priorityFilter').value;
+                            const statusFilter = document.getElementById('statusFilter').value;
+                            const searchFilter = document.getElementById('searchFilter').value.toLowerCase();
+                            const announcements = document.querySelectorAll('.announcement-item');
+
+                            let visibleCount = 0;
+                            let publishedCount = 0;
+
+                            announcements.forEach(announcement => {
+                                const priority = announcement.dataset.priority;
+                                const status = announcement.dataset.status;
+                                const title = announcement.querySelector('.announcement-title').textContent.toLowerCase();
+                                const content = announcement.querySelector('.announcement-content').textContent.toLowerCase();
+                                const tags = Array.from(announcement.querySelectorAll('.tag')).map(tag => tag.textContent
+                                    .toLowerCase());
+
+                                const matchesPriority = !priorityFilter || priority === priorityFilter;
+                                const matchesStatus = !statusFilter || status === statusFilter;
+                                const matchesSearch = !searchFilter ||
+                                    title.includes(searchFilter) ||
+                                    content.includes(searchFilter) ||
+                                    tags.some(tag => tag.includes(searchFilter));
+
+                                if (matchesPriority && matchesStatus && matchesSearch) {
+                                    announcement.style.display = 'block';
+                                    visibleCount++;
+                                    if (status === 'published') publishedCount++;
+                                } else {
+                                    announcement.style.display = 'none';
+                                }
+                            });
+
+                            document.getElementById('totalCount').textContent = visibleCount;
+                            document.getElementById('publishedCount').textContent = publishedCount;
+                        }
+
+                        // Add event listeners
+                        document.getElementById('priorityFilter').addEventListener('change', filterAnnouncements);
+                        document.getElementById('statusFilter').addEventListener('change', filterAnnouncements);
+                        document.getElementById('searchFilter').addEventListener('input', filterAnnouncements);
+
+                        // Action button handlers (you can customize these)
+                        document.addEventListener('click', function(e) {
+                            if (e.target.closest('.btn-view')) {
+                                console.log('View announcement');
+                                // Add your view logic here
+                            } else if (e.target.closest('.btn-edit')) {
+                                console.log('Edit announcement');
+                                // Add your edit logic here
+                            } else if (e.target.closest('.btn-delete')) {
+                                if (confirm('Are you sure you want to delete this announcement?')) {
+                                    console.log('Delete announcement');
+                                    // Add your delete logic here
+                                }
+                            }
+                        });
+                    </script>
                 </div>
             </section>
+
+
 
             <!-- Reports Section -->
             <section id="reports" class="content-section">
@@ -514,7 +1351,7 @@
                 </div>
             </section>
 
-            <!-- Settings Section -->
+             Settings Section -->
             <section id="settings" class="content-section">
                 <div class="section-header">
                     <h2 class="section-title">
@@ -559,6 +1396,8 @@
                     </div>
                 </div>
             </section>
+
+
         </main>
     </div>
 
@@ -585,64 +1424,18 @@
                             <label class="form-label">Last Name</label>
                             <input type="text" class="form-input" name="last_name" id="officerLastName" required>
                         </div>
-                        <!-- <div class="form-group">
-                            <label class="form-label">Position/Title</label>
-                            <input type="text" class="form-input" id="officerPosition" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Region</label>
-                            <select class="form-select" id="officerRegion" required>
-                                <option value="">Select Region</option>
-                                <option value="NCR">NCR - National Capital Region</option>
-                                <option value="Region I">Region I - Ilocos Region</option>
-                                <option value="Region II">Region II - Cagayan Valley</option>
-                                <option value="Region III">Region III - Central Luzon</option>
-                                <option value="Region IV-A">Region IV-A - CALABARZON</option>
-                                <option value="Region IV-B">Region IV-B - MIMAROPA</option>
-                                <option value="Region V">Region V - Bicol Region</option>
-                                <option value="Region VI">Region VI - Western Visayas</option>
-                                <option value="Region VII">Region VII - Central Visayas</option>
-                                <option value="Region VIII">Region VIII - Eastern Visayas</option>
-                                <option value="Region IX">Region IX - Zamboanga Peninsula</option>
-                                <option value="Region X">Region X - Northern Mindanao</option>
-                                <option value="Region XI">Region XI - Davao Region</option>
-                                <option value="Region XII">Region XII - SOCCSKSARGEN</option>
-                                <option value="CAR">CAR - Cordillera Administrative Region</option>
-                                <option value="BARMM">BARMM - Bangsamoro Autonomous Region</option>
-                            </select>
-                        </div> -->
+
                         <div class="form-group form-grid-full">
                             <label class="form-label">Email Address</label>
                             <input type="email" class="form-input" name="email" id="officerEmail" required>
                         </div>
-                        <!-- <div class="form-group">
-                            <label class="form-label">Phone Number</label>
-                            <input type="tel" class="form-input" id="officerPhone" required>
-                        </div> -->
-                        <!-- <div class="form-group">
-                            <label class="form-label">Employee ID</label>
-                            <input type="text" class="form-input" id="officerEmployeeId" required>
-                        </div> -->
-                        <!-- <div class="form-group">
-                            <label class="form-label">Username</label>
-                            <input type="text" class="form-input" id="officerUsername" required>
-                        </div> -->
+
                         <div class="form-group">
                             <label class="form-label">Temporary Password</label>
                             <input type="password" class="form-input" name="temporary_password" id="officerPassword"
                                 required>
                         </div>
-                        <!-- <div class="form-group">
-                            <label class="form-label">Access Level</label>
-                            <select class="form-select" id="officerAccessLevel" required>
-                                <option value="">Select Access Level</option>
-                                <option value="regional">Regional Officer</option>
-                                <option value="provincial">Provincial Officer</option>
-                                <option value="training">Training Officer</option>
-                                <option value="assessment">Assessment Officer</option>
-                                <option value="admin">Administrative Officer</option>
-                            </select>
-                        </div> -->
+
                         <div class="form-group">
                             <label class="form-label">Status</label>
                             <select class="form-select" id="officerStatus" name="status" required>
@@ -664,96 +1457,7 @@
         </div>
     </div>
 
-    <!-- Edit Officer Modal -->
-    <div id="editOfficerModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Edit Officer</h2>
-                <p class="modal-subtitle">Update officer information and account details</p>
-                <button class="modal-close" onclick="closeModal('editOfficerModal')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="editOfficerForm">
-                    <input type="hidden" id="editOfficerId">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label class="form-label">First Name</label>
-                            <input type="text" class="form-input" id="editOfficerFirstName" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Last Name</label>
-                            <input type="text" class="form-input" id="editOfficerLastName" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Position/Title</label>
-                            <input type="text" class="form-input" id="editOfficerPosition" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Region</label>
-                            <select class="form-select" id="editOfficerRegion" required>
-                                <option value="">Select Region</option>
-                                <option value="NCR">NCR - National Capital Region</option>
-                                <option value="Region I">Region I - Ilocos Region</option>
-                                <option value="Region II">Region II - Cagayan Valley</option>
-                                <option value="Region III">Region III - Central Luzon</option>
-                                <option value="Region IV-A">Region IV-A - CALABARZON</option>
-                                <option value="Region IV-B">Region IV-B - MIMAROPA</option>
-                                <option value="Region V">Region V - Bicol Region</option>
-                                <option value="Region VI">Region VI - Western Visayas</option>
-                                <option value="Region VII">Region VII - Central Visayas</option>
-                                <option value="Region VIII">Region VIII - Eastern Visayas</option>
-                                <option value="Region IX">Region IX - Zamboanga Peninsula</option>
-                                <option value="Region X">Region X - Northern Mindanao</option>
-                                <option value="Region XI">Region XI - Davao Region</option>
-                                <option value="Region XII">Region XII - SOCCSKSARGEN</option>
-                                <option value="CAR">CAR - Cordillera Administrative Region</option>
-                                <option value="BARMM">BARMM - Bangsamoro Autonomous Region</option>
-                            </select>
-                        </div>
-                        <div class="form-group form-grid-full">
-                            <label class="form-label">Email Address</label>
-                            <input type="email" class="form-input" id="editOfficerEmail" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Phone Number</label>
-                            <input type="tel" class="form-input" id="editOfficerPhone" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Employee ID</label>
-                            <input type="text" class="form-input" id="editOfficerEmployeeId" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Access Level</label>
-                            <select class="form-select" id="editOfficerAccessLevel" required>
-                                <option value="">Select Access Level</option>
-                                <option value="regional">Regional Officer</option>
-                                <option value="provincial">Provincial Officer</option>
-                                <option value="training">Training Officer</option>
-                                <option value="assessment">Assessment Officer</option>
-                                <option value="admin">Administrative Officer</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Status</label>
-                            <select class="form-select" id="editOfficerStatus" required>
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
-                            </select>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-cancel"
-                    onclick="closeModal('editOfficerModal')">Cancel</button>
-                <button type="submit" class="btn btn-primary" onclick="updateOfficer()">
-                    <i class="fas fa-save"></i> Update Officer
-                </button>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Add Announcement Modal -->
     <div id="addAnnouncementModal" class="modal">
@@ -766,21 +1470,30 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="addAnnouncementForm">
+                <form action="{{ route('admin.create-announcement') }}" method="POST"
+                    enctype="multipart/form-data">
+                    @csrf
                     <div class="form-group">
                         <label class="form-label">Announcement Title</label>
-                        <input type="text" class="form-input" id="announcementTitle" required
+                        <input type="text" class="form-input" name="title" id="announcementTitle" required
                             placeholder="Enter announcement title">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Content</label>
-                        <textarea class="form-input form-textarea" id="announcementContent" required
+                        <textarea class="form-input form-textarea" name="content" id="announcementContent" required
                             placeholder="Enter announcement content..."></textarea>
                     </div>
+                    <div class="form-group">
+                        <label class="form-label">Image</label>
+                        <input type="file" class="form-input" name="image" id="announcementImage"
+                            name="image" accept="image/*">
+                    </div>
+
+
                     <div class="form-grid">
                         <div class="form-group">
                             <label class="form-label">Priority Level</label>
-                            <select class="form-select" id="announcementPriority" required>
+                            <select class="form-select" name="priority" id="announcementPriority" required>
                                 <option value="">Select Priority</option>
                                 <option value="low">Low Priority</option>
                                 <option value="medium">Medium Priority</option>
@@ -790,43 +1503,45 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Target Audience</label>
-                            <select class="form-select" id="announcementAudience" required>
+                            <select class="form-select" name="audience" id="announcementAudience" required>
                                 <option value="">Select Audience</option>
                                 <option value="all">All Users</option>
                                 <option value="applicants">Job Applicants Only</option>
                                 <option value="employers">Employers Only</option>
-                                <option value="officers">TESDA Officers Only</option>
-                                <option value="regional">Regional Offices</option>
+                                <option value="tesda_officers">TESDA Officers Only</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Publication Date</label>
-                            <input type="datetime-local" class="form-input" id="announcementDate" required>
+                            <input type="datetime-local" name="date" class="form-input" id="announcementDate"
+                                required>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Status</label>
-                            <select class="form-select" id="announcementStatus" required>
+                            <select class="form-select" name="status" id="announcementStatus" required>
                                 <option value="">Select Status</option>
                                 <option value="draft">Save as Draft</option>
                                 <option value="published">Publish Immediately</option>
                                 <option value="scheduled">Schedule for Later</option>
+                                <option value="archived">archived</option>
                             </select>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Tags (Optional)</label>
-                        <input type="text" class="form-input" id="announcementTags"
+                        <input type="text" class="form-input" name="tags" id="announcementTags"
                             placeholder="Enter tags separated by commas">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-cancel"
+                            onclick="closeModal('addAnnouncementModal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary" onclick="submitAnnouncementForm()">
+                            <i class="fas fa-bullhorn"></i> Create Announcement
+                        </button>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-cancel"
-                    onclick="closeModal('addAnnouncementModal')">Cancel</button>
-                <button type="submit" class="btn btn-primary" onclick="submitAnnouncementForm()">
-                    <i class="fas fa-bullhorn"></i> Create Announcement
-                </button>
-            </div>
+
         </div>
     </div>
 
@@ -922,40 +1637,6 @@
     <script>
         // Global Data Storage
 
-        let announcements = [{
-                id: 1,
-                title: 'New TESDA Scholarship Program 2025',
-                content: 'TESDA is now accepting applications for the 2025 scholarship program. Eligible applicants can apply for various technical courses throughout the country. The program aims to provide free technical education to qualified Filipino citizens.',
-                priority: 'high',
-                audience: 'all',
-                status: 'published',
-                date: '2025-01-28',
-                tags: ['scholarship', 'education', 'application'],
-                author: 'Admin User'
-            },
-            {
-                id: 2,
-                title: 'Updated Assessment Guidelines',
-                content: 'New assessment guidelines have been implemented for all certification programs. Please review the updated procedures and ensure all assessments comply with the new standards effective immediately.',
-                priority: 'medium',
-                audience: 'officers',
-                status: 'published',
-                date: '2025-01-25',
-                tags: ['assessment', 'guidelines', 'procedures'],
-                author: 'Admin User'
-            },
-            {
-                id: 3,
-                title: 'System Maintenance Notice',
-                content: 'The TESDA portal will undergo scheduled maintenance on January 30, 2025, from 2:00 AM to 6:00 AM. During this time, all services will be temporarily unavailable. We apologize for any inconvenience.',
-                priority: 'urgent',
-                audience: 'all',
-                status: 'draft',
-                date: '2025-01-22',
-                tags: ['maintenance', 'system', 'downtime'],
-                author: 'Admin User'
-            }
-        ];
 
         // Navigation Functions
         function showSection(sectionId, element) {

@@ -484,7 +484,7 @@
                             @else
                                 <div class="stat-label">Total Applicants Approved</div>
                             @endif
-                            {{-- <small class="text-primary mt-1">📈 This quarter</small> --}}
+                            {{-- <small class="text-primary mt-1"> This quarter</small> --}}
                         </div>
                         <div class="stat-icon success">
                             <i class="fas fa-users"></i>

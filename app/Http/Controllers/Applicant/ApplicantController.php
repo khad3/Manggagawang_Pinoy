@@ -27,6 +27,7 @@ use App\Models\Applicant\SavedJobModel as SavedJob;
 use App\Models\Applicant\TesdaUploadCertificationModel as TesdaCertification;
 use App\Models\Applicant\ApplicantPostLikeModel as PostLike;
 use App\Models\Applicant\ApplyJobModel as ApplyJob;
+use App\Models\Admin\AnnouncementModel;
 use App\Notifications\Applicant\FriendRequestNotification;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -397,6 +398,20 @@ public function ShowHomepage()
     ])->where('applicant_id', $applicantId)->get();
     
 
+     // Get only announcements targeted to applicants and published
+    $notifications = AnnouncementModel::where('target_audience', 'applicants')
+        ->where('status', 'published')
+        ->orderBy('created_at', 'desc')
+        ->take(5) // limit to 5 latest
+        ->get();
+
+
+     $unreadCount = AnnouncementModel::where('target_audience', 'applicants')
+    ->where('is_read', false)
+    ->count();
+
+
+
     return view('applicant.homepage.homepage', compact(
         'retrievePersonal',
         'applicantCounts',
@@ -406,10 +421,81 @@ public function ShowHomepage()
         'savedJobIds',
         'tesdaCertification',
         'tesdaCertificateCounts',
-        'appliedJobs'
+        'appliedJobs',
+        'notifications',
+        'unreadCount'
     ));
 }
 
+ // Mark a single notification as read
+public function markAsReads($id)
+{
+    try {
+        // Find the notification for the current user (if you have user authentication)
+        $notification = AnnouncementModel::where('id', $id)
+            ->where('target_audience', 'applicants')
+            ->firstOrFail();
+
+        // If you have user-specific notifications, add user filtering:
+        // ->where('user_id', auth()->id()) // Uncomment if you have user-specific notifications
+
+        $notification->is_read = true;
+        $notification->save();
+
+        // Return JSON response for AJAX
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Notification marked as read'
+            ]);
+        }
+
+        // Fallback for non-AJAX requests
+        return redirect()->back()->with('success', 'Notification marked as read');
+        
+    } catch (\Exception $e) {
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to mark notification as read'
+            ], 500);
+        }
+        
+        return redirect()->back()->with('error', 'Failed to mark notification as read');
+    }
+}
+
+public function markAllAsReads()
+{
+    try {
+        $updated = AnnouncementModel::where('target_audience', 'applicants')
+            ->where('is_read', false)
+            // ->where('user_id', auth()->id()) // Uncomment if you have user-specific notifications
+            ->update(['is_read' => true]);
+
+        // Return JSON response for AJAX
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'All notifications marked as read',
+                'updated_count' => $updated
+            ]);
+        }
+
+        // Fallback for non-AJAX requests
+        return redirect()->back()->with('success', 'All notifications marked as read');
+        
+    } catch (\Exception $e) {
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to mark all notifications as read'
+            ], 500);
+        }
+        
+        return redirect()->back()->with('error', 'Failed to mark all notifications as read');
+    }
+}
 
 
 public function ShowForum()
