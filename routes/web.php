@@ -1,16 +1,19 @@
 <?php
 
+use App\Http\Controllers\Applicant\CommunityForumController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Applicant\ApplicantController; 
 use App\Http\Controllers\Employer\EmployerController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AnnouncementController;
+use App\Http\Controllers\Applicant\ProfileController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\TesdaOfficer\TesdaOfficerController;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\App;
 
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpKernel\Profiler\Profile;
 
 //Index
 Route::get('/index', [ApplicantController::class, 'index'])->name('display.index');
@@ -53,68 +56,68 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
 Route::post('applicant/mark-all-read', [ApplicantController::class, 'markAllAsReads'])
     ->name('applicant.mark-all-read');
 
-    Route::get('communityforum', [ApplicantController::class, 'ShowForum'])->name('applicant.forum.display');
-    Route::post('communityforum/create', [ApplicantController::class, 'CreatePost'])->name('applicant.forum.store');
-    Route::delete('communityforum/delete/{id}', [ApplicantController::class, 'DeletePost'])->name('applicant.forum.delete');
+    Route::get('communityforum', [CommunityForumController::class, 'ShowForum'])->name('applicant.forum.display');
+    Route::post('communityforum/create', [CommunityForumController::class, 'CreatePost'])->name('applicant.forum.store');
+    Route::delete('communityforum/delete/{id}', [CommunityForumController::class, 'DeletePost'])->name('applicant.forum.delete');
 
-    Route::get('communityforum/addcomment', [ApplicantController::class, 'ShowPost'])->name('applicant.forum.comments.display');
-    Route::post('communityforum/addcomment', [ApplicantController::class, 'AddComments'])->name('applicant.forum.comments.store');
-    Route::delete('communityforum/deletecomment/{id}', [ApplicantController::class, 'DeleteComment'])->name('applicant.forum.comments.delete');
-    Route::post('communityforum/replycomment', [ApplicantController::class, 'ReplyComments'])->name('applicant.forum.replycomments.store');
-    Route::delete('communityforum/replycomment/delete/{id}', [ApplicantController::class, 'DeleteReplyComment'])->name('applicant.forum.replycomments.delete');
+    Route::get('communityforum/addcomment', [CommunityForumController::class, 'ShowPost'])->name('applicant.forum.comments.display');
+    Route::post('communityforum/addcomment', [CommunityForumController::class, 'AddComments'])->name('applicant.forum.comments.store');
+    Route::delete('communityforum/deletecomment/{id}', [CommunityForumController::class, 'DeleteComment'])->name('applicant.forum.comments.delete');
+    Route::post('communityforum/replycomment', [CommunityForumController::class, 'ReplyComments'])->name('applicant.forum.replycomments.store');
+    Route::delete('communityforum/replycomment/delete/{id}', [CommunityForumController::class, 'DeleteReplyComment'])->name('applicant.forum.replycomments.delete');
 
-    Route::post('communityforum/like{id}', [ApplicantController::class, 'LikePost'])->name('applicant.forum.likes.store');
-    Route::get('communityforum/viewpost', [ApplicantController::class, 'ViewMyPost'])->name('applicant.forum.viewpost.display');
+    Route::post('communityforum/like{id}', [CommunityForumController::class, 'LikePost'])->name('applicant.forum.likes.store');
+    Route::get('communityforum/viewpost', [CommunityForumController::class, 'ViewMyPost'])->name('applicant.forum.viewpost.display');
 
     // Group forum
-    Route::get('communityforum/create-group', [ApplicantController::class, 'ShowGroupForum'])->name('applicant.forum.group.display');
-    Route::post('communityforum/create-group', [ApplicantController::class, 'AddGroupForum'])->name('applicant.forum.group.store');
-    Route::get('communityforum/group-community', [ApplicantController::class, 'DisplayGroupForum'])->name('applicant.forum.groupcommunity.display');
-    Route::post('communityforum/join-group', [ApplicantController::class, 'RequestAndJoinGroup'])->name('applicant.forum.joingroup.store');
+    Route::get('communityforum/create-group', [CommunityForumController::class, 'ShowGroupForum'])->name('applicant.forum.group.display');
+    Route::post('communityforum/create-group', [CommunityForumController::class, 'AddGroupForum'])->name('applicant.forum.group.store');
+    Route::get('communityforum/group-community', [CommunityForumController::class, 'DisplayGroupForum'])->name('applicant.forum.groupcommunity.display');
+    Route::post('communityforum/join-group', [CommunityForumController::class, 'RequestAndJoinGroup'])->name('applicant.forum.joingroup.store');
 
     // Group-specific posts/comments/likes
-    Route::post('communityforum/view-specific-group/{groupId}', [ApplicantController::class, 'AddPostGroupCommunity'])->name('applicant.forum.addpostgroupcommunity.store');
-    Route::get('communityforum/view-specific-group/{id}', [ApplicantController::class, 'ViewSpecificGroup'])->name('applicant.forum.joinedgroup.display');
+    Route::post('communityforum/view-specific-group/{groupId}', [CommunityForumController::class, 'AddPostGroupCommunity'])->name('applicant.forum.addpostgroupcommunity.store');
+    Route::get('communityforum/view-specific-group/{id}', [CommunityForumController::class, 'ViewSpecificGroup'])->name('applicant.forum.joinedgroup.display');
 
-    Route::get('communityforum/view-group-creator', [ApplicantController::class, 'ViewGroupByCreator'])->name('applicant.forum.viewgroupcreator.display');
-    Route::delete('communityforum/{id}/view-group-creator', [ApplicantController::class, 'DeleteGroupByCreator'])->name('applicant.forum.deletegroupcreator.delete');
+    Route::get('communityforum/view-group-creator', [CommunityForumController::class, 'ViewGroupByCreator'])->name('applicant.forum.viewgroupcreator.display');
+    Route::delete('communityforum/{id}/view-group-creator', [CommunityForumController::class, 'DeleteGroupByCreator'])->name('applicant.forum.deletegroupcreator.delete');
 
-    Route::get('communityforum/view-specific-creator/view-group/{groupId}', [ApplicantController::class, 'ViewGroupByCreatorPage'])->name('applicant.forum.creatorviewpage.display');
-    Route::post('communityforum/view-specific-creator/view-group/{groupId}', [ApplicantController::class, 'AddPostGroupSpecific'])->name('applicant.forum.addpostgroup.store');
-    Route::post('communityforum/view-specific-creator/view-group/{groupId}/comment', [ApplicantController::class, 'AddCommentGroupSpecific'])->name('applicant.forum.groupcomments.store');
-    Route::delete('communityforum/view-specific-creator/view-group/{groupId}/comment/{commentId}', [ApplicantController::class, 'DeleteCommentGroup'])->name('applicant.forum.groupcomments.delete');
-    Route::post('communityforum/view-specific-creator/view-group/{groupId}/like/{postId}', [ApplicantController::class, 'AddLikeGroup'])->name('applicant.forum.groupaddlike.store');
+    Route::get('communityforum/view-specific-creator/view-group/{groupId}', [CommunityForumController::class, 'ViewGroupByCreatorPage'])->name('applicant.forum.creatorviewpage.display');
+    Route::post('communityforum/view-specific-creator/view-group/{groupId}', [CommunityForumController::class, 'AddPostGroupSpecific'])->name('applicant.forum.addpostgroup.store');
+    Route::post('communityforum/view-specific-creator/view-group/{groupId}/comment', [CommunityForumController::class, 'AddCommentGroupSpecific'])->name('applicant.forum.groupcomments.store');
+    Route::delete('communityforum/view-specific-creator/view-group/{groupId}/comment/{commentId}', [CommunityForumController::class, 'DeleteCommentGroup'])->name('applicant.forum.groupcomments.delete');
+    Route::post('communityforum/view-specific-creator/view-group/{groupId}/like/{postId}', [CommunityForumController::class, 'AddLikeGroup'])->name('applicant.forum.groupaddlike.store');
 
     // Post editing
-    Route::get('communityforum/{id}/edit-post', [ApplicantController::class, 'ShowPostPage'])->name('applicant.forum.editpost.display');
-    Route::put('communityforum/{id}/update', [ApplicantController::class, 'EditPost'])->name('applicant.forum.update');
+    Route::get('communityforum/{id}/edit-post', [CommunityForumController::class, 'ShowPostPage'])->name('applicant.forum.editpost.display');
+    Route::put('communityforum/{id}/update', [CommunityForumController::class, 'EditPost'])->name('applicant.forum.update');
 
     // Friend
-    Route::post('communityforum/add-friend/{id}', [ApplicantController::class, 'AddFriend'])->name('applicant.forum.addfriend.store');
-    Route::delete('communityforum/cancel-friend-request/{id}', [ApplicantController::class, 'CancelFriendRequest'])->name('applicant.forum.friend.cancel');
-    Route::put('communityforum/accept-friend-request/{id}', [ApplicantController::class, 'AcceptFriendRequest'])->name('applicant.forum.friend.accept');
-    Route::get('communityforum/view-friend-list', [ApplicantController::class, 'ViewFriendlistPage'])->name('applicant.forum.viewfriendlist.display');
+    Route::post('communityforum/add-friend/{id}', [CommunityForumController::class, 'AddFriend'])->name('applicant.forum.addfriend.store');
+    Route::delete('communityforum/cancel-friend-request/{id}', [CommunityForumController::class, 'CancelFriendRequest'])->name('applicant.forum.friend.cancel');
+    Route::put('communityforum/accept-friend-request/{id}', [CommunityForumController::class, 'AcceptFriendRequest'])->name('applicant.forum.friend.accept');
+    Route::get('communityforum/view-friend-list', [CommunityForumController::class, 'ViewFriendlistPage'])->name('applicant.forum.viewfriendlist.display');
 
     // Profile
-    Route::get('profile', [ApplicantController::class, 'ViewProfilePage'])->name('applicant.profile.display');
-    Route::post('add-cover-photo', [ApplicantController::class, 'AddCoverPhoto'])->name('applicant.coverphoto.store');
-    Route::delete('delete-cover-photo', [ApplicantController::class, 'DeleteCoverPhoto'])->name('applicant.coverphoto.delete');
-    Route::put('profile/edit-update/{applicant_id}', [ApplicantController::class, 'EditProfile'])->name('applicant.profile.info.update');
-    Route::post('profile/add-post', [ApplicantController::class, 'ApplicantPost'])->name('applicant.applicantposts.store');
-    Route::put('profile/update-post/{id}', [ApplicantController::class, 'ApplicantEditPost'])->name('applicant.applicantposts.update');
-    Route::delete('profile/delete-post/{id}', [ApplicantController::class, 'ApplicantDeletePost'])->name('applicant.applicantposts.delete');
-    Route::post('profile/add-portfolio', [ApplicantController::class, 'AddPortfolio'])->name('applicant.portfolio.store');
-    Route::delete('profile/delete-portfolio/{id}', [ApplicantController::class, 'DeletePortfolio'])->name('applicant.portfolio.delete');
-    Route::post('profile/add-youtube-video', [ApplicantController::class, 'AddYoutubeVideo'])->name('applicant.youtubevideo.store');
-    Route::delete('profile/delete-youtube-video/{id}', [ApplicantController::class, 'DeleteYoutubeVideo'])->name('applicant.youtubevideo.delete');
-    Route::get('profile/{id}', [ApplicantController::class, 'getApplicantProfile'])->name('applicant.getprofile.display');
-    Route::put('profile/update/{id}', [ApplicantController::class, 'updateProfile'])->name('applicant.editprofile');
-    Route::post('profile/like-post/{id}', [ApplicantController::class, 'toggleLike'])->name('applicant.likepost.store');
-    Route::post('profile/comment-post/{id}', [ApplicantController::class, 'ApplicantAddComments'])->name('applicantaddcomments.store');
-    Route::delete('profile/delete-comment/{id}', [ApplicantController::class, 'ApplicantDeleteComments'])->name('applicant.comment.delete');
+    Route::get('profile', [ProfileController::class, 'ViewProfilePage'])->name('applicant.profile.display');
+    Route::post('add-cover-photo', [ProfileController::class, 'AddCoverPhoto'])->name('applicant.coverphoto.store');
+    Route::delete('delete-cover-photo', [ProfileController::class, 'DeleteCoverPhoto'])->name('applicant.coverphoto.delete');
+    Route::put('profile/edit-update/{applicant_id}', [ProfileController::class, 'EditProfile'])->name('applicant.profile.info.update');
+    Route::post('profile/add-post', [ProfileController::class, 'ApplicantPost'])->name('applicant.applicantposts.store');
+    Route::put('profile/update-post/{id}', [ProfileController::class, 'ApplicantEditPost'])->name('applicant.applicantposts.update');
+    Route::delete('profile/delete-post/{id}', [ProfileController::class, 'ApplicantDeletePost'])->name('applicant.applicantposts.delete');
+    Route::post('profile/add-portfolio', [ProfileController::class, 'AddPortfolio'])->name('applicant.portfolio.store');
+    Route::delete('profile/delete-portfolio/{id}', [ProfileController::class, 'DeletePortfolio'])->name('applicant.portfolio.delete');
+    Route::post('profile/add-youtube-video', [ProfileController::class, 'AddYoutubeVideo'])->name('applicant.youtubevideo.store');
+    Route::delete('profile/delete-youtube-video/{id}', [ProfileController::class, 'DeleteYoutubeVideo'])->name('applicant.youtubevideo.delete');
+    Route::get('profile/{id}', [ProfileController::class, 'getApplicantProfile'])->name('applicant.getprofile.display');
+    Route::put('profile/update/{id}', [ProfileController::class, 'updateProfile'])->name('applicant.editprofile');
+    Route::post('profile/like-post/{id}', [ProfileController::class, 'toggleLike'])->name('applicant.likepost.store');
+    Route::post('profile/comment-post/{id}', [ProfileController::class, 'ApplicantAddComments'])->name('applicantaddcomments.store');
+    Route::delete('profile/delete-comment/{id}', [ProfileController::class, 'ApplicantDeleteComments'])->name('applicant.comment.delete');
     //Tesda certification
-    Route::post('add-certification', [ApplicantController::class, 'addTesdaCertificate'])->name('applicant.certification.store');
-    Route::delete('delete-certification/{id}', [ApplicantController::class, 'deleteTesdaCertificate'])->name('applicant.certification.delete');
+    Route::post('add-certification', [ProfileController::class, 'addTesdaCertificate'])->name('applicant.certification.store');
+    Route::delete('delete-certification/{id}', [ProfileController::class, 'deleteTesdaCertificate'])->name('applicant.certification.delete');
 
     // Calling card
     Route::get('callingcard', [ApplicantController::class, 'ViewCallingCard'])->name('applicant.callingcard.display');
