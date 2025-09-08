@@ -59,8 +59,8 @@
             </div>
         </form>
     <div class="divider"></div>
-      <div class="login-alt-label"><strong>Sign in as employer</strong></div>
-      <button class="sign-in-b employer-btn">Sign in as Employer</button>
+      <div class="login-alt-label"><strong>Sign in as Worker</strong></div>
+      <button href="applicant/login" class="sign-in-b employer-btn">Sign in as Worker</button>
     </div>
         <div class="login-right">
       <div class="centered-portrait">
