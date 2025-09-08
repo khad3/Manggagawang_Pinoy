@@ -211,10 +211,47 @@
                 <div class="chart-container">
                     <h3 class="chart-title">User Registration Trends</h3>
                     <div class="chart-placeholder">
-                        <i class="fas fa-chart-line"></i>
-                        <p>Chart visualization will be displayed here</p>
+                        <div id="userRegistrationChart" style="width: 100%; height: 400px;"></div>
                     </div>
                 </div>
+
+                <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+                <script type="text/javascript">
+                    google.charts.load('current', {
+                        packages: ['corechart']
+                    });
+                    google.charts.setOnLoadCallback(drawChart);
+
+                    function drawChart() {
+                        var data = google.visualization.arrayToDataTable([
+                            {!! implode(',', $chartData) !!}
+                        ]);
+
+                        var options = {
+                            title: 'User Registration Trends',
+                            chartArea: {
+                                width: '70%'
+                            },
+                            hAxis: {
+                                title: 'Month'
+                            },
+                            vAxis: {
+                                title: 'Total Registrations',
+                                minValue: 0,
+                                gridlines: {
+                                    count: 5
+                                },
+                                format: '0'
+                            },
+                            colors: {!! json_encode($colors) !!}
+                        };
+
+                        var chart = new google.visualization.ColumnChart(
+                            document.getElementById('userRegistrationChart')
+                        );
+                        chart.draw(data, options);
+                    }
+                </script>
             </section>
 
             <!-- Officers Management Section -->

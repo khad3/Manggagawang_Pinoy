@@ -125,6 +125,32 @@ class AdminController extends Controller
     ->whereYear('created_at', Carbon::now()->year)
     ->count();
 
+
+  $applicantStats = RegisterModel::selectRaw('MONTH(created_at) as month, COUNT(*) as total')
+    ->whereYear('created_at', Carbon::now()->year)
+    ->groupBy('month')
+    ->orderBy('month')
+    ->pluck('total', 'month');
+
+$employerStats = Employer::selectRaw('MONTH(created_at) as month, COUNT(*) as total')
+    ->whereYear('created_at', Carbon::now()->year)
+    ->groupBy('month')
+    ->orderBy('month')
+    ->pluck('total', 'month');
+
+$chartData = [];
+$chartData[] = "['Month', 'Applicants', 'Employers']"; // ✅ Add both series
+
+for ($m = 1; $m <= 12; $m++) {
+    $monthName = Carbon::create()->month($m)->format('F');
+    $applicants = $applicantStats[$m] ?? 0;
+    $employers  = $employerStats[$m] ?? 0;
+    $chartData[] = "['{$monthName}', {$applicants}, {$employers}]";
+}
+
+$colors = ['#1E88E5', '#43A047']; // Blue = applicants, Green = employers
+
+
     
 
 
@@ -146,7 +172,9 @@ class AdminController extends Controller
         'retrieveAnnouncementsTotal',
         'publishedAnnouncementTotal',
         'tesdaOfficersCount',
-        'newTesdaOfficers'
+        'newTesdaOfficers',
+        'chartData',
+        'colors'
     ));
 }
 
