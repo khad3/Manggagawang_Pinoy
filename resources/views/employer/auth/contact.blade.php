@@ -221,7 +221,7 @@
                                         <select class="form-select" id="department" name="employer_department">
                                             <option value="">Select department</option>
                                             <option value="Management">Management</option>
-                                            <option value="Human-resources">Human Resources</option>
+                                            <option value="Human-resource">Human Resources</option>
                                             <option value="Operations">Operations</option>
                                             <option value="Project-management">
                                                 Project Management
@@ -338,11 +338,11 @@
                                         <select class="form-select" id="emergencyRelation"
                                             name="emergency_contact_relationship">
                                             <option value="">Select relationship</option>
-                                            <option value="Company Owner">Company Owner</option>
+                                            <option value="Company_Owner">Company Owner</option>
                                             <option value="Manager/Supervisor">Manager/Supervisor</option>
-                                            <option value="Safety Officer">Safety Officer</option>
-                                            <option value="HR Representative">HR Representative</option>
-                                            <option value="Business Partner">Business Partner</option>
+                                            <option value="Safety-officer">Safety Officer</option>
+                                            <option value="HR-representative">HR Representative</option>
+                                            <option value="Business-partner">Business Partner</option>
                                             <option value="Other">Other</option>
                                         </select>
                                     </div>

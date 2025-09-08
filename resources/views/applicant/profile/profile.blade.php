@@ -589,6 +589,7 @@
                                             data-bs-toggle="modal" {{-- optional: we call modal via JS but keep bootstrap attribute for accessibility --}}
                                             data-bs-target="#viewSampleWorkModal">
                                             <button type="button" class="btn view-portfolio-btn"
+                                                data-id="{{ $portfolio->id }}"
                                                 data-image="{{ asset('storage/' . $portfolio->sample_work_image) }}"
                                                 data-title="{{ $portfolio->sample_work_title }}"
                                                 data-desc="{{ $portfolio->sample_work_description }}">
@@ -602,52 +603,55 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Single Modal (reused for all items) -->
+                                <div class="modal fade" id="viewSampleWorkModal" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                                        <div class="modal-content">
+
+                                            <!-- Modal Header -->
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="viewSampleWorkModalTitle">Preview</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close" id="closeModalX"></button>
+                                            </div>
+
+                                            <!-- Modal Body -->
+                                            <div class="modal-body text-center p-0">
+                                                <img id="viewSampleWorkModalImage" src=""
+                                                    alt="Portfolio image" class="img-fluid w-100"
+                                                    style="max-height:75vh; object-fit:contain;">
+                                                <div class="p-3 text-start">
+                                                    <p id="viewSampleWorkModalDesc" class="text-muted mb-0"></p>
+                                                </div>
+                                            </div>
+
+                                            <!-- Modal Footer -->
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary btn-sm"
+                                                    data-bs-dismiss="modal" id="closeModalBtn">Close</button>
+
+                                                <!-- Delete Form -->
+                                                @if (isset($portfolio))
+                                                    <!---Ignored--->
+                                                    <form
+                                                        action="{{ route('applicant.portfolio.delete', ['id' => $portfolio->id]) }}"
+                                                        method="POST" class="d-inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                            class="btn btn-danger btn-sm">Delete</button>
+                                                    </form>
+                                                @endif
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             @endforeach
                         </div>
 
 
-                        <!-- Single Modal (reused for all items) -->
-                        <div class="modal fade" id="viewSampleWorkModal" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-lg modal-dialog-centered">
-                                <div class="modal-content">
 
-                                    <!-- Modal Header -->
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="viewSampleWorkModalTitle">Preview</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close" id="closeModalX"></button>
-                                    </div>
-
-                                    <!-- Modal Body -->
-                                    <div class="modal-body text-center p-0">
-                                        <img id="viewSampleWorkModalImage" src="" alt="Portfolio image"
-                                            class="img-fluid w-100" style="max-height:75vh; object-fit:contain;">
-                                        <div class="p-3 text-start">
-                                            <p id="viewSampleWorkModalDesc" class="text-muted mb-0"></p>
-                                        </div>
-                                    </div>
-
-                                    <!-- Modal Footer -->
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary btn-sm"
-                                            data-bs-dismiss="modal" id="closeModalBtn">Close</button>
-
-                                        <!-- Delete Form -->
-                                        @if (isset($portfolio))
-                                            <!---Ignored--->
-                                            <form id="deletePortfolioForm"
-                                                action="{{ route('applicant.portfolio.delete', ['id' => $portfolio->id]) }}"
-                                                method="POST" class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                            </form>
-                                        @endif
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
 
 

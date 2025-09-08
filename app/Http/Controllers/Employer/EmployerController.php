@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Employer\JobDetailModel as JobDetails;
 use App\Models\Employer\AccountInformationModel as AccountInformation;
 use App\Models\Employer\PersonalInformationModel as PersonalInformation;
-use App\Models\Employer\CompanyAdressModel as CompanyAdress;
+use App\Models\Employer\CompanyAdressModel as CompanyAddress;
 use App\Models\Employer\EmergencyContactModel as EmergencyContact;
 use App\Models\Employer\CommunicationPreferenceModel as CommunicationPreference;
 use App\Models\Employer\AdditionalInformationModel as AdditionalInformation;
@@ -120,7 +120,7 @@ class EmployerController extends Controller
 
 
     //Add the contact details
-   public function addContactDetails(Request $request)
+ public function addContactDetails(Request $request)
 {
     $jobId = session('job_id');
     $employerId = session('employer_id');
@@ -129,8 +129,9 @@ class EmployerController extends Controller
         return redirect()->route('employer.register.display');
     }
 
-    // --- Create Account Information ---
-    $request->validate([
+    // 🔹 Validate ALL inputs first
+    $validated = $request->validate([
+        // Account Information
         'account_email' => 'required|email|unique:employer_account,email',
         'password' => [
             'required',
@@ -141,103 +142,97 @@ class EmployerController extends Controller
             'regex:/[\W]/'
         ],
         'password_confirmation' => 'required|same:password',
-    ]);
 
-    $employer = new AccountInformation();
-    $employer->email = $request->input('account_email');
-    $employer->password = Hash::make($request->input('password'));
-    $employer->save();
-
-    // Optional: Update session employer_id after saving
-    session(['employer_id' => $employer->id]);
-
-    // --- Update Job with Employer ID ---
-    $job = JobDetails::find($jobId);
-    if ($job) {
-        $job->employer_id = $employer->id;
-        $job->save();
-    }
-
-    // --- Personal Info ---
-    $request->validate([
+        // Personal Info
         'first_name' => 'required|string',
         'last_name' => 'required|string',
         'email' => 'required|email|unique:employer_personal_info,email',
         'phone_number' => 'required|digits:11',
         'employer_job_title' => 'required|string',
-        'employer_department' => 'required|string',
-    ]);
+        'employer_department' => 'required|in:Management,Human-resource,Operations,Project-management,Safety-compliance,Administration,Other',
 
-    $personalInfo = new PersonalInformation();
-    $personalInfo->first_name = $request->input('first_name');
-    $personalInfo->last_name = $request->input('last_name');
-    $personalInfo->email = $request->input('email');
-    $personalInfo->phone_number = $request->input('phone_number');
-    $personalInfo->employer_id = $employer->id;
-    $personalInfo->employer_job_title = $request->input('employer_job_title');
-    $personalInfo->employer_department = $request->input('employer_department');
-    $personalInfo->save();
-
-    // --- Company Address ---
-    $request->validate([
+        // Company Address
         'company_name' => 'required|string',
         'complete_address' => 'required|string',
         'municipality' => 'required|string',
         'province' => 'required|string',
         'zip_code' => 'required|digits:4',
-    ]);
 
-    $companyAddress = new CompanyAdress();
-    $companyAddress->employer_id = $employer->id;
-    $companyAddress->personal_info_id = $personalInfo->id;
-    $companyAddress->company_name = $request->input('company_name');
-    $companyAddress->company_complete_address = $request->input('complete_address');
-    $companyAddress->company_municipality = $request->input('municipality');
-    $companyAddress->company_province = $request->input('province');
-    $companyAddress->company_zipcode = $request->input('zip_code');
-    $companyAddress->save();
-
-    // --- Emergency Contact ---
-    $request->validate([
+        // Emergency Contact
         'emergency_contact_name' => 'required|string',
         'emergency_contact_number' => 'required|digits:11',
-        'emergency_contact_relationship' => 'required|string|in:Company Owner, Manager/Supervisor, Safety Officer,HR Representative,Business Partner,Other'
-    ]);
+        'emergency_contact_relationship' => 'required|in:Company_Owner,Manager/Supervisor,Safety-officer,HR-representative,Business-partner,Other',
 
-    $emergencyContact = new EmergencyContact();
-    $emergencyContact->employer_id = $employer->id;
-    $emergencyContact->personal_info_id = $personalInfo->id;
-    $emergencyContact->first_name = $request->input('emergency_contact_name');
-    $emergencyContact->last_name = $request->input('emergency_contact_relationship');
-    $emergencyContact->phone_number = $request->input('emergency_contact_number');
-    $emergencyContact->save();
-
-    // --- Communication Preferences ---
-    $request->validate([
+        // Communication Preferences
         'contact_method' => 'required|string|in:email,phone,sms',
         'contact_time' => 'required|string|in:morning,afternoon,evening,anytime',
         'language_preference' => 'required|string',
-    ]);
 
-    $preference = new CommunicationPreference();
-    $preference->employer_id = $employer->id;
-    $preference->personal_info_id = $personalInfo->id;
-    $preference->contact_method = $request->input('contact_method');
-    $preference->contact_time = $request->input('contact_time');
-    $preference->language_preference = $request->input('language_preference');
-    $preference->save();
-
-    // --- Additional Information ---
-    $request->validate([
+        // Additional Info
         'typical_working_hours' => 'required|string',
         'special_instructions' => 'required|string',
     ]);
 
+    // --- Create Account Information ---
+    $employer = new AccountInformation();
+    $employer->email = $validated['account_email'];
+    $employer->password = Hash::make($validated['password']);
+    $employer->save();
+
+    session(['employer_id' => $employer->id]);
+
+    // --- Update Job with Employer ID ---
+    if ($job = JobDetails::find($jobId)) {
+        $job->employer_id = $employer->id;
+        $job->save();
+    }
+
+    // --- Personal Info ---
+    $personalInfo = new PersonalInformation();
+    $personalInfo->first_name = $validated['first_name'];
+    $personalInfo->last_name = $validated['last_name'];
+    $personalInfo->email = $validated['email'];
+    $personalInfo->phone_number = $validated['phone_number'];
+    $personalInfo->employer_id = $employer->id;
+    $personalInfo->employer_job_title = $validated['employer_job_title'];
+    $personalInfo->employer_department = $validated['employer_department'];
+    $personalInfo->save();
+
+    // --- Company Address ---
+    $companyAddress = new CompanyAddress(); // ✅ check your model spelling
+    $companyAddress->employer_id = $employer->id;
+    $companyAddress->personal_info_id = $personalInfo->id;
+    $companyAddress->company_name = $validated['company_name'];
+    $companyAddress->company_complete_address = $validated['complete_address'];
+    $companyAddress->company_municipality = $validated['municipality'];
+    $companyAddress->company_province = $validated['province'];
+    $companyAddress->company_zipcode = $validated['zip_code'];
+    $companyAddress->save();
+
+    // --- Emergency Contact ---
+    $emergencyContact = new EmergencyContact();
+    $emergencyContact->employer_id = $employer->id;
+    $emergencyContact->personal_info_id = $personalInfo->id;
+    $emergencyContact->first_name = $validated['emergency_contact_name'];
+    $emergencyContact->relation_to_company = $validated['emergency_contact_relationship']; // ✅ consistent column
+    $emergencyContact->phone_number = $validated['emergency_contact_number'];
+    $emergencyContact->save();
+
+    // --- Communication Preferences ---
+    $preference = new CommunicationPreference();
+    $preference->employer_id = $employer->id;
+    $preference->personal_info_id = $personalInfo->id;
+    $preference->contact_method = $validated['contact_method'];
+    $preference->contact_time = $validated['contact_time'];
+    $preference->language_preference = $validated['language_preference'];
+    $preference->save();
+
+    // --- Additional Information ---
     $additional = new AdditionalInformation();
     $additional->employer_id = $employer->id;
     $additional->personal_info_id = $personalInfo->id;
-    $additional->typical_working_hours = $request->input('typical_working_hours');
-    $additional->special_intructions_or_notes = $request->input('special_instructions');
+    $additional->typical_working_hours = $validated['typical_working_hours'];
+    $additional->special_intructions_or_notes = $validated['special_instructions']; // ✅ confirm column spelling in migration
     $additional->save();
 
     return redirect()->route('employer.hiringpreference.display')->with('success', 'Registration successful!');
@@ -341,7 +336,7 @@ class EmployerController extends Controller
     $retrievedCertPriority = CertPriority::where('employer_id', $employer_id)->first();
     $retrievedHiringTimeline = HiringTimeline::where('employer_id', $employer_id)->first();
     $retrievedSpecialRequirement = SpecialRequirement::where('employer_id', $employer_id)->first();
-    $retrievedCompanyAddress = CompanyAdress::where('employer_id', $employer_id)->first();
+    $retrievedCompanyAddress = CompanyAddress::where('employer_id', $employer_id)->first();
     $retrievedCommunication = CommunicationPreference::where('employer_id', $employer_id)->first();
 
     return view('employer.auth.reviewregistration', compact(
@@ -362,7 +357,9 @@ class EmployerController extends Controller
 
     //View the success form
     public function ShowSuccessForm() {
-        return view('employer.auth.successful' );
+        $employer_id = session('employer_id');
+        $email = AccountInformation::where('id', $employer_id)->value('email');
+        return view('employer.auth.successful' , compact('email'));
     }
 
 

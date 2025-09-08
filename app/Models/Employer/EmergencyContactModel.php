@@ -12,9 +12,8 @@ class EmergencyContactModel extends Model
         'employer_id', 
         'personal_info_id',
         'first_name',
-        'last_name', 
-        'relationship',
-         'phone'
+        'relation_to_company',
+         'phone_number'
     ];
 
     public function personal_info()

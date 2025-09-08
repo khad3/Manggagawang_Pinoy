@@ -187,18 +187,7 @@ Route::group(['prefix' => 'employer'], function () {
     //View registration form step 1 
     Route::get('register', [EmployerController::class, 'ShowRegistrationForm'])->name('employer.register.display');
     Route::post('register', [EmployerController::class, 'addJobDetails'])->name('employer.jobdetails.store');
-    //View contact form  2
-   
-    
-    //Display the login form
-    Route::get('login', [EmployerController::class, 'ShowLoginForm'])->name('employer.login.display');
-    Route::post('login', [EmployerController::class, 'login'])->name('employer.login.store');
-
-});
-
-//Protected routes for employer
-Route::middleware(['employer.authenticate'])->prefix('employer')->group(function () {
-     Route::get('contact', [EmployerController::class, 'ShowContactForm'])->name('employer.contact.display');
+         Route::get('contact', [EmployerController::class, 'ShowContactForm'])->name('employer.contact.display');
     Route::post('contact', [EmployerController::class, 'addContactDetails'])->name('employer.contact.store');
     //View hiring preference form 3
     Route::get('hiring-preference', [EmployerController::class, 'ShowHiringPreferenceForm'])->name('employer.hiringpreference.display');
@@ -211,6 +200,18 @@ Route::middleware(['employer.authenticate'])->prefix('employer')->group(function
     //Send and display email
     Route::post('/employer/send-verification-email', [EmployerController::class, 'sendVerificationEmail'])->name('employer.sendVerificationEmail');
     Route::get('/employer/verify/{email}', [EmployerController::class, 'verifyEmail'])->name('employer.verify');
+    //View contact form  2
+   
+    
+    //Display the login form
+    Route::get('login', [EmployerController::class, 'ShowLoginForm'])->name('employer.login.display');
+    Route::post('login', [EmployerController::class, 'login'])->name('employer.login.store');
+
+});
+
+//Protected routes for employer
+Route::middleware(['employer.authenticate'])->prefix('employer')->group(function () {
+
 
        //Homepage display
     Route::get('homepage', [EmployerController::class, 'ShowHomepage'])->name('employer.info.homepage.display');

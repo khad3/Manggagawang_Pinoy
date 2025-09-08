@@ -16,29 +16,28 @@
         <div class="success-icon">
             <i class="fas fa-check fa-3x text-white"></i>
         </div>
-
         <!-- Success Message -->
-        <h1 class="display-4 fw-bold text-dark mb-3">Registration Complete!</h1>
+        <h1 class="display-4 fw-bold text-dark mb-3">Registration Successful!</h1>
         <p class="lead text-muted mb-4">
-            Your employer account has been successfully created. We'll review your information and connect you with
-            qualified TESDA-certified workers.
+            Your employer account has been created successfully.
         </p>
 
-        <!-- Confirmation Details -->
+
+        {{-- <!-- Confirmation Details -->
         <div class="info-card text-start">
             <h4 class="fw-bold mb-3 text-center">
                 <i class="fas fa-info-circle text-warning me-2"></i>What Happens Next?
             </h4>
 
-            <div class="step-item">
+            {{-- <div class="step-item">
                 <div class="step-number">1</div>
                 <div>
                     <strong>Account Verification (24 hours)</strong>
                     <br><small class="text-muted">We'll verify your company information and approve your account</small>
                 </div>
-            </div>
+            </div> --}}
 
-            <div class="step-item">
+        {{-- <div class="step-item">
                 <div class="step-number">2</div>
                 <div>
                     <strong>Job Posting Activation</strong>
@@ -61,7 +60,7 @@
                     <br><small class="text-muted">Connect with candidates and start the hiring process</small>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
         <!-- Contact Information -->
         <div class="info-card mt-4">
@@ -71,14 +70,14 @@
             <p class="mb-3">A confirmation email has been sent to:</p>
             <div class="alert alert-info">
                 <i class="fas fa-mail-bulk me-2"></i>
-                <strong>employer@company.com</strong>
+                <strong>{{ $email }}</strong>
             </div>
             <p class="small text-muted">
                 Please check your email for detailed next steps and account activation instructions.
             </p>
         </div>
 
-        <!-- TESDA Information -->
+        {{-- <!-- TESDA Information -->
         <div class="info-card mt-4">
             <h5 class="fw-bold mb-3">
                 <i class="fas fa-certificate text-warning me-2"></i>TESDA Partnership Benefits
@@ -99,7 +98,7 @@
                     </ul>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
         <!-- Action Buttons -->
         <div class="mt-5">
@@ -118,9 +117,16 @@
                 Registration completed on <strong>{{ date('F j, Y \a\t g:i A') }}</strong>
             </p>
             <p class="small text-muted">
-                Need help? Contact us at <strong>support@skillforce.ph</strong> or call <strong>+63 2 8XXX-XXXX</strong>
+                Need help? Contact us at
+                <strong>
+                    <a href="mailto:manggagawangpinoycompany@gmail.com" class="text-decoration-none">
+                        manggagawangpinoycompany@gmail.com
+                    </a>
+                </strong>
+                or call <strong>+63 99 999 9999</strong>
             </p>
         </div>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
