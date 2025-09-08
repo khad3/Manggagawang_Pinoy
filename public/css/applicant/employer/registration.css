@@ -1,7 +1,7 @@
 :root {
-    --primary-orange: #ea580c;
+    --primary-orange: #020180;
     --primary-red: #dc2626;
-    --light-orange: #fed7aa;
+    --light-orange: #dcdcec;
     --light-red: #fef2f2;
 }
 
@@ -25,6 +25,7 @@ body {
     font-size: 1.1rem;
     transition: all 0.3s ease;
     border: 2px solid;
+    margin-left: 30px;
 }
 
 .step-active {
@@ -67,15 +68,12 @@ body {
 }
 
 .btn-primary-custom {
-    background: linear-gradient(
-        45deg,
-        var(--primary-orange),
-        var(--primary-red)
-    );
+    background: var(--primary-orange);
     border: none;
     padding: 12px 24px;
     border-radius: 8px;
     transition: all 0.3s ease;
+    color:#ffffff;
 }
 
 .btn-primary-custom:hover {
@@ -115,7 +113,7 @@ body {
 }
 
 .tesda-section {
-    background: linear-gradient(45deg, #fef3c7, #fed7aa);
+    background: var(--light-orange);
     border: 2px solid var(--primary-orange);
     border-radius: 8px;
     padding: 1.5rem;

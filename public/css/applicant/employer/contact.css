@@ -1,60 +1,21 @@
 :root {
-    --primary-orange: #ea580c;
+    --primary-orange: #020180;
     --primary-red: #dc2626;
-    --light-orange: #fed7aa;
+    --light-orange: #dcdcec;
     --light-red: #fef2f2;
 }
-
 body {
-    background: linear-gradient(135deg, #fff7ed 0%, #ffffff 50%, #fef2f2 100%);
+    background: linear-gradient(120deg, var(--light-orange) 0%, var(--white) 100%);
     min-height: 100vh;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #222;
 }
 
 .registration-container {
-    padding: 60px 0;
-}
-
-.step-indicator {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
+    padding: 48px 0;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: 1.1rem;
-    transition: all 0.3s ease;
-    border: 2px solid;
-}
-
-.step-active {
-    background: var(--primary-orange);
-    border-color: var(--primary-orange);
-    color: white;
-}
-
-.step-inactive {
-    background: white;
-    border-color: #d1d5db;
-    color: #6b7280;
-}
-
-.step-completed {
-    background: var(--primary-orange);
-    border-color: var(--primary-orange);
-    color: white;
-}
-
-.step-line {
-    height: 2px;
-    background: #d1d5db;
-    flex: 1;
-    margin: 0 20px;
-    transition: all 0.3s ease;
-}
-
-.step-line-completed {
-    background: var(--primary-orange);
 }
 
 .form-card {
@@ -64,18 +25,58 @@ body {
     border: none;
     max-width: 800px;
     margin: 0 auto;
+    margin-top: 80px;
+}
+
+.step-indicator {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+    border: 2px solid rgba(128, 128, 128, 0.500);
+    background: var(--white);
+    color: rgba(128, 128, 128, 0.300);
+    margin-left: 30px;
+    transition: all 0.3s;
+}
+
+.step-active,
+.step-completed {
+    background: var(--primary-orange);
+    border-color: var(--primary-orange);
+    color: white;
+}
+
+.step-inactive {
+    background: var(--white);
+    border-color: rgba(128, 128, 128, 0.300);
+    color: rgba(128, 128, 128, 0.500);
+}
+
+.step-line {
+    height: 2px;
+    background: rgba(128, 128, 128, 0.500);
+    flex: 1;
+    margin: 0 8px;
+    border-radius: 1px;
+    transition: background 0.3s;
+}
+
+.step-line-completed {
+    background: var(--primary-orange);
 }
 
 .btn-primary-custom {
-    background: linear-gradient(
-        45deg,
-        var(--primary-orange),
-        var(--primary-red)
-    );
+    background: var(--primary-orange);
     border: none;
     padding: 12px 24px;
     border-radius: 8px;
     transition: all 0.3s ease;
+    color:#ffffff;
 }
 
 .btn-primary-custom:hover {
@@ -93,6 +94,8 @@ body {
     background: var(--light-red);
     border: 1px solid var(--light-orange);
     border-radius: 8px;
-    padding: 1rem;
-    margin: 1rem 0;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+    color: var(--primary-red);
+    font-size: 0.98rem;
 }
