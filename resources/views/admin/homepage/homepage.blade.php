@@ -10,7 +10,428 @@
     <!-- fav icon -->
     <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
     <link rel="stylesheet" href="{{ asset('css/applicant/admin/homepage.css') }}">
+    <style>
+        /* Enhanced CSS for Reports and User Management */
 
+        /* Reports Section Styles */
+        .reports-container {
+            display: grid;
+            gap: 24px;
+        }
+
+        .reports-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .report-filters {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .filter-select,
+        .search-input {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .report-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+
+        .report-card-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .report-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .report-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .report-metric {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #059669;
+            margin: 8px 0;
+        }
+
+        .report-change {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        /* User Management Table Styles */
+        .users-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .users-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f9fafb;
+        }
+
+        .users-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .users-table th {
+            background: #f9fafb;
+            padding: 16px 24px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.9rem;
+        }
+
+        .users-table td {
+            padding: 16px 24px;
+            border-bottom: 1px solid #f3f4f6;
+            color: #4b5563;
+        }
+
+        .users-table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: white;
+            font-size: 14px;
+            margin-right: 12px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-details h6 {
+            margin: 0;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .user-details p {
+            margin: 2px 0 0 0;
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-banned {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .status-suspended {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin: 0 2px;
+            transition: all 0.2s;
+        }
+
+        .btn-view {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .btn-edit {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .btn-ban {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .btn-suspend {
+            background: #fde68a;
+            color: #92400e;
+        }
+
+        .btn-unban {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .pagination {
+            padding: 20px 24px;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .pagination-info {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pagination-btn {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: #f3f4f6;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        /* Modal Enhancements */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #d97706;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* Activity Log Styles */
+        .activity-item {
+            display: flex;
+            align-items: start;
+            padding: 16px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 14px;
+        }
+
+        .activity-ban {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .activity-unban {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .activity-suspend {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .activity-login {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-content h6 {
+            margin: 0 0 4px 0;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .activity-content p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+    </style>
 
 
 </head>
@@ -835,7 +1256,7 @@
 
 
 
-            <!-- Reports Section -->
+            <!-- Reports & Analytics Section -->
             <section id="reports" class="content-section">
                 <div class="section-header">
                     <h2 class="section-title">
@@ -848,140 +1269,921 @@
                     </button>
                 </div>
 
-                <div class="reports-grid">
-                    <div class="chart-container">
-                        <h4 class="chart-title">Certificate Issuance by Month</h4>
-                        <div class="chart-placeholder">
-                            <i class="fas fa-chart-bar"></i>
-                            <p>Chart visualization</p>
+                <div class="reports-container">
+                    <div class="reports-header">
+                        <div class="report-filters">
+                            <div class="filter-group">
+                                <label>Time Period:</label>
+                                <select class="filter-select" id="timePeriod">
+                                    <option value="7days">Last 7 Days</option>
+                                    <option value="30days" selected>Last 30 Days</option>
+                                    <option value="90days">Last 90 Days</option>
+                                    <option value="1year">Last Year</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label>User Type:</label>
+                                <select class="filter-select" id="userType">
+                                    <option value="all">All Users</option>
+                                    <option value="applicants">Applicants</option>
+                                    <option value="employers">Employers</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="chart-container">
-                        <h4 class="chart-title">User Registration Growth</h4>
-                        <div class="chart-placeholder">
-                            <i class="fas fa-chart-line"></i>
-                            <p>Chart visualization</p>
+                    <div class="reports-grid">
+                        <div class="report-card">
+                            <div class="report-card-header">
+                                <h3 class="report-title">User Registrations</h3>
+                                <div class="report-actions">
+                                    <button class="action-btn btn-view" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="report-metric">1,247</div>
+                            <div class="report-change">
+                                <i class="fas fa-trending-up text-success"></i>
+                                +18.2% from last period
+                            </div>
+                        </div>
+
+                        <div class="report-card">
+                            <div class="report-card-header">
+                                <h3 class="report-title">Account Bans</h3>
+                                <div class="report-actions">
+                                    <button class="action-btn btn-view" title="View Details"
+                                        onclick="showBanReport()">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="report-metric">23</div>
+                            <div class="report-change">
+                                <i class="fas fa-trending-down text-danger"></i>
+                                -12.8% from last period
+                            </div>
+                        </div>
+
+                        <div class="report-card">
+                            <div class="report-card-header">
+                                <h3 class="report-title">Login Activity</h3>
+                                <div class="report-actions">
+                                    <button class="action-btn btn-view" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="report-metric">18,924</div>
+                            <div class="report-change">
+                                <i class="fas fa-trending-up text-success"></i>
+                                +5.7% from last period
+                            </div>
+                        </div>
+
+                        <div class="report-card">
+                            <div class="report-card-header">
+                                <h3 class="report-title">Certificate Issuance</h3>
+                                <div class="report-actions">
+                                    <button class="action-btn btn-view" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="report-metric">892</div>
+                            <div class="report-change">
+                                <i class="fas fa-trending-up text-success"></i>
+                                +22.1% from last period
+                            </div>
+                        </div>
+
+                        <div class="report-card">
+                            <div class="report-card-header">
+                                <h3 class="report-title">Suspended Accounts</h3>
+                                <div class="report-actions">
+                                    <button class="action-btn btn-view" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="report-metric">156</div>
+                            <div class="report-change">
+                                <i class="fas fa-trending-up text-warning"></i>
+                                +3.4% from last period
+                            </div>
+                        </div>
+
+                        <div class="report-card">
+                            <div class="report-card-header">
+                                <h3 class="report-title">Job Applications</h3>
+                                <div class="report-actions">
+                                    <button class="action-btn btn-view" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="report-metric">4,567</div>
+                            <div class="report-change">
+                                <i class="fas fa-trending-up text-success"></i>
+                                +28.9% from last period
+                            </div>
                         </div>
                     </div>
 
-                    <div class="chart-container">
-                        <h4 class="chart-title">Top Courses by Enrollment</h4>
-                        <div class="chart-placeholder">
-                            <i class="fas fa-chart-pie"></i>
-                            <p>Chart visualization</p>
+                    <!-- Recent Activity Log -->
+                    <div class="report-card" style="grid-column: 1 / -1;">
+                        <div class="report-card-header">
+                            <h3 class="report-title">Recent Admin Actions</h3>
+                            <div class="report-actions">
+                                <button class="action-btn btn-view" title="View All">
+                                    <i class="fas fa-list"></i>
+                                </button>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="chart-container">
-                        <h4 class="chart-title">Regional Distribution</h4>
-                        <div class="chart-placeholder">
-                            <i class="fas fa-map"></i>
-                            <p>Chart visualization</p>
+                        <div id="activityLog">
+                            <div class="activity-item">
+                                <div class="activity-icon activity-ban">
+                                    <i class="fas fa-ban"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h6>User Banned</h6>
+                                    <p>juan.dela@email.com was banned for violating community guidelines</p>
+                                </div>
+                                <div class="activity-time">2 hours ago</div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon activity-unban">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h6>User Unbanned</h6>
+                                    <p>maria.santos@email.com ban was lifted after appeal review</p>
+                                </div>
+                                <div class="activity-time">5 hours ago</div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon activity-suspend">
+                                    <i class="fas fa-pause"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h6>Account Suspended</h6>
+                                    <p>robert.garcia@email.com suspended for 7 days due to multiple reports</p>
+                                </div>
+                                <div class="activity-time">1 day ago</div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon activity-login">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h6>Mass Login Activity</h6>
+                                    <p>Detected 1,247 user logins in the past hour</p>
+                                </div>
+                                <div class="activity-time">2 days ago</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Certificates Section -->
-            <!-- <section id="certificates" class="content-section">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <i class="fas fa-certificate"></i>
-                        Certificate Management
-                    </h2>
-                    <button class="btn btn-primary" onclick="openIssueCertificateModal()">
-                        <i class="fas fa-plus"></i>
-                        Issue Certificate
-                    </button>
+            <!-- Suspend User Modal -->
+            <div id="suspendUserModal" class="modal-overlay">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Suspend User Account</h3>
+                        <button class="modal-close" onclick="closeSuspendModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="suspendUserInfo"></div>
+                        <div class="form-group">
+                            <label for="suspendReason">Reason for Suspension:</label>
+                            <select id="suspendReason" class="filter-select"
+                                style="width: 100%; margin-bottom: 15px;">
+                                <option value="">Select reason...</option>
+                                <option value="pending_investigation">Pending Investigation</option>
+                                <option value="multiple_reports">Multiple User Reports</option>
+                                <option value="suspicious_activity">Suspicious Activity</option>
+                                <option value="payment_issue">Payment/Verification Issue</option>
+                                <option value="temporary_violation">Temporary Policy Violation</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="suspendDuration">Suspension Duration:</label>
+                            <select id="suspendDuration" class="filter-select"
+                                style="width: 100%; margin-bottom: 15px;">
+                                <option value="1">1 Day</option>
+                                <option value="3">3 Days</option>
+                                <option value="7">7 Days</option>
+                                <option value="14">14 Days</option>
+                                <option value="30">30 Days</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="suspendNotes">Additional Notes:</label>
+                            <textarea id="suspendNotes" rows="3"
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                placeholder="Optional additional details..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeSuspendModal()">Cancel</button>
+                        <button class="btn btn-warning" onclick="confirmSuspendUser()">
+                            <i class="fas fa-pause"></i> Suspend User
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Details Modal -->
+            <div id="userDetailsModal" class="modal-overlay">
+                <div class="modal-content" style="max-width: 600px;">
+                    <div class="modal-header">
+                        <h3 class="modal-title">User Details</h3>
+                        <button class="modal-close" onclick="closeUserDetailsModal()">&times;</button>
+                    </div>
+                    <div class="modal-body" id="userDetailsContent">
+                        <!-- Content will be populated by JavaScript -->
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeUserDetailsModal()">Close</button>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                // Sample user data
+                let users = [{
+                        id: 1,
+                        name: 'Juan Dela Cruz',
+                        email: 'juan.dela@email.com',
+                        type: 'applicant',
+                        status: 'active',
+                        lastLogin: '2025-01-15 09:30:00',
+                        registrationDate: '2024-12-01',
+                        avatar: 'JD',
+                        region: 'NCR',
+                        reports: 0
+                    },
+                    {
+                        id: 2,
+                        name: 'Maria Santos',
+                        email: 'maria.santos@email.com',
+                        type: 'employer',
+                        status: 'active',
+                        lastLogin: '2025-01-14 16:45:00',
+                        registrationDate: '2024-11-15',
+                        avatar: 'MS',
+                        region: 'Region III',
+                        reports: 1
+                    },
+                    {
+                        id: 3,
+                        name: 'Robert Garcia',
+                        email: 'robert.garcia@email.com',
+                        type: 'applicant',
+                        status: 'banned',
+                        lastLogin: '2025-01-10 14:20:00',
+                        registrationDate: '2024-10-20',
+                        avatar: 'RG',
+                        region: 'Region IV-A',
+                        reports: 5,
+                        banReason: 'harassment',
+                        banDate: '2025-01-12'
+                    },
+                    {
+                        id: 4,
+                        name: 'Ana Reyes',
+                        email: 'ana.reyes@email.com',
+                        type: 'applicant',
+                        status: 'suspended',
+                        lastLogin: '2025-01-13 11:15:00',
+                        registrationDate: '2024-09-08',
+                        avatar: 'AR',
+                        region: 'NCR',
+                        reports: 2,
+                        suspendReason: 'pending_investigation',
+                        suspendDate: '2025-01-13'
+                    },
+                    {
+                        id: 5,
+                        name: 'Carlos Mendoza',
+                        email: 'carlos.mendoza@email.com',
+                        type: 'employer',
+                        status: 'active',
+                        lastLogin: '2025-01-15 08:00:00',
+                        registrationDate: '2024-08-12',
+                        avatar: 'CM',
+                        region: 'Region I',
+                        reports: 0
+                    },
+                    {
+                        id: 6,
+                        name: 'Lisa Fernandez',
+                        email: 'lisa.fernandez@email.com',
+                        type: 'officer',
+                        status: 'active',
+                        lastLogin: '2025-01-15 10:30:00',
+                        registrationDate: '2024-07-20',
+                        avatar: 'LF',
+                        region: 'NCR',
+                        reports: 0
+                    },
+                    {
+                        id: 7,
+                        name: 'Miguel Torres',
+                        email: 'miguel.torres@email.com',
+                        type: 'applicant',
+                        status: 'active',
+                        lastLogin: '2025-01-14 19:45:00',
+                        registrationDate: '2024-12-10',
+                        avatar: 'MT',
+                        region: 'Region III',
+                        reports: 1
+                    },
+                    {
+                        id: 8,
+                        name: 'Elena Vasquez',
+                        email: 'elena.vasquez@email.com',
+                        type: 'employer',
+                        status: 'banned',
+                        lastLogin: '2025-01-08 13:20:00',
+                        registrationDate: '2024-06-15',
+                        avatar: 'EV',
+                        region: 'Region IV-A',
+                        reports: 8,
+                        banReason: 'fraud',
+                        banDate: '2025-01-09'
+                    }
+                ];
+
+                let currentUser = null;
+                let currentPage = 1;
+                let usersPerPage = 10;
+
+                // Navigation function
+                function showSection(sectionId, element) {
+                    // Hide all sections
+                    const sections = document.querySelectorAll('.content-section');
+                    sections.forEach(section => section.classList.remove('active'));
+
+                    // Show selected section
+                    document.getElementById(sectionId).classList.add('active');
+
+                    // Update menu items
+                    const menuItems = document.querySelectorAll('.menu-item');
+                    menuItems.forEach(item => item.classList.remove('active'));
+                    element.classList.add('active');
+
+                    // Load section-specific data
+                    if (sectionId === 'users') {
+                        renderUsers();
+                    } else if (sectionId === 'reports') {
+                        updateReports();
+                    }
+                }
+
+                // Render users table
+                function renderUsers() {
+                    const tbody = document.getElementById('usersTableBody');
+                    const statusFilter = document.getElementById('statusFilter').value;
+                    const typeFilter = document.getElementById('userTypeFilter').value;
+                    const searchTerm = document.getElementById('userSearch').value.toLowerCase();
+
+                    let filteredUsers = users.filter(user => {
+                        const matchesStatus = !statusFilter || user.status === statusFilter;
+                        const matchesType = !typeFilter || user.type === typeFilter;
+                        const matchesSearch = !searchTerm ||
+                            user.name.toLowerCase().includes(searchTerm) ||
+                            user.email.toLowerCase().includes(searchTerm);
+
+                        return matchesStatus && matchesType && matchesSearch;
+                    });
+
+                    tbody.innerHTML = '';
+
+                    const startIndex = (currentPage - 1) * usersPerPage;
+                    const endIndex = startIndex + usersPerPage;
+                    const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+
+                    paginatedUsers.forEach(user => {
+                        const row = document.createElement('tr');
+
+                        const avatarColors = {
+                            'applicant': '#3b82f6',
+                            'employer': '#059669',
+                            'officer': '#dc2626'
+                        };
+
+                        const statusBadgeClass = {
+                            'active': 'status-active',
+                            'banned': 'status-banned',
+                            'suspended': 'status-suspended'
+                        };
+
+                        row.innerHTML = `
+                    <td>
+                        <div class="user-info">
+                            <div class="user-avatar" style="background: ${avatarColors[user.type] || '#6b7280'}">
+                                ${user.avatar}
+                            </div>
+                            <div class="user-details">
+                                <h6>${user.name}</h6>
+                                <p>${user.email}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${user.type.charAt(0).toUpperCase() + user.type.slice(1)}</td>
+                    <td>
+                        <span class="status-badge ${statusBadgeClass[user.status]}">
+                            ${user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                        </span>
+                    </td>
+                    <td>${formatDate(user.lastLogin)}</td>
+                    <td>${formatDate(user.registrationDate)}</td>
+                    <td>
+                        <div style="display: flex; gap: 4px;">
+                            <button class="action-btn btn-view" onclick="showUserDetails(${user.id})" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            ${user.status === 'active' ? `
+                                                                                                                    <button class="action-btn btn-suspend" onclick="showSuspendModal(${user.id})" title="Suspend User">
+                                                                                                                        <i class="fas fa-pause"></i>
+                                                                                                                    </button>
+                                                                                                                    <button class="action-btn btn-ban" onclick="showBanModal(${user.id})" title="Ban User">
+                                                                                                                        <i class="fas fa-ban"></i>
+                                                                                                                    </button>
+                                                                                                                ` : user.status === 'banned' ? `
+                                                                                                                    <button class="action-btn btn-unban" onclick="unbanUser(${user.id})" title="Unban User">
+                                                                                                                        <i class="fas fa-check"></i>
+                                                                                                                    </button>
+                                                                                                                ` : user.status === 'suspended' ? `
+                                                                                                                    <button class="action-btn btn-unban" onclick="unsuspendUser(${user.id})" title="Unsuspend User">
+                                                                                                                        <i class="fas fa-play"></i>
+                                                                                                                    </button>
+                                                                                                                ` : ''}
+                        </div>
+                    </td>
+                `;
+                        tbody.appendChild(row);
+                    });
+
+                    // Update pagination info
+                    updatePaginationInfo(filteredUsers.length);
+                }
+
+                // Show ban modal
+                function showBanModal(userId) {
+                    currentUser = users.find(u => u.id === userId);
+                    const modal = document.getElementById('banUserModal');
+                    const userInfo = document.getElementById('banUserInfo');
+
+                    userInfo.innerHTML = `
+                <div style="display: flex; align-items: center; margin-bottom: 20px; padding: 15px; background: #fee2e2; border-radius: 8px;">
+                    <div class="user-avatar" style="background: #dc2626; margin-right: 12px;">
+                        ${currentUser.avatar}
+                    </div>
+                    <div>
+                        <h6 style="margin: 0; color: #dc2626;">${currentUser.name}</h6>
+                        <p style="margin: 0; color: #7f1d1d; font-size: 0.9rem;">${currentUser.email}</p>
+                        <p style="margin: 0; color: #7f1d1d; font-size: 0.85rem;">Reports: ${currentUser.reports}</p>
+                    </div>
+                </div>
+            `;
+
+                    modal.classList.add('active');
+                }
+
+                // Show suspend modal
+                function showSuspendModal(userId) {
+                    currentUser = users.find(u => u.id === userId);
+                    const modal = document.getElementById('suspendUserModal');
+                    const userInfo = document.getElementById('suspendUserInfo');
+
+                    userInfo.innerHTML = `
+                <div style="display: flex; align-items: center; margin-bottom: 20px; padding: 15px; background: #fef3c7; border-radius: 8px;">
+                    <div class="user-avatar" style="background: #d97706; margin-right: 12px;">
+                        ${currentUser.avatar}
+                    </div>
+                    <div>
+                        <h6 style="margin: 0; color: #d97706;">${currentUser.name}</h6>
+                        <p style="margin: 0; color: #92400e; font-size: 0.9rem;">${currentUser.email}</p>
+                        <p style="margin: 0; color: #92400e; font-size: 0.85rem;">Reports: ${currentUser.reports}</p>
+                    </div>
+                </div>
+            `;
+
+                    modal.classList.add('active');
+                }
+
+                // Show user details modal
+                function showUserDetails(userId) {
+                    const user = users.find(u => u.id === userId);
+                    const modal = document.getElementById('userDetailsModal');
+                    const content = document.getElementById('userDetailsContent');
+
+                    content.innerHTML = `
+                <div style="display: flex; align-items: start; margin-bottom: 20px;">
+                    <div class="user-avatar" style="background: ${user.status === 'active' ? '#059669' : user.status === 'banned' ? '#dc2626' : '#d97706'}; width: 60px; height: 60px; font-size: 20px; margin-right: 20px;">
+                        ${user.avatar}
+                    </div>
+                    <div style="flex: 1;">
+                        <h4 style="margin: 0 0 8px 0;">${user.name}</h4>
+                        <p style="margin: 0 0 4px 0; color: #6b7280;">${user.email}</p>
+                        <span class="status-badge ${user.status === 'active' ? 'status-active' : user.status === 'banned' ? 'status-banned' : 'status-suspended'}">${user.status.charAt(0).toUpperCase() + user.status.slice(1)}</span>
+                    </div>
                 </div>
                 
-                <div class="card">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Certificate ID</th>
-                                <th>Recipient</th>
-                                <th>Course</th>
-                                <th>Issue Date</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="certificatesTable">
-                            <tr>
-                                <td>TESDA-2025-001234</td>
-                                <td>Juan Dela Cruz</td>
-                                <td>Computer Programming NC III</td>
-                                <td>Jan 28, 2025</td>
-                                <td><span class="status-badge status-active">Valid</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn btn-primary btn-sm">
-                                            <i class="fas fa-eye"></i> View
-                                        </button>
-                                        <button class="btn btn-danger btn-sm">
-                                            <i class="fas fa-ban"></i> Revoke
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <div>
+                        <h6 style="margin: 0 0 8px 0; color: #374151;">Account Type</h6>
+                        <p style="margin: 0; color: #6b7280;">${user.type.charAt(0).toUpperCase() + user.type.slice(1)}</p>
+                    </div>
+                    <div>
+                        <h6 style="margin: 0 0 8px 0; color: #374151;">Region</h6>
+                        <p style="margin: 0; color: #6b7280;">${user.region}</p>
+                    </div>
+                    <div>
+                        <h6 style="margin: 0 0 8px 0; color: #374151;">Registration Date</h6>
+                        <p style="margin: 0; color: #6b7280;">${formatDate(user.registrationDate)}</p>
+                    </div>
+                    <div>
+                        <h6 style="margin: 0 0 8px 0; color: #374151;">Last Login</h6>
+                        <p style="margin: 0; color: #6b7280;">${formatDate(user.lastLogin)}</p>
+                    </div>
                 </div>
-            </section> -->
+                
+                <div style="margin-bottom: 20px;">
+                    <h6 style="margin: 0 0 8px 0; color: #374151;">Reports & Violations</h6>
+                    <p style="margin: 0; color: ${user.reports > 3 ? '#dc2626' : user.reports > 0 ? '#d97706' : '#059669'};">
+                        ${user.reports} total reports
+                    </p>
+                </div>
+                
+                ${user.status === 'banned' ? `
+                                                                                                        <div style="margin-bottom: 20px; padding: 12px; background: #fee2e2; border-radius: 8px;">
+                                                                                                            <h6 style="margin: 0 0 8px 0; color: #dc2626;">Ban Information</h6>
+                                                                                                            <p style="margin: 0; color: #7f1d1d;">Reason: ${user.banReason}</p>
+                                                                                                            <p style="margin: 0; color: #7f1d1d;">Date: ${formatDate(user.banDate)}</p>
+                                                                                                        </div>
+                                                                                                    ` : ''}
+                
+                ${user.status === 'suspended' ? `
+                                                                                                        <div style="margin-bottom: 20px; padding: 12px; background: #fef3c7; border-radius: 8px;">
+                                                                                                            <h6 style="margin: 0 0 8px 0; color: #d97706;">Suspension Information</h6>
+                                                                                                            <p style="margin: 0; color: #92400e;">Reason: ${user.suspendReason}</p>
+                                                                                                            <p style="margin: 0; color: #92400e;">Date: ${formatDate(user.suspendDate)}</p>
+                                                                                                        </div>
+                                                                                                    ` : ''}
+            `;
 
-            <!-- Users Section */
+                    modal.classList.add('active');
+                }
+
+                // Confirm ban user
+                function confirmBanUser() {
+                    if (!currentUser) return;
+
+                    const reason = document.getElementById('banReason').value;
+                    const duration = document.getElementById('banDuration').value;
+                    const notes = document.getElementById('banNotes').value;
+
+                    if (!reason) {
+                        alert('Please select a reason for the ban.');
+                        return;
+                    }
+
+                    // Update user status
+                    const userIndex = users.findIndex(u => u.id === currentUser.id);
+                    users[userIndex].status = 'banned';
+                    users[userIndex].banReason = reason;
+                    users[userIndex].banDate = new Date().toISOString();
+                    users[userIndex].banDuration = duration;
+                    users[userIndex].banNotes = notes;
+
+                    // Add to activity log
+                    addActivityLog('ban', `${currentUser.name} (${currentUser.email}) was banned for ${reason}`);
+
+                    // Update UI
+                    renderUsers();
+                    updateBannedCount();
+                    closeBanModal();
+
+                    showAlert(`User ${currentUser.name} has been banned successfully.`, 'warning');
+                }
+
+                // Confirm suspend user
+                function confirmSuspendUser() {
+                    if (!currentUser) return;
+
+                    const reason = document.getElementById('suspendReason').value;
+                    const duration = document.getElementById('suspendDuration').value;
+                    const notes = document.getElementById('suspendNotes').value;
+
+                    if (!reason) {
+                        alert('Please select a reason for the suspension.');
+                        return;
+                    }
+
+                    // Update user status
+                    const userIndex = users.findIndex(u => u.id === currentUser.id);
+                    users[userIndex].status = 'suspended';
+                    users[userIndex].suspendReason = reason;
+                    users[userIndex].suspendDate = new Date().toISOString();
+                    users[userIndex].suspendDuration = duration;
+                    users[userIndex].suspendNotes = notes;
+
+                    // Add to activity log
+                    addActivityLog('suspend', `${currentUser.name} (${currentUser.email}) was suspended for ${reason}`);
+
+                    // Update UI
+                    renderUsers();
+                    closeSuspendModal();
+
+                    showAlert(`User ${currentUser.name} has been suspended for ${duration} days.`, 'warning');
+                }
+
+                // Unban user
+                function unbanUser(userId) {
+                    if (!confirm('Are you sure you want to unban this user?')) return;
+
+                    const userIndex = users.findIndex(u => u.id === userId);
+                    const user = users[userIndex];
+
+                    users[userIndex].status = 'active';
+                    delete users[userIndex].banReason;
+                    delete users[userIndex].banDate;
+                    delete users[userIndex].banDuration;
+                    delete users[userIndex].banNotes;
+
+                    // Add to activity log
+                    addActivityLog('unban', `${user.name} (${user.email}) ban was lifted`);
+
+                    // Update UI
+                    renderUsers();
+                    updateBannedCount();
+
+                    showAlert(`User ${user.name} has been unbanned successfully.`, 'success');
+                }
+
+                // Unsuspend user
+                function unsuspendUser(userId) {
+                    if (!confirm('Are you sure you want to unsuspend this user?')) return;
+
+                    const userIndex = users.findIndex(u => u.id === userId);
+                    const user = users[userIndex];
+
+                    users[userIndex].status = 'active';
+                    delete users[userIndex].suspendReason;
+                    delete users[userIndex].suspendDate;
+                    delete users[userIndex].suspendDuration;
+                    delete users[userIndex].suspendNotes;
+
+                    // Add to activity log
+                    addActivityLog('unsuspend', `${user.name} (${user.email}) suspension was lifted`);
+
+                    // Update UI
+                    renderUsers();
+
+                    showAlert(`User ${user.name} has been unsuspended successfully.`, 'success');
+                }
+
+                // Modal functions
+                function closeBanModal() {
+                    document.getElementById('banUserModal').classList.remove('active');
+                    document.getElementById('banReason').value = '';
+                    document.getElementById('banDuration').value = '7';
+                    document.getElementById('banNotes').value = '';
+                    currentUser = null;
+                }
+
+                function closeSuspendModal() {
+                    document.getElementById('suspendUserModal').classList.remove('active');
+                    document.getElementById('suspendReason').value = '';
+                    document.getElementById('suspendDuration').value = '1';
+                    document.getElementById('suspendNotes').value = '';
+                    currentUser = null;
+                }
+
+                function closeUserDetailsModal() {
+                    document.getElementById('userDetailsModal').classList.remove('active');
+                }
+
+                // Utility functions
+                function formatDate(dateString) {
+                    const date = new Date(dateString);
+                    return date.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                }
+
+                function updateBannedCount() {
+                    const bannedCount = users.filter(u => u.status === 'banned').length;
+                    document.getElementById('bannedUsers').textContent = bannedCount;
+                }
+
+                function updatePaginationInfo(totalCount) {
+                    const start = (currentPage - 1) * usersPerPage + 1;
+                    const end = Math.min(currentPage * usersPerPage, totalCount);
+
+                    document.getElementById('showingStart').textContent = start;
+                    document.getElementById('showingEnd').textContent = end;
+                    document.getElementById('totalCount').textContent = totalCount;
+                    document.getElementById('totalUsersCount').textContent = totalCount;
+                }
+
+                function addActivityLog(type, message) {
+                    const activityLog = document.getElementById('activityLog');
+                    const activityItem = document.createElement('div');
+                    activityItem.className = 'activity-item';
+
+                    const icons = {
+                        'ban': 'fas fa-ban',
+                        'unban': 'fas fa-check',
+                        'suspend': 'fas fa-pause',
+                        'unsuspend': 'fas fa-play'
+                    };
+
+                    const colors = {
+                        'ban': 'activity-ban',
+                        'unban': 'activity-unban',
+                        'suspend': 'activity-suspend',
+                        'unsuspend': 'activity-unban'
+                    };
+
+                    activityItem.innerHTML = `
+                <div class="activity-icon ${colors[type]}">
+                    <i class="${icons[type]}"></i>
+                </div>
+                <div class="activity-content">
+                    <h6>${type.charAt(0).toUpperCase() + type.slice(1)} Action</h6>
+                    <p>${message}</p>
+                </div>
+                <div class="activity-time">Just now</div>
+            `;
+
+                    activityLog.insertBefore(activityItem, activityLog.firstChild);
+
+                    // Keep only recent 10 activities
+                    while (activityLog.children.length > 10) {
+                        activityLog.removeChild(activityLog.lastChild);
+                    }
+                }
+
+                function showAlert(message, type = 'success') {
+                    // Simple alert for demo - you can replace with your preferred notification system
+                    const alertClass = type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'error';
+                    console.log(`${alertClass.toUpperCase()}: ${message}`);
+                    alert(message);
+                }
+
+                function generateReport() {
+                    showAlert('Generating comprehensive report...', 'info');
+                    // Simulate report generation
+                    setTimeout(() => {
+                        showAlert('Report generated successfully!');
+                    }, 2000);
+                }
+
+                function exportUsers() {
+                    showAlert('Exporting user data...', 'info');
+                    // Simulate export
+                    setTimeout(() => {
+                        showAlert('User data exported successfully!');
+                    }, 1500);
+                }
+
+                function showBanReport() {
+                    showAlert('Loading ban activity report...', 'info');
+                }
+
+                function updateReports() {
+                    // Update report metrics based on current data
+                    const bannedCount = users.filter(u => u.status === 'banned').length;
+                    const suspendedCount = users.filter(u => u.status === 'suspended').length;
+
+                    // You can update report cards here
+                    console.log(`Reports updated: ${bannedCount} banned, ${suspendedCount} suspended`);
+                }
+
+                function changePage(direction) {
+                    const totalPages = Math.ceil(users.length / usersPerPage);
+
+                    if (direction > 0 && currentPage < totalPages) {
+                        currentPage++;
+                    } else if (direction < 0 && currentPage > 1) {
+                        currentPage--;
+                    }
+
+                    renderUsers();
+                }
+
+                // Event listeners for filters
+                document.addEventListener('DOMContentLoaded', function() {
+                    renderUsers();
+                    updateBannedCount();
+
+                    // Add event listeners for filters
+                    document.getElementById('statusFilter').addEventListener('change', renderUsers);
+                    document.getElementById('userTypeFilter').addEventListener('change', renderUsers);
+                    document.getElementById('userSearch').addEventListener('input', renderUsers);
+
+                    // Close modals when clicking outside
+                    document.addEventListener('click', function(e) {
+                        if (e.target.classList.contains('modal-overlay')) {
+                            e.target.classList.remove('active');
+                        }
+                    });
+                });
+            </script>
+
+            <!-- User Management Section -->
             <section id="users" class="content-section">
                 <div class="section-header">
                     <h2 class="section-title">
                         <i class="fas fa-users"></i>
                         User Management
                     </h2>
-                    <button class="btn btn-secondary" onclick="exportUsers()">
+                    <button class="btn btn-primary" onclick="exportUsers()">
                         <i class="fas fa-download"></i>
                         Export Users
                     </button>
                 </div>
-                
-                <div class="card">
-                    <table class="data-table">
+
+                <div class="users-container">
+                    <div class="users-header">
+                        <div class="users-controls">
+                            <div class="filter-group">
+                                <select class="filter-select" id="statusFilter">
+                                    <option value="">All Status</option>
+                                    <option value="active">Active</option>
+                                    <option value="banned">Banned</option>
+                                    <option value="suspended">Suspended</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <select class="filter-select" id="userTypeFilter">
+                                    <option value="">All Types</option>
+                                    <option value="applicant">Applicants</option>
+                                    <option value="employer">Employers</option>
+                                    <option value="officer">Officers</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <input type="text" class="search-input" placeholder="Search users..."
+                                    id="userSearch">
+                            </div>
+                        </div>
+                        <div class="users-stats">
+                            <span class="stat-badge">
+                                <i class="fas fa-users"></i>
+                                <span id="totalUsersCount">1,247</span> Total
+                            </span>
+                        </div>
+                    </div>
+
+                    <table class="users-table">
                         <thead>
                             <tr>
-                                <th>User ID</th>
-                                <th>Name</th>
-                                <th>Email</th>
+                                <th>User</th>
                                 <th>Type</th>
-                                <th>Registration Date</th>
                                 <th>Status</th>
+                                <th>Last Login</th>
+                                <th>Registration Date</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="usersTable">
-                            <tr>
-                                <td>USR-001</td>
-                                <td>Juan Dela Cruz</td>
-                                <td>juan@email.com</td>
-                                <td>Applicant</td>
-                                <td>Jan 28, 2025</td>
-                                <td><span class="status-badge status-active">Active</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn btn-warning btn-sm">
-                                            <i class="fas fa-edit"></i> Edit
-                                        </button>
-                                        <button class="btn btn-danger btn-sm">
-                                            <i class="fas fa-ban"></i> Block
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
+                        <tbody id="usersTableBody">
+                            <!-- Users will be populated by JavaScript -->
                         </tbody>
                     </table>
+
+                    <div class="pagination">
+                        <div class="pagination-info">
+                            Showing <span id="showingStart">1</span>-<span id="showingEnd">10</span> of <span
+                                id="totalCount">1,247</span> users
+                        </div>
+                        <div class="pagination-controls">
+                            <button class="pagination-btn" id="prevBtn" onclick="changePage(-1)">
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </button>
+                            <button class="pagination-btn active">1</button>
+                            <button class="pagination-btn">2</button>
+                            <button class="pagination-btn">3</button>
+                            <button class="pagination-btn" id="nextBtn" onclick="changePage(1)">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-             Settings Section -->
+            <!--Settings Section -->
             <section id="settings" class="content-section">
                 <div class="section-header">
                     <h2 class="section-title">

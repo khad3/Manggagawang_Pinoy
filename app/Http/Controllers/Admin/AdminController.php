@@ -139,7 +139,7 @@ $employerStats = Employer::selectRaw('MONTH(created_at) as month, COUNT(*) as to
     ->pluck('total', 'month');
 
 $chartData = [];
-$chartData[] = "['Month', 'Applicants', 'Employers']"; // ✅ Add both series
+$chartData[] = "['Month', 'Applicants', 'Employers']"; // Add both series
 
 for ($m = 1; $m <= 12; $m++) {
     $monthName = Carbon::create()->month($m)->format('F');
