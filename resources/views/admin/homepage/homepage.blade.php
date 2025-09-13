@@ -1708,21 +1708,21 @@
                                 <i class="fas fa-eye"></i>
                             </button>
                             ${user.status === 'active' ? `
-                                                                                                                    <button class="action-btn btn-suspend" onclick="showSuspendModal(${user.id})" title="Suspend User">
-                                                                                                                        <i class="fas fa-pause"></i>
-                                                                                                                    </button>
-                                                                                                                    <button class="action-btn btn-ban" onclick="showBanModal(${user.id})" title="Ban User">
-                                                                                                                        <i class="fas fa-ban"></i>
-                                                                                                                    </button>
-                                                                                                                ` : user.status === 'banned' ? `
-                                                                                                                    <button class="action-btn btn-unban" onclick="unbanUser(${user.id})" title="Unban User">
-                                                                                                                        <i class="fas fa-check"></i>
-                                                                                                                    </button>
-                                                                                                                ` : user.status === 'suspended' ? `
-                                                                                                                    <button class="action-btn btn-unban" onclick="unsuspendUser(${user.id})" title="Unsuspend User">
-                                                                                                                        <i class="fas fa-play"></i>
-                                                                                                                    </button>
-                                                                                                                ` : ''}
+                                                                                                                                                        <button class="action-btn btn-suspend" onclick="showSuspendModal(${user.id})" title="Suspend User">
+                                                                                                                                                            <i class="fas fa-pause"></i>
+                                                                                                                                                        </button>
+                                                                                                                                                        <button class="action-btn btn-ban" onclick="showBanModal(${user.id})" title="Ban User">
+                                                                                                                                                            <i class="fas fa-ban"></i>
+                                                                                                                                                        </button>
+                                                                                                                                                    ` : user.status === 'banned' ? `
+                                                                                                                                                        <button class="action-btn btn-unban" onclick="unbanUser(${user.id})" title="Unban User">
+                                                                                                                                                            <i class="fas fa-check"></i>
+                                                                                                                                                        </button>
+                                                                                                                                                    ` : user.status === 'suspended' ? `
+                                                                                                                                                        <button class="action-btn btn-unban" onclick="unsuspendUser(${user.id})" title="Unsuspend User">
+                                                                                                                                                            <i class="fas fa-play"></i>
+                                                                                                                                                        </button>
+                                                                                                                                                    ` : ''}
                         </div>
                     </td>
                 `;
@@ -1822,20 +1822,20 @@
                 </div>
                 
                 ${user.status === 'banned' ? `
-                                                                                                        <div style="margin-bottom: 20px; padding: 12px; background: #fee2e2; border-radius: 8px;">
-                                                                                                            <h6 style="margin: 0 0 8px 0; color: #dc2626;">Ban Information</h6>
-                                                                                                            <p style="margin: 0; color: #7f1d1d;">Reason: ${user.banReason}</p>
-                                                                                                            <p style="margin: 0; color: #7f1d1d;">Date: ${formatDate(user.banDate)}</p>
-                                                                                                        </div>
-                                                                                                    ` : ''}
+                                                                                                                                            <div style="margin-bottom: 20px; padding: 12px; background: #fee2e2; border-radius: 8px;">
+                                                                                                                                                <h6 style="margin: 0 0 8px 0; color: #dc2626;">Ban Information</h6>
+                                                                                                                                                <p style="margin: 0; color: #7f1d1d;">Reason: ${user.banReason}</p>
+                                                                                                                                                <p style="margin: 0; color: #7f1d1d;">Date: ${formatDate(user.banDate)}</p>
+                                                                                                                                            </div>
+                                                                                                                                        ` : ''}
                 
                 ${user.status === 'suspended' ? `
-                                                                                                        <div style="margin-bottom: 20px; padding: 12px; background: #fef3c7; border-radius: 8px;">
-                                                                                                            <h6 style="margin: 0 0 8px 0; color: #d97706;">Suspension Information</h6>
-                                                                                                            <p style="margin: 0; color: #92400e;">Reason: ${user.suspendReason}</p>
-                                                                                                            <p style="margin: 0; color: #92400e;">Date: ${formatDate(user.suspendDate)}</p>
-                                                                                                        </div>
-                                                                                                    ` : ''}
+                                                                                                                                            <div style="margin-bottom: 20px; padding: 12px; background: #fef3c7; border-radius: 8px;">
+                                                                                                                                                <h6 style="margin: 0 0 8px 0; color: #d97706;">Suspension Information</h6>
+                                                                                                                                                <p style="margin: 0; color: #92400e;">Reason: ${user.suspendReason}</p>
+                                                                                                                                                <p style="margin: 0; color: #92400e;">Date: ${formatDate(user.suspendDate)}</p>
+                                                                                                                                            </div>
+                                                                                                                                        ` : ''}
             `;
 
                     modal.classList.add('active');

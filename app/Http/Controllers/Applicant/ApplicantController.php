@@ -594,16 +594,32 @@ public function getUnreadCounts(Request $request)
 
 //View the calling carrd
 public function ViewCallingCard() {
-
     $applicantID = session('applicant_id');
-
-    $retrievedProfiles = RegisterModel::with('personal_info' , 'work_background' , 'template')->where('id' , $applicantID)->get();
-
-    if(!$retrievedProfiles) {
+ 
+    // Fetch applicant profile
+    $retrievedProfile = RegisterModel::with('personal_info', 'work_background', 'template')
+        ->where('id', $applicantID)
+        ->first();
+ 
+    if (!$retrievedProfile) {
         return back()->withErrors('No profile found');
     }
-
-    return view('applicant.callingcard.arcallingcard' , compact('retrievedProfiles'));
+ 
+    // Fetch portfolio (latest)
+    $retrievedPortfolio = ApplicantPortfolioModel::with('personalInfo', 'workExperience')
+        ->where('applicant_id', $applicantID)
+        ->get();
+ 
+    // Fetch youtube/video link (latest)
+    $retrievedYoutube = ApplicantUrlModel::with('personalInfo', 'workExperience')
+        ->where('applicant_id', $applicantID)
+        ->get();
+ 
+    return view('applicant.callingcard.arcallingcard', compact(
+        'retrievedProfile',
+        'retrievedPortfolio',
+        'retrievedYoutube'
+    ));
 }
 
 
