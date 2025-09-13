@@ -409,34 +409,60 @@ public function ShowLoginForm() {
 public function login(Request $request)
 {
     // Validate input
-    $credentials = $request->validate([
-        'email' => ['required', 'email'],
-        'password' => ['required'],
+    $request->validate([
+        'email'    => 'required|email',
+        'password' => 'required|string|min:6',
     ]);
 
-    // Check for employer record
+    $credentials = $request->only('email', 'password');
+
+    
     $employer = AccountInformation::where('email', $credentials['email'])->first();
 
-    // Check password and handle failed login
-    if (!$employer || !Hash::check($credentials['password'], $employer->password)) {
-        return back()->withErrors(['email' => 'Invalid email or password.'])->withInput();
+    
+    if (!$employer) {
+        return back()->withErrors([
+            'email' => 'No account found with this email address.',
+        ])->withInput($request->only('email'));
     }
 
-    // Optional: Check if email is verified
+    
+    if (!Hash::check($credentials['password'], $employer->password)) {
+        return back()->withErrors([
+            'email' => 'Invalid email or password.',
+        ])->withInput($request->only('email'));
+    }
+
+    
+    if (strtolower($employer->status ?? '') === 'banned') {
+        return back()->withErrors([
+            'email' => 'Your account has been banned. Please contact support.',
+        ])->withInput($request->only('email'));
+    }
+
+    
     if (is_null($employer->email_verified_at)) {
-        return back()->withErrors(['email' => 'Please verify your email address first.'])->withInput();
+        return back()->withErrors([
+            'email' => 'Please verify your email address before logging in.',
+        ])->withInput($request->only('email'));
     }
 
-    // Store session (custom auth)
+   
+    $employer->save();
+
+    
     session([
-        'employer_id' => $employer->id,
+        'employer_id'    => $employer->id,
         'employer_email' => $employer->email,
-        'employer_name' => $employer->first_name ?? 'Employer',
+        'employer_name'  => $employer->first_name ?? 'Employer',
     ]);
 
-    return redirect()->route('employer.info.homepage.display')
-                     ->with('success', 'Login successful.');
+    
+    return redirect()
+        ->route('employer.info.homepage.display')
+        ->with('success', 'Welcome back, ' . ($employer->first_name ?? 'Employer') . '!');
 }
+
 
 
 //View the homepage of employer
