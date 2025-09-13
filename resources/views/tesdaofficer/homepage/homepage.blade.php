@@ -177,29 +177,31 @@
                                             <td><strong>{{ $application->id }}</strong></td>
                                         @endauth
 
-                                        <td>{{ $application->personal_info->first_name }}
-                                            {{ $application->personal_info->last_name }}</td>
-                                        <td>{{ $application->certification_program }}</td>
-                                        <td>{{ $application->created_at->format('M d, Y') }}</td>
-                                        @if ($application->status == 'pending')
-                                            <td><span
-                                                    class="badge rounded-pill bg-warning">{{ $application->status }}</span>
-                                            </td>
-                                        @elseif($application->status == 'approved')
-                                            <td><span
-                                                    class="badge rounded-pill bg-success">{{ $application->status }}</span>
-                                            </td>
-                                        @elseif($application->status == 'rejected')
-                                            <td><span
-                                                    class="badge rounded-pill bg-danger">{{ $application->status }}</span>
-                                            </td>
-                                        @else
-                                            <td><span
-                                                    class="badge rounded-pill bg-dark">{{ $application->status }}</span>
-                                            </td>
-                                        @endif
+                                        <td>
+                                            {{ $application->personal_info?->first_name ?? 'N/A' }}
+                                            {{ $application->personal_info?->last_name ?? '' }}
+                                        </td>
 
-                                        <td>{{ $application->officer_comment }}</td>
+                                        <td>{{ $application->certification_program ?? 'N/A' }}</td>
+                                        <td>{{ $application->created_at ? $application->created_at->format('M d, Y') : 'N/A' }}
+                                        </td>
+
+                                        <td>
+                                            @php
+                                                $status = strtolower($application->status ?? 'pending');
+                                                $badgeClass = match ($status) {
+                                                    'pending' => 'bg-warning',
+                                                    'approved' => 'bg-success',
+                                                    'rejected' => 'bg-danger',
+                                                    default => 'bg-dark',
+                                                };
+                                            @endphp
+                                            <span class="badge rounded-pill {{ $badgeClass }}">
+                                                {{ ucfirst($status) }}
+                                            </span>
+                                        </td>
+
+                                        <td>{{ $application->officer_comment ?? '-' }}</td>
 
                                         <td>
                                             <button class="btn btn-primary btn-sm"
@@ -217,6 +219,7 @@
                                         </td>
                                     </tr>
                                 @endforeach
+
                             </tbody>
                         </table>
 
@@ -237,11 +240,11 @@
                                         <iframe id="certificateFrame" src="" frameborder="0"
                                             style="width:100%; height:600px;"></iframe>
                                     </div>
-                                    <div class="modal-footer">
+                                    {{-- <div class="modal-footer">
                                         <!-- Download link -->
                                         <a id="downloadCertificate" href="#" class="btn btn-primary"
                                             target="_blank">Download</a>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
                         </div>

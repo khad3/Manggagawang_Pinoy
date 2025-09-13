@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Admin\AccountAdminModel as Admin;
 use App\Models\Admin\AddTesdaOfficerModel as AddTesdaOfficer;
+use App\Models\Admin\UserManagmentModel;
 use App\Models\Admin\AnnouncementModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -17,6 +18,7 @@ use Carbon\Carbon;
 use App\Models\Employer\AccountInformationModel as Employer;
 //Applicants Model
 use App\Models\Applicant\RegisterModel;
+use App\Models\User;
 use Illuminate\Auth\Events\Logout;
 
 class AdminController extends Controller
@@ -126,32 +128,44 @@ class AdminController extends Controller
     ->count();
 
 
-  $applicantStats = RegisterModel::selectRaw('MONTH(created_at) as month, COUNT(*) as total')
-    ->whereYear('created_at', Carbon::now()->year)
-    ->groupBy('month')
-    ->orderBy('month')
-    ->pluck('total', 'month');
+     $applicantStats = RegisterModel::selectRaw('MONTH(created_at) as month, COUNT(*) as total')
+        ->whereYear('created_at', Carbon::now()->year)
+        ->groupBy('month')
+        ->orderBy('month')
+        ->pluck('total', 'month');
 
-$employerStats = Employer::selectRaw('MONTH(created_at) as month, COUNT(*) as total')
-    ->whereYear('created_at', Carbon::now()->year)
-    ->groupBy('month')
-    ->orderBy('month')
-    ->pluck('total', 'month');
+    $employerStats = Employer::selectRaw('MONTH(created_at) as month, COUNT(*) as total')
+        ->whereYear('created_at', Carbon::now()->year)
+        ->groupBy('month')
+        ->orderBy('month')
+        ->pluck('total', 'month');
 
-$chartData = [];
-$chartData[] = "['Month', 'Applicants', 'Employers']"; // Add both series
+    $chartData = [];
+    $chartData[] = "['Month', 'Applicants', 'Employers']"; // Add both series
 
-for ($m = 1; $m <= 12; $m++) {
-    $monthName = Carbon::create()->month($m)->format('F');
-    $applicants = $applicantStats[$m] ?? 0;
-    $employers  = $employerStats[$m] ?? 0;
-    $chartData[] = "['{$monthName}', {$applicants}, {$employers}]";
-}
+    for ($m = 1; $m <= 12; $m++) {
+        $monthName = Carbon::create()->month($m)->format('F');
+        $applicants = $applicantStats[$m] ?? 0;
+        $employers  = $employerStats[$m] ?? 0;
+        $chartData[] = "['{$monthName}', {$applicants}, {$employers}]";
+    }
 
-$colors = ['#1E88E5', '#43A047']; // Blue = applicants, Green = employers
+    $colors = ['#1E88E5', '#43A047']; // Blue = applicants, Green = employers
 
 
-    
+    // //retrieved the user data to display in the homepage
+    // $retrievedApplicants = RegisterModel::where('type_user', 'applicant')->get();
+
+$applicantUser = RegisterModel::with('personal_info')
+    ->get()
+    ->map(fn($a) => ['type' => 'applicant', 'data' => $a]);
+
+$employerUser = Employer::with('personal_info' , 'addressCompany')
+    ->get()
+    ->map(fn($e) => ['type' => 'employer', 'data' => $e]);
+
+// Merge both collections
+$users = $applicantUser->concat($employerUser);
 
 
     return view('admin.homepage.homepage', compact(
@@ -174,7 +188,10 @@ $colors = ['#1E88E5', '#43A047']; // Blue = applicants, Green = employers
         'tesdaOfficersCount',
         'newTesdaOfficers',
         'chartData',
-        'colors'
+        'colors',
+        'users'
+      
+
     ));
 }
 

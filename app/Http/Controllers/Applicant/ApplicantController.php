@@ -305,34 +305,55 @@ public function ShowLoginForm()
     return view('applicant.auth.login');
 }
 
-public function Login(Request $request)
+public function login(Request $request)
 {
+    // Validate the request
     $request->validate([
-        'email' => 'required|email',
-        'password' => 'required|string',
+        'email'    => 'required|email',
+        'password' => 'required|string|min:6',
     ]);
 
-    // Find the applicant by email
-    $applicant = RegisterModel::with('personal_info')->where('email', $request->email)->first();
+    
+    $applicant = RegisterModel::with('personal_info')
+        ->where('email', $request->email)
+        ->first();
 
-    // Check if applicant exists and password is correct
-    if (!$applicant || !Hash::check($request->password, $applicant->password)) {
-        return back()->withErrors(['email' => 'Invalid email or password.']);
+   
+    if (!$applicant) {
+        return back()->withErrors([
+            'email' => 'No account found with this email address.',
+        ])->withInput($request->only('email'));
     }
 
-     // ✅ Update last seen to NOW
+    // 4Check if the account is banned
+    if (strtolower($applicant->status) === 'banned') {
+        return back()->withErrors([
+            'email' => 'Your account has been banned. Please contact support for assistance.',
+        ])->withInput($request->only('email'));
+    }
+
+    // 5Verify password
+    if (!Hash::check($request->password, $applicant->password)) {
+        return back()->withErrors([
+            'email' => 'Invalid email or password.',
+        ])->withInput($request->only('email'));
+    }
+
+    
     $applicant->last_seen = now();
     $applicant->save();
 
     
-
-    // Store applicant session (custom auth logic)
     session([
         'applicant_id' => $applicant->id,
     ]);
 
-    return redirect()->route('applicant.info.homepage.display')->with('success', 'Welcome to mangagawang pinoy, ' . $applicant->personal_info->first_name);
+    
+    return redirect()
+        ->route('applicant.info.homepage.display')
+        ->with('success', 'Welcome back, ' . ($applicant->personal_info->first_name ?? 'Applicant') . '!');
 }
+
 
 //Homepage
 public function ShowHomepage()
