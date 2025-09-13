@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <title>Homepage</title>
 
     <!-- Bootstrap 5.3 CSS -->
@@ -247,9 +249,7 @@
                         <button class="nav-icon" onclick="toggleDropdown('notificationsDropdown')">
                             <i class="bi bi-bell"></i>
                             @php
-                                $unreadCount = isset($notifications)
-                                    ? $notifications->where('is_read', false)->count()
-                                    : 0;
+                                $unreadCount = isset($notifications) ? $notifications->where('is_read', 0)->count() : 0;
                             @endphp
                             @if ($unreadCount > 0)
                                 <span class="nav-badge" id="notificationsBadge">{{ $unreadCount }}</span>
@@ -263,7 +263,7 @@
                                 class="dropdown-header d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
                                 <h6 class="mb-0">Notifications</h6>
                                 <button class="mark-all-read btn btn-sm btn-link text-primary p-0"
-                                    onclick="markAllAsReads()">
+                                    onclick="markAllAsRead()">
                                     Mark all as read
                                 </button>
                             </div>
@@ -273,6 +273,7 @@
                                     @foreach ($notifications as $note)
                                         <div class="notification-item d-flex align-items-start gap-2 p-2 mb-2 rounded hover-shadow {{ !$note->is_read ? 'unread' : '' }}"
                                             style="cursor: pointer;" data-id="{{ $note->id }}"
+                                            data-note-id="{{ $note->id }}"
                                             onclick="markAsRead({{ $note->id }})" data-bs-toggle="modal"
                                             data-bs-target="#viewNotificationModal-{{ $note->id }}">
 
@@ -313,9 +314,62 @@
                             </div>
 
                             <div class="dropdown-footer border-top p-2 text-center">
-                                <a href="#" class="view-all-link text-primary small text-decoration-none">View
-                                    All Notifications</a>
+                                <a href="#" class="view-all-link text-primary small text-decoration-none"
+                                    data-bs-toggle="modal" data-bs-target="#viewAllNotificationsModal">
+                                    View All Notifications
+                                </a>
                             </div>
+
+                            {{-- View All Notifications Modal --}}
+                            <div class="modal fade" id="viewAllNotificationsModal" tabindex="-1" aria-hidden="true"
+                                data-bs-backdrop="false">
+                                <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+                                    <div class="modal-content rounded-3 shadow">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">All Notifications</h5>
+                                            <button type="button" class="btn-close"
+                                                data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            @forelse ($notifications as $note)
+                                                <div class="border-bottom p-2 mb-2 {{ !$note->is_read ? 'fw-bold' : '' }}"
+                                                    style="cursor: pointer;" data-bs-toggle="modal"
+                                                    data-bs-target="#viewNotificationModal-{{ $note->id }}">
+                                                    <h6>{{ $note->title }}</h6>
+                                                    <p class="mb-1">{{ $note->content }}</p>
+                                                    <small class="text-muted">
+                                                        {{ $note->created_at->format('M d, Y h:i A') }}
+                                                    </small>
+                                                </div>
+
+                                                {{-- Individual Notification Modal --}}
+                                                <div class="modal fade"
+                                                    id="viewNotificationModal-{{ $note->id }}" tabindex="-1"
+                                                    aria-hidden="true" data-bs-backdrop="false">
+                                                    <div class="modal-dialog modal-dialog-centered">
+                                                        <div class="modal-content rounded-3 shadow">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">{{ $note->title }}</h5>
+                                                                <button type="button" class="btn-close"
+                                                                    data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <p>{{ $note->content }}</p>
+                                                                <small class="text-muted">
+                                                                    {{ $note->created_at->format('M d, Y h:i A') }}
+                                                                </small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @empty
+                                                <p class="text-center text-muted">No notifications available</p>
+                                            @endforelse
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 
@@ -339,31 +393,90 @@
 
                     {{-- JS for marking as read --}}
                     <script>
-                        function markAsRead(id) {
-                            axios.post(`applicant/mark-read/${id}`, {
-                                _token: '{{ csrf_token() }}'
-                            }).then(() => {
-                                const item = document.querySelector(`.notification-item[data-id='${id}']`);
-                                if (item) item.classList.remove('unread');
+                        /**
+                         * Marks a single notification as read and removes the 'unread' class on success.
+                         */
+                        async function markAsRead(id) {
+                            try {
+                                const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-                                const badge = document.getElementById('notificationsBadge');
-                                if (badge) {
-                                    let count = parseInt(badge.textContent) - 1;
-                                    badge.textContent = count > 0 ? count : '';
-                                    if (count <= 0) badge.style.display = 'none';
+                                const res = await fetch(`notifications/${id}/read`, {
+                                    method: 'POST',
+                                    credentials: 'same-origin',
+                                    headers: {
+                                        'X-CSRF-TOKEN': token,
+                                        'Accept': 'application/json',
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({})
+                                });
+
+                                if (!res.ok) {
+                                    console.error('markAsRead failed, status:', res.status);
+                                    return;
                                 }
-                            }).catch(err => console.error(err));
+
+                                const data = await res.json();
+                                if (data.success) {
+                                    // remove unread highlight
+                                    const el = document.querySelector(`[data-note-id="${id}"]`) || document.querySelector(
+                                        `[data-id="${id}"]`);
+                                    if (el) el.classList.remove('unread');
+
+                                    // 🔥 update badge count
+                                    const badge = document.querySelector('#notificationsBadge');
+                                    if (badge) {
+                                        let current = parseInt(badge.innerText) || 0;
+                                        if (current > 0) {
+                                            badge.innerText = current - 1;
+                                            if (current - 1 === 0) {
+                                                badge.remove(); // hide badge if 0
+                                            }
+                                        }
+                                    }
+                                }
+                            } catch (err) {
+                                console.error('Error in markAsRead:', err);
+                            }
                         }
 
-                        function markAllAsRead() {
-                            axios.post(`applicant/mark-all-read`, {
-                                _token: '{{ csrf_token() }}'
-                            }).then(() => {
-                                document.querySelectorAll('.notification-item.unread').forEach(item => item.classList.remove(
-                                    'unread'));
-                                const badge = document.getElementById('notificationsBadge');
-                                if (badge) badge.style.display = 'none';
-                            }).catch(err => console.error(err));
+
+                        async function markAllAsRead() {
+                            try {
+                                const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                                const res = await fetch(`notifications/mark-all-read`, {
+                                    method: 'POST',
+                                    credentials: 'same-origin',
+                                    headers: {
+                                        'X-CSRF-TOKEN': token,
+                                        'Accept': 'application/json',
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({})
+                                });
+
+                                if (!res.ok) {
+                                    console.error('markAllAsRead failed, status:', res.status);
+                                    return;
+                                }
+
+                                const data = await res.json();
+                                if (data.success) {
+                                    // 🔹 Remove "unread" class from all items
+                                    document.querySelectorAll('.notification-item.unread').forEach(el => {
+                                        el.classList.remove('unread');
+                                    });
+
+                                    // 🔹 Reset badge count
+                                    const badge = document.querySelector('#notificationsBadge');
+                                    if (badge) {
+                                        badge.remove(); // hide badge since all are read
+                                    }
+                                }
+                            } catch (err) {
+                                console.error('Error in markAllAsRead:', err);
+                            }
                         }
                     </script>
 
@@ -1179,39 +1292,7 @@
             }, 5000);
         }
 
-        // Notification click handlers
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add click handlers for notification items
-            document.querySelectorAll('.notification-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    if (this.classList.contains('unread')) {
-                        this.classList.remove('unread');
-                        updateNotificationBadge();
-                        showToast('Notification marked as read', 'success');
-                    }
-                });
-            });
 
-            // Add click handlers for message items
-            document.querySelectorAll('.message-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    const messageId = this.dataset.id;
-                    showMessageModal(messageId);
-                });
-            });
-        });
-
-        // Update notification badge count
-        function updateNotificationBadge() {
-            const unreadCount = document.querySelectorAll('#notificationsDropdown .notification-item.unread').length;
-            const badge = document.getElementById('notificationsBadge');
-            badge.textContent = unreadCount;
-            if (unreadCount === 0) {
-                badge.style.display = 'none';
-            } else {
-                badge.style.display = 'flex';
-            }
-        }
 
         // Close modal when clicking overlay
         document.getElementById('messageModal').addEventListener('click', function(e) {

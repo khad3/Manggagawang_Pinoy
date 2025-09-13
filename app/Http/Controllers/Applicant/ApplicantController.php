@@ -390,7 +390,7 @@ public function ShowHomepage()
 
      // Get only announcements targeted to applicants and published
     $notifications = AnnouncementModel::where('target_audience', 'applicants')
-        ->where('status', 'published')
+        ->where('status',['published','scheduled'])
         ->orderBy('created_at', 'desc')
         ->take(5) // limit to 5 latest
         ->get();
@@ -399,6 +399,8 @@ public function ShowHomepage()
      $unreadCount = AnnouncementModel::where('target_audience', 'applicants')
     ->where('is_read', false)
     ->count();
+
+    
 
 
 
@@ -418,73 +420,22 @@ public function ShowHomepage()
 }
 
  // Mark a single notification as read
-public function markAsReads($id)
+// app/Http/Controllers/NotificationController.php
+public function ReadNotification($id)
 {
-    try {
-        // Find the notification for the current user (if you have user authentication)
-        $notification = AnnouncementModel::where('id', $id)
-            ->where('target_audience', 'applicants')
-            ->firstOrFail();
+    $notification = AnnouncementModel::findOrFail($id);
+    $notification->is_read = 1; // mark as read
+    $notification->save();
 
-        // If you have user-specific notifications, add user filtering:
-        // ->where('user_id', auth()->id()) // Uncomment if you have user-specific notifications
-
-        $notification->is_read = true;
-        $notification->save();
-
-        // Return JSON response for AJAX
-        if (request()->expectsJson() || request()->ajax()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Notification marked as read'
-            ]);
-        }
-
-        // Fallback for non-AJAX requests
-        return redirect()->back()->with('success', 'Notification marked as read');
-        
-    } catch (\Exception $e) {
-        if (request()->expectsJson() || request()->ajax()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to mark notification as read'
-            ], 500);
-        }
-        
-        return redirect()->back()->with('error', 'Failed to mark notification as read');
-    }
+    return response()->json(['success' => true]);
 }
 
-public function markAllAsReads()
+public function ReadlAllnotifications()
 {
-    try {
-        $updated = AnnouncementModel::where('target_audience', 'applicants')
-            ->where('is_read', false)
-            // ->where('user_id', auth()->id()) // Uncomment if you have user-specific notifications
-            ->update(['is_read' => true]);
+    // Assuming you store notifications in a Notification model
+    AnnouncementModel::where('is_read', 0)->update(['is_read' => 1]);
 
-        // Return JSON response for AJAX
-        if (request()->expectsJson() || request()->ajax()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'All notifications marked as read',
-                'updated_count' => $updated
-            ]);
-        }
-
-        // Fallback for non-AJAX requests
-        return redirect()->back()->with('success', 'All notifications marked as read');
-        
-    } catch (\Exception $e) {
-        if (request()->expectsJson() || request()->ajax()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to mark all notifications as read'
-            ], 500);
-        }
-        
-        return redirect()->back()->with('error', 'Failed to mark all notifications as read');
-    }
+    return response()->json(['success' => true]);
 }
 
 
@@ -562,34 +513,6 @@ public function getUnreadCounts(Request $request)
     
     return response()->json(['unread_counts' => $unreadCounts]);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //View the calling carrd
@@ -717,73 +640,6 @@ public function updateLastSeen()
 
     return response()->json(['message' => 'Unauthorized'], 401); 
 }
-
-
-//  public function getPortfolioImages($applicant_id)
-//     {
-//         $images = DB::table('applicants_portfolio')
-//             ->where('applicant_id', $applicant_id)
-//             ->get();
-            
-//         return response()->json($images);
-//     }
-    
-//     public function getYouTubeVideos($applicant_id)
-//     {
-//         $videos = DB::table('applicants_sample_work_url')
-//             ->where('applicant_id', $applicant_id)
-//             ->get();
-            
-//         return response()->json($videos);
-//     }
-
-// public function generateQr($id)
-// {
-//     // Validate that ID exists
-//     if (!$id) {
-//         throw new \InvalidArgumentException('ID parameter is required');
-//     }
-    
-//     // Check if the applicant exists
-//     $applicant = RegisterModel::find($id);
-//     if (!$applicant) {
-//         throw new \Exception('Applicant not found');
-//     }
-    
-//     $url = route('applicant.callingcard.display', ['id' => $id]);
-//     return QrCode::size(300)->generate($url);
-// }
-
-
-// // In your controller where you call generateQr
-// public function showQrCode($id)
-// {
-//     try {
-//         $qrCode = $this->generateQr($id);
-//         return response($qrCode)->header('Content-Type', 'image/svg+xml');
-//     } catch (\Exception $e) {
-//         return response()->json(['error' => $e->getMessage()], 400);
-//     }
-// }
-
-//    public function showAr($id)
-// {
-//     $applicant = RegisterModel::with('personal_info', 'work_background', 'template')->find($id);
-
-//     if (!$applicant) {
-//         abort(404, "Applicant not found.");
-//     }
-
-//     $images = DB::table('applicants_portfolio')
-//         ->where('applicant_id', $id)
-//         ->get();
-
-//     $videos = DB::table('applicants_sample_work_url')
-//         ->where('applicant_id', $id)
-//         ->get();
-
-//     return view('applicant.callingcard.arcallingcard', compact('applicant', 'images', 'videos'));
-// }
 
 
 

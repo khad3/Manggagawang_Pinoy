@@ -51,10 +51,11 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
     Route::post('info/template', [ApplicantController::class, 'TemplateForm'])->name('applicant.info.template.store');
 
     Route::get('homepage', [ApplicantController::class, 'ShowHomepage'])->name('applicant.info.homepage.display');
-    Route::post('applicant/mark-read/{id}', [ApplicantController::class, 'markAsReads'])
-    ->name('applicant.mark-read');
-Route::post('applicant/mark-all-read', [ApplicantController::class, 'markAllAsReads'])
-    ->name('applicant.mark-all-read');
+   // routes/web.php
+    Route::post('notifications/{id}/read', [ApplicantController::class, 'ReadNotification']);
+    Route::post('/notifications/mark-all-read', [ApplicantController::class, 'ReadlAllnotifications']);
+
+
 
     Route::get('communityforum', [CommunityForumController::class, 'ShowForum'])->name('applicant.forum.display');
     Route::post('communityforum/create', [CommunityForumController::class, 'CreatePost'])->name('applicant.forum.store');
