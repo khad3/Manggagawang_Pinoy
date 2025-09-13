@@ -15,6 +15,7 @@ class AccountInformationModel extends Model
         'password',
         'email_verified_at',
         'verification_token ',
+        'status',
 
     ];
 

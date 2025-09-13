@@ -340,7 +340,9 @@ public function login(Request $request)
     }
 
     
+    $applicant->last_login = now();
     $applicant->last_seen = now();
+    
     $applicant->save();
 
     

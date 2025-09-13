@@ -6,6 +6,7 @@ use App\Http\Controllers\Applicant\ApplicantController;
 use App\Http\Controllers\Employer\EmployerController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AnnouncementController;
+use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Applicant\ProfileController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\TesdaOfficer\TesdaOfficerController;
@@ -266,6 +267,10 @@ Route::middleware(['admin.authenticate'])->prefix('admin')->group(function () {
     Route::post('create-announcement', [AnnouncementController::class, 'createAnnouncement'])->name('admin.create-announcement');
     Route::delete('delete-announcement/{id}', [AnnouncementController::class, 'deleteAnnouncement'])->name('admin.delete-announcement.destroy');
     Route::put('update-announcement/{id}', [AnnouncementController::class, 'updateAnnouncement'])->name('admin.update-announcement');
+
+    //Suspension
+    Route::post('suspend-employer', [UserManagementController::class, 'suspendUser'])->name('admin.suspend-user.store');
+    
 
 
 });

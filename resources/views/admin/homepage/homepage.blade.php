@@ -1023,54 +1023,7 @@
                 </div>
             </section>
 
-            <!-- Suspend User Modal -->
-            <div id="suspendUserModal" class="modal-overlay">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3 class="modal-title">Suspend User Account</h3>
-                        <button class="modal-close" onclick="closeSuspendModal()">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <div id="suspendUserInfo"></div>
-                        <div class="form-group">
-                            <label for="suspendReason">Reason for Suspension:</label>
-                            <select id="suspendReason" class="filter-select"
-                                style="width: 100%; margin-bottom: 15px;">
-                                <option value="">Select reason...</option>
-                                <option value="pending_investigation">Pending Investigation</option>
-                                <option value="multiple_reports">Multiple User Reports</option>
-                                <option value="suspicious_activity">Suspicious Activity</option>
-                                <option value="payment_issue">Payment/Verification Issue</option>
-                                <option value="temporary_violation">Temporary Policy Violation</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="suspendDuration">Suspension Duration:</label>
-                            <select id="suspendDuration" class="filter-select"
-                                style="width: 100%; margin-bottom: 15px;">
-                                <option value="1">1 Day</option>
-                                <option value="3">3 Days</option>
-                                <option value="7">7 Days</option>
-                                <option value="14">14 Days</option>
-                                <option value="30">30 Days</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="suspendNotes">Additional Notes:</label>
-                            <textarea id="suspendNotes" rows="3"
-                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;"
-                                placeholder="Optional additional details..."></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" onclick="closeSuspendModal()">Cancel</button>
-                        <button class="btn btn-warning" onclick="confirmSuspendUser()">
-                            <i class="fas fa-pause"></i> Suspend User
-                        </button>
-                    </div>
-                </div>
-            </div>
+
 
 
 
@@ -1093,9 +1046,10 @@
                     <div class="users-header">
                         <div class="users-controls">
                             <div class="filter-group">
-                                <select class="filter-select" id="statusFilter">
+                                <select class="filter-select" id="statusFilters">
                                     <option value="">All Status</option>
                                     <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
                                     <option value="banned">Banned</option>
                                     <option value="suspended">Suspended</option>
                                 </select>
@@ -1105,7 +1059,7 @@
                                     <option value="">All Types</option>
                                     <option value="applicant">Applicants</option>
                                     <option value="employer">Employers</option>
-                                    <option value="officer">Officers</option>
+
                                 </select>
                             </div>
                             <div class="filter-group">
@@ -1121,7 +1075,7 @@
                         </div>
                     </div>
 
-                    <table class="users-table">
+                    <table id="usersTable" class="users-table">
                         <thead>
                             <tr>
                                 <th>User</th>
@@ -1134,12 +1088,17 @@
                         </thead>
                         <tbody>
                             @foreach ($users as $user)
-                                <tr>
+                                @php
+                                    $status = strtolower(trim($user['data']->status ?? 'inactive'));
+                                    $type = strtolower(trim($user['type'] ?? 'applicant'));
+                                    $userId = $user['data']->id ?? null;
+                                @endphp
+                                <tr data-id="{{ $userId }}" data-status="{{ $status }}"
+                                    data-type="{{ $type }}">
                                     <td>
                                         <div class="user-info">
                                             <div
-                                                class="user-avatar 
-    {{ $user['type'] === 'applicant' ? 'avatar-applicant' : 'avatar-employer' }}">
+                                                class="user-avatar {{ $user['type'] === 'applicant' ? 'avatar-applicant' : 'avatar-employer' }}">
                                                 @if ($user['type'] === 'applicant')
                                                     {{ strtoupper(substr($user['data']->personal_info?->first_name ?? 'U', 0, 1)) }}
                                                     {{ strtoupper(substr($user['data']->personal_info?->last_name ?? '', 0, 1)) }}
@@ -1147,7 +1106,6 @@
                                                     {{ strtoupper(substr($user['data']->addressCompany?->company_name ?? 'U', 0, 1)) }}
                                                 @endif
                                             </div>
-
 
                                             <div class="user-details">
                                                 @if ($user['type'] === 'applicant')
@@ -1186,24 +1144,28 @@
                                     </td>
 
                                     <td>
-                                        {{ $user['data']->updated_at ? \Carbon\Carbon::parse($user['data']->updated_at)->diffForHumans() : 'N/A' }}
+                                        {{ $user['data']->last_login ? \Carbon\Carbon::parse($user['data']->last_login)->diffForHumans() : 'N/A' }}
                                     </td>
 
-
-                                    <td>{{ $user['data']->created_at ? \Carbon\Carbon::parse($user['data']->created_at)->format('M d, Y') : 'N/A' }}
+                                    <td>
+                                        {{ $user['data']->created_at ? \Carbon\Carbon::parse($user['data']->created_at)->format('M d, Y') : 'N/A' }}
                                     </td>
 
                                     <td>
                                         <div class="actions">
-                                            <button class="action-btn btn-view" onclick="openModal('viewUserModal')"
+                                            <button class="action-btn btn-view"
+                                                onclick="openModal('viewUserModal', {{ $userId }})"
                                                 title="View Details">
                                                 <i class="fas fa-eye"></i>
                                             </button>
-                                            <button class="action-btn btn-suspend"
-                                                onclick="openModal('suspendUserModal')" title="Suspend User">
+                                            <button class="action-btn btn-suspend" type="button"
+                                                onclick="openSuspendModal({{ $userId }}, '{{ addslashes($user['data']->personal_info?->first_name ?? ($user['data']->addressCompany?->company_name ?? '')) }}')"
+                                                title="Suspend User">
                                                 <i class="fas fa-pause-circle"></i>
                                             </button>
-                                            <button class="action-btn btn-ban" onclick="openModal('banUserModal')"
+
+                                            <button class="action-btn btn-ban"
+                                                onclick="openModal('banUserModal', {{ $userId }})"
                                                 title="Ban User">
                                                 <i class="fas fa-ban"></i>
                                             </button>
@@ -1211,6 +1173,7 @@
                                     </td>
                                 </tr>
                             @endforeach
+
 
                         </tbody>
                     </table>
@@ -1298,24 +1261,97 @@
                         </div>
                     </div>
 
-                    <!-- SUSPEND USER MODAL -->
-                    <div id="suspendUserModal" class="modal-overlay"
-                        style="background: transparent; pointer-events: none;">
-                        <div class="modal-content" style="pointer-events: auto;">
+                    <!-- Suspend User Modal -->
+                    <div id="suspendUserModals" class="modal-overlay">
+                        <div class="modal-content">
                             <div class="modal-header">
-                                <h3 class="modal-title">Suspend User</h3>
-                                <button class="modal-close" onclick="closeModal('suspendUserModal')">&times;</button>
+                                <h3 class="modal-title">Suspend User Account</h3>
+                                <button class="modal-close" type="button"
+                                    onclick="closeModal('suspendUserModals')">&times;</button>
                             </div>
-                            <div class="modal-body">
-                                <p>Are you sure you want to suspend this user?</p>
-                            </div>
-                            <div class="modal-footer">
-                                <button class="btn btn-secondary"
-                                    onclick="closeModal('suspendUserModal')">Cancel</button>
-                                <button class="btn btn-warning">Suspend</button>
-                            </div>
+
+                            <form action="{{ route('admin.suspend-user.store') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="user_id" id="suspendUserId">
+
+                                <div class="modal-body">
+                                    <div id="suspendUserInfo"></div>
+
+                                    <!-- Suspension Reason -->
+                                    <div class="form-group">
+                                        <label for="suspendReason">Reason for Suspension:</label>
+                                        <select id="suspendReason" name="reason" class="filter-select"
+                                            style="width: 100%; margin-bottom: 15px;" onchange="toggleOtherReason()">
+                                            <option value="">Select reason...</option>
+                                            <option value="pending_investigation">Pending Investigation</option>
+                                            <option value="multiple_user_reports">Multiple User Reports</option>
+                                            <option value="suspicious_activity">Suspicious Activity</option>
+                                            <option value="other">Other</option>
+                                        </select>
+
+                                        <!-- Hidden input for "Other" reason -->
+                                        <input type="text" name="other_reason" id="otherReasonInput"
+                                            class="filter-select" placeholder="Enter custom reason..."
+                                            style="width: 100%; margin-bottom: 15px; display: none;" />
+                                    </div>
+
+                                    <!-- Suspension Duration -->
+                                    <div class="form-group">
+                                        <label for="suspendDuration">Suspension Duration:</label>
+                                        <select id="suspendDuration" name="suspension_duration" class="filter-select"
+                                            style="width: 100%; margin-bottom: 15px;">
+                                            <option value="1">1 Day</option>
+                                            <option value="3">3 Days</option>
+                                            <option value="7">7 Days</option>
+                                            <option value="14">14 Days</option>
+                                            <option value="30">30 Days</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Additional Notes -->
+                                    <div class="form-group">
+                                        <label for="suspendNotes">Additional Notes:</label>
+                                        <textarea name="additional_notes" id="suspendNotes" rows="3"
+                                            style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                            placeholder="Optional additional details..."></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button class="btn btn-secondary" type="button"
+                                        onclick="closeModal('suspendUserModals')">Cancel</button>
+                                    <button class="btn btn-warning" type="submit">
+                                        <i class="fas fa-pause"></i> Suspend User
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
+
+                    <script>
+                        // Show/hide "Other Reason"
+                        function toggleOtherReason() {
+                            const select = document.getElementById('suspendReason');
+                            const otherInput = document.getElementById('otherReasonInput');
+                            if (select.value === 'other') {
+                                otherInput.style.display = 'block';
+                            } else {
+                                otherInput.style.display = 'none';
+                                otherInput.value = '';
+                            }
+                        }
+
+                        // Open suspend modal and set user ID
+                        function openSuspendModal(userId, userName = '') {
+                            document.getElementById('suspendUserId').value = userId;
+
+                            // Optional: show which user is being suspended
+                            const infoDiv = document.getElementById('suspendUserInfo');
+                            infoDiv.innerHTML = userName ? `<p><strong>User:</strong> ${userName}</p>` : '';
+
+                            openModal('suspendUserModals');
+                        }
+                    </script>
 
                     <!-- BAN USER MODAL -->
                     <div id="banUserModal" class="modal-overlay"
@@ -1354,87 +1390,6 @@
                     </div>
                 </div>
             </section>
-
-
-            <!-- User Details Modal -->
-            <div id="userDetailsModal" class="modal-overlay">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3 class="modal-title">User Details</h3>
-                        <button class="modal-close" onclick="closeUserDetailsModal()">&times;</button>
-                    </div>
-                    <div class="modal-body" id="userDetailsContent">
-
-                        <div class="user-details">
-                            <div class="detail-section">
-                                <div class="section-title">👤 Basic Information</div>
-                                <div class="detail-row">
-                                    <span class="detail-label">ID:</span>
-                                    <span class="detail-value">1</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Name:</span>
-                                    <span class="detail-value">Juan Dela Cruz</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Email:</span>
-                                    <span class="detail-value">juan.dela@email.com</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Type:</span>
-                                    <span class="detail-value">Applicant</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Status:</span>
-                                    <span class="detail-value"><span
-                                            class="status-badge badge-active">Active</span></span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Region:</span>
-                                    <span class="detail-value">NCR</span>
-                                </div>
-                            </div>
-
-                            <div class="detail-section">
-                                <div class="section-title">📅 Account Information</div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Registration Date:</span>
-                                    <span class="detail-value">December 1, 2024</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Last Login:</span>
-                                    <span class="detail-value">Jan 15, 2025, 09:30 AM</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Reports:</span>
-                                    <span class="detail-value">0</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Additional status info sections -->
-                        <div class="reports-warning" style="display: none;">
-                            ⚠️ This user has 5 report(s) against them.
-                        </div>
-
-                        <div class="ban-info" style="display: none;">
-                            <strong>Ban Information:</strong><br>
-                            Reason: harassment<br>
-                            Date: January 12, 2025
-                        </div>
-
-                        <div class="suspend-info" style="display: none;">
-                            <strong>Suspension Information:</strong><br>
-                            Reason: pending_investigation<br>
-                            Date: January 13, 2025
-                        </div>
-
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" onclick="closeUserDetailsModal()">Close</button>
-                    </div>
-                </div>
-            </div>
 
             <!--Settings Section -->
             <section id="settings" class="content-section">
@@ -1693,8 +1648,7 @@
     </div>
 
     <!-- Logout Confirmation Modal -->
-    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 rounded-3 shadow-lg" style="max-width: 400px; margin: auto;">
                 <div class="modal-header bg-danger text-white">
@@ -1718,6 +1672,35 @@
         </div>
     </div>
 
+
+    <script>
+        const statusFilter = document.getElementById('statusFilters');
+        const userTypeFilter = document.getElementById('userTypeFilter');
+        const userSearch = document.getElementById('userSearch');
+        const usersTable = document.getElementById('usersTable').getElementsByTagName('tbody')[0];
+
+        function filterUsers() {
+            const status = statusFilter.value.toLowerCase();
+            const type = userTypeFilter.value.toLowerCase();
+            const searchText = userSearch.value.toLowerCase();
+
+            Array.from(usersTable.rows).forEach(row => {
+                const rowStatus = row.getAttribute('data-status').toLowerCase();
+                const rowType = row.getAttribute('data-type').toLowerCase();
+                const rowText = row.textContent.toLowerCase();
+
+                const matchesStatus = !status || rowStatus === status;
+                const matchesType = !type || rowType === type;
+                const matchesSearch = !searchText || rowText.includes(searchText);
+
+                row.style.display = (matchesStatus && matchesType && matchesSearch) ? '' : 'none';
+            });
+        }
+
+        statusFilter.addEventListener('change', filterUsers);
+        userTypeFilter.addEventListener('change', filterUsers);
+        userSearch.addEventListener('input', filterUsers);
+    </script>
 
 
     <script>

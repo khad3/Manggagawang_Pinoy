@@ -447,7 +447,7 @@ public function login(Request $request)
         ])->withInput($request->only('email'));
     }
 
-   
+   $employer->last_login = now();
     $employer->save();
 
     
