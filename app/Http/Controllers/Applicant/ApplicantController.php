@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Employer\JobDetailModel;
 
 use App\Mail\Applicant\VerifyEmail as VerifyEmail;
+use App\Models\Admin\SuspensionModel;
 use App\Models\Applicant\ApplicantPostCommentModel;
 use App\Models\Applicant\ApplicantPostModel;
 use App\Models\Applicant\ApplicantUrlModel;
@@ -424,9 +425,31 @@ public function ShowHomepage()
     ->count();
 
     
+    //retrieved the suspended notification 
+    $suspendedApplicant = RegisterModel::where('id', $applicantId)
+        ->where('status', 'suspended')
+        ->with('suspension')
+        ->first();
+    $isSuspended = false;
+    $suspension = null;
 
+    if ($suspendedApplicant && $suspendedApplicant->suspension) {
+        $suspension = $suspendedApplicant->suspension;
+        $endDate = $suspension->created_at->addDays($suspension->suspension_duration);
 
+        if (now()->lt($endDate)) { // still in suspension
+            $isSuspended = true;
+        } else {
+            // Suspension expired → auto update applicant status
+            $suspendedApplicant->status = 'active';
+            $suspendedApplicant->save();
 
+            // Optionally delete suspension record
+            // $suspension->delete();
+        }   
+    }
+
+   
     return view('applicant.homepage.homepage', compact(
         'retrievePersonal',
         'applicantCounts',
@@ -438,7 +461,10 @@ public function ShowHomepage()
         'tesdaCertificateCounts',
         'appliedJobs',
         'notifications',
-        'unreadCount'
+        'unreadCount',
+        'isSuspended',
+        'suspension'
+       
     ));
 }
 

@@ -250,11 +250,15 @@
                             <i class="bi bi-bell"></i>
                             @php
                                 $unreadCount = isset($notifications) ? $notifications->where('is_read', 0)->count() : 0;
+                                $suspendedCount = isset($suspendedNotifications) ? $suspendedNotifications->count() : 0;
+                                $totalCount = $unreadCount + $suspendedCount;
                             @endphp
-                            @if ($unreadCount > 0)
-                                <span class="nav-badge" id="notificationsBadge">{{ $unreadCount }}</span>
+                            @if ($totalCount > 0)
+                                <span class="nav-badge" id="notificationsBadge">{{ $totalCount }}</span>
                             @endif
                         </button>
+
+
 
                         <div class="dropdown-menu shadow-sm border-0" id="notificationsDropdown"
                             style="min-width: 320px; max-height: 400px; overflow-y: auto;">
@@ -269,6 +273,7 @@
                             </div>
 
                             <div class="dropdown-content p-2">
+                                {{-- Regular Notifications --}}
                                 @if (isset($notifications) && count($notifications) > 0)
                                     @foreach ($notifications as $note)
                                         <div class="notification-item d-flex align-items-start gap-2 p-2 mb-2 rounded hover-shadow {{ !$note->is_read ? 'unread' : '' }}"
@@ -295,7 +300,8 @@
                                             {{-- Content --}}
                                             <div class="notification-content flex-grow-1">
                                                 <div class="notification-title fw-semibold text-dark mb-1">
-                                                    {{ $note->title }}</div>
+                                                    {{ $note->title }}
+                                                </div>
                                                 <div class="notification-message text-muted small mb-1"
                                                     style="line-height: 1.2;">
                                                     {{ \Illuminate\Support\Str::limit($note->content, 60, '...') }}
@@ -311,7 +317,50 @@
                                         No new notifications
                                     </div>
                                 @endif
+
+                                {{-- Suspended Notifications --}}
+                                @if ($isSuspended)
+                                    <div
+                                        class="notification-item d-flex align-items-start gap-2 p-2 mb-2 rounded border border-danger bg-light">
+                                        <div class="notification-icon flex-shrink-0">
+                                            <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
+                                        </div>
+                                        <div class="notification-content flex-grow-1">
+                                            <div class="notification-title fw-semibold text-dark mb-1">
+                                                {{ $suspendedApplicant->personal_info->first_name ?? 'Unknown' }}
+                                                {{ $suspendedApplicant->personal_info->last_name ?? '' }}
+                                            </div>
+                                            <div class="notification-message text-muted small mb-1"
+                                                style="line-height:1.3;">
+                                                Suspended due to:
+                                                @if ($suspension->reason == 'multiple_user_reports')
+                                                    <span class="text-danger fw-semibold">Multiple User Reports</span>
+                                                @elseif ($suspension->reason == 'pending_investigation')
+                                                    <span class="text-danger fw-semibold">Pending Investigation</span>
+                                                @elseif ($suspension->reason == 'suspicious_activity')
+                                                    <span class="text-danger fw-semibold">Suspicious Activity</span>
+                                                @elseif ($suspension->reason == 'other')
+                                                    <span class="text-danger fw-semibold">Other:
+                                                        {{ $suspension->other_reason }}</span>
+                                                @endif
+                                            </div>
+
+                                            <div class="notification-restriction text-danger small fw-semibold mb-1">
+                                                You cannot comment or apply for jobs for
+                                                {{ $suspension->suspension_duration }}
+                                                {{ $suspension->suspension_duration == 1 ? 'day' : 'days' }}.
+                                            </div>
+
+                                            <div class="notification-time text-muted small">
+                                                Applies until:
+                                                {{ $suspension->created_at->addDays($suspension->suspension_duration)->format('M d, Y h:i A') }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+
                             </div>
+
 
                             <div class="dropdown-footer border-top p-2 text-center">
                                 <a href="#" class="view-all-link text-primary small text-decoration-none"
@@ -864,31 +913,47 @@
                                                 <i class="fas fa-times me-1"></i> Cancel Application
                                             </button>
                                         @else
-                                            <!-- Apply Job Button - Show if never applied OR application was rejected -->
-                                            <button class="btn btn-success btn-sm apply-btn"
-                                                data-job-id="{{ $jobDetail->id }}"
-                                                data-title="{{ $jobDetail->title }}"
-                                                data-company="{{ $retrievedAddressCompany->first()->company_name ?? 'Unknown Company' }}"
-                                                data-location="{{ $jobDetail->location }}" data-bs-toggle="modal"
-                                                data-bs-target="#applyJobModal">
-                                                <i class="bi bi-send-check"></i>
-                                                @if ($applicationRecord && $applicationRecord->status === 'rejected')
-                                                    Re-apply Job
-                                                @else
-                                                    Apply Job
-                                                @endif
-                                            </button>
-
-                                            @if ($applicationRecord && $applicationRecord->status === 'rejected')
-                                                <!-- Show rejection notice -->
+                                            {{-- Check if applicant is suspended --}}
+                                            @if ($isSuspended)
+                                                <button class="btn btn-secondary btn-sm" disabled>
+                                                    <i class="bi bi-slash-circle"></i>
+                                                    Suspended ({{ $suspension->suspension_duration }}
+                                                    {{ $suspension->suspension_duration == 1 ? 'day' : 'days' }})
+                                                </button>
                                                 <div class="mt-2">
-                                                    <small class="text-danger">
-                                                        <i class="fas fa-exclamation-triangle me-1"></i>
-                                                        Your previous application was rejected. You can apply again.
+                                                    <small class="text-muted">
+                                                        You cannot apply until
+                                                        {{ $suspension->created_at->addDays($suspension->suspension_duration)->format('M d, Y h:i A') }}
                                                     </small>
                                                 </div>
+                                            @else
+                                                <!-- Apply Job Button - Show if never applied OR application was rejected -->
+                                                <button class="btn btn-success btn-sm apply-btn"
+                                                    data-job-id="{{ $jobDetail->id }}"
+                                                    data-title="{{ $jobDetail->title }}"
+                                                    data-company="{{ $retrievedAddressCompany->first()->company_name ?? 'Unknown Company' }}"
+                                                    data-location="{{ $jobDetail->location }}" data-bs-toggle="modal"
+                                                    data-bs-target="#applyJobModal">
+                                                    <i class="bi bi-send-check"></i>
+                                                    @if ($applicationRecord && $applicationRecord->status === 'rejected')
+                                                        Re-apply Job
+                                                    @else
+                                                        Apply Job
+                                                    @endif
+                                                </button>
+
+                                                @if ($applicationRecord && $applicationRecord->status === 'rejected')
+                                                    <!-- Show rejection notice -->
+                                                    <div class="mt-2">
+                                                        <small class="text-danger">
+                                                            <i class="fas fa-exclamation-triangle me-1"></i>
+                                                            Your previous application was rejected. You can apply again.
+                                                        </small>
+                                                    </div>
+                                                @endif
                                             @endif
                                         @endif
+
 
                                     </div>
                                 </div>

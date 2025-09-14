@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Models\Applicant\PersonalModel;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Models\Admin\SuspensionModel;
 use Illuminate\Notifications\Notifiable;
 use Carbon\Carbon;
 
@@ -68,5 +69,16 @@ public function appliedJobs()
     return $this->hasMany(ApplyJobModel::class, 'applicant_id');
 
 }
+
+
+public function suspension()
+{
+    return $this->hasOne(SuspensionModel::class, 'applicant_id');
+
+}
+
+
+
+
 
 }
