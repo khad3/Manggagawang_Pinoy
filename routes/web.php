@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Applicant\ProfileController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\TesdaOfficer\TesdaOfficerController;
+use App\Models\User;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\App;
 
@@ -270,7 +271,8 @@ Route::middleware(['admin.authenticate'])->prefix('admin')->group(function () {
 
     //Suspension
     Route::post('suspend-employer', [UserManagementController::class, 'suspendUser'])->name('admin.suspend-user.store');
-    
+    Route::put('users/{id}/ban', [UserManagementController::class, 'banUser'])->name('admin.ban-user.store');
+
 
 
 });

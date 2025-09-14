@@ -1585,6 +1585,36 @@
             }
         }
     </script>
+
+    <script>
+        const timeout = 10 * 60 * 1000; // 10 minutes
+        const warningTime = 9 * 60 * 1000; // 1 min before logout
+
+        let warningTimer = setTimeout(showWarning, warningTime);
+        let logoutTimer = setTimeout(autoLogout, timeout);
+
+        function resetTimers() {
+            clearTimeout(warningTimer);
+            clearTimeout(logoutTimer);
+            warningTimer = setTimeout(showWarning, warningTime);
+            logoutTimer = setTimeout(autoLogout, timeout);
+        }
+
+        function showWarning() {
+            alert(
+                "You will be logged out in 1 minute due to inactivity. Move your mouse or press a key to stay logged in."
+            );
+        }
+
+        function autoLogout() {
+            window.location.href = "{{ route('applicant.login.display') }}";
+        }
+
+        document.addEventListener('mousemove', resetTimers);
+        document.addEventListener('keydown', resetTimers);
+        document.addEventListener('click', resetTimers);
+    </script>
+
 </body>
 
 </html>

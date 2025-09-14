@@ -73,14 +73,26 @@
             <div id="alertContainer"></div>
 
             <!-- Header -->
-            <!-- Officers Management Section -->
+
             @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle me-2"></i>
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <div class="alert alert-success alert-dismissible fade show mt-3" role="alert" id="success-alert">
+                    <center>{{ session('success') }}</center>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
+
+                <script>
+                    // Hide the alert after 5 seconds (5000 ms)
+                    setTimeout(() => {
+                        let alert = document.getElementById('success-alert');
+                        if (alert) {
+                            alert.classList.remove('show'); // fade out
+                            alert.classList.add('fade'); // keep bootstrap fade animation
+                            setTimeout(() => alert.remove(), 500); // remove from DOM after fade
+                        }
+                    }, 2000); // change to 2000 for 2 seconds
+                </script>
             @endif
+
             <div class="header-bar">
                 <div>
                     <h1>TESDA Super Admin Dashboard</h1>
@@ -1024,11 +1036,6 @@
             </section>
 
 
-
-
-
-
-
             <!-- User Management Section -->
             <section id="users" class="content-section">
                 <div class="section-header">
@@ -1164,11 +1171,26 @@
                                                 <i class="fas fa-pause-circle"></i>
                                             </button>
 
-                                            <button class="action-btn btn-ban"
-                                                onclick="openModal('banUserModal', {{ $userId }})"
-                                                title="Ban User">
-                                                <i class="fas fa-ban"></i>
-                                            </button>
+                                            <!-- Ban User (smaller button like action-btn) -->
+                                            @if ($user['data']->status === 'banned')
+                                                <button class="action-btn btn-unban text-success"
+                                                    onclick="openBanModal('/users/{{ $userId }}/unban')"
+                                                    title="Unban User">
+                                                    <i class="fas fa-user-check"></i> Unban
+                                                </button>
+                                            @else
+                                                <button class="action-btn btn-ban text-danger"
+                                                    onclick="openBanModal(
+        {{ $user['data']->id }},
+        '{{ addslashes($user['type'] === 'employer' ? $user['data']->addressCompany?->company_name ?? 'Unknown Company' : $user['data']->personal_info?->first_name . ' ' . ($user['data']->personal_info?->last_name ?? '')) }}',
+        '{{ $user['type'] }}'
+    )"
+                                                    title="Ban User">
+                                                    <i class="fas fa-user-slash"></i>
+                                                </button>
+                                            @endif
+
+
                                         </div>
                                     </td>
                                 </tr>
@@ -1355,21 +1377,71 @@
 
                     <!-- BAN USER MODAL -->
                     <div id="banUserModal" class="modal-overlay"
-                        style="background: transparent; pointer-events: none;">
-                        <div class="modal-content" style="pointer-events: auto;">
-                            <div class="modal-header">
+                        style="display: none; position: fixed; inset: 0; background: transparent; justify-content: center; align-items: center; z-index: 1050;">
+                        <div class="modal-content rounded shadow bg-white" style="max-width: 450px; width: 100%;">
+                            <!-- Header -->
+                            <div
+                                class="modal-header d-flex justify-content-between align-items-center border-bottom p-3">
                                 <h3 class="modal-title">Ban User</h3>
-                                <button class="modal-close" onclick="closeModal('banUserModal')">&times;</button>
+                                <button class="modal-close btn-close" onclick="closeBanModal()"></button>
                             </div>
-                            <div class="modal-body">
-                                <p>Are you sure you want to <strong>ban</strong> this user permanently?</p>
+
+                            <!-- Body -->
+                            <div class="modal-body p-3" id="banUserInfo">
+                                <!-- Content injected dynamically -->
                             </div>
-                            <div class="modal-footer">
-                                <button class="btn btn-secondary" onclick="closeModal('banUserModal')">Cancel</button>
-                                <button class="btn btn-danger">Ban</button>
+
+                            <!-- Footer -->
+                            <div class="modal-footer d-flex justify-content-end gap-2 border-top p-3">
+                                <button class="btn btn-secondary" onclick="closeBanModal()">Cancel</button>
+
+                                <form id="banUserForm" method="POST" action="">
+                                    @csrf
+                                    @method('PUT')
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="fas fa-user-slash me-1"></i> Ban User
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
+
+
+                    <script>
+                        // Open Ban Modal and set form action + user name
+                        function openBanModal(userId, userName = '', userType = 'applicant') {
+                            const form = document.getElementById('banUserForm');
+
+                            // Add type query param
+                            form.action = `/admin/users/${userId}/ban?type=${userType.toLowerCase()}`;
+
+                            const infoDiv = document.getElementById('banUserInfo');
+
+                            if (userType.toLowerCase() === 'employer') {
+                                infoDiv.innerHTML = `
+            <p>Are you sure you want to <strong class="text-danger">ban</strong> the company <strong>${userName}</strong> permanently?</p>
+            <p class="text-muted small mb-0">
+                Once banned, this company will no longer be able to log in, post jobs, or access the system.
+            </p>
+        `;
+                            } else {
+                                infoDiv.innerHTML = `
+            <p>Are you sure you want to <strong class="text-danger">ban</strong> <strong>${userName}</strong> permanently?</p>
+            <p class="text-muted small mb-0">
+                Once banned, this user will no longer be able to log in, apply for jobs, or access the system.
+            </p>
+        `;
+                            }
+
+                            document.getElementById('banUserModal').style.display = 'flex';
+                        }
+
+                        function closeBanModal() {
+                            document.getElementById('banUserModal').style.display = 'none';
+                        }
+                    </script>
+
+
 
                     <div class="pagination">
                         <div class="pagination-info">
@@ -2200,6 +2272,40 @@
             }, 1000);
         });
     </script>
+
+    <!-- expiratuion timer --->
+    <script>
+        // 10 minutes timeout (600,000 ms)
+        const timeout = 10 * 60 * 1000;
+
+        // Show popup 1 minute before logout (9 minutes = 540,000 ms)
+        const warningTime = 9 * 60 * 1000;
+
+        let warningTimer = setTimeout(showWarning, warningTime);
+        let logoutTimer = setTimeout(autoLogout, timeout);
+
+        function resetTimers() {
+            clearTimeout(warningTimer);
+            clearTimeout(logoutTimer);
+            warningTimer = setTimeout(showWarning, warningTime);
+            logoutTimer = setTimeout(autoLogout, timeout);
+        }
+
+        function showWarning() {
+            alert(
+            "You will be logged out in 1 minute due to inactivity. Move your mouse or press a key to stay logged in.");
+        }
+
+        function autoLogout() {
+            window.location.href = "{{ route('admin.login.display') }}";
+        }
+
+        // Reset timers on any activity
+        document.addEventListener('mousemove', resetTimers);
+        document.addEventListener('keydown', resetTimers);
+        document.addEventListener('click', resetTimers);
+    </script>
+
 </body>
 
 </html>
