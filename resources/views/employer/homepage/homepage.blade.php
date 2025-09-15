@@ -1974,7 +1974,7 @@
         function showWarning() {
             alert(
                 "You will be logged out in 1 minute due to inactivity. Move your mouse or press a key to stay logged in."
-                );
+            );
         }
 
         function autoLogout() {

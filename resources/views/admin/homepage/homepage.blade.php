@@ -499,6 +499,7 @@
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
+
                                             </div>
                                         </div>
 
@@ -694,151 +695,7 @@
                                 </div>
                             </div>
                         @endforeach
-
-
-                        <!-- View Announcement Modal -->
-                        <div class="modal fade" id="viewAnnouncementModal" tabindex="-1"
-                            aria-labelledby="viewAnnouncementModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg modal-dialog-centered">
-                                <div class="modal-content">
-
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="viewAnnouncementModalLabel">
-                                            <i class="fas fa-bullhorn me-2"></i> Announcement Details
-                                        </h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-
-                                    <div class="modal-body">
-                                        <div class="announcement-details">
-                                            <h3 id="modalAnnouncementTitle">New Training Facilities Opening</h3>
-                                            <p id="modalAnnouncementContent">
-                                                We are excited to announce the opening of three new TESDA training
-                                                facilities in
-                                                Metro Manila. These facilities will offer expanded course offerings and
-                                                state-of-the-art equipment for hands-on learning. Grand opening ceremony
-                                                scheduled
-                                                for February 2025.
-                                            </p>
-
-                                            <div class="tags-container" id="modalAnnouncementTags">
-                                                <span class="tag">#facilities</span>
-                                                <span class="tag">#training</span>
-                                                <span class="tag">#expansion</span>
-                                                <span class="tag">#manila</span>
-                                            </div>
-
-                                            <div class="announcement-meta mt-3">
-                                                <div class="meta-item">
-                                                    <i class="fas fa-user"></i> <span
-                                                        id="modalAnnouncementAuthor">Admin User</span>
-                                                </div>
-                                                <div class="meta-item">
-                                                    <i class="fas fa-calendar"></i> <span
-                                                        id="modalAnnouncementDate">Jan 20, 2025</span>
-                                                </div>
-                                                <div class="meta-item">
-                                                    <i class="fas fa-users"></i> <span
-                                                        id="modalAnnouncementAudience">All Users</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">Close</button>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
-
-
-                    <script>
-                        document.querySelectorAll('.btn-view').forEach(button => {
-                            button.addEventListener('click', function() {
-                                let parent = this.closest('.announcement-item');
-
-                                document.getElementById('modalAnnouncementTitle').textContent = parent.querySelector(
-                                    '.announcement-title').textContent;
-                                document.getElementById('modalAnnouncementContent').textContent = parent.querySelector(
-                                    '.announcement-content').textContent;
-                                document.getElementById('modalAnnouncementAuthor').textContent = parent.querySelector(
-                                    '.meta-item:nth-child(1) span').textContent;
-                                document.getElementById('modalAnnouncementDate').textContent = parent.querySelector(
-                                    '.meta-item:nth-child(2) span').textContent;
-                                document.getElementById('modalAnnouncementAudience').textContent = parent.querySelector(
-                                    '.meta-item:nth-child(3) span').textContent;
-
-                                // For tags
-                                document.getElementById('modalAnnouncementTags').innerHTML = parent.querySelector(
-                                    '.tags-container').innerHTML;
-                            });
-                        });
-
-                        // Filter functionality
-                        function filterAnnouncements() {
-                            const priorityFilter = document.getElementById('priorityFilter').value;
-                            const statusFilter = document.getElementById('statusFilter').value;
-                            const searchFilter = document.getElementById('searchFilter').value.toLowerCase();
-                            const announcements = document.querySelectorAll('.announcement-item');
-
-                            let visibleCount = 0;
-                            let publishedCount = 0;
-
-                            announcements.forEach(announcement => {
-                                const priority = announcement.dataset.priority;
-                                const status = announcement.dataset.status;
-                                const title = announcement.querySelector('.announcement-title').textContent.toLowerCase();
-                                const content = announcement.querySelector('.announcement-content').textContent.toLowerCase();
-                                const tags = Array.from(announcement.querySelectorAll('.tag')).map(tag => tag.textContent
-                                    .toLowerCase());
-
-                                const matchesPriority = !priorityFilter || priority === priorityFilter;
-                                const matchesStatus = !statusFilter || status === statusFilter;
-                                const matchesSearch = !searchFilter ||
-                                    title.includes(searchFilter) ||
-                                    content.includes(searchFilter) ||
-                                    tags.some(tag => tag.includes(searchFilter));
-
-                                if (matchesPriority && matchesStatus && matchesSearch) {
-                                    announcement.style.display = 'block';
-                                    visibleCount++;
-                                    if (status === 'published') publishedCount++;
-                                } else {
-                                    announcement.style.display = 'none';
-                                }
-                            });
-
-                            document.getElementById('totalCount').textContent = visibleCount;
-                            document.getElementById('publishedCount').textContent = publishedCount;
-                        }
-
-                        // Add event listeners
-                        document.getElementById('priorityFilter').addEventListener('change', filterAnnouncements);
-                        document.getElementById('statusFilter').addEventListener('change', filterAnnouncements);
-                        document.getElementById('searchFilter').addEventListener('input', filterAnnouncements);
-
-                        // Action button handlers (you can customize these)
-                        document.addEventListener('click', function(e) {
-                            if (e.target.closest('.btn-view')) {
-                                console.log('View announcement');
-                                // Add your view logic here
-                            } else if (e.target.closest('.btn-edit')) {
-                                console.log('Edit announcement');
-                                // Add your edit logic here
-                            } else if (e.target.closest('.btn-delete')) {
-                                if (confirm('Are you sure you want to delete this announcement?')) {
-                                    console.log('Delete announcement');
-                                    // Add your delete logic here
-                                }
-                            }
-                        });
-                    </script>
                 </div>
             </section>
 
@@ -856,7 +713,6 @@
                         Generate Report
                     </button>
                 </div>
-
                 <div class="reports-container">
                     <div class="reports-header">
                         <div class="report-filters">
@@ -1043,10 +899,10 @@
                         <i class="fas fa-users"></i>
                         User Management
                     </h2>
-                    <button class="btn btn-primary" onclick="exportUsers()">
+                    <a href="{{ route('admin.export') }}" class="btn btn-primary">
                         <i class="fas fa-download"></i>
                         Export Users
-                    </button>
+                    </a>
                 </div>
 
                 <div class="users-container">
@@ -1173,22 +1029,43 @@
 
                                             <!-- Ban User (smaller button like action-btn) -->
                                             @if ($user['data']->status === 'banned')
+                                                <!-- Unban Button -->
                                                 <button class="action-btn btn-unban text-success"
-                                                    onclick="openBanModal('/users/{{ $userId }}/unban')"
+                                                    onclick="openUnbanModal({{ $user['data']->id }}, '{{ $user['type'] }}')"
                                                     title="Unban User">
                                                     <i class="fas fa-user-check"></i> Unban
                                                 </button>
                                             @else
+                                                <!-- Ban Button -->
                                                 <button class="action-btn btn-ban text-danger"
                                                     onclick="openBanModal(
-        {{ $user['data']->id }},
-        '{{ addslashes($user['type'] === 'employer' ? $user['data']->addressCompany?->company_name ?? 'Unknown Company' : $user['data']->personal_info?->first_name . ' ' . ($user['data']->personal_info?->last_name ?? '')) }}',
-        '{{ $user['type'] }}'
-    )"
+            {{ $user['data']->id }},
+            '{{ addslashes(
+                $user['type'] === 'employer'
+                    ? $user['data']->addressCompany?->company_name ?? 'Unknown Company'
+                    : $user['data']->personal_info?->first_name . ' ' . ($user['data']->personal_info?->last_name ?? ''),
+            ) }}',
+            '{{ $user['type'] }}'
+        )"
                                                     title="Ban User">
-                                                    <i class="fas fa-user-slash"></i>
+                                                    <i class="fas fa-user-slash"></i> Ban
                                                 </button>
                                             @endif
+
+                                            <!-- Delete User Button -->
+                                            <!-- Delete User Button -->
+                                            <button class="action-btn btn-delete text-danger" data-bs-toggle="modal"
+                                                data-bs-target="#confirmDeleteUserModal"
+                                                data-user-id="{{ $user['data']->id }}"
+                                                data-user-type="{{ $user['type'] }}" title="Delete User">
+                                                <i class="fas fa-user-times"></i>
+                                            </button>
+
+
+
+
+
+
 
 
                                         </div>
@@ -1441,6 +1318,104 @@
                         }
                     </script>
 
+                    <!-- UNBAN USER Modal -->
+                    <div class="modal fade" id="banModal" tabindex="-1" aria-labelledby="banModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content rounded-3 shadow">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="banModalLabel">Confirm Unban</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to <strong>unban</strong> this user?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary rounded-pill"
+                                        data-bs-dismiss="modal">Cancel</button>
+                                    <form id="unbanForm" method="POST" action="">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit" class="btn btn-success rounded-pill">Yes,
+                                            Unban</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Script -->
+                    <script>
+                        function openUnbanModal(userId, userType) {
+                            const form = document.getElementById('unbanForm');
+                            // Set dynamic action URL with userId & userType
+                            form.action = `/admin/users/${userId}/unban?type=${userType.toLowerCase()}`;
+
+                            const unbanModal = new bootstrap.Modal(document.getElementById('banModal'));
+                            unbanModal.show();
+                        }
+                    </script>
+
+                    <!-- DELETE USER MODAL -->
+                    <div class="modal fade" id="confirmDeleteUserModal" tabindex="-1"
+                        aria-labelledby="confirmDeleteUserModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content rounded-3 shadow">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="confirmDeleteUserModalLabel">Confirm Delete User</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <p id="deleteUserMessage">
+                                        Are you sure you want to <strong class="text-danger">permanently
+                                            delete</strong> this user?
+                                    </p>
+                                    <p class="text-muted small mb-0">
+                                        This action cannot be undone. The account and all related data will be
+                                        permanently removed.
+                                    </p>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary rounded-pill"
+                                        data-bs-dismiss="modal">Cancel</button>
+                                    <form id="deleteUserForm" method="POST" action="">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger rounded-pill">
+                                            <i class="fas fa-user-times me-1"></i> Yes, Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        const deleteUserModal = document.getElementById('confirmDeleteUserModal');
+
+                        deleteUserModal.addEventListener('show.bs.modal', function(event) {
+                            const button = event.relatedTarget;
+                            const userId = button.getAttribute('data-user-id');
+                            const userType = button.getAttribute('data-user-type');
+
+                            // Update form action dynamically
+                            const form = document.getElementById('deleteUserForm');
+                            form.action = `/admin/users/${userId}/delete?type=${userType.toLowerCase()}`;
+
+                            // Decide label: if employer -> company, else use userType
+                            let displayType = userType.toLowerCase() === 'employer' ? 'company' : userType.toLowerCase();
+
+                            // Update modal message
+                            const message = document.getElementById('deleteUserMessage');
+                            message.innerHTML =
+                                `Are you sure you want to <strong class="text-danger">permanently delete</strong> this ${displayType}?`;
+                        });
+                    </script>
+
 
 
                     <div class="pagination">
@@ -1652,69 +1627,6 @@
                         </button>
                     </div>
                 </form>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- Edit Announcement Modal -->
-    <div id="editAnnouncementModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Edit Announcement</h2>
-                <p class="modal-subtitle">Update announcement details and settings</p>
-                <button class="modal-close" onclick="closeModal('editAnnouncementModal')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="editAnnouncementForm">
-                    <input type="hidden" id="editAnnouncementId">
-                    <div class="form-group">
-                        <label class="form-label">Announcement Title</label>
-                        <input type="text" class="form-input" id="editAnnouncementTitle" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Content</label>
-                        <textarea class="form-input form-textarea" id="editAnnouncementContent" required></textarea>
-                    </div>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label class="form-label">Priority Level</label>
-                            <select class="form-select" id="editAnnouncementPriority" required>
-                                <option value="low">Low Priority</option>
-                                <option value="medium">Medium Priority</option>
-                                <option value="high">High Priority</option>
-                                <option value="urgent">Urgent</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Target Audience</label>
-                            <select class="form-select" id="editAnnouncementAudience" required>
-                                <option value="all">All Users</option>
-                                <option value="applicants">Job Applicants Only</option>
-                                <option value="employers">Employers Only</option>
-                                <option value="officers">TESDA Officers Only</option>
-                                <option value="regional">Regional Offices</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Status</label>
-                            <select class="form-select" id="editAnnouncementStatus" required>
-                                <option value="draft">Draft</option>
-                                <option value="published">Published</option>
-                                <option value="scheduled">Scheduled</option>
-                            </select>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-cancel"
-                    onclick="closeModal('editAnnouncementModal')">Cancel</button>
-                <button type="submit" class="btn btn-primary" onclick="updateAnnouncement()">
-                    <i class="fas fa-save"></i> Update Announcement
-                </button>
             </div>
         </div>
     </div>
@@ -1936,47 +1848,6 @@
             }
         }
 
-        function deleteOfficer(officerId) {
-            const officer = officers.find(o => o.id === officerId);
-            if (officer && confirm(
-                    `Are you sure you want to delete ${officer.firstName} ${officer.lastName}'s account? This action cannot be undone.`
-                )) {
-                officers = officers.filter(o => o.id !== officerId);
-                renderOfficers();
-                updateStats();
-                showAlert(`Officer account deleted successfully.`, 'info');
-            }
-        }
-
-        // Announcement Management Functions
-        function renderAnnouncements() {
-            const announcementsList = document.getElementById('announcementsList');
-            announcementsList.innerHTML = '';
-
-            announcements.forEach(announcement => {
-                const announcementCard = document.createElement('div');
-                announcementCard.className = 'card announcement-card';
-                announcementCard.innerHTML = `
-                    <div class="announcement-header">
-                        <h4 class="announcement-title">${announcement.title}</h4>
-                        <span class="announcement-date">${new Date(announcement.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                    </div>
-                    <p class="announcement-content">${announcement.content}</p>
-                    <div class="announcement-footer">
-                        <span class="status-badge status-${announcement.status === 'published' ? 'active' : announcement.status === 'draft' ? 'draft' : 'inactive'}">${announcement.status.charAt(0).toUpperCase() + announcement.status.slice(1)}</span>
-                        <div class="action-buttons">
-                            <button class="btn btn-warning btn-sm" onclick="openEditAnnouncementModal(${announcement.id})">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteAnnouncement(${announcement.id})">
-                                <i class="fas fa-trash"></i> Delete
-                            </button>
-                        </div>
-                    </div>
-                `;
-                announcementsList.appendChild(announcementCard);
-            });
-        }
 
         function openAddAnnouncementModal() {
             // Set current date/time
@@ -1985,131 +1856,7 @@
             openModal('addAnnouncementModal');
         }
 
-        function openEditAnnouncementModal(announcementId) {
-            const announcement = announcements.find(a => a.id === announcementId);
-            if (announcement) {
-                document.getElementById('editAnnouncementId').value = announcement.id;
-                document.getElementById('editAnnouncementTitle').value = announcement.title;
-                document.getElementById('editAnnouncementContent').value = announcement.content;
-                document.getElementById('editAnnouncementPriority').value = announcement.priority;
-                document.getElementById('editAnnouncementAudience').value = announcement.audience;
-                document.getElementById('editAnnouncementStatus').value = announcement.status;
 
-                openModal('editAnnouncementModal');
-            }
-        }
-
-        function submitAnnouncementForm() {
-            const form = document.getElementById('addAnnouncementForm');
-            if (form.checkValidity()) {
-                const newAnnouncement = {
-                    id: announcements.length + 1,
-                    title: document.getElementById('announcementTitle').value,
-                    content: document.getElementById('announcementContent').value,
-                    priority: document.getElementById('announcementPriority').value,
-                    audience: document.getElementById('announcementAudience').value,
-                    status: document.getElementById('announcementStatus').value,
-                    date: document.getElementById('announcementDate').value.slice(0, 10),
-                    tags: document.getElementById('announcementTags').value.split(',').map(tag => tag.trim()).filter(
-                        tag => tag),
-                    author: 'Admin User'
-                };
-
-                announcements.push(newAnnouncement);
-                renderAnnouncements();
-                updateStats();
-                closeModal('addAnnouncementModal');
-                showAlert(`Announcement "${newAnnouncement.title}" created successfully!`);
-            } else {
-                showAlert('Please fill in all required fields.', 'error');
-            }
-        }
-
-        function updateAnnouncement() {
-            const announcementId = parseInt(document.getElementById('editAnnouncementId').value);
-            const announcementIndex = announcements.findIndex(a => a.id === announcementId);
-
-            if (announcementIndex !== -1) {
-                announcements[announcementIndex] = {
-                    ...announcements[announcementIndex],
-                    title: document.getElementById('editAnnouncementTitle').value,
-                    content: document.getElementById('editAnnouncementContent').value,
-                    priority: document.getElementById('editAnnouncementPriority').value,
-                    audience: document.getElementById('editAnnouncementAudience').value,
-                    status: document.getElementById('editAnnouncementStatus').value
-                };
-
-                renderAnnouncements();
-                closeModal('editAnnouncementModal');
-                showAlert(`Announcement updated successfully!`);
-            }
-        }
-
-        function deleteAnnouncement(announcementId) {
-            const announcement = announcements.find(a => a.id === announcementId);
-            if (announcement && confirm(`Are you sure you want to delete the announcement "${announcement.title}"?`)) {
-                announcements = announcements.filter(a => a.id !== announcementId);
-                renderAnnouncements();
-                updateStats();
-                showAlert(`Announcement deleted successfully.`, 'info');
-            }
-        }
-
-        // Certificate Functions
-        function openIssueCertificateModal() {
-            // Set current date
-            const today = new Date().toISOString().slice(0, 10);
-            document.getElementById('certificateIssueDate').value = today;
-            openModal('issueCertificateModal');
-        }
-
-        function submitCertificateForm() {
-            const form = document.getElementById('issueCertificateForm');
-            if (form.checkValidity()) {
-                const certificateData = {
-                    id: 'TESDA-2025-' + String(Date.now()).slice(-6),
-                    recipient: document.getElementById('certificateRecipient').value,
-                    course: document.getElementById('certificateCourse').value,
-                    assessmentDate: document.getElementById('certificateAssessmentDate').value,
-                    issueDate: document.getElementById('certificateIssueDate').value,
-                    trainingCenter: document.getElementById('certificateTrainingCenter').value,
-                    assessmentCenter: document.getElementById('certificateAssessmentCenter').value,
-                    notes: document.getElementById('certificateNotes').value,
-                    status: 'valid'
-                };
-
-                // Add certificate to table (in a real app, this would be saved to database)
-                addCertificateToTable(certificateData);
-                updateStats();
-                closeModal('issueCertificateModal');
-                showAlert(`Certificate ${certificateData.id} issued successfully to ${certificateData.recipient}!`);
-            } else {
-                showAlert('Please fill in all required fields.', 'error');
-            }
-        }
-
-        function addCertificateToTable(certificate) {
-            const tbody = document.getElementById('certificatesTable');
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${certificate.id}</td>
-                <td>${certificate.recipient}</td>
-                <td>${certificate.course}</td>
-                <td>${new Date(certificate.issueDate).toLocaleDateString()}</td>
-                <td><span class="status-badge status-active">Valid</span></td>
-                <td>
-                    <div class="action-buttons">
-                        <button class="btn btn-primary btn-sm">
-                            <i class="fas fa-eye"></i> View
-                        </button>
-                        <button class="btn btn-danger btn-sm">
-                            <i class="fas fa-ban"></i> Revoke
-                        </button>
-                    </div>
-                </td>
-            `;
-            tbody.appendChild(row);
-        }
 
         // Settings Functions
         function saveSettings() {
@@ -2293,7 +2040,8 @@
 
         function showWarning() {
             alert(
-            "You will be logged out in 1 minute due to inactivity. Move your mouse or press a key to stay logged in.");
+                "You will be logged out in 1 minute due to inactivity. Move your mouse or press a key to stay logged in."
+            );
         }
 
         function autoLogout() {

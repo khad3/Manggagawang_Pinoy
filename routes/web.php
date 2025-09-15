@@ -272,7 +272,11 @@ Route::middleware(['admin.authenticate'])->prefix('admin')->group(function () {
     //Suspension
     Route::post('suspend-employer', [UserManagementController::class, 'suspendUser'])->name('admin.suspend-user.store');
     Route::put('users/{id}/ban', [UserManagementController::class, 'banUser'])->name('admin.ban-user.store');
+    Route::put('users/{id}/unban', [UserManagementController::class, 'unbanUser'])->name('admin.unban-user.store');
+    Route::delete('users/{id}/delete', [UserManagementController::class, 'deleteUser'])->name('admin.delete-user.destroy');
 
+    //Excel
+    Route::get('export', [UserManagementController::class, 'exportData'])->name('admin.export');
 
 
 });
