@@ -10,6 +10,12 @@
     <!-- fav icon -->
     <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
     <link rel="stylesheet" href="{{ asset('css/applicant/admin/homepage.css') }}">
+    <style>
+        .modal-xl {
+            max-width: 95% !important;
+            /* almost full width */
+        }
+    </style>
 </head>
 
 <body>
@@ -738,6 +744,7 @@
 
                     <div class="reports-grid">
                         <!-- Report Card -->
+                        <!-- 📊 Dashboard Card -->
                         <div class="report-card">
                             <div class="report-card-header">
                                 <h3 class="report-title">User Registrations</h3>
@@ -748,17 +755,17 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="report-metric">1,247</div>
+                            <div class="report-metric">{{ $totalUsers }}</div>
                             <div class="report-change">
                                 <i class="fas fa-trending-up text-success"></i>
                                 +18.2% from last period
                             </div>
                         </div>
 
-                        <!-- Modal -->
+                        <!-- 📊 Modal -->
                         <div class="modal fade" id="userRegistrationModal" tabindex="-1"
                             aria-labelledby="userRegistrationModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg modal-dialog-centered">
+                            <div class="modal-dialog modal-xl modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="userRegistrationModalLabel">User Registration
@@ -767,39 +774,41 @@
                                             aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <div id="userRegistrationChart" style="width: 100%; height: 400px;"></div>
+                                        <div class="chart-container">
+                                            <div id="modalUserRegistrationChart" style="width: 100%; height: 600px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Google Charts -->
+                        <!-- 📊 Google Charts -->
                         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-                        <script>
+                        <script type="text/javascript">
                             google.charts.load('current', {
                                 packages: ['corechart']
                             });
 
-                            // Draw chart when modal opens
-                            document.getElementById('userRegistrationModal').addEventListener('shown.bs.modal', function() {
-                                drawUserRegistrationChart();
-                            });
+                            // Draw modal chart only when modal is opened
+                            document.getElementById('userRegistrationModal')
+                                .addEventListener('shown.bs.modal', function() {
+                                    drawModalChart();
+                                });
 
-                            function drawUserRegistrationChart() {
+                            function drawModalChart() {
                                 var data = google.visualization.arrayToDataTable([
-                                    ['Month', 'Registrations'],
-                                    ['Jan', 200],
-                                    ['Feb', 300],
-                                    ['Mar', 250],
-                                    ['Apr', 400],
-                                    ['May', 350],
-                                    ['Jun', 500]
+                                    {!! implode(',', $chartData) !!}
                                 ]);
 
                                 var options = {
-                                    title: 'User Registration Trends',
+                                    title: 'User Registration Trends (Applicants vs Employers)',
                                     chartArea: {
-                                        width: '70%'
+                                        width: '85%',
                                     },
                                     hAxis: {
                                         title: 'Month'
@@ -807,17 +816,28 @@
                                     vAxis: {
                                         title: 'Total Registrations',
                                         minValue: 0,
+                                        gridlines: {
+                                            count: 5
+                                        },
                                         format: '0'
                                     },
-                                    colors: ['#4CAF50']
+                                    colors: {!! json_encode($colors) !!},
+                                    legend: {
+                                        position: 'top',
+                                        alignment: 'center'
+                                    }
                                 };
 
                                 var chart = new google.visualization.ColumnChart(
-                                    document.getElementById('userRegistrationChart')
+                                    document.getElementById('modalUserRegistrationChart')
                                 );
                                 chart.draw(data, options);
                             }
                         </script>
+
+
+
+
 
 
                         <div class="report-card">
@@ -1099,11 +1119,6 @@
                                                     <i class="fas fa-pause-circle"></i>
                                                 </button>
                                             @endif
-
-
-
-
-
                                             <!-- Ban User (smaller button like action-btn) -->
                                             @if ($user['data']->status === 'banned')
                                                 <!-- Unban Button -->

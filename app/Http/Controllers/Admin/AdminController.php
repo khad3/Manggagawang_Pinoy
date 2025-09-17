@@ -167,6 +167,12 @@ $employerUser = Employer::with('personal_info' , 'addressCompany')
 // Merge both collections
 $users = $applicantUser->concat($employerUser);
 
+$applicantsCount = RegisterModel::count();
+$employerCount = Employer::count();
+
+$totalUsers = $applicantsCount + $employerCount;
+
+
 
     return view('admin.homepage.homepage', compact(
         'employerCount',
@@ -189,7 +195,8 @@ $users = $applicantUser->concat($employerUser);
         'newTesdaOfficers',
         'chartData',
         'colors',
-        'users'
+        'users',
+        'totalUsers'
       
 
     ));
