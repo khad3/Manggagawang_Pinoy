@@ -57,6 +57,9 @@ class ApplicantController extends Controller
         return view('landingpage.aboutus');
     }
 
+    public function termsandconditions(){
+        return view('terms&condition.terms_condition');
+    }
 
     //Registration form
     public function ShowRegistrationForm(){

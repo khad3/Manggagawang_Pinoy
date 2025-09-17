@@ -28,9 +28,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('terms-and-conditions', [ApplicantController::class, 'termsandconditions'])->name('display.termsandconditions');
+
 
 // Public routes 
 Route::prefix('applicant')->group(function () {
+    
+
     Route::get('register', [ApplicantController::class, 'ShowRegistrationForm'])->name('applicant.register.display');
     Route::post('register', [ApplicantController::class, 'Register'])->name('applicant.register.store');
 

@@ -22,7 +22,8 @@
         <div id="loader-content">
             <div
                 style="width: 80px; height: 80px; background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.4)); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 24px; font-weight: 700; color: white;">
-                <img src="{{ asset('img/logo.png') }}" alt="Logo" style="max-width: 100px;"></div>
+                <img src="{{ asset('img/logo.png') }}" alt="Logo" style="max-width: 100px;">
+            </div>
             <div id="loader"></div>
             <div id="loader-text">Please wait...</div>
         </div>
@@ -120,8 +121,8 @@
                     <div class="custom-checkbox" id="termsCheckbox" onclick="toggleCheckbox()"></div>
                     <input type="checkbox" name="terms" id="termsInput" style="display: none;" required>
                     <label class="checkbox-label" for="termsInput">
-                        I agree to the <a href="#" target="_blank">Terms & Conditions</a> and <a href="#"
-                            target="_blank">Privacy Policy</a>
+                        I agree to the <a href="{{ route('display.termsandconditions') }}" target="_blank">Terms &
+                            Conditions</a> and <a href="#" target="_blank">Privacy Policy</a>
                     </label>
                 </div>
 

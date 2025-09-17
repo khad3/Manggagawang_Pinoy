@@ -743,8 +743,7 @@
                     </div>
 
                     <div class="reports-grid">
-                        <!-- Report Card -->
-                        <!-- 📊 Dashboard Card -->
+                        <!-- User trends report Card -->
                         <div class="report-card">
                             <div class="report-card-header">
                                 <h3 class="report-title">User Registrations</h3>
@@ -854,22 +853,6 @@
                             <div class="report-change">
                                 <i class="fas fa-trending-down text-danger"></i>
                                 -12.8% from last period
-                            </div>
-                        </div>
-
-                        <div class="report-card">
-                            <div class="report-card-header">
-                                <h3 class="report-title">Login Activity</h3>
-                                <div class="report-actions">
-                                    <button class="action-btn btn-view" title="View Details">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="report-metric">18,924</div>
-                            <div class="report-change">
-                                <i class="fas fa-trending-up text-success"></i>
-                                +5.7% from last period
                             </div>
                         </div>
 
