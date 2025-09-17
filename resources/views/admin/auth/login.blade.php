@@ -17,7 +17,7 @@
 
 <body>
     <div class="login-box text-center">
-        <img src="{{ asset('img/logo.png') }}" alt="TESDA Logo" class="tesda-logo">
+        <img src="{{ asset('img/logo2.png') }}" alt="TESDA Logo" class="tesda-logo">
         <h2>Super Admin Login</h2>
 
         @error('email')

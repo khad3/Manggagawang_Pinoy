@@ -737,11 +737,13 @@
                     </div>
 
                     <div class="reports-grid">
+                        <!-- Report Card -->
                         <div class="report-card">
                             <div class="report-card-header">
                                 <h3 class="report-title">User Registrations</h3>
                                 <div class="report-actions">
-                                    <button class="action-btn btn-view" title="View Details">
+                                    <button class="action-btn btn-view" title="View Details" data-bs-toggle="modal"
+                                        data-bs-target="#userRegistrationModal">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </div>
@@ -752,6 +754,71 @@
                                 +18.2% from last period
                             </div>
                         </div>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="userRegistrationModal" tabindex="-1"
+                            aria-labelledby="userRegistrationModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="userRegistrationModalLabel">User Registration
+                                            Trends</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div id="userRegistrationChart" style="width: 100%; height: 400px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Google Charts -->
+                        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+                        <script>
+                            google.charts.load('current', {
+                                packages: ['corechart']
+                            });
+
+                            // Draw chart when modal opens
+                            document.getElementById('userRegistrationModal').addEventListener('shown.bs.modal', function() {
+                                drawUserRegistrationChart();
+                            });
+
+                            function drawUserRegistrationChart() {
+                                var data = google.visualization.arrayToDataTable([
+                                    ['Month', 'Registrations'],
+                                    ['Jan', 200],
+                                    ['Feb', 300],
+                                    ['Mar', 250],
+                                    ['Apr', 400],
+                                    ['May', 350],
+                                    ['Jun', 500]
+                                ]);
+
+                                var options = {
+                                    title: 'User Registration Trends',
+                                    chartArea: {
+                                        width: '70%'
+                                    },
+                                    hAxis: {
+                                        title: 'Month'
+                                    },
+                                    vAxis: {
+                                        title: 'Total Registrations',
+                                        minValue: 0,
+                                        format: '0'
+                                    },
+                                    colors: ['#4CAF50']
+                                };
+
+                                var chart = new google.visualization.ColumnChart(
+                                    document.getElementById('userRegistrationChart')
+                                );
+                                chart.draw(data, options);
+                            }
+                        </script>
+
 
                         <div class="report-card">
                             <div class="report-card-header">
@@ -1021,11 +1088,21 @@
                                                 title="View Details">
                                                 <i class="fas fa-eye"></i>
                                             </button>
-                                            <button class="action-btn btn-suspend" type="button"
-                                                onclick="openSuspendModal({{ $userId }}, '{{ addslashes($user['data']->personal_info?->first_name ?? ($user['data']->addressCompany?->company_name ?? '')) }}')"
-                                                title="Suspend User">
-                                                <i class="fas fa-pause-circle"></i>
-                                            </button>
+                                            @if ($user['type'] === 'applicant')
+                                                <button type="button" class="action-btn btn-suspend"
+                                                    onclick="openSuspendModal({{ $user['data']->id }}, '{{ addslashes($user['data']->personal_info?->first_name ?? '') }}', 'applicant')">
+                                                    <i class="fas fa-pause-circle"></i>
+                                                </button>
+                                            @elseif ($user['type'] === 'employer')
+                                                <button type="button" class="action-btn btn-suspend"
+                                                    onclick="openSuspendModal({{ $user['data']->id }}, '{{ addslashes($user['data']->addressCompany?->company_name ?? '') }}', 'employer')">
+                                                    <i class="fas fa-pause-circle"></i>
+                                                </button>
+                                            @endif
+
+
+
+
 
                                             <!-- Ban User (smaller button like action-btn) -->
                                             @if ($user['data']->status === 'banned')
@@ -1172,6 +1249,7 @@
                             <form action="{{ route('admin.suspend-user.store') }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="user_id" id="suspendUserId">
+                                <input type="hidden" name="type" id="suspendUserType">
 
                                 <div class="modal-body">
                                     <div id="suspendUserInfo"></div>
@@ -1241,10 +1319,10 @@
                         }
 
                         // Open suspend modal and set user ID
-                        function openSuspendModal(userId, userName = '') {
+                        function openSuspendModal(userId, userName = '', userType = '') {
                             document.getElementById('suspendUserId').value = userId;
+                            document.getElementById('suspendUserType').value = userType;
 
-                            // Optional: show which user is being suspended
                             const infoDiv = document.getElementById('suspendUserInfo');
                             infoDiv.innerHTML = userName ? `<p><strong>User:</strong> ${userName}</p>` : '';
 

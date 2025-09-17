@@ -425,29 +425,36 @@ public function ShowHomepage()
     ->count();
 
     
-    //retrieved the suspended notification 
-    $suspendedApplicant = RegisterModel::where('id', $applicantId)
-        ->where('status', 'suspended')
-        ->with('suspension')
-        ->first();
-    $isSuspended = false;
-    $suspension = null;
+   $suspendedApplicant = RegisterModel::where('id', $applicantId)->where('status', 'suspended')
+    ->with(['suspension' => function ($q) {
+        $q->latest()->first(); // get latest suspension if multiple
+    }])
+    ->first();
 
-    if ($suspendedApplicant && $suspendedApplicant->suspension) {
-        $suspension = $suspendedApplicant->suspension;
-        $endDate = $suspension->created_at->addDays($suspension->suspension_duration);
+$isSuspended = false;
+$suspension = $suspendedApplicant?->suspension;
 
-        if (now()->lt($endDate)) { // still in suspension
-            $isSuspended = true;
-        } else {
-            // Suspension expired → auto update applicant status
+// If applicant has suspension record
+if ($suspendedApplicant && $suspension) {
+    $endDate = $suspension->created_at->copy()->addDays($suspension->suspension_duration);
+
+    if (now()->lt($endDate)) {
+        // ✅ Still suspended
+        $isSuspended = true;
+
+        if ($suspendedApplicant->status !== 'suspended') {
+            $suspendedApplicant->status = 'suspended';
+            $suspendedApplicant->save();
+        }
+    } else {
+        // ✅ Suspension expired
+        if ($suspendedApplicant->status !== 'active') {
             $suspendedApplicant->status = 'active';
             $suspendedApplicant->save();
-
-            // Optionally delete suspension record
-            // $suspension->delete();
-        }   
+        }
     }
+}
+
 
    
     return view('applicant.homepage.homepage', compact(

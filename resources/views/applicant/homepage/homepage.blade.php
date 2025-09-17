@@ -346,7 +346,7 @@
                                             </div>
 
                                             <div class="notification-restriction text-danger small fw-semibold mb-1">
-                                                You cannot comment or apply for jobs for
+                                                You cannot apply for jobs for
                                                 {{ $suspension->suspension_duration }}
                                                 {{ $suspension->suspension_duration == 1 ? 'day' : 'days' }}.
                                             </div>
