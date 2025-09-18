@@ -393,7 +393,8 @@
                             <input class="form-check-input" type="checkbox" id="agreeTerms" required />
                             <label class="form-check-label" for="agreeTerms">
                                 I agree to Mangagawang Pinoy's
-                                <a href="#" class="text-decoration-underline">Terms of Service</a>
+                                <a href="{{ route('display.termsandconditions') }}"
+                                    class="text-decoration-underline">Terms of Service</a>
                                 and
                                 <a href="#" class="text-decoration-underline">Privacy Policy</a>
                             </label>

@@ -4,6 +4,7 @@ namespace App\Models\Employer;
 
 use Faker\Provider\ar_EG\Company;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Admin\SuspensionModel;
 
 class AccountInformationModel extends Model
 {
@@ -26,6 +27,10 @@ class AccountInformationModel extends Model
 
     public function personal_info() {
         return $this->hasOne(PersonalInformationModel::class, 'employer_id');
+    }
+
+    public function suspension() {
+        return $this->hasOne(SuspensionModel::class, 'employer_id');
     }
 
     

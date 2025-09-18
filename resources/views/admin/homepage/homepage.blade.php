@@ -7,6 +7,8 @@
     <title>TESDA Super Admin Dashboard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
     <!-- fav icon -->
     <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
     <link rel="stylesheet" href="{{ asset('css/applicant/admin/homepage.css') }}">
@@ -14,6 +16,72 @@
         .modal-xl {
             max-width: 95% !important;
             /* almost full width */
+        }
+
+        /* Activity Log Styling */
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+            background: #fff;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        /* Specific action colors */
+        .activity-banned {
+            background-color: #fdecea;
+            /* light red background */
+            color: #e53935;
+            /* red icon */
+        }
+
+        .activity-unbanned {
+            background-color: #e8f5e9;
+            /* light green background */
+            color: #43a047;
+            /* green icon */
+        }
+
+        .activity-suspended {
+            background-color: #fff8e1;
+            /* light orange background */
+            color: #fb8c00;
+            /* orange icon */
+        }
+
+        /* Content */
+        .activity-content h6 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .activity-content p {
+            margin: 2px 0 0;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .activity-time {
+            margin-left: auto;
+            font-size: 12px;
+            color: #999;
         }
     </style>
 </head>
@@ -747,67 +815,42 @@
                         <div class="report-card">
                             <div class="report-card-header">
                                 <h3 class="report-title">User Registrations</h3>
-                                <div class="report-actions">
-                                    <button class="action-btn btn-view" title="View Details" data-bs-toggle="modal"
-                                        data-bs-target="#userRegistrationModal">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </div>
                             </div>
-                            <div class="report-metric">{{ $totalUsers }}</div>
+
+                            <!-- Show total registrations -->
+                            <div class="report-metric">
+                                {{ $totalUsers }}
+                            </div>
+
+                            <!-- Static trend placeholder (can be made dynamic later) -->
                             <div class="report-change">
                                 <i class="fas fa-trending-up text-success"></i>
                                 +18.2% from last period
                             </div>
-                        </div>
 
-                        <!-- 📊 Modal -->
-                        <div class="modal fade" id="userRegistrationModal" tabindex="-1"
-                            aria-labelledby="userRegistrationModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-xl modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="userRegistrationModalLabel">User Registration
-                                            Trends</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="chart-container">
-                                            <div id="modalUserRegistrationChart" style="width: 100%; height: 600px;">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
+                            <!-- 📊 Chart Container -->
+                            <div class="chart-container mt-3">
+                                <div id="userRegistrationCharts" style="width: 100%; height: 400px;"></div>
                             </div>
                         </div>
 
-                        <!-- 📊 Google Charts -->
+                        <!-- 📊 Google Charts Script -->
                         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
                         <script type="text/javascript">
                             google.charts.load('current', {
                                 packages: ['corechart']
                             });
+                            google.charts.setOnLoadCallback(drawChart);
 
-                            // Draw modal chart only when modal is opened
-                            document.getElementById('userRegistrationModal')
-                                .addEventListener('shown.bs.modal', function() {
-                                    drawModalChart();
-                                });
-
-                            function drawModalChart() {
+                            function drawChart() {
                                 var data = google.visualization.arrayToDataTable([
                                     {!! implode(',', $chartData) !!}
                                 ]);
 
                                 var options = {
-                                    title: 'User Registration Trends (Applicants vs Employers)',
+                                    title: 'User Registration Trends',
                                     chartArea: {
-                                        width: '85%',
+                                        width: '70%'
                                     },
                                     hAxis: {
                                         title: 'Month'
@@ -820,15 +863,11 @@
                                         },
                                         format: '0'
                                     },
-                                    colors: {!! json_encode($colors) !!},
-                                    legend: {
-                                        position: 'top',
-                                        alignment: 'center'
-                                    }
+                                    colors: {!! json_encode($colors) !!}
                                 };
 
                                 var chart = new google.visualization.ColumnChart(
-                                    document.getElementById('modalUserRegistrationChart')
+                                    document.getElementById('userRegistrationCharts')
                                 );
                                 chart.draw(data, options);
                             }
@@ -842,67 +881,212 @@
                         <div class="report-card">
                             <div class="report-card-header">
                                 <h3 class="report-title">Account Bans</h3>
-                                <div class="report-actions">
-                                    <button class="action-btn btn-view" title="View Details"
-                                        onclick="showBanReport()">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </div>
                             </div>
-                            <div class="report-metric">23</div>
+
+                            {{-- Show total bans (Applicants + Employers) --}}
+                            <div class="report-metric">
+                                {{ $retrieveAccountBanApplicant + $retrieveAccountBanEmployer }}
+                            </div>
+
+                            {{-- Static trend placeholder (can be made dynamic later) --}}
                             <div class="report-change">
                                 <i class="fas fa-trending-down text-danger"></i>
                                 -12.8% from last period
                             </div>
+
+                            <!-- 📊 Chart Container -->
+                            <div class="chart-container mt-3">
+                                <div id="accountBanChart" style="width: 100%; height: 400px;"></div>
+                            </div>
                         </div>
 
+                        <!-- 📊 Google Charts Script -->
+                        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+                        <script type="text/javascript">
+                            google.charts.load('current', {
+                                packages: ['corechart']
+                            });
+                            google.charts.setOnLoadCallback(drawBanChart);
+
+                            function drawBanChart() {
+                                var data = google.visualization.arrayToDataTable([
+                                    {!! implode(',', $banChartData) !!}
+                                ]);
+
+                                var options = {
+                                    title: 'Banned Accounts (Applicants vs Employers)',
+                                    chartArea: {
+                                        width: '100%'
+                                    },
+                                    pieHole: 0.3,
+                                    colors: {!! json_encode($banColors) !!},
+                                    legend: {
+                                        position: 'top',
+                                        alignment: 'center'
+                                    }
+                                };
+
+                                var chart = new google.visualization.PieChart(
+                                    document.getElementById('accountBanChart')
+                                );
+                                chart.draw(data, options);
+                            }
+                        </script>
+
+
                         <div class="report-card">
-                            <div class="report-card-header">
+                            <div class="report-card-header d-flex justify-content-between align-items-center">
                                 <h3 class="report-title">Certificate Issuance</h3>
-                                <div class="report-actions">
-                                    <button class="action-btn btn-view" title="View Details">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
+                                <!-- Move increase to the right -->
+                                <div class="report-change text-end">
+                                    <i class="fas fa-trending-up text-success"></i>
+                                    +22.1% from last period
                                 </div>
                             </div>
-                            <div class="report-metric">892</div>
-                            <div class="report-change">
-                                <i class="fas fa-trending-up text-success"></i>
-                                +22.1% from last period
+
+                            <!-- 📊 Chart Container -->
+                            <div id="certificationLineChart" style="width: 100%; height: 400px;"></div>
+
+                            <!-- Total Metric -->
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <div class="report-metric">{{ $retrievedCertificationCount }}</div>
+                                <!-- ✅ Legend with colors -->
+                                <div class="custom-legend">
+                                    <span><span class="legend-box"
+                                            style="background-color: {{ $certificationsColors[0] }}"></span>
+                                        Approved</span>
+                                    <span><span class="legend-box"
+                                            style="background-color: {{ $certificationsColors[1] }}"></span>
+                                        Pending</span>
+                                    <span><span class="legend-box"
+                                            style="background-color: {{ $certificationsColors[2] }}"></span>
+                                        Rejected</span>
+                                    <span><span class="legend-box"
+                                            style="background-color: {{ $certificationsColors[3] }}"></span>
+                                        Request Revision</span>
+
+                                </div>
                             </div>
                         </div>
+
+                        <style>
+                            .custom-legend {
+                                display: flex;
+                                gap: 15px;
+                                font-size: 14px;
+                                align-items: center;
+                            }
+
+                            .legend-box {
+                                display: inline-block;
+                                width: 14px;
+                                height: 14px;
+                                margin-right: 5px;
+                                border-radius: 3px;
+                            }
+                        </style>
+
+                        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+                        <script type="text/javascript">
+                            google.charts.load('current', {
+                                packages: ['corechart']
+                            });
+                            google.charts.setOnLoadCallback(drawCertChart);
+
+                            function drawCertChart() {
+                                var data = google.visualization.arrayToDataTable([
+                                    {!! implode(',', $certificationsChartData) !!}
+                                ]);
+
+                                var options = {
+                                    title: 'Certification Status Trends',
+                                    curveType: 'function',
+                                    legend: {
+                                        position: 'none'
+                                    }, // ❌ Hide default legend
+                                    chartArea: {
+                                        width: '80%',
+                                        height: '70%'
+                                    },
+                                    colors: {!! json_encode($certificationsColors) !!},
+                                    hAxis: {
+                                        title: 'Month',
+                                        slantedText: true,
+                                        slantedTextAngle: 45
+                                    },
+                                    vAxis: {
+                                        title: 'Number of Certifications',
+                                        minValue: 0,
+                                        format: '0'
+                                    }
+                                };
+
+                                var chart = new google.visualization.LineChart(
+                                    document.getElementById('certificationLineChart')
+                                );
+                                chart.draw(data, options);
+                            }
+                        </script>
+
+
+
 
                         <div class="report-card">
                             <div class="report-card-header">
                                 <h3 class="report-title">Suspended Accounts</h3>
-                                <div class="report-actions">
-                                    <button class="action-btn btn-view" title="View Details">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </div>
                             </div>
-                            <div class="report-metric">156</div>
+
+                            <!-- Show total suspended accounts -->
+                            <div class="report-metric">
+                                {{ $retrievedSuspendedApplicants + $retrievedSuspendedEmployers }}
+                            </div>
+
+                            <!-- Static trend placeholder -->
                             <div class="report-change">
                                 <i class="fas fa-trending-up text-warning"></i>
                                 +3.4% from last period
                             </div>
+
+                            <!-- 📊 Chart Container -->
+                            <div class="chart-container mt-3">
+                                <div id="suspendedAccountChart" style="width: 100%; height: 400px;"></div>
+                            </div>
                         </div>
 
-                        <div class="report-card">
-                            <div class="report-card-header">
-                                <h3 class="report-title">Job Applications</h3>
-                                <div class="report-actions">
-                                    <button class="action-btn btn-view" title="View Details">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="report-metric">4,567</div>
-                            <div class="report-change">
-                                <i class="fas fa-trending-up text-success"></i>
-                                +28.9% from last period
-                            </div>
-                        </div>
+                        <!-- 📊 Google Charts Script -->
+                        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+                        <script type="text/javascript">
+                            google.charts.load('current', {
+                                packages: ['corechart']
+                            });
+                            google.charts.setOnLoadCallback(drawSuspendedChart);
+
+                            function drawSuspendedChart() {
+                                var data = google.visualization.arrayToDataTable([
+                                    {!! implode(',', $suspendedChartData) !!}
+                                ]);
+
+                                var options = {
+                                    title: 'Suspended Accounts (Applicants vs Employers)',
+                                    chartArea: {
+                                        width: '100%'
+                                    },
+                                    pieHole: 0.3, // donut chart
+                                    colors: {!! json_encode($suspendedColors) !!},
+                                    legend: {
+                                        position: 'top',
+                                        alignment: 'center'
+                                    }
+                                };
+
+                                var chart = new google.visualization.PieChart(
+                                    document.getElementById('suspendedAccountChart')
+                                );
+                                chart.draw(data, options);
+                            }
+                        </script>
+
+
                     </div>
 
                     <!-- Recent Activity Log -->
@@ -916,47 +1100,28 @@
                             </div>
                         </div>
                         <div id="activityLog">
-                            <div class="activity-item">
-                                <div class="activity-icon activity-ban">
-                                    <i class="fas fa-ban"></i>
+                            @foreach ($activityLogs as $log)
+                                <div class="activity-item">
+                                    <div class="activity-icon activity-{{ $log['action'] }}">
+                                        @if ($log['action'] === 'banned')
+                                            <i class="fa-solid fa-ban"></i>
+                                        @elseif($log['action'] === 'unbanned')
+                                            <i class="fas fa-check"></i>
+                                        @elseif($log['action'] === 'suspended')
+                                            <i class="fas fa-pause"></i>
+                                        @endif
+                                    </div>
+                                    <div class="activity-content">
+                                        <h6>User {{ ucfirst($log['action']) }}</h6>
+                                        <p>{{ $log['description'] }}</p>
+                                    </div>
+                                    <div class="activity-time">
+                                        {{ $log['created_at']->diffForHumans() }}
+                                    </div>
                                 </div>
-                                <div class="activity-content">
-                                    <h6>User Banned</h6>
-                                    <p>juan.dela@email.com was banned for violating community guidelines</p>
-                                </div>
-                                <div class="activity-time">2 hours ago</div>
-                            </div>
-                            <div class="activity-item">
-                                <div class="activity-icon activity-unban">
-                                    <i class="fas fa-check"></i>
-                                </div>
-                                <div class="activity-content">
-                                    <h6>User Unbanned</h6>
-                                    <p>maria.santos@email.com ban was lifted after appeal review</p>
-                                </div>
-                                <div class="activity-time">5 hours ago</div>
-                            </div>
-                            <div class="activity-item">
-                                <div class="activity-icon activity-suspend">
-                                    <i class="fas fa-pause"></i>
-                                </div>
-                                <div class="activity-content">
-                                    <h6>Account Suspended</h6>
-                                    <p>robert.garcia@email.com suspended for 7 days due to multiple reports</p>
-                                </div>
-                                <div class="activity-time">1 day ago</div>
-                            </div>
-                            <div class="activity-item">
-                                <div class="activity-icon activity-login">
-                                    <i class="fas fa-sign-in-alt"></i>
-                                </div>
-                                <div class="activity-content">
-                                    <h6>Mass Login Activity</h6>
-                                    <p>Detected 1,247 user logins in the past hour</p>
-                                </div>
-                                <div class="activity-time">2 days ago</div>
-                            </div>
+                            @endforeach
                         </div>
+
                     </div>
                 </div>
             </section>
@@ -1046,7 +1211,8 @@
                                                         {{ $user['data']->personal_info?->last_name ?? '' }}</h4>
                                                     <p>{{ $user['data']->email ?? 'N/A' }}</p>
                                                 @else
-                                                    <h4>{{ $user['data']->addressCompany->company_name ?? 'N/A' }}</h4>
+                                                    <h4>{{ $user['data']->addressCompany->company_name ?? 'N/A' }}
+                                                    </h4>
                                                     <p>{{ $user['data']->email ?? 'N/A' }}</p>
                                                 @endif
                                             </div>

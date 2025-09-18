@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Admin\AccountAdminModel as Admin;
 use App\Models\Admin\AddTesdaOfficerModel as AddTesdaOfficer;
+use App\Models\Applicant\TesdaUploadCertificationModel as TesdaCertification;
 use App\Models\Admin\UserManagmentModel;
 use App\Models\Admin\AnnouncementModel;
 use Illuminate\Support\Facades\Auth;
@@ -127,7 +128,7 @@ class AdminController extends Controller
     ->whereYear('created_at', Carbon::now()->year)
     ->count();
 
-
+    //user trends
      $applicantStats = RegisterModel::selectRaw('MONTH(created_at) as month, COUNT(*) as total')
         ->whereYear('created_at', Carbon::now()->year)
         ->groupBy('month')
@@ -156,21 +157,203 @@ class AdminController extends Controller
     // //retrieved the user data to display in the homepage
     // $retrievedApplicants = RegisterModel::where('type_user', 'applicant')->get();
 
-$applicantUser = RegisterModel::with('personal_info')
+    $applicantUser = RegisterModel::with('personal_info')
+        ->get()
+        ->map(fn($a) => ['type' => 'applicant', 'data' => $a]);
+
+    $employerUser = Employer::with('personal_info' , 'addressCompany')
+        ->get()
+        ->map(fn($e) => ['type' => 'employer', 'data' => $e]);
+
+    // Merge both collections
+    $users = $applicantUser->concat($employerUser);
+
+    $applicantsCount = RegisterModel::count();
+    $employerCount = Employer::count();
+
+    $totalUsers = $applicantsCount + $employerCount;
+
+
+    //retrieve the account ban to make a reports
+   // Count bans
+    $retrieveAccountBanApplicant = RegisterModel::where('status', 'banned')->count();
+    $retrieveAccountBanEmployer = Employer::where('status', 'banned')->count();
+
+    // Prepare chart data for Google Charts
+    $banChartData = [];
+    $banChartData[] = "['Account Type', 'Banned Count']"; 
+    $banChartData[] = "['Applicants', {$retrieveAccountBanApplicant}]";
+    $banChartData[] = "['Employers', {$retrieveAccountBanEmployer}]";
+
+    $banColors = ['#E53935', '#FB8C00']; // Red for Applicants, Orange for Employers
+
+
+
+    //Suspended Chart data
+    $retrievedSuspendedApplicants = RegisterModel::where('status', 'suspended')->count();
+    $retrievedSuspendedEmployers = Employer::where('status', 'suspended')->count();
+
+
+    $suspendedChartData = [];
+    $suspendedChartData[] = "['Account Type', 'Suspended Count']"; 
+    $suspendedChartData[] = "['Applicants', {$retrievedSuspendedApplicants}]";
+    $suspendedChartData[] = "['Employers', {$retrievedSuspendedEmployers}]";
+
+    $suspendedColors = ['#E53935', '#FB8C00']; // Red for Applicants, Orange for Employers
+
+
+        //retrieve the certifications accecpted
+    // Group certifications by month (accepted ones)
+
+    $retrievedCertificationCount = TesdaCertification::where('status', 'approved')->count();
+    // Certifications grouped by month and status
+    $certifications = TesdaCertification::selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, status, COUNT(*) as total")
+        ->groupBy('month', 'status')
+        ->orderBy('month')
+        ->get();
+
+    $statuses = ['approved', 'pending', 'rejected', 'request_revision'];
+    $months = $certifications->pluck('month')->unique()->values();
+
+    $certificationsChartData = [];
+    $certificationsChartData[] = "['Month', 'Approved', 'Pending', 'Rejected', 'Request Revision']";
+
+    foreach ($months as $month) {
+        // Convert YYYY-MM to "Mon YYYY"
+        $monthLabel = \Carbon\Carbon::createFromFormat('Y-m', $month)->format('M Y');
+
+        $row = ["'{$monthLabel}'"];
+        foreach ($statuses as $status) {
+            $count = $certifications
+                ->where('month', $month)
+                ->where('status', $status)
+                ->sum('total');
+            $row[] = $count;
+        }
+        $certificationsChartData[] = "[" . implode(',', $row) . "]";
+    }   
+
+    $certificationsColors = ['#43A047', '#FB8C00', '#E53935', '#1E88E5']; 
+    // Green = Approved, Orange = Pending, Red = Rejected, Blue = Request Revision
+    
+$activityLogs = collect();
+
+/**
+ * Suspended Applicants
+ */
+$applicantSuspensions = RegisterModel::with('suspension')
+    ->where('status', 'suspended')
+    ->latest()
     ->get()
-    ->map(fn($a) => ['type' => 'applicant', 'data' => $a]);
+    ->map(function ($a) {
+        $duration = $a->suspension->duration ?? 'N/A';
+        return [
+            'action' => 'suspended',
+            'email' => $a->email,
+            'description' => "{$a->email} suspended for {$duration} days due to multiple reports",
+            'created_at' => $a->updated_at,
+        ];
+    });
 
-$employerUser = Employer::with('personal_info' , 'addressCompany')
+/**
+ * Suspended Employers
+ */
+$employerSuspensions = Employer::with('suspension')
+    ->where('status', 'suspended')
+    ->latest()
     ->get()
-    ->map(fn($e) => ['type' => 'employer', 'data' => $e]);
+    ->map(function ($e) {
+        $duration = $e->suspension->duration ?? 'N/A';
+        return [
+            'action' => 'suspended',
+            'email' => $e->email,
+            'description' => "{$e->email} suspended for {$duration} days due to multiple reports",
+            'created_at' => $e->updated_at,
+        ];
+    });
 
-// Merge both collections
-$users = $applicantUser->concat($employerUser);
+/**
+ * Banned Applicants
+ */
+$applicantBanned = RegisterModel::where('status', 'banned')
+    ->latest()
+    ->get()
+    ->map(function ($a) {
+        return [
+            'action' => 'banned',
+            'email' => $a->email,
+            'description' => "{$a->email} was banned by admin",
+            'created_at' => $a->updated_at,
+        ];
+    });
 
-$applicantsCount = RegisterModel::count();
-$employerCount = Employer::count();
+/**
+ * Banned Employers
+ */
+$employerBanned = Employer::where('status', 'banned')
+    ->latest()
+    ->get()
+    ->map(function ($e) {
+        return [
+            'action' => 'banned',
+            'email' => $e->email,
+            'description' => "{$e->email} was banned by admin",
+            'created_at' => $e->updated_at,
+        ];
+    });
 
-$totalUsers = $applicantsCount + $employerCount;
+/**
+ * Unbanned Applicants
+ */
+// Unbanned Applicants
+$applicantUnbans = RegisterModel::where('status', 'active')
+    ->latest()
+    ->get()
+    ->map(function ($a) {
+        return [
+            'action' => 'unbanned',
+            'email' => $a->email,
+            'description' => "{$a->email} ban was lifted by admin",
+            'created_at' => $a->updated_at,
+        ];
+    });
+
+// Unbanned Employers
+$employerUnbans = Employer::where('status', 'active')
+    ->latest()
+    ->get()
+    ->map(function ($e) {
+        return [
+            'action' => 'unbanned',
+            'email' => $e->email,
+            'description' => "{$e->email} ban was lifted by admin",
+            'created_at' => $e->updated_at,
+        ];
+    });
+
+
+/**
+ * Merge ALL logs together
+ */
+$activityLogs = collect()
+    ->merge($applicantSuspensions)
+    ->merge($employerSuspensions)
+    ->merge($applicantBanned)
+    ->merge($employerBanned)
+    ->merge($applicantUnbans)
+    ->merge($employerUnbans)
+    ->sortByDesc('created_at')
+    ->values();
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -196,8 +379,20 @@ $totalUsers = $applicantsCount + $employerCount;
         'chartData',
         'colors',
         'users',
-        'totalUsers'
-      
+        'totalUsers',
+        'banChartData',
+        'banColors',
+        'retrieveAccountBanApplicant',
+        'retrieveAccountBanEmployer',
+        'suspendedChartData',
+        'suspendedColors',
+        'retrievedSuspendedApplicants',
+        'retrievedSuspendedEmployers',
+        'certificationsChartData',
+        'certificationsColors',
+        'retrievedCertificationCount',
+        'activityLogs',
+        
 
     ));
 }
