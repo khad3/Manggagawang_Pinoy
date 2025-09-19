@@ -1,0 +1,802 @@
+<?php
+
+namespace App\Http\Controllers\Applicant;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+
+use App\Models\Applicant\ApplicantFriendModel as AddFriend;
+use App\Models\Applicant\PostModel as Post;
+use App\Models\Applicant\PersonalModel as PersonalInfo;
+use App\Models\Applicant\ExperienceModel as WorkBackground;
+use App\Models\Applicant\RegisterModel;
+use App\Models\Applicant\CommentModel as Comment;
+use App\Models\Applicant\ReplyModel as ReplyComment;
+use App\Models\Applicant\LikeModel as ForumLike;
+use App\Models\Applicant\GroupModel as Group;
+use App\Models\Applicant\PostSpecificGroupModel as GroupPost;
+use App\Models\Applicant\GroupCommentModel as GroupComment;
+use App\Models\Applicant\GroupLikeModel as GroupLike;
+use App\Models\Applicant\SendMessageModel as SendMessage;
+
+class CommunityForumController extends Controller
+{
+    
+    // Display the community forum with posts and categories
+    public function ShowForum(){
+        
+        $currentApplicantId = session('applicant_id');
+
+        $posts = Post::with([
+            'likes',
+            'personalInfo',
+            'comments.replies.applicant.personal_info',
+            'workBackground',
+            'comments.applicant.personal_info'
+        ])->orderBy('created_at', 'desc')->get();
+
+        $posts->map(function ($post) use ($currentApplicantId) {
+        $targetApplicantId = $post->applicant_id;
+
+        $friendRequest = AddFriend::where(function($query) use ($currentApplicantId, $targetApplicantId) {
+            $query->where('request_id', $currentApplicantId)
+                ->where('receiver_id', $targetApplicantId);
+            })->orWhere(function($query) use ($currentApplicantId, $targetApplicantId) {
+            $query->where('request_id', $targetApplicantId)
+                ->where('receiver_id', $currentApplicantId);
+            })->first();
+
+        $post->alreadySent = $friendRequest !== null;
+        $post->friendRequestId = $friendRequest?->id;
+        $post->friendRequestStatus = $friendRequest?->status;
+        $post->isReceiver = $friendRequest?->receiver_id == $currentApplicantId;
+
+        return $post;
+    });
+
+        $categories = Post::distinct()->pluck('category')->toArray();
+
+        return view('applicant.community_form.forums', compact('posts', 'categories'));
+    }
+
+
+
+    // Create a new post 
+    public function CreatePost(Request $request)
+{
+        $applicantId = session('applicant_id');
+
+        $request->validate([
+            'post_title' => 'required|string|max:255',
+            'post_content' => 'required|string',
+            'post_topic' => 'required|string',
+            'post_media' => 'nullable|file|mimes:jpeg,png,jpg,mp4,mov,avi|max:20480', // max 20MB
+      
+        ]);
+
+        // Get the applicant's personal_info_id
+        $personalInfo = PersonalInfo::where('applicant_id', $applicantId)->first();
+        $workBackground = WorkBackground::where('applicant_id', $applicantId)->first();
+
+        if (!$personalInfo) {
+            return redirect()->back()->withErrors('Personal information not found.');
+        }
+
+        $mediaPath = null;
+
+        if ($request->hasFile('post_media')) {
+            $mediaPath = $request->file('post_media')->store('post_media', 'public');
+        }
+
+        $post = new Post([
+            'title' => $request->post_title,
+            'content' => $request->post_content,
+            'applicant_id' => $applicantId,
+            'personal_info_id' => $personalInfo->id, 
+            'work_experience_id' => $workBackground->id,
+            'image_path' => $mediaPath,
+            'category' => $request->post_topic,
+        ]);
+
+        $post->save();
+
+        return redirect()->route('applicant.forum.display')->with('success', 'Post created successfully.');
+    }
+
+
+
+    //Delete posts sa community forum with custom auth (kumbaga sino nakalog in makikita nila yung delete post)
+    public function DeletePost($id){
+        $post = Post::findOrFail($id);
+        $applicantId = session('applicant_id');
+
+        if (!$applicantId || $applicantId !== $post->applicant_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $post->delete();
+
+        return redirect()->route('applicant.forum.display')->with('success', 'Post deleted successfully.');
+    }
+
+
+
+    //Add comments
+    public function AddComments(Request $request){
+        $applicantId = session('applicant_id');
+
+        $request->validate([
+            'comment' => 'required|string',
+            'post_id' => 'required|exists:forum_posts,id',
+        ]);
+
+        // Find the applicant by id (assuming 'id' is the primary key)
+        $applicant = RegisterModel::find($applicantId);
+
+            if (!$applicant) {
+                return redirect()->back()->withErrors('Applicant not found or not logged in.');
+            }
+
+            // Find the post by id (assuming 'id' is the primary key in forum_posts table)
+        $post = Post::where('id', $request->post_id)->first();
+
+            if (!$post) {
+                return redirect()->back()->withErrors('Post not found.');
+            }
+
+            // Create and save the comment
+        $comment = new Comment([
+            'comment' => $request->comment,
+            'forum_post_id' => $post->id,
+            'applicant_id' => $applicant->id,
+        ]);
+
+        $comment->save();
+
+        return redirect()->route('applicant.forum.display')->with('success', 'Comment added successfully.');
+    }
+
+
+    //Delete comments parent 
+    public function DeleteComment($id) {
+
+        $comment = Comment::findOrFail($id);
+        $comment->delete();
+
+        return redirect()->route('applicant.forum.display')->with('success', 'Comment deleted successfully.');
+    }
+
+    //reply to the comments
+    public function ReplyComments(Request $request){
+
+        $request->validate([
+            'reply_comment' => 'required|string',
+        ]);
+
+        $reply = new ReplyComment([
+            'reply' => $request->reply_comment,
+            'forum_comment_id' => $request->comment_id,
+            'applicant_id' => session('applicant_id'),
+        ]);
+
+        $reply->save();
+
+        return redirect()->route('applicant.forum.display')->with('success', 'Reply added successfully.');
+    }
+
+    //Delete reply comments child
+    public function DeleteReplyComment($id) {
+
+        $reply = ReplyComment::findOrFail($id);
+        $reply->delete();
+
+        return redirect()->route('applicant.forum.display')->with('success', 'Reply deleted successfully.');
+    }
+
+
+    //Adding likes
+    public function LikePost($id){
+
+        $applicantId = session('applicant_id');
+
+            if (!$applicantId) {
+                return redirect()->back()->with('error', 'You must be logged in to like a post.');
+            }
+
+        // Check if the applicant already liked this post
+        $existingLike = ForumLike::where('forum_post_id', $id)
+            ->where('applicant_id', $applicantId)
+            ->first();
+
+            if ($existingLike) {
+            // Toggle: if liked (likes=1), then dislike (likes=0) or remove the record
+            // Option 1: Delete the like record (simpler)
+            $existingLike->delete();
+
+            // Option 2: Or update likes to 0 instead of deleting
+            // $existingLike->likes = 0;
+            // $existingLike->save();
+            return redirect()->back()->with('success', 'You unliked the post.');
+             } else {
+                // Create a new like record
+                ForumLike::create([
+                    'forum_post_id' => $id,
+                    'applicant_id' => $applicantId,
+                    'likes' => 1,
+                ]);
+
+            return redirect()->back()->with('success', 'Post liked successfully.');
+            }
+        }
+
+
+    //View my post
+    public function ViewMyPost() {
+        $applicantId = session('applicant_id');
+        $posts = Post::where('applicant_id', $applicantId)->get()->sortByDesc('created_at');
+
+        $categories = Post::distinct()->pluck('category')->toArray();
+
+        return view('applicant.community_form.viewmypost', compact('posts' , 'categories')); 
+    }
+
+
+    //View group forum form
+    public function ShowGroupForum() {
+        return view('applicant.community_form.groupforum');
+    }
+
+
+    //Add group forum
+    public function AddGroupForum(Request $request) {
+
+
+        $applicantId = session('applicant_id');
+        $request->validate([
+            'group_title'   => 'required|string|max:100',
+            'group_description'   => 'required|string|max:100',
+            'group_privacy' => 'required|string|max:100',
+        
+        ]);
+
+        $personalInfo = PersonalInfo::where('applicant_id', $applicantId)->first();
+
+            if (!$personalInfo) {
+                 return redirect()->back()->withErrors('Personal information not found.');
+            }
+
+            $personalInfoId = $personalInfo->id;
+            $newGroup = new Group([
+                'group_name' => $request->group_title,
+                'group_description' => $request->group_description,
+                'privacy' => $request->group_privacy,
+                'applicant_id' => $applicantId,
+                'personal_info_id' => $personalInfoId,
+            ]);
+
+            $newGroup->save();
+
+            return redirect()->route('applicant.forum.display')->with(['success' => 'Group created successfully.']);
+        }
+
+
+    //View list of group forum kumabaga ito yung display
+    public function DisplayGroupForum(){
+        $applicant_id = session('applicant_id');
+
+        $listOfGroups = Group::with(['members', 'personalInfo'])
+            ->withCount('members')
+            ->orderByDesc('created_at')
+            ->get();
+
+        return view('applicant.community_form.viewgroup', compact('listOfGroups', 'applicant_id'));
+    }
+
+    //For request and join group forum
+    public function RequestAndJoinGroup(Request $request){
+        $request->validate([
+            'group_id' => 'required|exists:group_community,id',
+        ]);
+
+        $applicantId = session('applicant_id');
+
+            if (!$applicantId) {
+                return redirect()->back()->with('error', 'You must be logged in to join a group.');
+            }
+
+        $groupId = $request->group_id;
+        $group = Group::findOrFail($groupId);
+
+        $applicantPersonalInfo = PersonalInfo::where('applicant_id', $applicantId)->first();
+            if (!$applicantPersonalInfo) {
+                return redirect()->back()->with('error', 'Personal information not found.');
+            }
+
+        // Check if already requested or approved
+        $existingMember = $group->members()
+            ->wherePivot('applicant_id', $applicantId)
+            ->first();
+
+            if ($existingMember) {
+                $status = $existingMember->pivot->status;
+            if ($status === 'approved') {
+                return redirect()->back()->with('info', 'You are already a member of the "' . $group->group_name . '" group.');
+            } elseif ($status === 'pending') {
+                return redirect()->back()->with('info', 'Your join request to "' . $group->group_name . '" is still pending approval.');
+            }
+        }
+
+    // Set status based on group type
+    $status = $group->privacy === 'public' ? 'approved' : 'pending';
+
+    // Attach request to group
+    $group->members()->attach($applicantId, [
+        'personal_info_id' => $applicantPersonalInfo->id,
+        'status' => $status,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    // Response messages
+        if ($group->privacy === 'public') {
+            return redirect()->back()->with('success', 'You successfully joined the public group: "' . $group->group_name . '".');
+        } else {
+            return redirect()->back()->with('success', 'Join request sent to "' . $group->group_name . '". Please wait for the creator\'s approval.');
+        }
+    }
+
+
+    //Add post for the group forum
+    public function AddPostGroupCommunity(Request $request, $groupId){
+
+        $applicantId = session('applicant_id');
+
+        // Load the group
+        $group = Group::with('members')->find($groupId);
+
+            if (!$group) {
+                return redirect()->back()->with('error', 'Group not found.');
+            }
+
+        // Check if the applicant is a member (including creator)
+        $isMember = $group->members->contains('id', $applicantId) || $group->applicant_id == $applicantId;
+
+            if (!$isMember) {
+                return redirect()->back()->with('error', 'You are not a member of this group.');
+            }
+
+        // Fetch the applicant and their personal info
+        $applicant = RegisterModel::with('personal_info')->find($applicantId);
+        $personalInfoId = $applicant->personal_info->id ?? null;
+
+        // Validate input
+        $validated = $request->validate([
+            'title'   => 'required|string|max:255',
+            'content' => 'required|string',
+            'image'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        // Handle image upload
+        $imagePath = null;
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('group_posts', 'public');
+            }
+
+        // Create post
+        GroupPost::create([
+            'title'             => $validated['title'],
+            'content'           => $validated['content'],
+            'image_path'        => $imagePath,
+            'group_community_id'=> $groupId,
+            'applicant_id'      => $applicantId,
+            'personal_info_id'  => $personalInfoId,
+        ]);
+
+        return redirect()->back()->with('success', 'Post added successfully.');
+    }
+
+
+    //View the specific group //SI applicant toj
+    public function ViewSpecificGroup($id){
+        $applicantId = session('applicant_id');
+
+        $group = Group::with([
+            'personalInfo',
+            'members.personal_info'
+        ])->withCount('members')->find($id);
+
+            if (!$group) {
+                return redirect()->back()->with('error', 'Group not found.');
+            }
+
+        $retrievePosts = GroupPost::with([
+            'work_background',
+            'likes',
+            'personalInfo',
+            'comments.personal_info',
+            'comments.applicant.work_background'
+        ])
+        ->withCount('comments') // <- this adds $post->comments_count
+        ->where('group_community_id', $id)
+        ->latest()
+        ->get();
+
+        $members = $group->members->filter(fn($member) =>
+        $member->pivot->status === 'approved' && $member->id !== $group->applicant_id
+        );
+
+        return view('applicant.community_form.viewspecificgroup', compact(
+         'group', 'members', 'applicantId', 'retrievePosts'
+        ));
+    }
+
+
+    // View groups created by the logged-in applicant
+    public function ViewGroupByCreator() {
+        $applicantId = session('applicant_id');
+
+        $listOfGroups = Group::with('personalInfo')
+            ->withCount('members')
+            ->where('applicant_id', $applicantId) // Only groups created by the current applicant
+            ->orderByDesc('created_at')
+            ->get();
+
+        return view('applicant.community_form.viewgroupwhocreated', compact('listOfGroups'));
+    }
+
+    //delete the group by applciant who created it
+    public function DeleteGroupByCreator($id) {
+
+        $group = Group::findOrFail($id);
+
+        // Only the creator can delete
+            if ($group->applicant_id !== session('applicant_id')) {
+                 return redirect()->back()->with('error', 'Unauthorized action.');
+            }
+
+        $group->delete();
+
+        return redirect()->route('applicant.forum.viewgroupcreator.display')->with('success', 'Group deleted successfully.');
+    }
+
+
+
+    //View the group by my created group co,,unities page //Creator
+    public function ViewGroupByCreatorPage($id){
+        $applicantId = session('applicant_id');
+
+        // Load group with creator info and members
+        $group = Group::with([
+            'personalInfo',
+            'members.personal_info'
+        ])->withCount('members')->find($id);
+
+            if (!$group) {
+                return redirect()->back()->with('error', 'Group not found.');
+            }
+
+        // Get posts with comments and commenter info
+        $retrievePosts = GroupPost::with([
+            'personalInfo', // author of the post
+            'comments.personal_info' // eager-load all comments and the commenter’s info
+        ])
+        ->where('group_community_id', $id)
+        ->latest()
+        ->get();
+
+        // Filter only approved members
+        $members = $group->members->filter(function ($member) use ($group) {
+            return $member->pivot->status === 'approved' && $member->id !== $group->applicant_id;
+        });
+
+        return view('applicant.community_form.viewspecificgroupbycreator', compact('group','members','applicantId','retrievePosts' ));
+
+    }
+
+    //Add post for specific group forum in my created group co,,unities page
+    public function AddPostGroupSpecific(Request $request, $groupId){
+        $applicantId = session('applicant_id');
+
+        // Load the group with its members
+        $group = Group::with('members')->find($groupId);
+
+            if (!$group) {
+                return redirect()->back()->with('error', 'Group not found.');
+            }
+
+        // Check if the applicant is a member or the group creator
+        $isMember = $group->members->contains('id', $applicantId) || $group->applicant_id == $applicantId;
+
+            if (!$isMember) {
+                return redirect()->back()->with('error', 'You are not a member of this group.');
+            }
+
+        // Fetch the applicant and their personal info
+        $applicant = RegisterModel::with('personal_info')->find($applicantId);
+        $personalInfoId = $applicant->personal_info->id ?? null;
+
+        // Validate input
+        $validated = $request->validate([
+            'title'   => 'required|string|max:255',
+            'content' => 'required|string',
+            'image'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        // Handle image upload
+        $imagePath = null;
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('group_posts', 'public');
+            }
+
+        // Create post
+        GroupPost::create([
+            'title'             => $validated['title'],
+            'content'           => $validated['content'],
+            'image_path'        => $imagePath,
+            'group_community_id'=> $groupId,
+            'applicant_id'      => $applicantId,
+            'personal_info_id'  => $personalInfoId,
+        ]);
+
+        return redirect()->back()->with('success', 'Post added successfully.');
+    }
+
+
+    //Add comment for group community forum 
+    public function AddCommentGroupSpecific(Request $request, $groupId){
+        $applicantId = session('applicant_id');
+
+        // Load the group with its members
+        $group = Group::with('members')->find($groupId);
+
+            if (!$group) {
+                return redirect()->back()->with('error', 'Group not found.');
+            }
+
+        // Check if the applicant is a member or the group creator
+        $isMember = $group->members->contains('id', $applicantId) || $group->applicant_id == $applicantId;
+
+            if (!$isMember) {
+                return redirect()->back()->with('error', 'You are not a member of this group.');
+            }
+
+        // Fetch the applicant and their personal info
+        $applicant = RegisterModel::with('personal_info' , 'work_background')->find($applicantId);
+        $personalInfoId = $applicant->personal_info->id ?? null;
+
+        // Validate input (including the post ID to comment on)
+        $validated = $request->validate([
+            'comment' => 'required|string',
+            'per_group_community_post_id' => 'required|exists:per_group_posts,id',
+        ]);
+
+        // Create comment
+        GroupComment::create([
+            'comment'                    => $validated['comment'],
+            'group_community_id'        => $groupId,
+            'applicant_id'              => $applicantId,
+            'personal_info_id'          => $personalInfoId,
+            'per_group_community_post_id' => $validated['per_group_community_post_id'],
+            'work_experience_id'        => $applicant->work_background->id ?? null
+        ]);
+
+        return redirect()->back()->with('success', 'Comment added successfully.');
+    }
+
+
+    //Delete comment 
+    public function DeleteCommentGroup($groupId, $commentId){
+        $group = Group::findOrFail($groupId); // ✅ Correct model
+
+        // Prevent deleting from private groups
+        if ($group->privacy === 'private') {
+            return redirect()->back()->with('error', 'You cannot delete comments in a private group.');
+        }
+
+        $comment = GroupComment::findOrFail($commentId);
+
+        // Only allow deletion by the comment owner
+        if ($comment->applicant_id !== session('applicant_id')) {
+            return redirect()->back()->with('error', 'You can only delete your own comment.');
+        }
+
+        $comment->delete();
+
+        return redirect()->route('applicant.forum.creatorviewpage.display', ['groupId' => $groupId])->with('success', 'Comment deleted successfully.');
+    }
+
+
+    //Add like for the group forum
+    public function AddLikeGroup(Request $request, $groupId, $postId){
+        $applicantId = session('applicant_id');
+
+        $applicant = RegisterModel::with('personal_info')->find($applicantId);
+            if (!$applicant || !$applicant->personal_info) {
+                return redirect()->back()->with('error', 'Applicant or personal info not found.');
+            }
+
+        $existingLike = GroupLike::where('group_community_id', $groupId)
+            ->where('per_group_community_post_id', $postId)
+            ->where('applicant_id', $applicantId)
+            ->first();
+
+             if ($existingLike) {
+                 $existingLike->delete();
+                    return redirect()->back()->with('success', 'Post unliked successfully.');
+                }
+
+        GroupLike::create([
+            'group_community_id' => $groupId,
+            'per_group_community_post_id' => $postId,
+            'applicant_id' => $applicantId,
+            'personal_info_id' => $applicant->personal_info->id,
+            'likes' => 1
+        ]);
+
+        return redirect()->back()->with('success', 'Post liked successfully.');
+    }
+
+
+    // My post forum edit page 
+    public function ShowPostPage($id){
+        $retrievedPosts = Post::findOrFail($id)->where('id', $id)->get();
+        return view('applicant.community_form.editforum' , compact('retrievedPosts'));
+    }
+
+    //Edit post forum  
+    public function EditPost(Request $request, $id){
+        // Retrieve the post by ID or throw 404 if not found
+        $post = Post::findOrFail($id);
+        // Validate input fields
+        $validated = $request->validate([
+            'post_title'   => 'required|string|max:100',
+            'post_topic'   => 'required|string|max:100',
+            'post_content' => 'required|string|max:800',
+            'post_media'   => 'nullable|file|mimes:jpg,jpeg,png,mp4,mov,avi|max:20480', // max 20MB
+        ]);
+        // Update basic fields
+        $post->title = $validated['post_title'];
+        $post->category = $validated['post_topic'];
+        $post->content = $validated['post_content'];
+
+        // If media is uploaded, store and update path
+        if ($request->hasFile('post_media')) {
+            $file = $request->file('post_media');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('post_media', $filename, 'public'); // Stored in storage/app/public/uploads/posts
+            $post->image_path = $path;
+        }
+        // Save updates to the database
+        $post->save();
+        // Redirect back to forum page with a success message
+        return redirect()->route('applicant.forum.viewpost.display')->with('success', 'Post updated successfully.');
+    }
+
+
+    //Add friend sa applicant 
+
+    public function AddFriend(Request $request, $id){
+        $applicantId = session('applicant_id');
+        $friendId = $id;
+
+        if (!RegisterModel::where('id', $friendId)->exists()) {
+            return redirect()->back()->with('error', 'The selected user does not exist.');
+        }
+
+        $alreadySent = AddFriend::where(function ($query) use ($applicantId, $friendId) {
+            $query->where('request_id', $applicantId)
+              ->where('receiver_id', $friendId);
+        })->orWhere(function ($query) use ($applicantId, $friendId) {
+            $query->where('request_id', $friendId)
+              ->where('receiver_id', $applicantId);
+        })->exists();
+
+        if ($alreadySent) {
+            return redirect()->back()->with('error', 'Friend request already sent or already friends.');
+        }
+
+        AddFriend::create([
+            'request_id' => $applicantId,
+            'receiver_id' => $friendId,
+            'status' => 'pending',
+    ]   );
+
+        return redirect()->back()->with('success', 'Friend request sent successfully.');
+    }
+
+    //Cancel friend request
+    public function CancelFriendRequest($id) {
+
+        $friendRequest = AddFriend::findOrFail($id);
+
+        if ($friendRequest->request_id == session('applicant_id') || $friendRequest->receiver_id == session('applicant_id')) {
+            $friendRequest->delete();
+            return redirect()->back()->with('success', 'Friend request cancelled.');
+        }
+        return redirect()->back()->with('error', 'Unauthorized action.');
+    }
+
+    //accept friend request
+    public function AcceptFriendRequest($id) {
+
+        $friendRequest = AddFriend::findOrFail($id);
+
+        if ($friendRequest->request_id == session('applicant_id') || $friendRequest->receiver_id == session('applicant_id')) {
+            $friendRequest->status = 'accepted';
+            $friendRequest->save();
+            return redirect()->back()->with('success', 'Friend request accepted.');
+        }
+
+        return redirect()->back()->with('error', 'Unauthorized action.');
+    }
+
+    //View Friend sa community forum
+public function ViewFriendlistPage(Request $request)
+{
+    $applicantID = session('applicant_id');
+
+    
+    $updatedLastSeen = RegisterModel::where('id', $applicantID)->update([
+        'last_seen' => now()
+    ]);
+
+    
+    $friend_id = $request->query('friend_id');
+
+    // If friend_id is present, mark messages from friend as read
+    if ($friend_id) {
+        SendMessage::where('sender_id', $friend_id)
+            ->where('receiver_id', $applicantID)
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+    }
+
+   
+    $retrievedFriends = AddFriend::with([
+        'sender.personal_info',
+        'receiver.personal_info',
+    ])
+    ->where('status', 'accepted')
+    ->where(function ($query) use ($applicantID) {
+        $query->where('request_id', $applicantID)
+              ->orWhere('receiver_id', $applicantID);
+    })
+    ->get();
+
+    // Retrieve messages (both sent and received)
+    $retrievedMessages = SendMessage::with('sender.personal_info', 'receiver.personal_info')
+        ->where(function ($query) use ($applicantID) {
+            $query->where('sender_id', $applicantID)
+                  ->orWhere('receiver_id', $applicantID);
+        })
+        ->get();
+
+    // Applicant info
+    $retrievedApplicantInfo = RegisterModel::with(['personal_info', 'work_background', 'template'])
+        ->find($applicantID);
+
+
+        $friendRequests = AddFriend::with(['sender.personal_info', 'sender.work_background'])
+    ->where('receiver_id', $applicantID)
+    ->where('status', 'pending')
+    ->get();
+
+
+
+
+    $receiver_id = $friend_id;
+    return view('applicant.friendlist.friendlist', compact(
+        'retrievedApplicantInfo',
+        'retrievedFriends',
+        'applicantID',
+        'retrievedMessages',
+        'updatedLastSeen',
+        'receiver_id',
+        'friendRequests'
+    ));
+}
+
+
+
+
+}
