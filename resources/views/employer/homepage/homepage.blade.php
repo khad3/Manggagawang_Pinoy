@@ -97,7 +97,27 @@
 
     <!-- Main Content -->
     <div class="main-content">
+        <br>
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show mt-3" role="alert" id="success-alert">
+                <center>{{ session('success') }}</center>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <script>
+                // Hide the alert after 5 seconds (5000 ms)
+                setTimeout(() => {
+                    let alert = document.getElementById('success-alert');
+                    if (alert) {
+                        alert.classList.remove('show'); // fade out
+                        alert.classList.add('fade'); // keep bootstrap fade animation
+                        setTimeout(() => alert.remove(), 500); // remove from DOM after fade
+                    }
+                }, 2000); // change to 2000 for 2 seconds
+            </script>
+        @endif
         <!-- Welcome Section -->
+        <br>
         <div class="welcome-header">
             <div class="welcome-title">Welcome back, {{ $retrievePersonal->first_name ?? 'Employer' }}
                 {{ $retrievePersonal->last_name ?? '' }}! 👋</div>
@@ -493,20 +513,7 @@
                 </div>
             </div>
 
-            <!-- Job Posts Grid -->
-            @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                    <i class="fas fa-check-circle me-1"></i> {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
 
-            @if (session('deleted'))
-                <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-                    <i class="fas fa-trash-alt me-1"></i> {{ session('deleted') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
             <div class="job-cards-grid">
                 @forelse ($JobPostRetrieved as $jobDetail)
                     <div class="job-card">
