@@ -8,10 +8,49 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
     <link href="{{ asset('css/applicant/employer/hiringpreference.css') }}" rel="stylesheet" />
+    <link href="{{ asset('css/applicant/landingpage/landingpage.css') }}" rel="stylesheet" />
 </head>
 
 <body>
-    <div class="registration-container">
+    <nav>
+        <div class="navbar-container">
+            <div class="nav-logo d-flex align-items-center">
+                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2" style="text-decoration:none;">
+                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home"/>
+                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2"/>
+                </a>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#">Services</a></li>
+                <li><a href="{{ route('display.topworker') }}">Top Workers</a></li>
+                <li><a href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
+                <li><a href="{{ route('display.aboutus') }}">About Us</a></li>
+                <li><button class="sign-in-b">Sign in</button></li>
+
+                <!-- Sign Up Dropdown -->
+                <li class="dropdown">
+                    <button class="sign-up-b">Sign up ▾</button>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ route('applicant.register.display') }}">As Applicant</a></li>
+                        <li><a href="{{ route('employer.register.display') }}">As Employer</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <div class="hamburger" id="hamburger">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+    </nav>
+
+
+            <!-- Step Content (single card only now) -->
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card form-card">
+                            <div class="registration-container">
         <div class="container">
             <!-- Header -->
             <div class="text-center mb-5">
@@ -52,7 +91,7 @@
                         </div>
                         <div class="step-line step-line-completed" id="line2"></div>
 
-                        <!-- Step 4 -->
+                        <!-- Step 3 -->
                         <div class="text-center">
                             <div class="step-indicator step-active" id="step3">3</div>
                             <div class="mt-2">
@@ -62,7 +101,7 @@
                         </div>
                         <div class="step-line" id="line3"></div>
 
-                        <!-- Step 5 -->
+                        <!-- Step 4 -->
                         <div class="text-center">
                             <div class="step-indicator step-inactive" id="step4">4</div>
                             <div class="mt-2">
@@ -73,11 +112,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Step Content -->
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <div class="card form-card">
                         <div class="card-header bg-white border-0 py-4">
                             <h3 class="card-title mb-2">Hiring Preferences</h3>
                             <p class="text-muted mb-0">
@@ -105,7 +139,7 @@
                                 </div>
                             @endif
 
-                            {{-- Optional: Show form validation errors --}}
+                            {{-- Validation errors --}}
                             @if ($errors->any())
                                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                     <i class="fas fa-times-circle me-2"></i>
@@ -120,11 +154,13 @@
                                 </div>
                             @endif
 
+
+
                             <form id="preferencesForm" action="{{ route('employer.hiringpreference.store') }}"
                                 method="POST">
                                 @csrf
                                 <div class="tesda-priority">
-                                    <h5 class="text-warning mb-3">
+                                    <h5 class="">
                                         <i class="fas fa-certificate me-2"></i>TESDA Certification Priority
                                     </h5>
 
@@ -426,7 +462,7 @@
                                     </div>
                                 </div>
                             </form>
-                        </div>
+
                     </div>
                 </div>
             </div>

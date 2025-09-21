@@ -8,10 +8,44 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
     <link href="{{ asset('css/applicant/employer/reviewregistration.css') }}" rel="stylesheet" />
+     <link href="{{ asset('css/applicant/landingpage/landingpage.css') }}" rel="stylesheet" />
 
 </head>
 
 <body>
+   <nav>
+        <div class="navbar-container">
+            <div class="nav-logo d-flex align-items-center">
+                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2" style="text-decoration:none;">
+                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home"/>
+                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2"/>
+                </a>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#">Services</a></li>
+                <li><a href="{{ route('display.topworker') }}">Top Workers</a></li>
+                <li><a href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
+                <li><a href="{{ route('display.aboutus') }}">About Us</a></li>
+                <li><button class="sign-in-b">Sign in</button></li>
+
+                <!-- Sign Up Dropdown -->
+                <li class="dropdown">
+                    <button class="sign-up-b">Sign up ▾</button>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ route('applicant.register.display') }}">As Applicant</a></li>
+                        <li><a href="{{ route('employer.register.display') }}">As Employer</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <div class="hamburger" id="hamburger">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+    </nav>
+
     <div class="registration-container">
         <div class="container">
             <!-- Header -->
