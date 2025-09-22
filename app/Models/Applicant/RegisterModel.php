@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Applicant\PersonalModel;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Models\Admin\SuspensionModel;
+use App\Models\Employer\SendMessageModel;
 use Illuminate\Notifications\Notifiable;
 use Carbon\Carbon;
 
@@ -77,7 +78,10 @@ public function suspension()
 
 }
 
-
+public function messages()
+{
+    return $this->hasMany(SendMessageModel::class, 'applicant_id');
+}
 
 
 

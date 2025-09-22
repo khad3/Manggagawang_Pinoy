@@ -10,6 +10,8 @@ use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Applicant\ProfileController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\TesdaOfficer\TesdaOfficerController;
+use App\Http\Controllers\Employer\SendMessageController;
+use App\Models\Employer\SendMessageModel;
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\App;
@@ -227,21 +229,26 @@ Route::middleware(['employer.authenticate'])->prefix('employer')->group(function
     Route::post('logout', [EmployerController::class, 'logout'])->name('employer.logout.store');
 
     //show the applicants profile modal
-    Route::get('employer/applicant/{id}/profile', [EmployerController::class, 'viewApplicantProfile'])->name('employer.applicantsprofile.display');
+    Route::get('applicant/{id}/profile', [EmployerController::class, 'viewApplicantProfile'])->name('employer.applicantsprofile.display');
 
     //Add job post
-    Route::post('employer/add-job-post', [EmployerController::class, 'addJobPost'])->name('employer.jobsposts.store');
-    Route::put('employer/job-post/{id}/update', [EmployerController::class, 'updateJobStatus'])->name('employer.updatejobpost.store');
-    Route::delete('employer/job-post/{id}/delete', [EmployerController::class, 'deleteJobPost'])->name('employer.deletejobpost.store');
+    Route::post('add-job-post', [EmployerController::class, 'addJobPost'])->name('employer.jobsposts.store');
+    Route::put('job-post/{id}/update', [EmployerController::class, 'updateJobStatus'])->name('employer.updatejobpost.store');
+    Route::delete('job-post/{id}/delete', [EmployerController::class, 'deleteJobPost'])->name('employer.deletejobpost.store');
     //Pending applicants
-    Route::put('employer/approve-applicant{id}', [EmployerController::class, 'approveApplicant'])->name('employer.approveapplicant.store');
-    Route::put('employer/reject-applicant/{id}', [EmployerController::class, 'rejectApplicant'])->name('employer.rejectapplicant.store');
+    Route::put('approve-applicant{id}', [EmployerController::class, 'approveApplicant'])->name('employer.approveapplicant.store');
+    Route::put('reject-applicant/{id}', [EmployerController::class, 'rejectApplicant'])->name('employer.rejectapplicant.store');
 
 
     //Send rating 
-    Route::post('employer/send-rating', [EmployerController::class, 'sendReview'])->name('employer.sendrating.store');
+    Route::post('send-rating', [EmployerController::class, 'sendReview'])->name('employer.sendrating.store');
 
-    
+
+    //Send message to applicant
+    Route::post('send-message', [SendMessageController::class, 'sendMessage'])->name('employer.sendmessage.store');
+    Route::get('conversation/{employerId}/{applicantId}', [SendMessageController::class, 'getConversation'])
+     ->name('conversation.get');
+
 });
 
 

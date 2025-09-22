@@ -18,6 +18,7 @@ use App\Models\Employer\WorkerRequirementModel as WorkerRequirement;
 use App\Models\Employer\SpecialRequirementModel as SpecialRequirement;
 use App\Models\Employer\InterviewScreeningModel as InterviewScreening;
 use App\Models\Employer\SendRatingModel as Rating;
+use App\Models\Employer\SendMessageModel as SendMessage;
 
 use App\Models\Applicant\PersonalModel as Applicants;
 use App\Models\Applicant\ApplicantPortfolioModel as ApplicantPortfolioModel;
@@ -514,10 +515,18 @@ public function ShowHomepage() {
     $retrievedApplicantApproved = ApplyJobModel::where('status', 'approved')->count();
     
   
+   $retrieveMessages = SendMessage::with(['applicant.personal_info'])
+    ->where('employer_id', $employerId)
+    ->orderBy('created_at', 'asc')
+    ->get();
 
 
-
-    return view('employer.homepage.homepage' , compact('retrievePersonal' , 'retrievedApplicants' , 'JobPostRetrieved' , 'retrievedApplicantApproved'));
+    return view('employer.homepage.homepage' , compact(
+        'retrievePersonal' , 
+    'retrievedApplicants' ,
+                'JobPostRetrieved' , 
+                'retrievedApplicantApproved',
+                'retrieveMessages'));
 
 }
 
