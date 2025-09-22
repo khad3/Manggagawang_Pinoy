@@ -67,23 +67,18 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
    // routes/web.php
     Route::post('notifications/{id}/read', [ApplicantController::class, 'ReadNotification']);
     Route::post('/notifications/mark-all-read', [ApplicantController::class, 'ReadlAllnotifications']);
-
-
-
+    //Community Forum
     Route::get('communityforum', [CommunityForumController::class, 'ShowForum'])->name('applicant.forum.display');
     Route::post('communityforum/create', [CommunityForumController::class, 'CreatePost'])->name('applicant.forum.store');
     Route::delete('communityforum/delete/{id}', [CommunityForumController::class, 'DeletePost'])->name('applicant.forum.delete');
-
     Route::get('communityforum/addcomment', [CommunityForumController::class, 'ShowPost'])->name('applicant.forum.comments.display');
     Route::post('communityforum/addcomment', [CommunityForumController::class, 'AddComments'])->name('applicant.forum.comments.store');
     Route::delete('communityforum/deletecomment/{id}', [CommunityForumController::class, 'DeleteComment'])->name('applicant.forum.comments.delete');
     Route::post('communityforum/replycomment', [CommunityForumController::class, 'ReplyComments'])->name('applicant.forum.replycomments.store');
     Route::delete('communityforum/replycomment/delete/{id}', [CommunityForumController::class, 'DeleteReplyComment'])->name('applicant.forum.replycomments.delete');
-
     Route::post('communityforum/like{id}', [CommunityForumController::class, 'LikePost'])->name('applicant.forum.likes.store');
     Route::get('communityforum/viewpost', [CommunityForumController::class, 'ViewMyPost'])->name('applicant.forum.viewpost.display');
-
-    // Group forum
+    // roup foru
     Route::get('communityforum/create-group', [CommunityForumController::class, 'ShowGroupForum'])->name('applicant.forum.group.display');
     Route::post('communityforum/create-group', [CommunityForumController::class, 'AddGroupForum'])->name('applicant.forum.group.store');
     Route::get('communityforum/group-community', [CommunityForumController::class, 'DisplayGroupForum'])->name('applicant.forum.groupcommunity.display');
@@ -167,32 +162,32 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
 
 
 
-    // Portfolio / YouTube
-    Route::get('/applicant-portfolio/{applicant_id}', function($applicant_id) {
-        return DB::table('applicants_portfolio')
-            ->where('applicant_id', $applicant_id)
-            ->get();
-    });
+    // // Portfolio / YouTube
+    // Route::get('/applicant-portfolio/{applicant_id}', function($applicant_id) {
+    //     return DB::table('applicants_portfolio')
+    //         ->where('applicant_id', $applicant_id)
+    //         ->get();
+    // });
 
-    Route::get('/applicant-youtube/{applicant_id}', function($applicant_id) {
-        return DB::table('applicants_sample_work_url')
-            ->where('applicant_id', $applicant_id)
-            ->get();
-    });
+    // Route::get('/applicant-youtube/{applicant_id}', function($applicant_id) {
+    //     return DB::table('applicants_sample_work_url')
+    //         ->where('applicant_id', $applicant_id)
+    //         ->get();
+    // });
 
-    Route::post('/save-qr-data', function(Request $request) {
-        DB::table('ar_qr_logs')->insert([
-            'applicant_id' => $request->applicant_id,
-            'generated_at' => now()
-        ]);
-        return response()->json(['success' => true]);
-    });
+    // Route::post('/save-qr-data', function(Request $request) {
+    //     DB::table('ar_qr_logs')->insert([
+    //         'applicant_id' => $request->applicant_id,
+    //         'generated_at' => now()
+    //     ]);
+    //     return response()->json(['success' => true]);
+    // });
 
-    // AR page
-    Route::get('/mobile-ar', function(Request $request) {
-        $data = json_decode($request->get('data'), true);
-        return view('mobile-ar', compact('data'));
-    });
+    // // AR page
+    // Route::get('/mobile-ar', function(Request $request) {
+    //     $data = json_decode($request->get('data'), true);
+    //     return view('mobile-ar', compact('data'));
+    // });
 });
 
 //Public routes for employer
@@ -270,27 +265,22 @@ Route::prefix('admin')->group(function () {
 });
 
 Route::middleware(['admin.authenticate'])->prefix('admin')->group(function () {
-     Route::get('homepage', [AdminController::class, 'homepageDisplay'])->name('admin.homepage.display');
 
-      Route::post('logout', [AdminController::class, 'logout'])->name('admin.logout.store');
-
-
+    Route::get('homepage', [AdminController::class, 'homepageDisplay'])->name('admin.homepage.display');
+    Route::post('logout', [AdminController::class, 'logout'])->name('admin.logout.store');
     //Officer
     Route::post('add-officer', [AdminController::class, 'addTesdaOfficer'])->name('admin.addofficer.store');
     Route::put('officer/{id}/update', [AdminController::class, 'updateTesdaOfficer'])->name('admin.updateofficer');
     Route::delete('officer/{id}/delete', [AdminController::class, 'deleteTesdaOfficer'])->name('admin.deleteofficer');
-
     //Announcement
     Route::post('create-announcement', [AnnouncementController::class, 'createAnnouncement'])->name('admin.create-announcement');
     Route::delete('delete-announcement/{id}', [AnnouncementController::class, 'deleteAnnouncement'])->name('admin.delete-announcement.destroy');
     Route::put('update-announcement/{id}', [AnnouncementController::class, 'updateAnnouncement'])->name('admin.update-announcement');
-
     //Suspension
     Route::post('suspend-employer', [UserManagementController::class, 'suspendUser'])->name('admin.suspend-user.store');
     Route::put('users/{id}/ban', [UserManagementController::class, 'banUser'])->name('admin.ban-user.store');
     Route::put('users/{id}/unban', [UserManagementController::class, 'unbanUser'])->name('admin.unban-user.store');
     Route::delete('users/{id}/delete', [UserManagementController::class, 'deleteUser'])->name('admin.delete-user.destroy');
-
     //Excel
     Route::get('export', [UserManagementController::class, 'exportData'])->name('admin.export');
 

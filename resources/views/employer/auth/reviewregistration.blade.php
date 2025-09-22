@@ -370,14 +370,6 @@
 
                                     </div>
                                 </div>
-                                <!-- <div class="col-md-6">
-                    <strong>Communication:</strong>
-                    <div class="mt-1">
-                   
-                      <i class="fas fa-check text-success me-2"></i>Email notifications<br />
-                      <i class="fas fa-check text-success me-2"></i>SMS notifications
-                    </div>
-                  </div> -->
                             </div>
 
                             <div class="mt-3">

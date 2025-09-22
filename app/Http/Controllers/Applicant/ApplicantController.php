@@ -15,6 +15,7 @@ use App\Models\Applicant\TemplateModel as Template;
 use App\Models\Applicant\ApplicantFriendModel as AddFriend;
 use App\Models\Applicant\SendMessageModel as SendMessage;
 use App\Models\Applicant\SavedJobModel as SavedJob;
+use App\Models\Employer\SendMessageModel as EmployerSendMessage;
 
 use App\Models\Applicant\ApplyJobModel as ApplyJob;
 use App\Models\Admin\AnnouncementModel;
@@ -457,6 +458,12 @@ if ($suspendedApplicant && $suspension) {
 }
 
 
+//Retrieve the employer messages
+$messages = EmployerSendMessage::with(['employer.addressCompany', 'employer.personal_info'])
+    ->where('applicant_id', $applicantId)
+    ->get();
+
+
    
     return view('applicant.homepage.homepage', compact(
         'retrievePersonal',
@@ -471,7 +478,8 @@ if ($suspendedApplicant && $suspension) {
         'notifications',
         'unreadCount',
         'isSuspended',
-        'suspension'
+        'suspension',
+        'messages'
        
     ));
 }

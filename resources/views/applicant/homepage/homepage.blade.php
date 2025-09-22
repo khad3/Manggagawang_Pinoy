@@ -18,6 +18,7 @@
     <!-- fav icon -->
     <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
     <link rel="stylesheet" href="{{ asset('css/applicant/homepage.css') }}">
+
 </head>
 
 <body>
@@ -173,76 +174,880 @@
                     <div class="nav-dropdown">
                         <button class="nav-icon" onclick="toggleDropdown('messagesDropdown')">
                             <i class="bi bi-chat-dots"></i>
-                            <span class="nav-badge" id="messagesBadge">3</span>
+                            <span class="nav-badge"
+                                id="messagesBadge">{{ $messages->where('status', 'unread')->count() }}</span>
                         </button>
+
                         <div class="dropdown-menu" id="messagesDropdown">
                             <div class="dropdown-header">
                                 <h6>Messages</h6>
                                 <button class="mark-all-read" onclick="markAllAsRead('messages')">Mark all as
                                     read</button>
                             </div>
+
                             <div class="dropdown-content">
-                                <div class="message-item unread" data-id="1">
-                                    <div class="message-avatar">
-                                        <img src="https://via.placeholder.com/40x40/667eea/white?text=TC"
-                                            alt="TechCorp">
-                                    </div>
-                                    <div class="message-content">
-                                        <div class="message-header">
-                                            <span class="sender-name">Sarah Johnson</span>
-                                            <span class="company-name">TechCorp Solutions</span>
-                                            <span class="message-time">2 min ago</span>
+                                <div class="messages-list">
+                                    @forelse($messages->groupBy('employer.id') as $employerId => $employerMessages)
+                                        @php
+                                            $employer = $employerMessages->first()->employer;
+                                            $unreadCount = $employerMessages->where('status', 'unread')->count();
+                                            $lastMessage = $employerMessages->sortByDesc('created_at')->first();
+                                            $totalMessages = $employerMessages->count();
+                                        @endphp
+
+                                        <div class="employer-item {{ $unreadCount > 0 ? 'unread' : '' }}"
+                                            data-employer-id="{{ $employerId }}"
+                                            onclick="openChatWithEmployer({{ $employerId }}, '{{ addslashes($employer->personal_info->first_name ?? 'N/A') }}', '{{ addslashes($employer->personal_info->last_name ?? 'N/A') }}', '{{ addslashes($employer->addressCompany->company_name ?? 'Company') }}')">
+
+                                            @if ($unreadCount > 0)
+                                                <div class="unread-indicator"></div>
+                                            @endif
+
+                                            <div class="message-avatar">
+                                                @if ($employer->addressCompany->company_logo)
+                                                    <img src="{{ $employer->addressCompany->company_logo }}"
+                                                        alt="{{ $employer->addressCompany->company_name }}">
+                                                @else
+                                                    <div class="avatar-placeholder">
+                                                        {{ strtoupper(substr($employer->addressCompany->company_name ?? 'C', 0, 1)) }}
+                                                    </div>
+                                                @endif
+                                            </div>
+
+                                            <div class="message-content">
+                                                <div class="message-header">
+                                                    <span class="sender-name">
+                                                        {{ $employer->personal_info->first_name ?? 'N/A' }}
+                                                        {{ $employer->personal_info->last_name ?? 'N/A' }}
+                                                    </span>
+                                                    <span class="company-name">
+                                                        {{ $employer->addressCompany->company_name ?? 'Company' }}
+                                                    </span>
+                                                    <div class="message-meta">
+                                                        <span
+                                                            class="message-time">{{ $lastMessage->created_at->diffForHumans() }}</span>
+                                                        @if ($unreadCount > 0)
+                                                            <span class="unread-count">{{ $unreadCount }}</span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                <div class="message-preview">
+                                                    {{ $totalMessages }} message{{ $totalMessages > 1 ? 's' : '' }} •
+                                                    {{ Str::limit($lastMessage->message, 60) }}
+                                                </div>
+                                            </div>
+
+                                            <button class="message-actions"
+                                                onclick="event.stopPropagation(); openChatWithEmployer({{ $employerId }}, '{{ addslashes($employer->personal_info->first_name ?? 'N/A') }}', '{{ addslashes($employer->personal_info->last_name ?? 'N/A') }}', '{{ addslashes($employer->addressCompany->company_name ?? 'Company') }}')"
+                                                title="Open chat">
+                                                <i class="bi bi-chat-square-text"></i>
+                                            </button>
                                         </div>
-                                        <div class="message-preview">Your application for Senior Developer position has
-                                            been reviewed...</div>
-                                    </div>
-                                    <button class="message-actions" onclick="showMessageModal(1)">
-                                        <i class="bi bi-eye"></i>
-                                    </button>
-                                </div>
-                                <div class="message-item unread" data-id="2">
-                                    <div class="message-avatar">
-                                        <img src="https://via.placeholder.com/40x40/764ba2/white?text=GE"
-                                            alt="GreenEnergy">
-                                    </div>
-                                    <div class="message-content">
-                                        <div class="message-header">
-                                            <span class="sender-name">Mike Chen</span>
-                                            <span class="company-name">GreenEnergy Innovations</span>
-                                            <span class="message-time">1 hour ago</span>
+                                    @empty
+                                        <div class="no-messages">
+                                            <i class="bi bi-chat-dots"></i>
+                                            <p>No conversations yet</p>
                                         </div>
-                                        <div class="message-preview">We'd like to schedule an interview for the
-                                            Environmental Engineer role...</div>
-                                    </div>
-                                    <button class="message-actions" onclick="showMessageModal(2)">
-                                        <i class="bi bi-eye"></i>
-                                    </button>
+                                    @endforelse
                                 </div>
-                                <div class="message-item" data-id="3">
-                                    <div class="message-avatar">
-                                        <img src="https://via.placeholder.com/40x40/2563eb/white?text=FF"
-                                            alt="FinanceFirst">
-                                    </div>
-                                    <div class="message-content">
-                                        <div class="message-header">
-                                            <span class="sender-name">Lisa Wang</span>
-                                            <span class="company-name">FinanceFirst Bank</span>
-                                            <span class="message-time">3 hours ago</span>
-                                        </div>
-                                        <div class="message-preview">Thank you for your interest in our Financial
-                                            Analyst position...</div>
-                                    </div>
-                                    <button class="message-actions" onclick="showMessageModal(3)">
-                                        <i class="bi bi-eye"></i>
-                                    </button>
+
+                                <div class="dropdown-footer">
+                                    <a href="#" class="view-all-link" onclick="openAllChats()">
+                                        <i class="bi bi-arrow-right"></i>
+                                        Open Chat System
+                                    </a>
                                 </div>
-                            </div>
-                            <div class="dropdown-footer">
-                                <a href="#" class="view-all-link">View All Messages</a>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Chat Modal/System -->
+                    <div id="chatModal" class="chat-modal" style="display: none;">
+                        <div class="chat-modal-overlay" onclick="closeChatModal()"></div>
+                        <div class="chat-modal-content">
+                            <div class="chat-container">
+                                <!-- Employers Sidebar -->
+                                <div class="employers-sidebar">
+                                    <div class="sidebar-header">
+                                        <h2>Messages</h2>
+                                        <p>Conversations with employers</p>
+                                        <button class="close-chat-btn" onclick="closeChatModal()">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="employers-list" id="employersList">
+                                        @forelse($messages->groupBy('employer.id') as $employerId => $employerMessages)
+                                            @php
+                                                $employer = $employerMessages->first()->employer;
+                                                $unreadCount = $employerMessages->where('status', 'unread')->count();
+                                                $lastMessage = $employerMessages->sortByDesc('created_at')->first();
+                                            @endphp
+
+                                            <div class="employer-list-item {{ $unreadCount > 0 ? 'has-unread' : '' }}"
+                                                data-employer-id="{{ $employerId }}"
+                                                onclick="loadConversation({{ $employerId }})">
+
+                                                <div class="employer-avatar">
+                                                    @if ($employer->addressCompany->company_logo)
+                                                        <img src="{{ $employer->addressCompany->company_logo }}"
+                                                            alt="{{ $employer->addressCompany->company_name }}">
+                                                    @else
+                                                        <div class="avatar-placeholder">
+                                                            {{ strtoupper(substr($employer->addressCompany->company_name ?? 'C', 0, 1)) }}
+                                                        </div>
+                                                    @endif
+                                                </div>
+
+                                                <div class="employer-info">
+                                                    <div class="employer-name">
+                                                        {{ $employer->personal_info->first_name ?? 'N/A' }}
+                                                        {{ $employer->personal_info->last_name ?? 'N/A' }}
+                                                    </div>
+                                                    <div class="company-name">
+                                                        {{ $employer->addressCompany->company_name ?? 'Company' }}
+                                                    </div>
+                                                    <div class="last-message-time">
+                                                        {{ $lastMessage->created_at->diffForHumans() }}
+                                                    </div>
+                                                </div>
+
+                                                @if ($unreadCount > 0)
+                                                    <span class="unread-count">{{ $unreadCount }}</span>
+                                                @endif
+                                            </div>
+                                        @empty
+                                            <div class="no-employers">
+                                                <i class="bi bi-chat-dots"></i>
+                                                <p>No conversations yet</p>
+                                            </div>
+                                        @endforelse
+                                    </div>
+                                </div>
+
+                                <!-- Chat Area -->
+                                <div class="chat-area">
+                                    <!-- Chat Header -->
+                                    <div class="chat-header" id="chatHeader" style="display: none;">
+                                        <div class="current-employer-avatar">
+                                            <div class="avatar-placeholder" id="currentAvatar">E</div>
+                                        </div>
+                                        <div class="current-employer-info">
+                                            <h3 id="currentEmployerName">Select an employer</h3>
+                                            <p id="currentCompanyName">to start chatting</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Messages Container -->
+                                    <div class="messages-container" id="messagesContainer">
+                                        <div class="no-conversation">
+                                            <i class="bi bi-chat-square-dots"></i>
+                                            <h3>Select a conversation</h3>
+                                            <p>Choose an employer from the list to view your messages</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Reply Area -->
+                                    <div class="reply-area" id="replyArea" style="display: none;">
+                                        <div class="reply-container">
+                                            <textarea class="reply-input" id="replyInput" placeholder="Type your reply..." rows="1"></textarea>
+                                            <button class="send-btn" id="sendBtn" disabled>
+                                                <i class="bi bi-send"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <style>
+                        /* Dropdown Styles */
+                        .dropdown-content .messages-list {
+                            max-height: 400px;
+                            overflow-y: auto;
+                        }
+
+                        .employer-item {
+                            display: flex;
+                            align-items: flex-start;
+                            padding: 12px 16px;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                            border-left: 3px solid transparent;
+                            position: relative;
+                            gap: 10px;
+                        }
+
+                        .employer-item:hover {
+                            background: #f8fafc;
+                            transform: translateX(2px);
+                        }
+
+                        .employer-item.unread {
+                            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+                            border-left-color: #f59e0b;
+                        }
+
+                        .employer-item:not(:last-child) {
+                            border-bottom: 1px solid #f1f5f9;
+                        }
+
+                        .message-avatar {
+                            width: 40px;
+                            height: 40px;
+                            border-radius: 10px;
+                            overflow: hidden;
+                            flex-shrink: 0;
+                        }
+
+                        .message-avatar img {
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                        }
+
+                        .avatar-placeholder {
+                            width: 100%;
+                            height: 100%;
+                            background: linear-gradient(135deg, #667eea, #764ba2);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-weight: 600;
+                            font-size: 14px;
+                        }
+
+                        .message-content {
+                            flex: 1;
+                            min-width: 0;
+                        }
+
+                        .sender-name {
+                            font-size: 14px;
+                            font-weight: 600;
+                            color: #1e293b;
+                            display: block;
+                            margin-bottom: 2px;
+                        }
+
+                        .company-name {
+                            font-size: 12px;
+                            color: #64748b;
+                            font-weight: 500;
+                            display: block;
+                            margin-bottom: 4px;
+                        }
+
+                        .message-meta {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: 4px;
+                        }
+
+                        .message-time {
+                            font-size: 11px;
+                            color: #94a3b8;
+                        }
+
+                        .unread-count {
+                            background: #ef4444;
+                            color: white;
+                            font-size: 10px;
+                            font-weight: 600;
+                            padding: 2px 6px;
+                            border-radius: 10px;
+                            min-width: 16px;
+                            text-align: center;
+                        }
+
+                        .message-preview {
+                            font-size: 12px;
+                            color: #64748b;
+                            line-height: 1.3;
+                            display: -webkit-box;
+                            -webkit-line-clamp: 1;
+                            -webkit-box-orient: vertical;
+                            overflow: hidden;
+                        }
+
+                        .message-actions {
+                            background: none;
+                            border: none;
+                            color: #64748b;
+                            font-size: 14px;
+                            cursor: pointer;
+                            padding: 6px;
+                            border-radius: 6px;
+                            transition: all 0.3s ease;
+                        }
+
+                        .message-actions:hover {
+                            background: #f1f5f9;
+                            color: #667eea;
+                        }
+
+                        .unread-indicator {
+                            position: absolute;
+                            top: 8px;
+                            right: 8px;
+                            width: 8px;
+                            height: 8px;
+                            background: #ef4444;
+                            border-radius: 50%;
+                            border: 2px solid white;
+                        }
+
+                        /* Chat Modal Styles */
+                        .chat-modal {
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            z-index: 1000;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+
+                        .chat-modal-overlay {
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            background: rgba(0, 0, 0, 0.5);
+                            backdrop-filter: blur(5px);
+                        }
+
+                        .chat-modal-content {
+                            position: relative;
+                            width: 95%;
+                            max-width: 1200px;
+                            height: 90%;
+                            max-height: 700px;
+                            background: white;
+                            border-radius: 16px;
+                            overflow: hidden;
+                            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+                        }
+
+                        .chat-container {
+                            width: 100%;
+                            height: 100%;
+                            display: flex;
+                        }
+
+                        /* Sidebar Styles */
+                        .employers-sidebar {
+                            width: 320px;
+                            background: #ffffff;
+                            border-right: 1px solid #e2e8f0;
+                            display: flex;
+                            flex-direction: column;
+                        }
+
+                        .sidebar-header {
+                            padding: 20px;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white;
+                            position: relative;
+                        }
+
+                        .sidebar-header h2 {
+                            font-size: 18px;
+                            font-weight: 600;
+                            margin-bottom: 4px;
+                        }
+
+                        .sidebar-header p {
+                            font-size: 13px;
+                            opacity: 0.9;
+                            margin: 0;
+                        }
+
+                        .close-chat-btn {
+                            position: absolute;
+                            top: 15px;
+                            right: 15px;
+                            background: rgba(255, 255, 255, 0.2);
+                            border: none;
+                            color: white;
+                            font-size: 14px;
+                            padding: 6px;
+                            border-radius: 6px;
+                            cursor: pointer;
+                            transition: background 0.3s;
+                        }
+
+                        .close-chat-btn:hover {
+                            background: rgba(255, 255, 255, 0.3);
+                        }
+
+                        .employers-list {
+                            flex: 1;
+                            overflow-y: auto;
+                            padding: 8px 0;
+                        }
+
+                        .employer-list-item {
+                            padding: 12px 16px;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                            border-left: 3px solid transparent;
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                        }
+
+                        .employer-list-item:hover {
+                            background: #f8fafc;
+                        }
+
+                        .employer-list-item.active {
+                            background: #f1f5f9;
+                            border-left-color: #667eea;
+                        }
+
+                        .employer-list-item.has-unread {
+                            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+                            border-left-color: #f59e0b;
+                        }
+
+                        .employer-info {
+                            flex: 1;
+                            min-width: 0;
+                        }
+
+                        .employer-name {
+                            font-size: 14px;
+                            font-weight: 600;
+                            color: #1e293b;
+                            margin-bottom: 2px;
+                        }
+
+                        .last-message-time {
+                            font-size: 11px;
+                            color: #94a3b8;
+                            margin-top: 2px;
+                        }
+
+                        /* Chat Area Styles */
+                        .chat-area {
+                            flex: 1;
+                            display: flex;
+                            flex-direction: column;
+                        }
+
+                        .chat-header {
+                            padding: 16px 20px;
+                            border-bottom: 1px solid #e2e8f0;
+                            background: white;
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                        }
+
+                        .current-employer-avatar {
+                            width: 36px;
+                            height: 36px;
+                            border-radius: 8px;
+                            overflow: hidden;
+                        }
+
+                        .current-employer-info h3 {
+                            font-size: 15px;
+                            font-weight: 600;
+                            color: #1e293b;
+                            margin: 0 0 2px 0;
+                        }
+
+                        .current-employer-info p {
+                            font-size: 12px;
+                            color: #64748b;
+                            margin: 0;
+                        }
+
+                        .messages-container {
+                            flex: 1;
+                            overflow-y: auto;
+                            padding: 16px;
+                            background: #f8fafc;
+                        }
+
+                        .message-bubble {
+                            max-width: 70%;
+                            margin-bottom: 12px;
+                            display: flex;
+                            flex-direction: column;
+                        }
+
+                        .message-bubble.from-employer {
+                            align-self: flex-start;
+                        }
+
+                        .message-bubble.from-applicant {
+                            align-self: flex-end;
+                        }
+
+                        .message-bubble .message-content {
+                            padding: 10px 14px;
+                            border-radius: 12px;
+                            word-wrap: break-word;
+                        }
+
+                        .message-bubble.from-employer .message-content {
+                            background: white;
+                            border: 1px solid #e2e8f0;
+                            border-bottom-left-radius: 4px;
+                        }
+
+                        .message-bubble.from-applicant .message-content {
+                            background: linear-gradient(135deg, #667eea, #764ba2);
+                            color: white;
+                            border-bottom-right-radius: 4px;
+                        }
+
+                        .message-timestamp {
+                            font-size: 10px;
+                            color: #94a3b8;
+                            margin-top: 4px;
+                            padding: 0 4px;
+                        }
+
+                        .message-bubble.from-applicant .message-timestamp {
+                            align-self: flex-end;
+                            color: rgba(255, 255, 255, 0.7);
+                        }
+
+                        .reply-area {
+                            padding: 16px 20px;
+                            border-top: 1px solid #e2e8f0;
+                            background: white;
+                        }
+
+                        .reply-container {
+                            display: flex;
+                            align-items: flex-end;
+                            gap: 10px;
+                        }
+
+                        .reply-input {
+                            flex: 1;
+                            min-height: 40px;
+                            max-height: 100px;
+                            padding: 10px 14px;
+                            border: 1px solid #e2e8f0;
+                            border-radius: 10px;
+                            font-size: 14px;
+                            font-family: inherit;
+                            resize: none;
+                            outline: none;
+                            transition: border-color 0.3s;
+                        }
+
+                        .reply-input:focus {
+                            border-color: #667eea;
+                            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+                        }
+
+                        .send-btn {
+                            width: 40px;
+                            height: 40px;
+                            border: none;
+                            border-radius: 10px;
+                            background: linear-gradient(135deg, #667eea, #764ba2);
+                            color: white;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 14px;
+                            transition: all 0.3s;
+                        }
+
+                        .send-btn:hover:not(:disabled) {
+                            transform: translateY(-1px);
+                            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+                        }
+
+                        .send-btn:disabled {
+                            opacity: 0.5;
+                            cursor: not-allowed;
+                        }
+
+                        .no-conversation {
+                            flex: 1;
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                            text-align: center;
+                            padding: 40px;
+                        }
+
+                        .no-conversation i {
+                            font-size: 48px;
+                            color: #cbd5e1;
+                            margin-bottom: 16px;
+                        }
+
+                        .no-conversation h3 {
+                            font-size: 16px;
+                            font-weight: 600;
+                            color: #1e293b;
+                            margin-bottom: 6px;
+                        }
+
+                        .no-conversation p {
+                            color: #64748b;
+                            font-size: 13px;
+                        }
+                    </style>
+
+                    <script>
+                        let currentEmployerId = null;
+                        let allMessages = @json($messages);
+
+                        // Open chat with specific employer
+                        function openChatWithEmployer(employerId, firstName, lastName, companyName) {
+                            document.getElementById('chatModal').style.display = 'flex';
+                            document.body.style.overflow = 'hidden';
+
+                            // Load the specific conversation
+                            setTimeout(() => {
+                                loadConversation(employerId);
+                            }, 100);
+                        }
+
+                        // Open all chats
+                        function openAllChats() {
+                            document.getElementById('chatModal').style.display = 'flex';
+                            document.body.style.overflow = 'hidden';
+                        }
+
+                        // Close chat modal
+                        function closeChatModal() {
+                            document.getElementById('chatModal').style.display = 'none';
+                            document.body.style.overflow = 'auto';
+
+                            // Reset chat area
+                            document.getElementById('chatHeader').style.display = 'none';
+                            document.getElementById('replyArea').style.display = 'none';
+                            document.getElementById('messagesContainer').innerHTML = `
+        <div class="no-conversation">
+            <i class="bi bi-chat-square-dots"></i>
+            <h3>Select a conversation</h3>
+            <p>Choose an employer from the list to view your messages</p>
+        </div>
+    `;
+
+                            // Remove active states
+                            document.querySelectorAll('.employer-list-item').forEach(item => {
+                                item.classList.remove('active');
+                            });
+                        }
+
+                        // Load conversation for selected employer
+                        function loadConversation(employerId) {
+                            currentEmployerId = employerId;
+
+                            // Update active state
+                            document.querySelectorAll('.employer-list-item').forEach(item => {
+                                item.classList.remove('active');
+                            });
+                            document.querySelector(`[data-employer-id="${employerId}"]`).classList.add('active');
+
+                            // Get employer messages
+                            const employerMessages = allMessages.filter(msg => msg.employer.id == employerId);
+                            const employer = employerMessages[0].employer;
+
+                            // Update chat header
+                            document.getElementById('chatHeader').style.display = 'flex';
+                            document.getElementById('currentEmployerName').textContent =
+                                `${employer.personal_info.first_name || 'N/A'} ${employer.personal_info.last_name || 'N/A'}`;
+                            document.getElementById('currentCompanyName').textContent =
+                                employer.addressCompany.company_name || 'Company';
+
+                            // Update avatar
+                            const avatarElement = document.getElementById('currentAvatar');
+                            if (employer.addressCompany.company_logo) {
+                                avatarElement.innerHTML = `<img src="${employer.addressCompany.company_logo}" 
+            alt="${employer.addressCompany.company_name}" style="width:100%;height:100%;object-fit:cover;">`;
+                            } else {
+                                avatarElement.textContent = (employer.addressCompany.company_name || 'C').charAt(0).toUpperCase();
+                            }
+
+                            // Load messages
+                            displayMessages(employerMessages);
+
+                            // Show reply area
+                            document.getElementById('replyArea').style.display = 'block';
+
+                            // Mark messages as read
+                            markMessagesAsRead(employerId);
+                        }
+
+                        // Display messages in chat
+                        function displayMessages(messages) {
+                            const container = document.getElementById('messagesContainer');
+
+                            if (messages.length === 0) {
+                                container.innerHTML = `
+            <div class="no-conversation">
+                <i class="bi bi-chat-square"></i>
+                <h3>No messages yet</h3>
+                <p>Start the conversation by sending a message</p>
+            </div>
+        `;
+                                return;
+                            }
+
+                            // Sort messages by date
+                            messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+                            container.innerHTML = messages.map(msg => {
+                                const isFromEmployer = msg.sender_type === 'employer' || !msg
+                                    .sender_type; // Assuming employer messages
+                                const bubbleClass = isFromEmployer ? 'from-employer' : 'from-applicant';
+
+                                return `
+            <div class="message-bubble ${bubbleClass}">
+                <div class="message-content">
+                    ${msg.message}
+                </div>
+                <div class="message-timestamp">
+                    ${formatMessageTime(msg.created_at)}
+                </div>
+            </div>
+        `;
+                            }).join('');
+
+                            // Scroll to bottom
+                            container.scrollTop = container.scrollHeight;
+                        }
+
+                        // Send reply
+                        function sendReply() {
+                            const replyInput = document.getElementById('replyInput');
+                            const message = replyInput.value.trim();
+                            if (!message || !currentEmployerId) return;
+
+                            // Add message to UI immediately
+                            const container = document.getElementById('messagesContainer');
+                            const messageHtml = `
+        <div class="message-bubble from-applicant">
+            <div class="message-content">
+                ${message}
+            </div>
+            <div class="message-timestamp">
+                Just now
+            </div>
+        </div>
+    `;
+
+                            container.innerHTML += messageHtml;
+                            container.scrollTop = container.scrollHeight;
+
+                            // Clear input
+                            replyInput.value = '';
+                            replyInput.style.height = 'auto';
+                            document.getElementById('sendBtn').disabled = true;
+
+                            // Here you would make an AJAX call to send the message
+                            // sendMessageToServer(currentEmployerId, message);
+                        }
+
+                        // Mark messages as read
+                        function markMessagesAsRead(employerId) {
+                            // Update dropdown item
+                            const dropdownItem = document.querySelector(`.employer-item[data-employer-id="${employerId}"]`);
+                            if (dropdownItem) {
+                                dropdownItem.classList.remove('unread');
+                                const unreadIndicator = dropdownItem.querySelector('.unread-indicator');
+                                if (unreadIndicator) unreadIndicator.remove();
+                                const unreadCount = dropdownItem.querySelector('.unread-count');
+                                if (unreadCount) unreadCount.remove();
+                            }
+
+                            // Update sidebar item
+                            const sidebarItem = document.querySelector(`.employer-list-item[data-employer-id="${employerId}"]`);
+                            if (sidebarItem) {
+                                sidebarItem.classList.remove('has-unread');
+                                const unreadCount = sidebarItem.querySelector('.unread-count');
+                                if (unreadCount) unreadCount.remove();
+                            }
+
+                            // Here you would make an AJAX call to mark messages as read
+                            // markAsReadOnServer(employerId);
+                        }
+
+                        // Format message time
+                        function formatMessageTime(dateString) {
+                            const date = new Date(dateString);
+                            const now = new Date();
+                            const diffInMinutes = Math.floor((now - date) / 1000 / 60);
+
+                            if (diffInMinutes < 1) return 'Just now';
+                            if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+                            if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
+                            return date.toLocaleDateString();
+                        }
+
+                        // Initialize chat functionality
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const replyInput = document.getElementById('replyInput');
+                            const sendBtn = document.getElementById('sendBtn');
+
+                            if (replyInput && sendBtn) {
+                                // Auto-resize textarea
+                                replyInput.addEventListener('input', function() {
+                                    this.style.height = 'auto';
+                                    this.style.height = this.scrollHeight + 'px';
+
+                                    sendBtn.disabled = !this.value.trim();
+                                });
+
+                                // Handle enter key
+                                replyInput.addEventListener('keydown', function(e) {
+                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                        e.preventDefault();
+                                        sendReply();
+                                    }
+                                });
+
+                                // Send button click
+                                sendBtn.addEventListener('click', sendReply);
+                                sendBtn.disabled = true;
+                            }
+
+                            // Handle escape key to close modal
+                            document.addEventListener('keydown', function(e) {
+                                if (e.key === 'Escape') {
+                                    closeChatModal();
+                                }
+                            });
+                        });
+
+                        // Legacy functions for dropdown interactions
+                        document.addEventListener('DOMContentLoaded', function() {
+                            // Add hover effects and click animations for dropdown items
+                            const employerItems = document.querySelectorAll('.employer-item');
+
+                            employerItems.forEach(item => {
+                                item.addEventListener('click', function() {
+                                    // Add a subtle click effect
+                                    this.style.transform = 'scale(0.98)';
+                                    setTimeout(() => {
+                                        this.style.transform = '';
+                                    }, 150);
+                                });
+                            });
+                        });
+                    </script>
 
                     <!-- Notifications Dropdown -->
                     <div class="nav-dropdown">
@@ -932,8 +1737,8 @@
                                                     data-job-id="{{ $jobDetail->id }}"
                                                     data-title="{{ $jobDetail->title }}"
                                                     data-company="{{ $retrievedAddressCompany->first()->company_name ?? 'Unknown Company' }}"
-                                                    data-location="{{ $jobDetail->location }}" data-bs-toggle="modal"
-                                                    data-bs-target="#applyJobModal">
+                                                    data-location="{{ $jobDetail->location }}"
+                                                    data-bs-toggle="modal" data-bs-target="#applyJobModal">
                                                     <i class="bi bi-send-check"></i>
                                                     @if ($applicationRecord && $applicationRecord->status === 'rejected')
                                                         Re-apply Job

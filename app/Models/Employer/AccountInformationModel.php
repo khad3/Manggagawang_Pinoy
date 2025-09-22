@@ -5,6 +5,7 @@ namespace App\Models\Employer;
 use Faker\Provider\ar_EG\Company;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Admin\SuspensionModel;
+use App\Models\Employer\CompanyAdressModel;
 
 class AccountInformationModel extends Model
 {
@@ -31,6 +32,10 @@ class AccountInformationModel extends Model
 
     public function suspension() {
         return $this->hasOne(SuspensionModel::class, 'employer_id');
+    }
+
+    public function employer() {
+        return $this->hasMany(SendMessageModel::class, 'employer_id');
     }
 
     

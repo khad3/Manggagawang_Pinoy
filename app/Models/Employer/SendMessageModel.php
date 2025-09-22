@@ -23,6 +23,7 @@ class SendMessageModel extends Model
     {
         return $this->belongsTo(EmployerModel::class, 'employer_id');
     }
+    
 
     public function applicant()
     {
