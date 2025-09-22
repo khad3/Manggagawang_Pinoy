@@ -46,7 +46,12 @@
         </div>
     </nav>
 
-    <div class="registration-container">
+   
+            <!-- Review Content -->
+          <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card form-card">
+                         <div class="registration-container">
         <div class="container">
             <!-- Header -->
             <div class="text-center mb-5">
@@ -111,11 +116,6 @@
                 </div>
             </div>
 
-            <!-- Review Content -->
-            <div class="row">
-                <!-- Company Information -->
-                <div class="col-lg-6 mb-4">
-                    <div class="review-card">
                         <div class="card-header bg-white border-0 py-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">
@@ -141,7 +141,7 @@
                                 </p>
                             </div>
                             <div class="tesda-highlight">
-                                <small class="fw-bold text-warning">
+                                <small class="fw-bold">
                                     <i class="fas fa-certificate me-1"></i>TESDA Partnership
                                     Status:
                                 </small>
@@ -153,7 +153,7 @@
                 </div>
 
                 <!-- Contact Information -->
-                <div class="col-lg-6 mb-4">
+                <div class="mb-4">
                     <div class="review-card">
                         <div class="card-header bg-white border-0 py-3">
                             <div class="d-flex justify-content-between align-items-center">
@@ -238,7 +238,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="tesda-highlight">
-                                        <strong class="text-warning">Required TESDA Certifications:</strong>
+                                        <strong class="">Required TESDA Certifications:</strong>
                                         <div class="mt-2">
                                             @php
                                                 $certs = [];

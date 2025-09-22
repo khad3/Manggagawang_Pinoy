@@ -125,7 +125,7 @@ body {
 }
 
 .tesda-highlight {
-    background: linear-gradient(45deg, #fef3c7, #fed7aa);
+    background: var(--light-orange);
     border: 2px solid var(--primary-orange);
     border-radius: 8px;
     padding: 1rem;
