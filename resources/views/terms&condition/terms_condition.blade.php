@@ -18,8 +18,8 @@
             (“Mangagawang Pinoy”, “we”, “us”, or “our”) and is provided for the sole use of its users and clients. </p>
         <p> By accessing or using our Platform, you (“Applicant”, “Employer”, or “User”) agree to be bound by these
             Terms. If you do not agree, please do not use our website or create an account. These Terms apply together
-            with our <a href="[insert privacy policy link]">Privacy Policy</a>, and if applicable, our <a
-                href="[insert data sharing link]">Data Sharing Policy</a>. </p>
+            with our <a href="{{ route('display.privacypolicy') }}">Privacy Policy</a>, and if applicable, our <a
+                href="{{ route('display.datasharing') }}">Data Sharing Policy</a>. </p>
         <hr>
         <h4>1. Eligibility</h4>
         <p> - You must be at least <strong>18 years old</strong> to use the Platform.<br> - By creating an account, you

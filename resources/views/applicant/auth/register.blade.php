@@ -122,7 +122,8 @@
                     <input type="checkbox" name="terms" id="termsInput" style="display: none;" required>
                     <label class="checkbox-label" for="termsInput">
                         I agree to the <a href="{{ route('display.termsandconditions') }}" target="_blank">Terms &
-                            Conditions</a> and <a href="#" target="_blank">Privacy Policy</a>
+                            Conditions</a> and <a href="{{ route('display.privacypolicy') }}" target="_blank">Privacy
+                            Policy</a>
                     </label>
                 </div>
 

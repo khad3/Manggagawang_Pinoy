@@ -11,6 +11,7 @@ use App\Http\Controllers\Applicant\ProfileController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\TesdaOfficer\TesdaOfficerController;
 use App\Http\Controllers\Employer\SendMessageController;
+use App\Http\Controllers\TermsAndCondition\TermAnfConditionController;
 use App\Models\Employer\SendMessageModel;
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
@@ -18,6 +19,11 @@ use Illuminate\Support\Facades\App;
 
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Profiler\Profile;
+
+//Terms and Condition and Privacy Policy and Data sharing
+Route::get('terms-and-conditions', [TermAnfConditionController::class, 'termsandconditions'])->name('display.termsandconditions');
+Route::get('privacy-policy', [TermAnfConditionController::class, 'privacypolicy'])->name('display.privacypolicy');
+Route::get('data-sharing', [TermAnfConditionController::class, 'dataSharing'])->name('display.datasharing');
 
 //Index
 Route::get('/index', [ApplicantController::class, 'index'])->name('display.index');
@@ -30,7 +36,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('terms-and-conditions', [ApplicantController::class, 'termsandconditions'])->name('display.termsandconditions');
 
 
 // Public routes 

@@ -8,17 +8,18 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
     <link href="{{ asset('css/applicant/employer/reviewregistration.css') }}" rel="stylesheet" />
-     <link href="{{ asset('css/applicant/landingpage/landingpage.css') }}" rel="stylesheet" />
+    <link href="{{ asset('css/applicant/landingpage/landingpage.css') }}" rel="stylesheet" />
 
 </head>
 
 <body>
-   <nav>
+    <nav>
         <div class="navbar-container">
             <div class="nav-logo d-flex align-items-center">
-                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2" style="text-decoration:none;">
-                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home"/>
-                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2"/>
+                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2"
+                    style="text-decoration:none;">
+                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
+                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" />
                 </a>
             </div>
             <ul class="nav-links" id="navLinks">
@@ -46,75 +47,76 @@
         </div>
     </nav>
 
-   
-            <!-- Review Content -->
-          <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <div class="card form-card">
-                         <div class="registration-container">
-        <div class="container">
-            <!-- Header -->
-            <div class="text-center mb-5">
-                <h1 class="display-4 fw-bold text-dark mb-3">
-                    Review Your Registration
-                </h1>
-                <p class="lead text-muted">
-                    Please review all information before submitting your employer
-                    registration
-                </p>
-            </div>
 
-            <!-- Progress Stepper -->
-            <div class="row justify-content-center mb-5">
-                <div class="col-lg-10">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <!-- Step 1 -->
-                        <div class="text-center">
-                            <div class="step-indicator step-completed" id="step1">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="mt-2">
-                                <small class="fw-semibold text-dark">Job Details</small>
-                                <br /><small class="text-muted d-none d-sm-block">Position requirements</small>
+    <!-- Review Content -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card form-card">
+                <div class="registration-container">
+                    <div class="container">
+                        <!-- Header -->
+                        <div class="text-center mb-5">
+                            <h1 class="display-4 fw-bold text-dark mb-3">
+                                Review Your Registration
+                            </h1>
+                            <p class="lead text-muted">
+                                Please review all information before submitting your employer
+                                registration
+                            </p>
+                        </div>
+
+                        <!-- Progress Stepper -->
+                        <div class="row justify-content-center mb-5">
+                            <div class="col-lg-10">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <!-- Step 1 -->
+                                    <div class="text-center">
+                                        <div class="step-indicator step-completed" id="step1">
+                                            <i class="fas fa-check"></i>
+                                        </div>
+                                        <div class="mt-2">
+                                            <small class="fw-semibold text-dark">Job Details</small>
+                                            <br /><small class="text-muted d-none d-sm-block">Position
+                                                requirements</small>
+                                        </div>
+                                    </div>
+                                    <div class="step-line step-line-completed" id="line1"></div>
+
+                                    <!-- Step 2 -->
+                                    <div class="text-center">
+                                        <div class="step-indicator step-completed" id="step2">
+                                            <i class="fas fa-check"></i>
+                                        </div>
+                                        <div class="mt-2">
+                                            <small class="fw-semibold text-dark">Contact</small>
+                                            <br /><small class="text-muted d-none d-sm-block">Your contact info</small>
+                                        </div>
+                                    </div>
+                                    <div class="step-line step-line-completed" id="line2"></div>
+
+                                    <!-- Step 3 -->
+                                    <div class="text-center">
+                                        <div class="step-indicator step-completed" id="step3">
+                                            <i class="fas fa-check"></i>
+                                        </div>
+                                        <div class="mt-2">
+                                            <small class="fw-semibold text-dark">Preferences</small>
+                                            <br /><small class="text-muted d-none d-sm-block">Hiring preferences</small>
+                                        </div>
+                                    </div>
+                                    <div class="step-line step-line-completed" id="line3"></div>
+
+                                    <!-- Step 4 -->
+                                    <div class="text-center">
+                                        <div class="step-indicator step-active" id="step4">4</div>
+                                        <div class="mt-2">
+                                            <small class="fw-semibold text-dark">Review</small>
+                                            <br /><small class="text-muted d-none d-sm-block">Review & submit</small>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="step-line step-line-completed" id="line1"></div>
-
-                        <!-- Step 2 -->
-                        <div class="text-center">
-                            <div class="step-indicator step-completed" id="step2">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="mt-2">
-                                <small class="fw-semibold text-dark">Contact</small>
-                                <br /><small class="text-muted d-none d-sm-block">Your contact info</small>
-                            </div>
-                        </div>
-                        <div class="step-line step-line-completed" id="line2"></div>
-
-                        <!-- Step 3 -->
-                        <div class="text-center">
-                            <div class="step-indicator step-completed" id="step3">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="mt-2">
-                                <small class="fw-semibold text-dark">Preferences</small>
-                                <br /><small class="text-muted d-none d-sm-block">Hiring preferences</small>
-                            </div>
-                        </div>
-                        <div class="step-line step-line-completed" id="line3"></div>
-
-                        <!-- Step 4 -->
-                        <div class="text-center">
-                            <div class="step-indicator step-active" id="step4">4</div>
-                            <div class="mt-2">
-                                <small class="fw-semibold text-dark">Review</small>
-                                <br /><small class="text-muted d-none d-sm-block">Review & submit</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
                         <div class="card-header bg-white border-0 py-3">
                             <div class="d-flex justify-content-between align-items-center">
@@ -430,7 +432,8 @@
                                 <a href="{{ route('display.termsandconditions') }}"
                                     class="text-decoration-underline">Terms of Service</a>
                                 and
-                                <a href="#" class="text-decoration-underline">Privacy Policy</a>
+                                <a href="{{ route('display.privacypolicy') }}"
+                                    class="text-decoration-underline">Privacy Policy</a>
                             </label>
                         </div>
                         <div class="form-check mb-2">
@@ -451,9 +454,8 @@
                         <div class="alert alert-info">
                             <i class="fas fa-info-circle me-2"></i>
                             <strong>What happens next?</strong><br />
-                            After submission, our team will review your registration within
-                            24 hours. You'll receive an email confirmation and can start
-                            receiving worker applications immediately upon approval.
+                            You'll receive an email confirmation and can start
+                            receiving worker applications.
                         </div>
                     </div>
                 </div>
