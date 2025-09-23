@@ -261,26 +261,36 @@
                         </div>
                     </div>
 
-                    <!-- Chat Modal/System -->
+                    <!-- Professional Chat Modal/System -->
                     <div id="chatModal" class="chat-modal" style="display: none;">
                         <div class="chat-modal-overlay" onclick="closeChatModal()"></div>
                         <div class="chat-modal-content">
                             <div class="chat-container">
-                                <!-- Employers Sidebar -->
+                                <!-- Enhanced Employers Sidebar -->
                                 <div class="employers-sidebar">
                                     <div class="sidebar-header">
-                                        <h2>Messages</h2>
-                                        <p>Conversations with employers</p>
+                                        <div class="header-content">
+                                            <h2>Messages</h2>
+                                            <p>Conversations with employers</p>
+                                        </div>
                                         <button class="close-chat-btn" onclick="closeChatModal()">
                                             <i class="bi bi-x-lg"></i>
                                         </button>
+                                    </div>
+
+                                    <div class="search-container">
+                                        <div class="search-input-wrapper">
+                                            <i class="bi bi-search"></i>
+                                            <input type="text" placeholder="Search conversations..."
+                                                class="search-input" id="searchInput">
+                                        </div>
                                     </div>
 
                                     <div class="employers-list" id="employersList">
                                         @forelse($messages->groupBy('employer.id') as $employerId => $employerMessages)
                                             @php
                                                 $employer = $employerMessages->first()->employer;
-                                                $unreadCount = $employerMessages->where('status', 'unread')->count();
+                                                $unreadCount = $employerMessages->where('is_read', 0)->count();
                                                 $lastMessage = $employerMessages->sortByDesc('created_at')->first();
                                             @endphp
 
@@ -297,6 +307,9 @@
                                                             {{ strtoupper(substr($employer->addressCompany->company_name ?? 'C', 0, 1)) }}
                                                         </div>
                                                     @endif
+                                                    @if ($unreadCount > 0)
+                                                        <div class="online-status"></div>
+                                                    @endif
                                                 </div>
 
                                                 <div class="employer-info">
@@ -306,6 +319,9 @@
                                                     </div>
                                                     <div class="company-name">
                                                         {{ $employer->addressCompany->company_name ?? 'Company' }}
+                                                    </div>
+                                                    <div class="last-message-preview">
+                                                        {{ Str::limit($lastMessage->message, 30) }}
                                                     </div>
                                                     <div class="last-message-time">
                                                         {{ $lastMessage->created_at->diffForHumans() }}
@@ -325,80 +341,115 @@
                                     </div>
                                 </div>
 
-                                <!-- Chat Area -->
+                                <!-- Enhanced Chat Area -->
                                 <div class="chat-area">
-                                    <!-- Chat Header -->
+                                    <!-- Professional Chat Header -->
                                     <div class="chat-header" id="chatHeader" style="display: none;">
-                                        <div class="current-employer-avatar">
-                                            <div class="avatar-placeholder" id="currentAvatar">E</div>
+                                        <div class="header-left">
+                                            <div class="current-employer-avatar">
+                                                <div class="avatar-placeholder" id="currentAvatar">E</div>
+                                            </div>
+                                            <div class="current-employer-info">
+                                                <h3 id="currentEmployerName">Select an employer</h3>
+                                                <p id="currentCompanyName">to start chatting</p>
+                                                <span class="online-status-text">Online</span>
+                                            </div>
                                         </div>
-                                        <div class="current-employer-info">
-                                            <h3 id="currentEmployerName">Select an employer</h3>
-                                            <p id="currentCompanyName">to start chatting</p>
-                                        </div>
+
                                     </div>
 
+                                    <!-- Enhanced Messages Container -->
                                     <!-- Messages Container -->
                                     <div class="messages-container" id="messagesContainer">
                                         <div class="no-conversation">
-                                            <i class="bi bi-chat-square-dots"></i>
+                                            <div class="no-conversation-icon">
+                                                <i class="bi bi-chat-square-dots"></i>
+                                            </div>
                                             <h3>Select a conversation</h3>
                                             <p>Choose an employer from the list to view your messages</p>
                                         </div>
                                     </div>
 
+
                                     <!-- Reply Area -->
                                     <div class="reply-area" id="replyArea" style="display: none;">
-                                        <div class="reply-container">
-                                            <textarea class="reply-input" id="replyInput" placeholder="Type your reply..." rows="1"></textarea>
-                                            <button class="send-btn" id="sendBtn" disabled>
+                                        <form action="{{ route('applicant.sendmessage.store') }}" method="POST"
+                                            enctype="multipart/form-data" class="reply-container">
+                                            @csrf
+                                            <input type="hidden" name="employer_id" id="replyEmployerId">
+
+                                            <div class="message-input-wrapper">
+                                                <!-- File Upload -->
+                                                <label class="attachment-btn" for="attachment" title="Attach file">
+                                                    <i class="bi bi-paperclip"></i>
+                                                </label>
+                                                <input type="file" name="attachment" id="attachment"
+                                                    class="d-none">
+
+                                                <!-- Message -->
+                                                <textarea class="reply-input" id="replyInput" name="message" placeholder="Type your message..." rows="1"
+                                                    required></textarea>
+
+                                                <button type="button" class="emoji-btn" title="Add emoji">
+                                                    <i class="bi bi-emoji-smile"></i>
+                                                </button>
+                                            </div>
+
+                                            <!-- Send Button -->
+                                            <button type="submit" class="send-btn" id="sendBtn">
                                                 <i class="bi bi-send"></i>
                                             </button>
+                                        </form>
+
+                                        <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                                            <span>Employer is typing...</span>
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <style>
-                        /* Dropdown Styles */
+                        /* Enhanced Dropdown Styles */
                         .dropdown-content .messages-list {
-                            max-height: 400px;
+                            max-height: 450px;
                             overflow-y: auto;
                         }
 
                         .employer-item {
                             display: flex;
                             align-items: flex-start;
-                            padding: 12px 16px;
+                            padding: 16px;
                             cursor: pointer;
                             transition: all 0.3s ease;
-                            border-left: 3px solid transparent;
+                            border-left: 4px solid transparent;
                             position: relative;
-                            gap: 10px;
+                            gap: 12px;
+                            border-radius: 8px;
+                            margin: 4px 8px;
                         }
 
                         .employer-item:hover {
-                            background: #f8fafc;
-                            transform: translateX(2px);
+                            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+                            transform: translateY(-1px);
+                            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
                         }
 
                         .employer-item.unread {
                             background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
                             border-left-color: #f59e0b;
-                        }
-
-                        .employer-item:not(:last-child) {
-                            border-bottom: 1px solid #f1f5f9;
+                            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.2);
                         }
 
                         .message-avatar {
-                            width: 40px;
-                            height: 40px;
-                            border-radius: 10px;
+                            width: 48px;
+                            height: 48px;
+                            border-radius: 12px;
                             overflow: hidden;
                             flex-shrink: 0;
+                            position: relative;
                         }
 
                         .message-avatar img {
@@ -415,8 +466,9 @@
                             align-items: center;
                             justify-content: center;
                             color: white;
-                            font-weight: 600;
-                            font-size: 14px;
+                            font-weight: 700;
+                            font-size: 16px;
+                            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
                         }
 
                         .message-content {
@@ -425,114 +477,94 @@
                         }
 
                         .sender-name {
-                            font-size: 14px;
-                            font-weight: 600;
+                            font-size: 15px;
+                            font-weight: 700;
                             color: #1e293b;
                             display: block;
-                            margin-bottom: 2px;
+                            margin-bottom: 3px;
                         }
 
                         .company-name {
-                            font-size: 12px;
+                            font-size: 13px;
                             color: #64748b;
-                            font-weight: 500;
+                            font-weight: 600;
                             display: block;
-                            margin-bottom: 4px;
+                            margin-bottom: 6px;
                         }
 
                         .message-meta {
                             display: flex;
                             justify-content: space-between;
                             align-items: center;
-                            margin-bottom: 4px;
+                            margin-bottom: 6px;
                         }
 
                         .message-time {
-                            font-size: 11px;
+                            font-size: 12px;
                             color: #94a3b8;
+                            font-weight: 500;
                         }
 
                         .unread-count {
-                            background: #ef4444;
+                            background: linear-gradient(135deg, #ef4444, #dc2626);
                             color: white;
-                            font-size: 10px;
-                            font-weight: 600;
-                            padding: 2px 6px;
-                            border-radius: 10px;
-                            min-width: 16px;
+                            font-size: 11px;
+                            font-weight: 700;
+                            padding: 3px 8px;
+                            border-radius: 12px;
+                            min-width: 20px;
                             text-align: center;
+                            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
                         }
 
                         .message-preview {
-                            font-size: 12px;
+                            font-size: 13px;
                             color: #64748b;
-                            line-height: 1.3;
+                            line-height: 1.4;
                             display: -webkit-box;
-                            -webkit-line-clamp: 1;
+                            -webkit-line-clamp: 2;
                             -webkit-box-orient: vertical;
                             overflow: hidden;
                         }
 
-                        .message-actions {
-                            background: none;
-                            border: none;
-                            color: #64748b;
-                            font-size: 14px;
-                            cursor: pointer;
-                            padding: 6px;
-                            border-radius: 6px;
-                            transition: all 0.3s ease;
-                        }
-
-                        .message-actions:hover {
-                            background: #f1f5f9;
-                            color: #667eea;
-                        }
-
-                        .unread-indicator {
-                            position: absolute;
-                            top: 8px;
-                            right: 8px;
-                            width: 8px;
-                            height: 8px;
-                            background: #ef4444;
-                            border-radius: 50%;
-                            border: 2px solid white;
-                        }
-
-                        /* Chat Modal Styles */
+                        /* Professional Chat Modal Styles */
                         .chat-modal {
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            width: 100vw;
+                            height: 100vh;
+                            z-index: 9999;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            padding: 0;
+                        }
+
+                        .chat-modal-overlay {
                             position: fixed;
                             top: 0;
                             left: 0;
                             width: 100%;
                             height: 100%;
-                            z-index: 1000;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                        }
-
-                        .chat-modal-overlay {
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            width: 100%;
-                            height: 100%;
-                            background: rgba(0, 0, 0, 0.5);
-                            backdrop-filter: blur(5px);
+                            background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8));
+                            backdrop-filter: blur(8px);
+                            z-index: 1;
                         }
 
                         .chat-modal-content {
                             position: relative;
-                            width: 95%;
-                            max-width: 1200px;
-                            height: 90%;
-                            max-height: 700px;
+                            width: 95vw;
+                            max-width: 1400px;
+                            height: 90vh;
+                            min-height: 600px;
                             background: white;
-                            border-radius: 16px;
+                            border-radius: 24px;
                             overflow: hidden;
-                            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+                            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.3);
+                            border: 1px solid rgba(255, 255, 255, 0.1);
+                            z-index: 2;
+                            margin: auto;
                         }
 
                         .chat-container {
@@ -541,80 +573,153 @@
                             display: flex;
                         }
 
-                        /* Sidebar Styles */
+                        /* Enhanced Sidebar Styles */
                         .employers-sidebar {
-                            width: 320px;
-                            background: #ffffff;
+                            width: 380px;
+                            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
                             border-right: 1px solid #e2e8f0;
                             display: flex;
                             flex-direction: column;
                         }
 
                         .sidebar-header {
-                            padding: 20px;
+                            padding: 24px;
                             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                             color: white;
                             position: relative;
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
                         }
 
-                        .sidebar-header h2 {
-                            font-size: 18px;
-                            font-weight: 600;
+                        .header-content h2 {
+                            font-size: 20px;
+                            font-weight: 700;
                             margin-bottom: 4px;
+                            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
                         }
 
-                        .sidebar-header p {
-                            font-size: 13px;
+                        .header-content p {
+                            font-size: 14px;
                             opacity: 0.9;
                             margin: 0;
                         }
 
                         .close-chat-btn {
-                            position: absolute;
-                            top: 15px;
-                            right: 15px;
                             background: rgba(255, 255, 255, 0.2);
                             border: none;
                             color: white;
-                            font-size: 14px;
-                            padding: 6px;
-                            border-radius: 6px;
+                            font-size: 16px;
+                            padding: 8px;
+                            border-radius: 8px;
                             cursor: pointer;
-                            transition: background 0.3s;
+                            transition: all 0.3s;
                         }
 
                         .close-chat-btn:hover {
                             background: rgba(255, 255, 255, 0.3);
+                            transform: scale(1.05);
+                        }
+
+                        .search-container {
+                            padding: 20px;
+                            background: white;
+                            border-bottom: 1px solid #f1f5f9;
+                        }
+
+                        .search-input-wrapper {
+                            position: relative;
+                            display: flex;
+                            align-items: center;
+                        }
+
+                        .search-input-wrapper i {
+                            position: absolute;
+                            left: 12px;
+                            color: #94a3b8;
+                            font-size: 14px;
+                        }
+
+                        .search-input {
+                            width: 100%;
+                            padding: 12px 16px 12px 40px;
+                            border: 2px solid #f1f5f9;
+                            border-radius: 12px;
+                            font-size: 14px;
+                            background: #f8fafc;
+                            transition: all 0.3s;
+                        }
+
+                        .search-input:focus {
+                            outline: none;
+                            border-color: #667eea;
+                            background: white;
+                            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
                         }
 
                         .employers-list {
                             flex: 1;
                             overflow-y: auto;
-                            padding: 8px 0;
+                            padding: 12px;
                         }
 
                         .employer-list-item {
-                            padding: 12px 16px;
+                            padding: 16px;
                             cursor: pointer;
                             transition: all 0.3s ease;
-                            border-left: 3px solid transparent;
+                            border-left: 4px solid transparent;
                             display: flex;
-                            align-items: center;
-                            gap: 10px;
+                            align-items: flex-start;
+                            gap: 12px;
+                            border-radius: 12px;
+                            margin-bottom: 8px;
+                            position: relative;
                         }
 
                         .employer-list-item:hover {
-                            background: #f8fafc;
+                            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+                            transform: translateX(4px);
+                            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
                         }
 
                         .employer-list-item.active {
-                            background: #f1f5f9;
-                            border-left-color: #667eea;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            border-left-color: #4f46e5;
+                            color: white;
+                            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+                        }
+
+                        .employer-list-item.active .employer-name,
+                        .employer-list-item.active .company-name,
+                        .employer-list-item.active .last-message-preview,
+                        .employer-list-item.active .last-message-time {
+                            color: white;
                         }
 
                         .employer-list-item.has-unread {
                             background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
                             border-left-color: #f59e0b;
+                        }
+
+                        .employer-avatar {
+                            width: 52px;
+                            height: 52px;
+                            border-radius: 14px;
+                            overflow: hidden;
+                            flex-shrink: 0;
+                            position: relative;
+                            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                        }
+
+                        .online-status {
+                            position: absolute;
+                            bottom: 2px;
+                            right: 2px;
+                            width: 14px;
+                            height: 14px;
+                            background: #10b981;
+                            border: 2px solid white;
+                            border-radius: 50%;
                         }
 
                         .employer-info {
@@ -623,66 +728,140 @@
                         }
 
                         .employer-name {
-                            font-size: 14px;
-                            font-weight: 600;
+                            font-size: 15px;
+                            font-weight: 700;
                             color: #1e293b;
-                            margin-bottom: 2px;
+                            margin-bottom: 3px;
+                            line-height: 1.2;
+                        }
+
+                        .company-name {
+                            font-size: 13px;
+                            color: #64748b;
+                            font-weight: 600;
+                            margin-bottom: 4px;
+                        }
+
+                        .last-message-preview {
+                            font-size: 12px;
+                            color: #94a3b8;
+                            line-height: 1.3;
+                            margin-bottom: 3px;
+                            display: -webkit-box;
+                            -webkit-line-clamp: 1;
+                            -webkit-box-orient: vertical;
+                            overflow: hidden;
                         }
 
                         .last-message-time {
                             font-size: 11px;
-                            color: #94a3b8;
-                            margin-top: 2px;
+                            color: #cbd5e1;
+                            font-weight: 500;
                         }
 
-                        /* Chat Area Styles */
+                        /* Enhanced Chat Area Styles */
                         .chat-area {
                             flex: 1;
                             display: flex;
                             flex-direction: column;
+                            background: #fafbfc;
                         }
 
                         .chat-header {
-                            padding: 16px 20px;
+                            padding: 20px 24px;
                             border-bottom: 1px solid #e2e8f0;
                             background: white;
                             display: flex;
                             align-items: center;
-                            gap: 10px;
+                            justify-content: space-between;
+                            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+                        }
+
+                        .header-left {
+                            display: flex;
+                            align-items: center;
+                            gap: 12px;
                         }
 
                         .current-employer-avatar {
-                            width: 36px;
-                            height: 36px;
-                            border-radius: 8px;
+                            width: 48px;
+                            height: 48px;
+                            border-radius: 12px;
                             overflow: hidden;
+                            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
                         }
 
                         .current-employer-info h3 {
-                            font-size: 15px;
-                            font-weight: 600;
+                            font-size: 16px;
+                            font-weight: 700;
                             color: #1e293b;
-                            margin: 0 0 2px 0;
+                            margin: 0 0 3px 0;
                         }
 
                         .current-employer-info p {
-                            font-size: 12px;
+                            font-size: 13px;
                             color: #64748b;
-                            margin: 0;
+                            margin: 0 0 2px 0;
+                            font-weight: 500;
+                        }
+
+                        .online-status-text {
+                            font-size: 11px;
+                            color: #10b981;
+                            font-weight: 600;
+                        }
+
+                        .header-actions {
+                            display: flex;
+                            gap: 8px;
+                        }
+
+                        .header-action-btn {
+                            width: 40px;
+                            height: 40px;
+                            border: none;
+                            border-radius: 10px;
+                            background: #f8fafc;
+                            color: #64748b;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 16px;
+                            transition: all 0.3s;
+                        }
+
+                        .header-action-btn:hover {
+                            background: #e2e8f0;
+                            color: #475569;
+                            transform: scale(1.05);
                         }
 
                         .messages-container {
                             flex: 1;
                             overflow-y: auto;
-                            padding: 16px;
-                            background: #f8fafc;
+                            padding: 24px;
+                            background: linear-gradient(180deg, #fafbfc 0%, #f1f5f9 100%);
                         }
 
                         .message-bubble {
-                            max-width: 70%;
-                            margin-bottom: 12px;
+                            max-width: 75%;
+                            margin-bottom: 16px;
                             display: flex;
                             flex-direction: column;
+                            animation: messageSlideIn 0.3s ease-out;
+                        }
+
+                        @keyframes messageSlideIn {
+                            from {
+                                opacity: 0;
+                                transform: translateY(10px);
+                            }
+
+                            to {
+                                opacity: 1;
+                                transform: translateY(0);
+                            }
                         }
 
                         .message-bubble.from-employer {
@@ -694,89 +873,145 @@
                         }
 
                         .message-bubble .message-content {
-                            padding: 10px 14px;
-                            border-radius: 12px;
+                            padding: 12px 16px;
+                            border-radius: 16px;
                             word-wrap: break-word;
+                            font-size: 14px;
+                            line-height: 1.5;
+                            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
                         }
 
                         .message-bubble.from-employer .message-content {
                             background: white;
                             border: 1px solid #e2e8f0;
-                            border-bottom-left-radius: 4px;
+                            border-bottom-left-radius: 6px;
+                            color: #1e293b;
                         }
 
                         .message-bubble.from-applicant .message-content {
                             background: linear-gradient(135deg, #667eea, #764ba2);
                             color: white;
-                            border-bottom-right-radius: 4px;
+                            border-bottom-right-radius: 6px;
                         }
 
                         .message-timestamp {
-                            font-size: 10px;
+                            font-size: 11px;
                             color: #94a3b8;
-                            margin-top: 4px;
-                            padding: 0 4px;
+                            margin-top: 6px;
+                            padding: 0 6px;
+                            font-weight: 500;
                         }
 
                         .message-bubble.from-applicant .message-timestamp {
                             align-self: flex-end;
-                            color: rgba(255, 255, 255, 0.7);
+                            color: rgba(255, 255, 255, 0.8);
                         }
 
                         .reply-area {
-                            padding: 16px 20px;
+                            padding: 20px 24px;
                             border-top: 1px solid #e2e8f0;
                             background: white;
+                            box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.05);
                         }
 
                         .reply-container {
                             display: flex;
                             align-items: flex-end;
-                            gap: 10px;
+                            gap: 12px;
+                            margin-bottom: 8px;
+                        }
+
+                        .message-input-wrapper {
+                            flex: 1;
+                            position: relative;
+                            display: flex;
+                            align-items: flex-end;
+                            background: #f8fafc;
+                            border: 2px solid #e2e8f0;
+                            border-radius: 16px;
+                            padding: 4px;
+                            transition: all 0.3s;
+                        }
+
+                        .message-input-wrapper:focus-within {
+                            border-color: #667eea;
+                            background: white;
+                            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+                        }
+
+                        .attachment-btn,
+                        .emoji-btn {
+                            width: 36px;
+                            height: 36px;
+                            border: none;
+                            background: transparent;
+                            color: #64748b;
+                            cursor: pointer;
+                            border-radius: 8px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 16px;
+                            transition: all 0.3s;
+                        }
+
+                        .attachment-btn:hover,
+                        .emoji-btn:hover {
+                            background: #e2e8f0;
+                            color: #475569;
                         }
 
                         .reply-input {
                             flex: 1;
-                            min-height: 40px;
-                            max-height: 100px;
-                            padding: 10px 14px;
-                            border: 1px solid #e2e8f0;
-                            border-radius: 10px;
+                            min-height: 36px;
+                            max-height: 120px;
+                            padding: 8px 12px;
+                            border: none;
+                            background: transparent;
                             font-size: 14px;
                             font-family: inherit;
                             resize: none;
                             outline: none;
-                            transition: border-color 0.3s;
+                            line-height: 1.5;
                         }
 
-                        .reply-input:focus {
-                            border-color: #667eea;
-                            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+                        .reply-input::placeholder {
+                            color: #94a3b8;
                         }
 
                         .send-btn {
-                            width: 40px;
-                            height: 40px;
+                            width: 44px;
+                            height: 44px;
                             border: none;
-                            border-radius: 10px;
+                            border-radius: 12px;
                             background: linear-gradient(135deg, #667eea, #764ba2);
                             color: white;
                             cursor: pointer;
                             display: flex;
                             align-items: center;
                             justify-content: center;
-                            font-size: 14px;
+                            font-size: 16px;
                             transition: all 0.3s;
+                            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
                         }
 
                         .send-btn:hover:not(:disabled) {
-                            transform: translateY(-1px);
-                            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+                            transform: translateY(-2px);
+                            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
                         }
 
                         .send-btn:disabled {
                             opacity: 0.5;
                             cursor: not-allowed;
+                            transform: none;
+                            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+                        }
+
+                        .typing-indicator {
+                            padding: 8px 16px;
+                            font-size: 12px;
+                            color: #64748b;
+                            font-style: italic;
                         }
 
                         .no-conversation {
@@ -786,44 +1021,109 @@
                             align-items: center;
                             justify-content: center;
                             text-align: center;
-                            padding: 40px;
+                            padding: 60px 40px;
                         }
 
-                        .no-conversation i {
-                            font-size: 48px;
-                            color: #cbd5e1;
-                            margin-bottom: 16px;
+                        .no-conversation-icon {
+                            width: 80px;
+                            height: 80px;
+                            border-radius: 50%;
+                            background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin-bottom: 20px;
+                        }
+
+                        .no-conversation-icon i {
+                            font-size: 32px;
+                            color: #64748b;
                         }
 
                         .no-conversation h3 {
-                            font-size: 16px;
-                            font-weight: 600;
+                            font-size: 18px;
+                            font-weight: 700;
                             color: #1e293b;
-                            margin-bottom: 6px;
+                            margin-bottom: 8px;
                         }
 
                         .no-conversation p {
                             color: #64748b;
-                            font-size: 13px;
+                            font-size: 14px;
+                            line-height: 1.5;
+                            max-width: 300px;
+                        }
+
+                        /* Responsive Design */
+                        @media (max-width: 1024px) {
+                            .chat-modal-content {
+                                width: 95%;
+                                height: 85vh;
+                            }
+
+                            .employers-sidebar {
+                                width: 320px;
+                            }
+                        }
+
+                        @media (max-width: 768px) {
+                            .chat-modal-content {
+                                width: 100%;
+                                height: 100vh;
+                                border-radius: 0;
+                            }
+
+                            .employers-sidebar {
+                                width: 280px;
+                            }
+
+                            .message-bubble {
+                                max-width: 85%;
+                            }
+                        }
+
+                        @media (max-width: 640px) {
+                            .chat-container {
+                                flex-direction: column;
+                            }
+
+                            .employers-sidebar {
+                                width: 100%;
+                                height: 40%;
+                                border-right: none;
+                                border-bottom: 1px solid #e2e8f0;
+                            }
+
+                            .chat-area {
+                                height: 60%;
+                            }
+
+
                         }
                     </style>
-
                     <script>
                         let currentEmployerId = null;
+                        // Pass messages from backend (already eager-loaded with employer info)
                         let allMessages = @json($messages);
 
+                        // Group messages by employer_id for easier access
+                        const messagesByEmployer = {};
+                        allMessages.forEach(msg => {
+                            if (!messagesByEmployer[msg.employer_id]) {
+                                messagesByEmployer[msg.employer_id] = [];
+                            }
+                            messagesByEmployer[msg.employer_id].push(msg);
+                        });
+
                         // Open chat with specific employer
-                        function openChatWithEmployer(employerId, firstName, lastName, companyName) {
+                        function openChatWithEmployer(employerId) {
                             document.getElementById('chatModal').style.display = 'flex';
                             document.body.style.overflow = 'hidden';
 
-                            // Load the specific conversation
-                            setTimeout(() => {
-                                loadConversation(employerId);
-                            }, 100);
+                            loadConversation(employerId);
                         }
 
-                        // Open all chats
+                        // Open all chats (just show modal without selecting)
                         function openAllChats() {
                             document.getElementById('chatModal').style.display = 'flex';
                             document.body.style.overflow = 'hidden';
@@ -838,12 +1138,12 @@
                             document.getElementById('chatHeader').style.display = 'none';
                             document.getElementById('replyArea').style.display = 'none';
                             document.getElementById('messagesContainer').innerHTML = `
-        <div class="no-conversation">
-            <i class="bi bi-chat-square-dots"></i>
-            <h3>Select a conversation</h3>
-            <p>Choose an employer from the list to view your messages</p>
-        </div>
-    `;
+            <div class="no-conversation">
+                <i class="bi bi-chat-square-dots"></i>
+                <h3>Select a conversation</h3>
+                <p>Choose an employer from the list to view your messages</p>
+            </div>
+        `;
 
                             // Remove active states
                             document.querySelectorAll('.employer-list-item').forEach(item => {
@@ -855,41 +1155,55 @@
                         function loadConversation(employerId) {
                             currentEmployerId = employerId;
 
-                            // Update active state
+                            // Set hidden input for reply form
+                            const replyEmployerInput = document.getElementById('replyEmployerId');
+                            replyEmployerInput.value = employerId;
+
+                            // Update active state in sidebar
                             document.querySelectorAll('.employer-list-item').forEach(item => {
                                 item.classList.remove('active');
                             });
-                            document.querySelector(`[data-employer-id="${employerId}"]`).classList.add('active');
+                            const activeItem = document.querySelector(`[data-employer-id="${employerId}"]`);
+                            if (activeItem) activeItem.classList.add('active');
 
-                            // Get employer messages
-                            const employerMessages = allMessages.filter(msg => msg.employer.id == employerId);
+                            const employerMessages = messagesByEmployer[employerId] || [];
+
+                            // If no messages, clear display
+                            if (employerMessages.length === 0) {
+                                displayMessages([]);
+                                return;
+                            }
+
                             const employer = employerMessages[0].employer;
 
                             // Update chat header
-                            document.getElementById('chatHeader').style.display = 'flex';
+                            const chatHeader = document.getElementById('chatHeader');
+                            chatHeader.style.display = 'flex';
                             document.getElementById('currentEmployerName').textContent =
-                                `${employer.personal_info.first_name || 'N/A'} ${employer.personal_info.last_name || 'N/A'}`;
+                                `${employer.personal_info?.first_name || 'N/A'} ${employer.personal_info?.last_name || ''}`;
                             document.getElementById('currentCompanyName').textContent =
-                                employer.addressCompany.company_name || 'Company';
+                                employer.address_company?.company_name || 'Company';
 
                             // Update avatar
                             const avatarElement = document.getElementById('currentAvatar');
-                            if (employer.addressCompany.company_logo) {
-                                avatarElement.innerHTML = `<img src="${employer.addressCompany.company_logo}" 
-            alt="${employer.addressCompany.company_name}" style="width:100%;height:100%;object-fit:cover;">`;
+                            if (employer.address_company?.company_logo) {
+                                avatarElement.innerHTML = `<img src="${employer.address_company.company_logo}" 
+            alt="${employer.address_company.company_name}" 
+            style="width:100%;height:100%;object-fit:cover;">`;
                             } else {
-                                avatarElement.textContent = (employer.addressCompany.company_name || 'C').charAt(0).toUpperCase();
+                                avatarElement.textContent = (employer.address_company?.company_name || 'C').charAt(0).toUpperCase();
                             }
 
-                            // Load messages
+                            // Load messages into chat area
                             displayMessages(employerMessages);
 
                             // Show reply area
                             document.getElementById('replyArea').style.display = 'block';
 
-                            // Mark messages as read
+                            // Mark messages as read (optional AJAX call)
                             markMessagesAsRead(employerId);
                         }
+
 
                         // Display messages in chat
                         function displayMessages(messages) {
@@ -897,73 +1211,51 @@
 
                             if (messages.length === 0) {
                                 container.innerHTML = `
-            <div class="no-conversation">
-                <i class="bi bi-chat-square"></i>
-                <h3>No messages yet</h3>
-                <p>Start the conversation by sending a message</p>
-            </div>
-        `;
+                <div class="no-conversation">
+                    <i class="bi bi-chat-square"></i>
+                    <h3>No messages yet</h3>
+                    <p>Start the conversation by sending a message</p>
+                </div>
+            `;
                                 return;
                             }
 
-                            // Sort messages by date
                             messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
                             container.innerHTML = messages.map(msg => {
-                                const isFromEmployer = msg.sender_type === 'employer' || !msg
-                                    .sender_type; // Assuming employer messages
+                                const isFromEmployer = msg.sender_type === 'employer';
                                 const bubbleClass = isFromEmployer ? 'from-employer' : 'from-applicant';
 
+                                let attachmentHtml = '';
+                                if (msg.attachment) {
+                                    attachmentHtml = `
+                    <div class="message-attachment mt-2">
+                        <img src="/storage/${msg.attachment}" 
+                             alt="Attachment" 
+                             class="img-fluid rounded-2 shadow-sm"
+                             style="max-height: 200px; width: auto;">
+                    </div>
+                `;
+                                }
+
                                 return `
-            <div class="message-bubble ${bubbleClass}">
-                <div class="message-content">
-                    ${msg.message}
+                <div class="message-bubble ${bubbleClass}">
+                    <div class="message-content">
+                        ${msg.message || ''}
+                        ${attachmentHtml}
+                    </div>
+                    <div class="message-timestamp">
+                        ${formatMessageTime(msg.created_at)}
+                    </div>
                 </div>
-                <div class="message-timestamp">
-                    ${formatMessageTime(msg.created_at)}
-                </div>
-            </div>
-        `;
+            `;
                             }).join('');
 
-                            // Scroll to bottom
                             container.scrollTop = container.scrollHeight;
-                        }
-
-                        // Send reply
-                        function sendReply() {
-                            const replyInput = document.getElementById('replyInput');
-                            const message = replyInput.value.trim();
-                            if (!message || !currentEmployerId) return;
-
-                            // Add message to UI immediately
-                            const container = document.getElementById('messagesContainer');
-                            const messageHtml = `
-        <div class="message-bubble from-applicant">
-            <div class="message-content">
-                ${message}
-            </div>
-            <div class="message-timestamp">
-                Just now
-            </div>
-        </div>
-    `;
-
-                            container.innerHTML += messageHtml;
-                            container.scrollTop = container.scrollHeight;
-
-                            // Clear input
-                            replyInput.value = '';
-                            replyInput.style.height = 'auto';
-                            document.getElementById('sendBtn').disabled = true;
-
-                            // Here you would make an AJAX call to send the message
-                            // sendMessageToServer(currentEmployerId, message);
                         }
 
                         // Mark messages as read
                         function markMessagesAsRead(employerId) {
-                            // Update dropdown item
                             const dropdownItem = document.querySelector(`.employer-item[data-employer-id="${employerId}"]`);
                             if (dropdownItem) {
                                 dropdownItem.classList.remove('unread');
@@ -973,16 +1265,12 @@
                                 if (unreadCount) unreadCount.remove();
                             }
 
-                            // Update sidebar item
                             const sidebarItem = document.querySelector(`.employer-list-item[data-employer-id="${employerId}"]`);
                             if (sidebarItem) {
                                 sidebarItem.classList.remove('has-unread');
                                 const unreadCount = sidebarItem.querySelector('.unread-count');
                                 if (unreadCount) unreadCount.remove();
                             }
-
-                            // Here you would make an AJAX call to mark messages as read
-                            // markAsReadOnServer(employerId);
                         }
 
                         // Format message time
@@ -997,57 +1285,16 @@
                             return date.toLocaleDateString();
                         }
 
-                        // Initialize chat functionality
                         document.addEventListener('DOMContentLoaded', function() {
-                            const replyInput = document.getElementById('replyInput');
-                            const sendBtn = document.getElementById('sendBtn');
-
-                            if (replyInput && sendBtn) {
-                                // Auto-resize textarea
-                                replyInput.addEventListener('input', function() {
-                                    this.style.height = 'auto';
-                                    this.style.height = this.scrollHeight + 'px';
-
-                                    sendBtn.disabled = !this.value.trim();
-                                });
-
-                                // Handle enter key
-                                replyInput.addEventListener('keydown', function(e) {
-                                    if (e.key === 'Enter' && !e.shiftKey) {
-                                        e.preventDefault();
-                                        sendReply();
-                                    }
-                                });
-
-                                // Send button click
-                                sendBtn.addEventListener('click', sendReply);
-                                sendBtn.disabled = true;
-                            }
-
-                            // Handle escape key to close modal
+                            // Escape key closes modal
                             document.addEventListener('keydown', function(e) {
                                 if (e.key === 'Escape') {
                                     closeChatModal();
                                 }
                             });
                         });
-
-                        // Legacy functions for dropdown interactions
-                        document.addEventListener('DOMContentLoaded', function() {
-                            // Add hover effects and click animations for dropdown items
-                            const employerItems = document.querySelectorAll('.employer-item');
-
-                            employerItems.forEach(item => {
-                                item.addEventListener('click', function() {
-                                    // Add a subtle click effect
-                                    this.style.transform = 'scale(0.98)';
-                                    setTimeout(() => {
-                                        this.style.transform = '';
-                                    }, 150);
-                                });
-                            });
-                        });
                     </script>
+
 
                     <!-- Notifications Dropdown -->
                     <div class="nav-dropdown">
