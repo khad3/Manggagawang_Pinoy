@@ -290,7 +290,7 @@
                                         @forelse($messages->groupBy('employer.id') as $employerId => $employerMessages)
                                             @php
                                                 $employer = $employerMessages->first()->employer;
-                                                $unreadCount = $employerMessages->where('status', 'unread')->count();
+                                                $unreadCount = $employerMessages->where('is_read', 0)->count();
                                                 $lastMessage = $employerMessages->sortByDesc('created_at')->first();
                                             @endphp
 
@@ -359,37 +359,53 @@
                                     </div>
 
                                     <!-- Enhanced Messages Container -->
+                                    <!-- Messages Container -->
                                     <div class="messages-container" id="messagesContainer">
                                         <div class="no-conversation">
                                             <div class="no-conversation-icon">
                                                 <i class="bi bi-chat-square-dots"></i>
                                             </div>
                                             <h3>Select a conversation</h3>
-                                            <p>Choose an employer from the list to view your messages and start chatting
-                                            </p>
+                                            <p>Choose an employer from the list to view your messages</p>
                                         </div>
                                     </div>
 
-                                    <!-- Enhanced Reply Area -->
+
+                                    <!-- Reply Area -->
                                     <div class="reply-area" id="replyArea" style="display: none;">
-                                        <div class="reply-container">
+                                        <form action="{{ route('applicant.sendmessage.store') }}" method="POST"
+                                            enctype="multipart/form-data" class="reply-container">
+                                            @csrf
+                                            <input type="hidden" name="employer_id" id="replyEmployerId">
+
                                             <div class="message-input-wrapper">
-                                                <button class="attachment-btn" title="Attach file">
+                                                <!-- File Upload -->
+                                                <label class="attachment-btn" for="attachment" title="Attach file">
                                                     <i class="bi bi-paperclip"></i>
-                                                </button>
-                                                <textarea class="reply-input" id="replyInput" placeholder="Type your message..." rows="1"></textarea>
-                                                <button class="emoji-btn" title="Add emoji">
+                                                </label>
+                                                <input type="file" name="attachment" id="attachment"
+                                                    class="d-none">
+
+                                                <!-- Message -->
+                                                <textarea class="reply-input" id="replyInput" name="message" placeholder="Type your message..." rows="1"
+                                                    required></textarea>
+
+                                                <button type="button" class="emoji-btn" title="Add emoji">
                                                     <i class="bi bi-emoji-smile"></i>
                                                 </button>
                                             </div>
-                                            <button class="send-btn" id="sendBtn" disabled>
+
+                                            <!-- Send Button -->
+                                            <button type="submit" class="send-btn" id="sendBtn">
                                                 <i class="bi bi-send"></i>
                                             </button>
-                                        </div>
+                                        </form>
+
                                         <div class="typing-indicator" id="typingIndicator" style="display: none;">
                                             <span>Employer is typing...</span>
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
@@ -1081,24 +1097,33 @@
                             .chat-area {
                                 height: 60%;
                             }
+
+
                         }
                     </style>
                     <script>
                         let currentEmployerId = null;
+                        // Pass messages from backend (already eager-loaded with employer info)
                         let allMessages = @json($messages);
 
+                        // Group messages by employer_id for easier access
+                        const messagesByEmployer = {};
+                        allMessages.forEach(msg => {
+                            if (!messagesByEmployer[msg.employer_id]) {
+                                messagesByEmployer[msg.employer_id] = [];
+                            }
+                            messagesByEmployer[msg.employer_id].push(msg);
+                        });
+
                         // Open chat with specific employer
-                        function openChatWithEmployer(employerId, firstName, lastName, companyName) {
+                        function openChatWithEmployer(employerId) {
                             document.getElementById('chatModal').style.display = 'flex';
                             document.body.style.overflow = 'hidden';
 
-                            // Load the specific conversation
-                            setTimeout(() => {
-                                loadConversation(employerId);
-                            }, 100);
+                            loadConversation(employerId);
                         }
 
-                        // Open all chats
+                        // Open all chats (just show modal without selecting)
                         function openAllChats() {
                             document.getElementById('chatModal').style.display = 'flex';
                             document.body.style.overflow = 'hidden';
@@ -1113,12 +1138,12 @@
                             document.getElementById('chatHeader').style.display = 'none';
                             document.getElementById('replyArea').style.display = 'none';
                             document.getElementById('messagesContainer').innerHTML = `
-        <div class="no-conversation">
-            <i class="bi bi-chat-square-dots"></i>
-            <h3>Select a conversation</h3>
-            <p>Choose an employer from the list to view your messages</p>
-        </div>
-    `;
+            <div class="no-conversation">
+                <i class="bi bi-chat-square-dots"></i>
+                <h3>Select a conversation</h3>
+                <p>Choose an employer from the list to view your messages</p>
+            </div>
+        `;
 
                             // Remove active states
                             document.querySelectorAll('.employer-list-item').forEach(item => {
@@ -1130,41 +1155,55 @@
                         function loadConversation(employerId) {
                             currentEmployerId = employerId;
 
-                            // Update active state
+                            // Set hidden input for reply form
+                            const replyEmployerInput = document.getElementById('replyEmployerId');
+                            replyEmployerInput.value = employerId;
+
+                            // Update active state in sidebar
                             document.querySelectorAll('.employer-list-item').forEach(item => {
                                 item.classList.remove('active');
                             });
-                            document.querySelector(`[data-employer-id="${employerId}"]`).classList.add('active');
+                            const activeItem = document.querySelector(`[data-employer-id="${employerId}"]`);
+                            if (activeItem) activeItem.classList.add('active');
 
-                            // Get employer messages
-                            const employerMessages = allMessages.filter(msg => msg.employer.id == employerId);
+                            const employerMessages = messagesByEmployer[employerId] || [];
+
+                            // If no messages, clear display
+                            if (employerMessages.length === 0) {
+                                displayMessages([]);
+                                return;
+                            }
+
                             const employer = employerMessages[0].employer;
 
                             // Update chat header
-                            document.getElementById('chatHeader').style.display = 'flex';
+                            const chatHeader = document.getElementById('chatHeader');
+                            chatHeader.style.display = 'flex';
                             document.getElementById('currentEmployerName').textContent =
-                                `${employer.personal_info.first_name || 'N/A'} ${employer.personal_info.last_name || 'N/A'}`;
+                                `${employer.personal_info?.first_name || 'N/A'} ${employer.personal_info?.last_name || ''}`;
                             document.getElementById('currentCompanyName').textContent =
-                                employer.addressCompany.company_name || 'Company';
+                                employer.address_company?.company_name || 'Company';
 
                             // Update avatar
                             const avatarElement = document.getElementById('currentAvatar');
-                            if (employer.addressCompany.company_logo) {
-                                avatarElement.innerHTML = `<img src="${employer.addressCompany.company_logo}" 
-            alt="${employer.addressCompany.company_name}" style="width:100%;height:100%;object-fit:cover;">`;
+                            if (employer.address_company?.company_logo) {
+                                avatarElement.innerHTML = `<img src="${employer.address_company.company_logo}" 
+            alt="${employer.address_company.company_name}" 
+            style="width:100%;height:100%;object-fit:cover;">`;
                             } else {
-                                avatarElement.textContent = (employer.addressCompany.company_name || 'C').charAt(0).toUpperCase();
+                                avatarElement.textContent = (employer.address_company?.company_name || 'C').charAt(0).toUpperCase();
                             }
 
-                            // Load messages
+                            // Load messages into chat area
                             displayMessages(employerMessages);
 
                             // Show reply area
                             document.getElementById('replyArea').style.display = 'block';
 
-                            // Mark messages as read
+                            // Mark messages as read (optional AJAX call)
                             markMessagesAsRead(employerId);
                         }
+
 
                         // Display messages in chat
                         function displayMessages(messages) {
@@ -1172,73 +1211,51 @@
 
                             if (messages.length === 0) {
                                 container.innerHTML = `
-            <div class="no-conversation">
-                <i class="bi bi-chat-square"></i>
-                <h3>No messages yet</h3>
-                <p>Start the conversation by sending a message</p>
-            </div>
-        `;
+                <div class="no-conversation">
+                    <i class="bi bi-chat-square"></i>
+                    <h3>No messages yet</h3>
+                    <p>Start the conversation by sending a message</p>
+                </div>
+            `;
                                 return;
                             }
 
-                            // Sort messages by date
                             messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
                             container.innerHTML = messages.map(msg => {
-                                const isFromEmployer = msg.sender_type === 'employer' || !msg
-                                    .sender_type; // Assuming employer messages
+                                const isFromEmployer = msg.sender_type === 'employer';
                                 const bubbleClass = isFromEmployer ? 'from-employer' : 'from-applicant';
 
+                                let attachmentHtml = '';
+                                if (msg.attachment) {
+                                    attachmentHtml = `
+                    <div class="message-attachment mt-2">
+                        <img src="/storage/${msg.attachment}" 
+                             alt="Attachment" 
+                             class="img-fluid rounded-2 shadow-sm"
+                             style="max-height: 200px; width: auto;">
+                    </div>
+                `;
+                                }
+
                                 return `
-            <div class="message-bubble ${bubbleClass}">
-                <div class="message-content">
-                    ${msg.message}
+                <div class="message-bubble ${bubbleClass}">
+                    <div class="message-content">
+                        ${msg.message || ''}
+                        ${attachmentHtml}
+                    </div>
+                    <div class="message-timestamp">
+                        ${formatMessageTime(msg.created_at)}
+                    </div>
                 </div>
-                <div class="message-timestamp">
-                    ${formatMessageTime(msg.created_at)}
-                </div>
-            </div>
-        `;
+            `;
                             }).join('');
 
-                            // Scroll to bottom
                             container.scrollTop = container.scrollHeight;
-                        }
-
-                        // Send reply
-                        function sendReply() {
-                            const replyInput = document.getElementById('replyInput');
-                            const message = replyInput.value.trim();
-                            if (!message || !currentEmployerId) return;
-
-                            // Add message to UI immediately
-                            const container = document.getElementById('messagesContainer');
-                            const messageHtml = `
-        <div class="message-bubble from-applicant">
-            <div class="message-content">
-                ${message}
-            </div>
-            <div class="message-timestamp">
-                Just now
-            </div>
-        </div>
-    `;
-
-                            container.innerHTML += messageHtml;
-                            container.scrollTop = container.scrollHeight;
-
-                            // Clear input
-                            replyInput.value = '';
-                            replyInput.style.height = 'auto';
-                            document.getElementById('sendBtn').disabled = true;
-
-                            // Here you would make an AJAX call to send the message
-                            // sendMessageToServer(currentEmployerId, message);
                         }
 
                         // Mark messages as read
                         function markMessagesAsRead(employerId) {
-                            // Update dropdown item
                             const dropdownItem = document.querySelector(`.employer-item[data-employer-id="${employerId}"]`);
                             if (dropdownItem) {
                                 dropdownItem.classList.remove('unread');
@@ -1248,16 +1265,12 @@
                                 if (unreadCount) unreadCount.remove();
                             }
 
-                            // Update sidebar item
                             const sidebarItem = document.querySelector(`.employer-list-item[data-employer-id="${employerId}"]`);
                             if (sidebarItem) {
                                 sidebarItem.classList.remove('has-unread');
                                 const unreadCount = sidebarItem.querySelector('.unread-count');
                                 if (unreadCount) unreadCount.remove();
                             }
-
-                            // Here you would make an AJAX call to mark messages as read
-                            // markAsReadOnServer(employerId);
                         }
 
                         // Format message time
@@ -1272,57 +1285,16 @@
                             return date.toLocaleDateString();
                         }
 
-                        // Initialize chat functionality
                         document.addEventListener('DOMContentLoaded', function() {
-                            const replyInput = document.getElementById('replyInput');
-                            const sendBtn = document.getElementById('sendBtn');
-
-                            if (replyInput && sendBtn) {
-                                // Auto-resize textarea
-                                replyInput.addEventListener('input', function() {
-                                    this.style.height = 'auto';
-                                    this.style.height = this.scrollHeight + 'px';
-
-                                    sendBtn.disabled = !this.value.trim();
-                                });
-
-                                // Handle enter key
-                                replyInput.addEventListener('keydown', function(e) {
-                                    if (e.key === 'Enter' && !e.shiftKey) {
-                                        e.preventDefault();
-                                        sendReply();
-                                    }
-                                });
-
-                                // Send button click
-                                sendBtn.addEventListener('click', sendReply);
-                                sendBtn.disabled = true;
-                            }
-
-                            // Handle escape key to close modal
+                            // Escape key closes modal
                             document.addEventListener('keydown', function(e) {
                                 if (e.key === 'Escape') {
                                     closeChatModal();
                                 }
                             });
                         });
-
-                        // Legacy functions for dropdown interactions
-                        document.addEventListener('DOMContentLoaded', function() {
-                            // Add hover effects and click animations for dropdown items
-                            const employerItems = document.querySelectorAll('.employer-item');
-
-                            employerItems.forEach(item => {
-                                item.addEventListener('click', function() {
-                                    // Add a subtle click effect
-                                    this.style.transform = 'scale(0.98)';
-                                    setTimeout(() => {
-                                        this.style.transform = '';
-                                    }, 150);
-                                });
-                            });
-                        });
                     </script>
+
 
                     <!-- Notifications Dropdown -->
                     <div class="nav-dropdown">
