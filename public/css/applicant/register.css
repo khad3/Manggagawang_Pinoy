@@ -1,18 +1,4 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
 
-body {
-    font-family: "Inter", sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
 
 /* Loader Styles */
 #loader-wrapper {
@@ -75,78 +61,10 @@ body {
     position: relative;
 }
 
-/* Progress Bar */
-.progress-container {
-    background: #f8fafc;
-    padding: 30px;
-    border-bottom: 1px solid #e2e8f0;
-}
 
-.progress-steps {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
 
-.step {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    font-weight: 600;
-    font-size: 14px;
-    position: relative;
-    transition: all 0.3s ease;
-}
 
-.step.active {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    transform: scale(1.1);
-}
 
-.step.completed {
-    background: #10b981;
-    color: white;
-}
-
-.step.pending {
-    background: #e2e8f0;
-    color: #64748b;
-}
-
-.progress-line {
-    position: absolute;
-    top: 50%;
-    left: 50px;
-    right: 50px;
-    height: 2px;
-    background: #e2e8f0;
-    z-index: 1;
-}
-
-.progress-line-fill {
-    height: 100%;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    transition: width 0.3s ease;
-    width: 0%;
-}
-
-.step-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    font-weight: 500;
-    color: #64748b;
-    margin-top: 10px;
-}
-
-.step-label.active {
-    color: #667eea;
-}
 
 /* Form Content */
 .form-content {
@@ -337,6 +255,7 @@ body {
 .form-links {
     text-align: center;
     font-size: 14px;
+    margin-bottom: 50px;
 }
 
 .form-links a {
@@ -397,4 +316,146 @@ body {
         height: 35px;
         font-size: 12px;
     }
+}
+
+:root {
+    --primary-orange: #020180;
+    --primary-red: #dc2626;
+    --light-orange: #dcdcec;
+    --light-red: #fef2f2;
+}
+
+body {
+    background: linear-gradient(135deg, #fff7ed 0%, #ffffff 50%, #fef2f2 100%);
+    min-height: 100vh;
+}
+
+.registration-container {
+    padding: 60px 0;
+}
+
+.step-indicator {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    border: 2px solid;
+    margin-left: 15px;
+}
+
+.step-active {
+    background: var(--primary-orange);
+    border-color: var(--primary-orange);
+    color: white;
+}
+
+.step-inactive {
+    background: white;
+    border-color: #d1d5db;
+    color: #6b7280;
+}
+
+.step-completed {
+    background: var(--primary-orange);
+    border-color: var(--primary-orange);
+    color: white;
+}
+
+.step-line {
+    height: 2px;
+    background: #d1d5db;
+    flex: 1;
+    margin: 0 20px;
+    transition: all 0.3s ease;
+}
+
+.step-line-completed {
+    background: var(--primary-orange);
+}
+
+.form-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: none;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.btn-primary-custom {
+    background: var(--primary-orange);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    color:#ffffff;
+}
+
+.btn-primary-custom:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+}
+
+.skill-badge {
+    background: #f3f4f6;
+    color: #374151;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    margin: 4px;
+    display: inline-block;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid #d1d5db;
+}
+
+.skill-badge.active {
+    background: var(--primary-orange);
+    color: white;
+    border-color: var(--primary-orange);
+}
+
+.skill-badge:hover {
+    background: var(--light-orange);
+    color: var(--primary-orange);
+    border-color: var(--primary-orange);
+}
+
+.skill-badge-selected {
+    background: var(--primary-orange);
+    color: white;
+    border-color: var(--primary-orange);
+}
+
+.tesda-section {
+    background: var(--light-orange);
+    border: 2px solid var(--primary-orange);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+}
+
+.certification-requirement {
+    background: white;
+    border: 2px solid var(--light-orange);
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.certification-requirement:hover {
+    border-color: var(--primary-orange);
+    box-shadow: 0 2px 8px rgba(234, 88, 12, 0.1);
+}
+
+.certification-requirement.selected {
+    border-color: var(--primary-orange);
+    background: var(--light-red);
 }
