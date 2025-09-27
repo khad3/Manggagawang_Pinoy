@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Employer\SendMessageModel;
 use App\Models\Applicant\RegisterModel;
+use Illuminate\Support\Facades\Crypt;
 
 class SendMessageController extends Controller
 {
@@ -28,18 +29,22 @@ class SendMessageController extends Controller
         $attachmentPath = $request->file('photo')->store('attachments', 'public');
     }
 
+    // Encrypt the message before saving
+    $encryptedMessage = $request->message ? Crypt::encryptString($request->message) : null;
+
     $message = SendMessageModel::create([
         'is_read' => false,
-        'message' => $request->message,
+        'message' => $encryptedMessage, // store encrypted message
         'attachment' => $attachmentPath,
         'sender_type' => 'employer',
         'employer_id' => $request->sender_id,
         'applicant_id' => $request->receiver_id,
     ]);
 
-   return redirect()->back()->with('success', "Message sent successfully to {$receiver->personal_info->first_name} {$receiver->personal_info->last_name}.");
-
-       
+    return redirect()->back()->with(
+        'success',
+        "Message sent successfully to {$receiver->personal_info->first_name} {$receiver->personal_info->last_name}."
+    );
 }
 
 

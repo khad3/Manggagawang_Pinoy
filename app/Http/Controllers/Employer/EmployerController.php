@@ -19,6 +19,7 @@ use App\Models\Employer\SpecialRequirementModel as SpecialRequirement;
 use App\Models\Employer\InterviewScreeningModel as InterviewScreening;
 use App\Models\Employer\SendRatingModel as Rating;
 use App\Models\Employer\SendMessageModel as SendMessage;
+use Illuminate\Support\Facades\Crypt;
 
 use App\Models\Applicant\PersonalModel as Applicants;
 use App\Models\Applicant\ApplicantPortfolioModel as ApplicantPortfolioModel;
@@ -518,7 +519,17 @@ public function ShowHomepage() {
 $retrieveMessages = SendMessage::with(['applicant.personal_info', 'employer'])
     ->where('employer_id', $employerId) // messages related to logged-in employer
     ->orderBy('created_at', 'asc')
-    ->get();
+    ->get()
+    ->map(function ($msg) {
+        if ($msg->message) {
+            try {
+                $msg->message = Crypt::decryptString($msg->message);
+            } catch (\Exception $e) {
+                $msg->message = '[Unable to decrypt message]';
+            }
+        }
+        return $msg;
+    });
 
 
 

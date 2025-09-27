@@ -16,7 +16,7 @@ use App\Models\Applicant\ApplicantFriendModel as AddFriend;
 use App\Models\Applicant\SendMessageModel as SendMessage;
 use App\Models\Applicant\SavedJobModel as SavedJob;
 use App\Models\Employer\SendMessageModel as EmployerSendMessage;
-
+use Illuminate\Support\Facades\Crypt;
 use App\Models\Applicant\ApplyJobModel as ApplyJob;
 use App\Models\Admin\AnnouncementModel;
 use App\Notifications\Applicant\FriendRequestNotification;
@@ -459,9 +459,21 @@ if ($suspendedApplicant && $suspension) {
 
 
 //Retrieve the employer messages
+// Retrieve the employer messages
 $messages = EmployerSendMessage::with(['employer.addressCompany', 'employer.personal_info'])
     ->where('applicant_id', $applicantId)
-    ->get();
+    ->orderBy('created_at', 'asc') // optional: keep chronological
+    ->get()
+    ->map(function ($msg) {
+        if ($msg->message) {
+            try {
+                $msg->message = Crypt::decryptString($msg->message);
+            } catch (\Exception $e) {
+                $msg->message = '[Unable to decrypt message]';
+            }
+        }
+        return $msg;
+    });
 
 
    
