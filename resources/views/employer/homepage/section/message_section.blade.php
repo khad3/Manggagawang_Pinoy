@@ -264,35 +264,28 @@
 
         if (messages.length > 0) {
             messages.forEach(msg => {
-                const messageDiv = document.createElement('div');
-                const isEmployer = msg.employer_id;
+                const isSentByEmployer = msg.sender_type === 'employer';
                 const messageTime = new Date(msg.created_at).toLocaleTimeString([], {
                     hour: '2-digit',
                     minute: '2-digit'
                 });
 
-                messageDiv.className = `message-bubble ${isEmployer ? 'sent' : 'received'}`;
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message-bubble ${isSentByEmployer ? 'sent' : 'received'}`;
 
                 messageDiv.innerHTML = `
                 <div class="message-content">
-                    ${msg.attachment 
-                        ? `<img src="/storage/${msg.attachment}" alt="Attachment" class="message-image">` 
-                        : ''}
-                    ${msg.message 
-                        ? `<p class="message-text">${msg.message}</p>` 
-                        : ''}
+                    ${msg.attachment ? `<img src="/storage/${msg.attachment}" alt="Attachment" class="message-image">` : ''}
+                    ${msg.message ? `<p class="message-text">${msg.message}</p>` : ''}
                 </div>
                 <div class="message-time">${messageTime}</div>
-                ${isEmployer ? '<div class="message-status">✓✓</div>' : ''}
+                ${isSentByEmployer ? '<div class="message-status">✓✓</div>' : ''}
             `;
 
                 chatMessages.appendChild(messageDiv);
             });
 
-            // Auto scroll to bottom
-            setTimeout(() => {
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }, 100);
+            chatMessages.scrollTop = chatMessages.scrollHeight; // scroll to bottom
         } else {
             chatMessages.innerHTML = `
             <div class="no-messages">
@@ -303,6 +296,7 @@
         `;
         }
     }
+
 
 
     // Handle form submission

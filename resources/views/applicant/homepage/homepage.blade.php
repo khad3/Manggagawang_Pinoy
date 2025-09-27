@@ -187,7 +187,7 @@
 
                             <div class="dropdown-content">
                                 <div class="messages-list">
-                                    @forelse($messages->groupBy('employer.id') as $employerId => $employerMessages)
+                                    @forelse($messages->groupBy('employer_id') as $employerId => $employerMessages)
                                         @php
                                             $employer = $employerMessages->first()->employer;
                                             $unreadCount = $employerMessages->where('status', 'unread')->count();
@@ -287,7 +287,7 @@
                                     </div>
 
                                     <div class="employers-list" id="employersList">
-                                        @forelse($messages->groupBy('employer.id') as $employerId => $employerMessages)
+                                        @forelse($messages->groupBy('employer_id') as $employerId => $employerMessages)
                                             @php
                                                 $employer = $employerMessages->first()->employer;
                                                 $unreadCount = $employerMessages->where('is_read', 0)->count();
@@ -373,8 +373,8 @@
 
                                     <!-- Reply Area -->
                                     <div class="reply-area" id="replyArea" style="display: none;">
-                                        <form action="{{ route('applicant.sendmessage.store') }}" method="POST"
-                                            enctype="multipart/form-data" class="reply-container">
+                                        <form action="{{ route('applicant.sendmessageemployer.store') }}"
+                                            method="POST" enctype="multipart/form-data" class="reply-container">
                                             @csrf
                                             <input type="hidden" name="employer_id" id="replyEmployerId">
 
@@ -390,13 +390,10 @@
                                                 <textarea class="reply-input" id="replyInput" name="message" placeholder="Type your message..." rows="1"
                                                     required></textarea>
 
-                                                <button type="button" class="emoji-btn" title="Add emoji">
-                                                    <i class="bi bi-emoji-smile"></i>
-                                                </button>
                                             </div>
 
                                             <!-- Send Button -->
-                                            <button type="submit" class="send-btn" id="sendBtn">
+                                            <button type="submit" class="send-btn" title="Send message">
                                                 <i class="bi bi-send"></i>
                                             </button>
                                         </form>
@@ -902,6 +899,22 @@
                             font-weight: 500;
                         }
 
+                        .message-bubble .message-timestamp {
+                            font-size: 11px;
+                            color: #94a3b8;
+                            margin-top: 6px;
+                            font-weight: 500;
+                        }
+
+                        .message-bubble.from-employer .message-timestamp {
+                            text-align: left;
+                        }
+
+                        .message-bubble.from-applicant .message-timestamp {
+                            text-align: right;
+                            color: rgba(255, 255, 255, 0.8);
+                        }
+
                         .message-bubble.from-applicant .message-timestamp {
                             align-self: flex-end;
                             color: rgba(255, 255, 255, 0.8);
@@ -1211,48 +1224,56 @@
 
                             if (messages.length === 0) {
                                 container.innerHTML = `
-                <div class="no-conversation">
-                    <i class="bi bi-chat-square"></i>
-                    <h3>No messages yet</h3>
-                    <p>Start the conversation by sending a message</p>
-                </div>
-            `;
+            <div class="no-conversation">
+                <i class="bi bi-chat-square"></i>
+                <h3>No messages yet</h3>
+                <p>Start the conversation by sending a message</p>
+            </div>
+        `;
                                 return;
                             }
 
+                            // Sort messages by creation time
                             messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
                             container.innerHTML = messages.map(msg => {
                                 const isFromEmployer = msg.sender_type === 'employer';
                                 const bubbleClass = isFromEmployer ? 'from-employer' : 'from-applicant';
 
+                                // Attachment HTML
                                 let attachmentHtml = '';
                                 if (msg.attachment) {
                                     attachmentHtml = `
-                    <div class="message-attachment mt-2">
-                        <img src="/storage/${msg.attachment}" 
-                             alt="Attachment" 
-                             class="img-fluid rounded-2 shadow-sm"
-                             style="max-height: 200px; width: auto;">
-                    </div>
-                `;
-                                }
-
-                                return `
-                <div class="message-bubble ${bubbleClass}">
-                    <div class="message-content">
-                        ${msg.message || ''}
-                        ${attachmentHtml}
-                    </div>
-                    <div class="message-timestamp">
-                        ${formatMessageTime(msg.created_at)}
-                    </div>
+                <div class="message-attachment mt-2">
+                    <img src="/storage/${msg.attachment}" 
+                         alt="Attachment" 
+                         class="img-fluid rounded-2 shadow-sm"
+                         style="max-height: 200px; width: auto;">
                 </div>
             `;
+                                }
+
+                                // Format timestamp for display and tooltip
+                                const timestamp = formatMessageTime(msg.created_at);
+                                const fullDate = new Date(msg.created_at).toLocaleString();
+
+                                return `
+            <div class="message-bubble ${bubbleClass}">
+                <div class="message-content">
+                    ${msg.message || ''}
+                    ${attachmentHtml}
+                    <div class="message-timestamp ${bubbleClass}" title="${fullDate}">
+                        ${timestamp}
+                    </div>
+                </div>
+            </div>
+        `;
                             }).join('');
 
+                            // Scroll to bottom
                             container.scrollTop = container.scrollHeight;
                         }
+
 
                         // Mark messages as read
                         function markMessagesAsRead(employerId) {

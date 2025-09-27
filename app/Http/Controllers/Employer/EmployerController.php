@@ -515,10 +515,11 @@ public function ShowHomepage() {
     $retrievedApplicantApproved = ApplyJobModel::where('status', 'approved')->count();
     
   
-   $retrieveMessages = SendMessage::with(['applicant.personal_info'])
-    ->where('employer_id', $employerId)
+$retrieveMessages = SendMessage::with(['applicant.personal_info', 'employer'])
+    ->where('employer_id', $employerId) // messages related to logged-in employer
     ->orderBy('created_at', 'asc')
     ->get();
+
 
 
     return view('employer.homepage.homepage' , compact(

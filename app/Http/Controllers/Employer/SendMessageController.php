@@ -32,6 +32,7 @@ class SendMessageController extends Controller
         'is_read' => false,
         'message' => $request->message,
         'attachment' => $attachmentPath,
+        'sender_type' => 'employer',
         'employer_id' => $request->sender_id,
         'applicant_id' => $request->receiver_id,
     ]);

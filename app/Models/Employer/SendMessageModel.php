@@ -15,7 +15,8 @@ class SendMessageModel extends Model
             'applicant_id', 
             'message',
             'attachment',
-            'is_read'
+            'is_read',
+            'sender_type',
     ];
 
 

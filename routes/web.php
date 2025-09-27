@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Applicant\ProfileController;
 use App\Http\Controllers\Applicant\SendMessageEmployerController;
+use App\Http\Controllers\Applicant\MessageController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\TesdaOfficer\TesdaOfficerController;
 use App\Http\Controllers\Employer\SendMessageController;
@@ -129,8 +130,8 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
     Route::post('add-certification', [ProfileController::class, 'addTesdaCertificate'])->name('applicant.certification.store');
     Route::delete('delete-certification/{id}', [ProfileController::class, 'deleteTesdaCertificate'])->name('applicant.certification.delete');
     //Applicant messages the employer
-    Route::post('send-message', [SendMessageEmployerController::class, 'sendMessage'])->name('applicant.sendmessage.store');
-
+    Route::post('send-message/employer', [MessageController::class, 'sendMessage'])->name('applicant.sendmessageemployer.store');
+    
 
     // Calling card
     Route::get('callingcard', [ApplicantController::class, 'ViewCallingCard'])->name('applicant.callingcard.display');

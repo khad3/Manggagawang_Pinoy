@@ -17,6 +17,7 @@ return new class extends Migration
         $table->unsignedBigInteger('applicant_id');  // receiver
         $table->longText('message')->nullable();     // safer for long messages
         $table->string('attachment')->nullable();    // for images/files
+        $table->enum('sender_type', ['employer', 'applicant'])->nullable();
         $table->boolean('is_read')->default(false);
         $table->timestamps();
 
