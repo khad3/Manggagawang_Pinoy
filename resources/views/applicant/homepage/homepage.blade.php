@@ -182,31 +182,27 @@
                     <!-- Profile Dropdown -->
                     <div class="nav-dropdown">
                         <button class="profile-pic" onclick="toggleDropdown('profileDropdown')">
-                            {{ strtoupper(substr($retrievePersonal->personal_info->first_name, 0, 1)) }}
-                            {{ strtoupper(substr($retrievePersonal->personal_info->last_name, 0, 1)) }}
+                            {{ strtoupper(substr($retrieveDataDecrypted['first_name'], 0, 1)) }}
+                            {{ strtoupper(substr($retrieveDataDecrypted['last_name'], 0, 1)) }}
                         </button>
                         <div class="dropdown-menu profile-menu" id="profileDropdown">
                             <div class="profile-header">
                                 <div class="profile-avatar">
-                                    @if ($retrievePersonal->personal_info)
-                                        @if (!empty($retrievePersonal->work_background) && !empty($retrievePersonal->work_background->profileimage_path))
-                                            <img src="{{ asset('storage/' . $retrievePersonal->work_background->profileimage_path) }}"
-                                                alt="Profile Picture" width="50" height="50"
-                                                style="border-radius: 50%;">
-                                        @else
-                                            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
-                                                style="width: 50px; height: 50px;">
-                                                {{ strtoupper(substr($retrievePersonal->first_name ?? 'U', 0, 1)) }}
-                                            </div>
-                                        @endif
+                                    @if (!empty($retrieveDataDecrypted['profileimage_path']))
+                                        <img src="{{ asset('storage/' . $retrieveDataDecrypted['profileimage_path']) }}"
+                                            alt="Profile Picture" width="50" height="50"
+                                            style="border-radius: 50%;">
                                     @else
-                                        ??
+                                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
+                                            style="width: 50px; height: 50px;">
+                                            {{ strtoupper(substr($retrieveDataDecrypted['first_name'] ?? 'U', 0, 1)) }}
+                                        </div>
                                     @endif
                                 </div>
                                 <div class="profile-info">
                                     <div class="profile-name">
-                                        {{ $retrievePersonal->personal_info->first_name ?? 'Unknown' }}
-                                        {{ $retrievePersonal->personal_info->last_name ?? '' }}
+                                        {{ $retrieveDataDecrypted['first_name'] ?? 'Unknown' }}
+                                        {{ $retrieveDataDecrypted['last_name'] ?? '' }}
                                     </div>
                                     <div class="profile-email">
                                         {{ $retrievePersonal->email ?? 'Not Provided' }}

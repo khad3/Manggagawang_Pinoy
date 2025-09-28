@@ -85,6 +85,9 @@ class ApplicantController extends Controller
     $verificationCode = mt_rand(100000, 999999);
     $expirationDate = Carbon::now()->addMinutes(10);
 
+
+    //Encrypt the email
+
     // Create the applicant and save verification code + expiration
     $applicant = RegisterModel::create([
         'username' => $request->username,
@@ -102,7 +105,7 @@ class ApplicantController extends Controller
 
     return redirect()->route('verification.display')->with([
         'success' => 'Registration successful. Please input the 6-digit code sent to your email.',
-        'email' => $applicant->email
+        'email' => $request->email
     ]);
 } 
 
@@ -110,6 +113,42 @@ public function ShowVerifyForm(){
     
     return view('applicant.auth.verification');
 }
+
+public function resend(Request $request)
+{
+    $applicantId = session('applicant_id');
+
+    if (!$applicantId) {
+        return response()->json(['message' => 'No applicant found in session.'], 400);
+    }
+
+    $applicant = RegisterModel::find($applicantId);
+
+    if (!$applicant) {
+        return response()->json(['message' => 'Applicant not found.'], 404);
+    }
+
+    // Generate new code
+    $newCode = mt_rand(100000, 999999);
+    $expiration = Carbon::now()->addMinutes(10);
+
+    $applicant->update([
+        'verification_code' => $newCode,
+        'email_verification_code_expires_at' => $expiration,
+    ]);
+
+    // 🟢 Debug log
+    \Log::info("Resend Code for {$applicant->email}: $newCode");
+
+    // Send email
+    Mail::to($applicant->email)->send(new VerifyEmail($newCode));
+
+    return response()->json([
+        'message' => 'A new verification code has been sent to your email.',
+    ]);
+}
+
+
 
    public function Verify(Request $request)
 {
@@ -149,8 +188,8 @@ public function ShowPersonalInfoForm()
 
 public function PersonalInfo(Request $request)
 {
-
     $applicantId = session('applicant_id');
+
     $request->validate([
         'first_name'    => 'required|string|max:50',
         'last_name'     => 'required|string|max:50',
@@ -160,14 +199,22 @@ public function PersonalInfo(Request $request)
         'province'      => 'required|string|max:80',
         'zipcode'       => 'required|numeric|digits:4',
         'barangay'      => 'required|string|max:80',
-        'id'  => 'required|exists:applicants,id',
+        'id'            => 'required|exists:applicants,id',
     ]);
 
     $applicant = RegisterModel::findOrFail($applicantId);
 
-    $personal_info = new PersonalInfo($request->only([
-        'first_name', 'last_name', 'gender', 'house_street', 'city', 'province', 'zipcode', 'barangay'
-    ]));
+    // Encrypt each field before saving
+    $personal_info = new PersonalInfo([
+        'first_name'   => Crypt::encrypt($request->first_name),
+        'last_name'    => Crypt::encrypt($request->last_name),
+        'gender'       => Crypt::encrypt($request->gender),
+        'house_street' => Crypt::encrypt($request->house_street),
+        'city'         => Crypt::encrypt($request->city),
+        'province'     => Crypt::encrypt($request->province),
+        'zipcode'      => Crypt::encrypt($request->zipcode),
+        'barangay'     => Crypt::encrypt($request->barangay),
+    ]);
 
     // Save via relation
     $applicant->personal_info()->save($personal_info);
@@ -196,22 +243,22 @@ public function WorkBackground(Request $request)
         'work_duration' => 'required|numeric',
         'work_duration_unit' => 'required|string',
         'employed' => 'required|string',
-        'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
     ]);
 
     $applicant = RegisterModel::findOrFail($applicantId);
 
-    // Store the image
+    // Store the image (path is not encrypted)
     $imagePath = $request->file('profile_picture')->store('profile_picture', 'public');
 
-    // Create the WorkBackground entry
+    // Encrypt fields before saving
     $work_background = new WorkBackground([
-        'position' => $request->position,
-        'other_position' => $request->other_position,
-        'work_duration' => $request->work_duration,
+        'position'           => Crypt::encrypt($request->position),
+        'other_position'     => $request->other_position ? Crypt::encrypt($request->other_position) : null,
+         'work_duration'      => $request->work_duration, // keep numeric, no encryption
         'work_duration_unit' => $request->work_duration_unit,
-        'employed' => $request->employed,
-        'profileimage_path' => $imagePath,
+        'employed'           => $request->employed,
+        'profileimage_path'  => $imagePath, // keep path unencrypted
     ]);
 
     // Save via relation
@@ -219,6 +266,17 @@ public function WorkBackground(Request $request)
 
     return redirect()->route('applicant.info.template.display')
         ->with('success', 'Work background saved successfully.');
+}
+/**
+ * Helper to safely decrypt a value
+ */
+private function safeDecrypt($value)
+{
+    try {
+        return $value ? Crypt::decrypt($value) : null;
+    } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+        return $value; // return original if decryption fails
+    }
 }
 
 //Final step to register 
@@ -230,17 +288,39 @@ public function ShowTemplateFormForm()
         return redirect()->route('some.previous.step')->withErrors('Applicant ID not found in session!');
     }
 
-    $personalInfo = PersonalInfo::where('applicant_id', $applicantId)->first();
-    $workBackground = WorkBackground::where('applicant_id', $applicantId)->first();
+   $personalInfo = PersonalInfo::where('applicant_id', $applicantId)->first();
+$workBackground = WorkBackground::where('applicant_id', $applicantId)->first();
+
+// Helper function to safely decrypt
+
+
+// Decrypted arrays
+$personalInfoDecrypted = $personalInfo ? [
+    'first_name'   => $this->safeDecrypt($personalInfo->first_name),
+    'last_name'    => $this->safeDecrypt($personalInfo->last_name),
+    'gender'       => $this->safeDecrypt($personalInfo->gender),
+    'house_street' => $this->safeDecrypt($personalInfo->house_street),
+    'city'         => $this->safeDecrypt($personalInfo->city),
+    'province'     => $this->safeDecrypt($personalInfo->province),
+    'zipcode'      => $this->safeDecrypt($personalInfo->zipcode),
+    'barangay'     => $this->safeDecrypt($personalInfo->barangay),
+] : [];
+
+$workBackgroundDecrypted = $workBackground ? [
+    'position'           => $this->safeDecrypt($workBackground->position),
+    'other_position'     => $this->safeDecrypt($workBackground->other_position),
+    'work_duration'      => $workBackground->work_duration, // numeric, do not decrypt
+    'work_duration_unit' => $this->safeDecrypt($workBackground->work_duration_unit),
+    'employed'           => $this->safeDecrypt($workBackground->employed),
+    'profileimage_path'  => $workBackground->profileimage_path,
+] : [];
+
 
     if (!$personalInfo || !$workBackground) {
         return redirect()->route('some.previous.step')->withErrors('Incomplete applicant data!');
     }
 
-    return view('applicant.auth.finalStepTemplate', [
-        'personalinfo' => $personalInfo,
-        'workexperience' => $workBackground
-    ]);
+    return view('applicant.auth.finalStepTemplate', compact('personalInfoDecrypted', 'workBackgroundDecrypted'));
 }
 
 public function TemplateForm(Request $request)
@@ -285,11 +365,16 @@ public function TemplateForm(Request $request)
         $sampleWorkFile = $request->file('sample_work')->store('sample_works', 'public');
     }
 
+    //encrypt data
+    $encrypted_description = $request->description ? Crypt::encrypt($request->description) : null;
+    $encrypted_sample_work = $sampleWorkFile ? Crypt::encrypt($sampleWorkFile) : null;
+    $encrypted_sample_work_url = $request->sample_work_url ? Crypt::encrypt($request->sample_work_url) : null;
+
     // Create new template
     $template = new Template([
-        'description' => $request->description,
-        'sample_work' => $sampleWorkFile, // this can be null
-        'sample_work_url' => $request->sample_work_url, // this can also be null
+        'description' => $encrypted_description,
+        'sample_work' => $encrypted_sample_work, // this can be null
+        'sample_work_url' => $encrypted_sample_work_url, // this can also be null
         'applicant_id' => $applicantId,
         'personal_info_id' => $personalInfo->id,
         'work_experience_id' => $workBackground->id,
@@ -320,6 +405,12 @@ public function login(Request $request)
     $applicant = RegisterModel::with('personal_info')
         ->where('email', $request->email)
         ->first();
+
+        
+    $applicant_name_decrypted = $applicant && $applicant->personal_info ?[
+        'first_name' => $this->safeDecrypt($applicant->personal_info->first_name),
+        
+    ]:[];
 
    
     if (!$applicant) {
@@ -354,9 +445,10 @@ public function login(Request $request)
     ]);
 
     
+    
     return redirect()
         ->route('applicant.info.homepage.display')
-        ->with('success', 'Welcome back, ' . ($applicant->personal_info->first_name ?? 'Applicant') . '!');
+        ->with('success', 'Welcome back, ' . ($applicant_name_decrypted['first_name'] ?? 'Applicant') . '!');
 }
 
 
@@ -375,6 +467,28 @@ public function ShowHomepage()
     $retrievePersonal = RegisterModel::with(['personal_info', 'work_background'])
         ->where('id', $applicantId)
         ->first();
+
+
+    //get the decrypted data
+    $retrieveDataDecrypted = $retrievePersonal ? [
+        'first_name' => $this->safeDecrypt($retrievePersonal->personal_info->first_name),
+        'last_name' => $this->safeDecrypt($retrievePersonal->personal_info->last_name),
+        'gender' => $this->safeDecrypt($retrievePersonal->personal_info->gender),
+        'house_street' => $this->safeDecrypt($retrievePersonal->personal_info->house_street),
+        'city' => $this->safeDecrypt($retrievePersonal->personal_info->city),
+        'state' => $this->safeDecrypt($retrievePersonal->personal_info->state),
+        'zipcode' => $this->safeDecrypt($retrievePersonal->personal_info->zipcode),
+        'country' => $this->safeDecrypt($retrievePersonal->personal_info->country),
+
+        //Work Experience
+        'position' => $this->safeDecrypt($retrievePersonal->work_background->position),
+        'other_position' => $this->safeDecrypt($retrievePersonal->work_background->other_position),
+        'work_duration' => $retrievePersonal->work_background->work_duration,
+        'work_duration_unit' => $retrievePersonal->work_background->work_duration_unit,
+        'employed' => $retrievePersonal->work_background->employed,
+
+
+    ] : [];
 
     // Get all the employer and also the active post
     $JobPostRetrieved = \App\Models\Employer\JobDetailModel::with(
@@ -478,6 +592,7 @@ $messages = EmployerSendMessage::with(['employer.addressCompany', 'employer.pers
 
    
     return view('applicant.homepage.homepage', compact(
+        'retrieveDataDecrypted',
         'retrievePersonal',
         'applicantCounts',
         'JobPostRetrieved',

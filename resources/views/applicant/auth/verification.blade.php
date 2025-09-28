@@ -49,11 +49,16 @@
                 <i class="bi bi-envelope-check" style="font-size: 32px; color: white;"></i>
             </div>
 
-            <h2 class="form-title">Check Your Email</h2>
-            <p class="form-subtitle">
+            @if (session('email'))
+                @php
+                    $email = session('email');
+                    $parts = explode('@', $email);
+                    $masked = substr($parts[0], 0, 2) . str_repeat('*', strlen($parts[0]) - 2) . '@' . $parts[1];
+                @endphp
                 We've sent a 6-digit verification code to your email address.
-                Please enter the code below to verify your account.
-            </p>
+                Please enter the code below to verify your account <strong>{{ $masked }}</strong>.
+            @endif
+
 
             <!-- Success/Error Messages -->
             @if (session('success'))
@@ -106,11 +111,12 @@
 
                 <!-- Resend -->
                 <div class="resend-container">
-                    <span style="color: #64748b; font-size: 14px;">Didn't receive the code? </span>
+                    <span style="color: #64748b; font-size: 14px;">Didn't receive the code?</span>
                     <button type="button" class="resend-btn" id="resendBtn" onclick="resendCode()" disabled>
-                        Resend Code
+                        Resend Code (<span id="countdown">30</span>s)
                     </button>
                 </div>
+
 
                 <!-- Submit Button -->
                 <button type="submit" class="submit-btn" id="submitBtn" disabled>
@@ -128,6 +134,61 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let countdown = 30; // seconds
+        let resendBtn = document.getElementById('resendBtn');
+        let countdownSpan = document.getElementById('countdown');
+
+        let timer = setInterval(function() {
+            countdown--;
+            countdownSpan.textContent = countdown;
+
+            if (countdown <= 0) {
+                clearInterval(timer);
+                resendBtn.disabled = false;
+                countdownSpan.textContent = '';
+                resendBtn.textContent = 'Resend Code';
+            }
+        }, 1000);
+
+        // Function to handle resend
+        function resendCode() {
+            resendBtn.disabled = true;
+            resendBtn.textContent = "Resending...";
+
+            // Example: send AJAX request to backend
+            fetch("{{ route('verification.resend') }}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message || "A new code has been sent to your email.");
+                    // restart countdown
+                    countdown = 30;
+                    resendBtn.textContent = "Resend Code (30s)";
+                    resendBtn.disabled = true;
+                    timer = setInterval(function() {
+                        countdown--;
+                        resendBtn.textContent = "Resend Code (" + countdown + "s)";
+                        if (countdown <= 0) {
+                            clearInterval(timer);
+                            resendBtn.disabled = false;
+                            resendBtn.textContent = "Resend Code";
+                        }
+                    }, 1000);
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    resendBtn.disabled = false;
+                    resendBtn.textContent = "Resend Code";
+                });
+        }
+    </script>
 
     <script>
         let timeLeft = 300; // 5 minutes in seconds

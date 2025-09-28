@@ -65,7 +65,7 @@
                 <div class="cover-section position-relative">
 
                     <!-- Cover Photo -->
-                    <img src="{{ asset('storage/' . $retrievedProfile->work_background->cover_photo_path) }}"
+                    <img src="{{ asset('storage/' . $retrievedDecrytedProfile['work_background']['cover_photo_path']) }}"
                         alt="Cover Photo" class="cover-image w-100 d-block"
                         style="max-height: 350px; object-fit: cover;">
 
@@ -171,13 +171,13 @@
             <div class="profile-info">
                 <div class="row align-items-center">
                     <div class="col-lg-8">
-                        @if ($retrievedProfile->personal_info)
+                        @if ($retrievedDecrytedProfile)
                             <h1 class="profile-name">
-                                {{ $retrievedProfile->personal_info->first_name }}
-                                {{ $retrievedProfile->personal_info->last_name }}
+                                {{ $retrievedDecrytedProfile['personal_info']['first_name'] }}
+                                {{ $retrievedDecrytedProfile['personal_info']['last_name'] }}
                             </h1>
                             <p class="profile-title">
-                                @if (in_array($retrievedProfile->work_background->position, [
+                                @if (in_array($retrievedDecrytedProfile['work_background']['position'], [
                                         'Automotive Servicing',
                                         'Bartender',
                                         'Barista',
@@ -201,12 +201,12 @@
                                         'Tourism Services Staff',
                                         'Waiter/Waitress',
                                     ]))
-                                    {{ $retrievedProfile->work_background->position }}
+                                    {{ $retrievedDecrytedProfile['work_background']['position'] }}
                                 @else
-                                    {{ $retrievedProfile->work_background->position }}
+                                    {{ $retrievedDecrytedProfile['work_background']['position'] }}
                                 @endif
-                                | {{ $retrievedProfile->work_background->work_duration }}
-                                {{ $retrievedProfile->work_background->work_duration_unit }}
+                                | {{ $retrievedDecrytedProfile['work_background']['work_duration'] }}
+                                {{ $retrievedDecrytedProfile['work_background']['work_duration_unit'] }}
                             </p>
 
                         @endif
@@ -294,12 +294,14 @@
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">First Name</label>
                                     <input type="text" class="form-control" name="first_name"
-                                        value="{{ $retrievedProfile->personal_info->first_name ?? '' }}" required>
+                                        value="{{ $retrievedDecrytedProfile['personal_info']['first_name'] ?? '' }}"
+                                        required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Last Name</label>
                                     <input type="text" class="form-control" name="last_name"
-                                        value="{{ $retrievedProfile->personal_info->last_name ?? '' }}" required>
+                                        value="{{ $retrievedDecrytedProfile['personal_info']['last_name'] ?? '' }}"
+                                        required>
                                 </div>
                             </div>
 
@@ -309,77 +311,77 @@
                                 <select class="form-select" id="position" name="position" required
                                     onchange="toggleOtherPosition()">
                                     <option value="" disabled
-                                        {{ empty($retrievedProfile->work_background->position) ? 'selected' : '' }}>
+                                        {{ empty($retrievedDecrytedProfile['work_background']['position']) ? 'selected' : '' }}>
                                         Select job position
                                     </option>
                                     <option value="Automotive Servicing"
-                                        {{ $retrievedProfile->work_background->position == 'Automotive Servicing' ? 'selected' : '' }}>
+                                        {{ $retrievedDecrytedProfile['work_background']['position'] == 'Automotive Servicing' ? 'selected' : '' }}>
                                         Automotive Servicing</option>
                                     <option value="Bartender"
-                                        {{ $retrievedProfile->work_background->position == 'Bartender' ? 'selected' : '' }}>
+                                        {{ $retrievedDecrytedProfile['work_background']['position'] == 'Bartender' ? 'selected' : '' }}>
                                         Bartender</option>
                                     <option value="Barista"
-                                        {{ $retrievedProfile->work_background->position == 'Barista' ? 'selected' : '' }}>
+                                        {{ $retrievedDecrytedProfile['work_background']['position'] == 'Barista' ? 'selected' : '' }}>
                                         Barista</option>
                                     <option value="Beauty Care Specialist"
-                                        {{ $retrievedProfile->work_background->position == 'Beauty Care Specialist' ? 'selected' : '' }}>
+                                        {{ $retrievedDecrytedProfile['work_background']['position'] == 'Beauty Care Specialist' ? 'selected' : '' }}>
                                         Beauty Care Specialist</option>
                                     <option value="Carpenter"
-                                        {{ $retrievedProfile->work_background->position == 'Carpenter' ? 'selected' : '' }}>
+                                        {{ $retrievedDecrytedProfile['work_background']['position'] == 'Carpenter' ? 'selected' : '' }}>
                                         Carpenter</option>
                                     <option value="Cook"
-                                        {{ $retrievedProfile->work_background->position == 'Cook' ? 'selected' : '' }}>
+                                        {{ $retrievedDecrytedProfile['work_background']['position'] == 'Cook' ? 'selected' : '' }}>
                                         Cook</option>
                                     <option value="Customer Service Representative"
-                                        {{ $retrievedProfile->work_background->position == 'Customer Service Representative' ? 'selected' : '' }}>
+                                        {{ $retrievedDecrytedProfile['work_background']['position'] == 'Customer Service Representative' ? 'selected' : '' }}>
                                         Customer Service Representative</option>
                                     <option value="Dressmaker/Tailor"
-                                        {{ $retrievedProfile->work_background->position == 'Dressmaker/Tailor' ? 'selected' : '' }}>
+                                        {{ $retrievedDecrytedProfile['work_background']['position'] == 'Dressmaker/Tailor' ? 'selected' : '' }}>
                                         Dressmaker/Tailor</option>
                                     <option value="Electrician"
-                                        {{ $retrievedProfile->work_background->position == 'Electrician' ? 'selected' : '' }}>
+                                        {{ $retrievedDecrytedProfile['work_background']['position'] == 'Electrician' ? 'selected' : '' }}>
                                         Electrician</option>
                                     <option value="Food and Beverage Server"
-                                        {{ $retrievedProfile->work_background->position == 'Food and Beverage Server' ? 'selected' : '' }}>
+                                        {{ $retrievedDecrytedProfile['work_background']['position'] == 'Food and Beverage Server' ? 'selected' : '' }}>
                                         Food and Beverage Server</option>
                                     <option value="Hairdresser"
-                                        {{ $retrievedProfile->work_background->position == 'Hairdresser' ? 'selected' : '' }}>
+                                        {{ $retrievedDecrytedProfile['work_background']['position'] == 'Hairdresser' ? 'selected' : '' }}>
                                         Hairdresser</option>
                                     <option value="Heavy Equipment Operator"
-                                        {{ $retrievedProfile->work_background->position == 'Heavy Equipment Operator' ? 'selected' : '' }}>
+                                        {{ $retrievedDecrytedProfile['work_background']['position'] == 'Heavy Equipment Operator' ? 'selected' : '' }}>
                                         Heavy Equipment Operator</option>
                                     <option value="Housekeeping"
-                                        {{ $retrievedProfile->work_background->position == 'Housekeeping' ? 'selected' : '' }}>
+                                        {{ $retrievedDecrytedProfile['work_background']['position'] == 'Housekeeping' ? 'selected' : '' }}>
                                         Housekeeping</option>
                                     <option value="Mason"
-                                        {{ $retrievedProfile->work_background->position == 'Mason' ? 'selected' : '' }}>
+                                        {{ $retrievedDecrytedProfile['work_background']['position'] == 'Mason' ? 'selected' : '' }}>
                                         Mason</option>
                                     <option value="Massage Therapist"
-                                        {{ $retrievedProfile->work_background->position == 'Massage Therapist' ? 'selected' : '' }}>
+                                        {{ $retrievedDecrytedProfile['work_background']['position'] == 'Massage Therapist' ? 'selected' : '' }}>
                                         Massage Therapist</option>
                                     <option value="Mechanic"
-                                        {{ $retrievedProfile->work_background->position == 'Mechanic' ? 'selected' : '' }}>
+                                        {{ $retrievedDecrytedProfile['work_background']['position'] == 'Mechanic' ? 'selected' : '' }}>
                                         Mechanic</option>
                                     <option value="Plumber"
-                                        {{ $retrievedProfile->work_background->position == 'Plumber' ? 'selected' : '' }}>
+                                        {{ $retrievedDecrytedProfile['work_background']['position'] == 'Plumber' ? 'selected' : '' }}>
                                         Plumber</option>
                                     <option value="Security Guard"
-                                        {{ $retrievedProfile->work_background->position == 'Security Guard' ? 'selected' : '' }}>
+                                        {{ $retrievedDecrytedProfile['work_background']['position'] == 'Security Guard' ? 'selected' : '' }}>
                                         Security Guard</option>
                                     <option value="SMAW Welder"
-                                        {{ $retrievedProfile->work_background->position == 'SMAW Welder' ? 'selected' : '' }}>
+                                        {{ $retrievedDecrytedProfile['work_background']['position'] == 'SMAW Welder' ? 'selected' : '' }}>
                                         SMAW Welder</option>
                                     <option value="Tile Setter"
-                                        {{ $retrievedProfile->work_background->position == 'Tile Setter' ? 'selected' : '' }}>
+                                        {{ $retrievedDecrytedProfile['work_background']['position'] == 'Tile Setter' ? 'selected' : '' }}>
                                         Tile Setter</option>
                                     <option value="Tourism Services Staff"
-                                        {{ $retrievedProfile->work_background->position == 'Tourism Services Staff' ? 'selected' : '' }}>
+                                        {{ $retrievedDecrytedProfile['work_background']['position'] == 'Tourism Services Staff' ? 'selected' : '' }}>
                                         Tourism Services Staff</option>
                                     <option value="Waiter/Waitress"
-                                        {{ $retrievedProfile->work_background->position == 'Waiter/Waitress' ? 'selected' : '' }}>
+                                        {{ $retrievedDecrytedProfile['work_background']['position'] == 'Waiter/Waitress' ? 'selected' : '' }}>
                                         Waiter/Waitress</option>
                                     <option value="Other"
-                                        {{ !in_array($retrievedProfile->work_background->position, [
+                                        {{ !in_array($retrievedDecrytedProfile['work_background']['position'], [
                                             'Automotive Servicing',
                                             'Bartender',
                                             'Barista',
@@ -402,7 +404,7 @@
                                             'Tile Setter',
                                             'Tourism Services Staff',
                                             'Waiter/Waitress',
-                                        ]) && $retrievedProfile->work_background->position
+                                        ]) && $retrievedDecrytedProfile['work_background']['position'] == 'Other'
                                             ? 'selected'
                                             : '' }}>
                                         Other (Please specify)
@@ -469,11 +471,14 @@
                                     <label class="form-label">Duration Unit</label>
                                     <select class="form-select" name="work_duration_unit">
                                         <option value="months"
-                                            {{ isset($retrievedProfile->work_background) && $retrievedProfile->work_background->work_duration_unit == 'months' ? 'selected' : '' }}>
-                                            Months</option>
+                                            {{ isset($retrievedDecryptedProfile['work_background']) && $retrievedDecryptedProfile['work_background']['work_duration_unit'] == 'months' ? 'selected' : '' }}>
+                                            Months
+                                        </option>
                                         <option value="years"
-                                            {{ isset($retrievedProfile->work_background) && $retrievedProfile->work_background->work_duration_unit == 'years' ? 'selected' : '' }}>
-                                            Years</option>
+                                            {{ isset($retrievedDecryptedProfile['work_background']) && $retrievedDecryptedProfile['work_background']['work_duration_unit'] == 'years' ? 'selected' : '' }}>
+                                            Years
+                                        </option>
+
                                     </select>
                                 </div>
                             </div>
@@ -525,10 +530,10 @@
                             <div class="about-content">
                                 <h6>Location</h6>
                                 <p>
-                                    {{ $retrievedProfile->personal_info->house_street }},
-                                    {{ $retrievedProfile->personal_info->barangay }},
-                                    {{ $retrievedProfile->personal_info->city }},
-                                    {{ $retrievedProfile->personal_info->province }}
+                                    {{ $retrievedDecrytedProfile['personal_info']['street'] ?? '' }}
+                                    {{ $retrievedDecrytedProfile['personal_info']['barangay'] ?? '' }},
+                                    {{ $retrievedDecrytedProfile['personal_info']['city'] ?? '' }},
+                                    {{ $retrievedDecrytedProfile['personal_info']['province'] ?? '' }}
                                 </p>
                             </div>
                         </div>
@@ -538,7 +543,7 @@
                             </div>
                             <div class="about-content">
                                 <h6>About</h6>
-                                <p>{{ $retrievedProfile->template->description }}</p>
+                                <p>{{ $retrievedDecrytedProfile['template']['description'] }}</p>
                             </div>
                         </div>
                     </div>

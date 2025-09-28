@@ -192,21 +192,23 @@
                                                 @endif
                                             </div>
 
-                                            <div class="author-details">
-                                                <h4 class="author-name">
-                                                    <a
-                                                        href="{{ route('applicant.getprofile.display', ['id' => $post->applicant_id]) }}">
-                                                        {{ $post->personalInfo->first_name ?? 'Unknown' }}
-                                                        {{ $post->personalInfo->last_name ?? '' }}
-                                                    </a>
-                                                </h4>
-                                                <p class="author-position">
-                                                    {{ $post->workBackground->position ?? 'Community Member' }}</p>
-                                                <time
-                                                    class="post-timestamp">{{ $post->created_at->diffForHumans() }}</time>
+                                            @foreach ($posts as $index => $post)
+                                                <div class="author-details">
+                                                    <h4 class="author-name">
+                                                        <a
+                                                            href="{{ route('applicant.getprofile.display', ['id' => $post->applicant_id]) }}">
+                                                            {{ $retrievedDecryptedPersonalInfo['personalInfo'][$index]['first_name'] ?? 'Unknown' }}
+                                                            {{ $retrievedDecryptedPersonalInfo['personalInfo'][$index]['last_name'] ?? '' }}
+                                                        </a>
+                                                    </h4>
+                                                    <p class="author-position">
+                                                        {{ $retrievedDecryptedPersonalInfo['workBackground'][$index]['position'] ?? 'Community Member' }}
+                                                    </p>
+                                                    <time
+                                                        class="post-timestamp">{{ $post->created_at->diffForHumans() }}</time>
+                                                </div>
+                                            @endforeach
 
-
-                                            </div>
                                         </div>
                                     </header>
 

@@ -56,7 +56,7 @@
             <!-- Profile Header -->
             <div class="profile-header">
                 <div class="profile-image-container">
-                    <img src="{{ Storage::url($workexperience->profileimage_path ?? '') ?: 'https://via.placeholder.com/100x100/667eea/ffffff?text=Avatar' }}"
+                    <img src="{{ Storage::url($workBackgroundDecrypted['profileimage_path'] ?? '') ?: 'https://via.placeholder.com/100x100/667eea/ffffff?text=Avatar' }}"
                         alt="Profile Image" class="profile-image">
                     <div class="profile-badge">
                         <i class="bi bi-check" style="color: white; font-size: 12px;"></i>
@@ -64,16 +64,17 @@
                 </div>
 
                 <h2 class="profile-name">
-                    {{ $personalinfo->first_name ?? 'First Name' }} {{ $personalinfo->last_name ?? 'Last Name' }}
+                    {{ $personalInfoDecrypted['first_name'] ?? 'First Name' }}
+                    {{ $personalInfoDecrypted['last_name'] ?? 'Last Name' }}
                 </h2>
 
                 <div class="profile-position">
-                    {{ $workexperience->position ?? 'Position' }}
+                    {{ $workBackgroundDecrypted['position'] ?? 'Position' }}
                 </div>
 
                 <div class="profile-experience">
-                    {{ $workexperience->work_duration ?? '0' }}
-                    {{ $workexperience->work_duration_unit ?? 'years' }} of experience
+                    {{ $workBackgroundDecrypted['work_duration'] ?? '0' }}
+                    {{ $workBackgroundDecrypted['work_duration_unit'] ?? 'years' }} of experience
                 </div>
             </div>
 

@@ -15,19 +15,58 @@ use App\Models\Applicant\TemplateModel as Template;
 use App\Models\Applicant\ApplicantPostLikeModel as PostLike;
 use App\Models\Applicant\ApplicantPostCommentModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class ProfileController extends Controller
+{   
+    //Decrrpyted
+    private function safeDecrypt($value)
 {
+    try {
+        return $value ? Crypt::decrypt($value) : null;
+    } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+        return $value; // return original if decryption fails
+    }
+}
     
     //View profile page
     public function ViewProfilePage() {
         $applicantID = session('applicant_id');
         $retrievedProfile = RegisterModel::with('personal_info' , 'work_background' , 'template')->find($applicantID);
+
+        $retrievedDecrytedProfile = $retrievedProfile ? [
+            'personal_info' => [
+                'first_name' => $this->safeDecrypt($retrievedProfile->personal_info->first_name),
+                'last_name' => $this->safeDecrypt($retrievedProfile->personal_info->last_name),
+                'gender' => $this->safeDecrypt($retrievedProfile->personal_info->gender),
+                'house_street' => $this->safeDecrypt($retrievedProfile->personal_info->house_street),
+                'city' => $this->safeDecrypt($retrievedProfile->personal_info->city),
+                'province' => $this->safeDecrypt($retrievedProfile->personal_info->province),
+                'zipcode' => $this->safeDecrypt($retrievedProfile->personal_info->zipcode),
+                'barangay' => $this->safeDecrypt($retrievedProfile->personal_info->barangay),
+            ],
+
+            'work_background' => [
+                'position' => $this->safeDecrypt($retrievedProfile->work_background->position),
+                'other_position' => $this->safeDecrypt($retrievedProfile->work_background->other_position),
+                'work_duration' => $retrievedProfile->work_background->work_duration,
+                'work_duration_unit' => $retrievedProfile->work_background->work_duration_unit,
+                'profileimage_path' => $retrievedProfile->work_background->profileimage_path,
+                'cover_photo_path' => $retrievedProfile->work_background->cover_photo_path,
+            ],
+
+            'template' => [
+                'description' => $this->safeDecrypt($retrievedProfile->template->description),
+                'sample_work' => $this->safeDecrypt($retrievedProfile->template->sample_work),
+                'sample_work_url' => $this->safeDecrypt($retrievedProfile->template->sample_work_url),
+            ]
+        ]:[];
+
         $retrievedPosts = ApplicantPostModel::with('personalInfo' , 'workBackground' ,'likes' , 'comments')->where('applicant_id' , $applicantID)->get()->reverse();
         $retrievedPortfolio = ApplicantPortfolioModel::with('personalInfo' , 'workExperience')->where('applicant_id' , $applicantID)->get()->reverse();
         $retrievedYoutube = ApplicantUrlModel::with('personalInfo' , 'workExperience')->where('applicant_id' , $applicantID)->get()->reverse();
         $retrievedTesdaCertifacation = TesdaCertification::where('applicant_id' , $applicantID)->get()->reverse();
-        return view('applicant.profile.profile' , compact('retrievedProfile' , 'retrievedPosts' , 'retrievedPortfolio' , 'retrievedYoutube' , 'retrievedTesdaCertifacation'));
+        return view('applicant.profile.profile' , compact('retrievedProfile' , 'retrievedPosts' , 'retrievedPortfolio' , 'retrievedYoutube' , 'retrievedTesdaCertifacation' , 'retrievedDecrytedProfile'));
     }
 
     //add cover photo
@@ -229,6 +268,35 @@ class ProfileController extends Controller
         // Load main applicant profile and relationships
         $retrievedProfile = RegisterModel::with(['personal_info', 'work_background', 'template'])->findOrFail($id);
 
+          $retrievedDecryptedProfile = $retrievedProfile ? [
+            'personal_info' => [
+                'first_name' => $this->safeDecrypt($retrievedProfile->personal_info->first_name),
+                'last_name' => $this->safeDecrypt($retrievedProfile->personal_info->last_name),
+                'gender' => $this->safeDecrypt($retrievedProfile->personal_info->gender),
+                'house_street' => $this->safeDecrypt($retrievedProfile->personal_info->house_street),
+                'city' => $this->safeDecrypt($retrievedProfile->personal_info->city),
+                'province' => $this->safeDecrypt($retrievedProfile->personal_info->province),
+                'zipcode' => $this->safeDecrypt($retrievedProfile->personal_info->zipcode),
+                'barangay' => $this->safeDecrypt($retrievedProfile->personal_info->barangay),
+            ],
+
+            'work_background' => [
+                'position' => $this->safeDecrypt($retrievedProfile->work_background->position),
+                'other_position' => $this->safeDecrypt($retrievedProfile->work_background->other_position),
+                'work_duration' => $retrievedProfile->work_background->work_duration,
+                'work_duration_unit' => $retrievedProfile->work_background->work_duration_unit,
+                'profileimage_path' => $retrievedProfile->work_background->profileimage_path,
+                'cover_photo_path' => $retrievedProfile->work_background->cover_photo_path,
+            ],
+
+            'template' => [
+                'description' => $this->safeDecrypt($retrievedProfile->template->description),
+                'sample_work' => $this->safeDecrypt($retrievedProfile->template->sample_work),
+                'sample_work_url' => $this->safeDecrypt($retrievedProfile->template->sample_work_url),
+            ]
+        ]:[];
+
+
    
         // Load target applicant's posts
         $retrievedPosts = ApplicantPostModel::with(['personalInfo', 'workBackground', 'likes', 'comments.applicant.personal_info'])
@@ -262,7 +330,7 @@ class ProfileController extends Controller
         ->latest()
         ->get();
 
-        return view('applicant.homepage.getprofile.getprofile', compact('retrievedProfile', 'retrievedPosts', 'retrievedPortfolio','retrievedYoutube', 'tesdaCertification','currentApplicantId'));
+        return view('applicant.homepage.getprofile.getprofile', compact('retrievedProfile', 'retrievedPosts', 'retrievedPortfolio','retrievedYoutube', 'tesdaCertification','currentApplicantId' , 'retrievedDecryptedProfile'));
     }
 
 

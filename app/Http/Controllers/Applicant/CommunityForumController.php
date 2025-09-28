@@ -18,12 +18,23 @@ use App\Models\Applicant\PostSpecificGroupModel as GroupPost;
 use App\Models\Applicant\GroupCommentModel as GroupComment;
 use App\Models\Applicant\GroupLikeModel as GroupLike;
 use App\Models\Applicant\SendMessageModel as SendMessage;
+use Illuminate\Support\Facades\Crypt; 
 
 class CommunityForumController extends Controller
 {
-    
+ 
     // Display the community forum with posts and categories
     public function ShowForum(){
+        if (!function_exists('safe_decrypt')) {
+    function safe_decrypt($value) {
+        try {
+            return $value ? Crypt::decrypt($value) : null;
+        } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+            return $value; // fallback
+        }
+    }
+}
+
         
         $currentApplicantId = session('applicant_id');
 
@@ -34,6 +45,26 @@ class CommunityForumController extends Controller
             'workBackground',
             'comments.applicant.personal_info'
         ])->orderBy('created_at', 'desc')->get();
+
+        $retrievedDecryptedPersonalInfo = $posts ? [
+
+    'personalInfo' => $posts->map(function ($post) {
+        return [
+            'first_name' => $post->personalInfo ? safe_decrypt($post->personalInfo->first_name) : null,
+            'last_name'  => $post->personalInfo ? safe_decrypt($post->personalInfo->last_name) : null,
+        ];
+    }),
+
+    'workBackground' => $posts->map(function ($post) {
+        return [
+            'position'       => $post->workBackground ? safe_decrypt($post->workBackground->position) : null,
+            'other_position' => $post->workBackground ? safe_decrypt($post->workBackground->other_position) : null,
+        ];
+    }),
+
+] : [];
+
+
 
         $posts->map(function ($post) use ($currentApplicantId) {
         $targetApplicantId = $post->applicant_id;
@@ -56,7 +87,7 @@ class CommunityForumController extends Controller
 
         $categories = Post::distinct()->pluck('category')->toArray();
 
-        return view('applicant.community_form.forums', compact('posts', 'categories'));
+        return view('applicant.community_form.forums', compact('posts', 'categories' , 'retrievedDecryptedPersonalInfo'));
     }
 
 

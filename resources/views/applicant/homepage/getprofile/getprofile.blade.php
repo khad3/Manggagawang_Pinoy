@@ -112,20 +112,22 @@
             </div>
 
             <!-- Profile Info -->
+            <!-- Profile Info -->
             <div class="profile-info">
                 <div class="row align-items-center">
                     <div class="col-lg-8">
-                        @if ($retrievedProfile->personal_info)
+                        @if ($retrievedDecryptedProfile['personal_info'])
                             <h1 class="profile-name">
-                                {{ $retrievedProfile->personal_info->first_name }}
-                                {{ $retrievedProfile->personal_info->last_name }}
+                                {{ $retrievedDecryptedProfile['personal_info']['first_name'] ?? 'First' }}
+                                {{ $retrievedDecryptedProfile['personal_info']['last_name'] ?? 'Last' }}
                             </h1>
                             <p class="profile-title">
-                                {{ $retrievedProfile->work_background->position }} |
-                                {{ $retrievedProfile->work_background->work_duration }}
-                                {{ $retrievedProfile->work_background->work_duration_unit }}
+                                {{ $retrievedDecryptedProfile['work_background']['position'] ?? 'Position' }} |
+                                {{ $retrievedDecryptedProfile['work_background']['work_duration'] ?? '0' }}
+                                {{ $retrievedDecryptedProfile['work_background']['work_duration_unit'] ?? 'years' }}
                             </p>
                         @endif
+
                         @if (isset($tesdaCertification) && $tesdaCertification->count() > 0)
                             @foreach ($tesdaCertification as $certification)
                                 @if ($certification->status == 'approved')
@@ -138,8 +140,8 @@
                         @else
                             <p class="text-muted">No TESDA Certifications available.</p>
                         @endif
-
                     </div>
+
                     <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
                         @if ($retrievedProfile->id != session('applicant_id'))
                             @if ($retrievedProfile->id !== session('applicant_id'))
@@ -170,7 +172,6 @@
                                         <button class="btn btn-sm btn-outline-danger mt-2">Cancel Friend
                                             Request</button>
                                     </form>
-
                                     {{-- If already friends --}}
                                 @elseif ($retrievedProfile->friendRequestStatus === 'accepted')
                                     <form action="{{ route('applicant.unfriend.store', $retrievedProfile->id) }}"
@@ -182,9 +183,7 @@
                                         </button>
                                     </form>
                                 @endif
-
                             @endif
-
 
                             @if ($retrievedProfile->friendRequestStatus === 'accepted')
                                 <a href="{{ route('applicant.forum.viewfriendlist.display', ['id' => $retrievedProfile->id]) }}"
@@ -202,6 +201,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
 
         <!-- Content Grid -->
@@ -240,10 +240,10 @@
                             <div class="about-content">
                                 <h6>Location</h6>
                                 <p>
-                                    {{ $retrievedProfile->personal_info->house_street }},
-                                    {{ $retrievedProfile->personal_info->barangay }},
-                                    {{ $retrievedProfile->personal_info->city }},
-                                    {{ $retrievedProfile->personal_info->province }}
+                                    {{ $retrievedDecryptedProfile['personal_info']['street'] ?? '' }}
+                                    {{ $retrievedDecryptedProfile['personal_info']['barangay'] ?? '' }},
+                                    {{ $retrievedDecryptedProfile['personal_info']['city'] ?? '' }},
+                                    {{ $retrievedDecryptedProfile['personal_info']['province'] ?? '' }}
                                 </p>
                             </div>
                         </div>
@@ -253,7 +253,7 @@
                             </div>
                             <div class="about-content">
                                 <h6>About</h6>
-                                <p>{{ $retrievedProfile->template->description }}</p>
+                                <p>{{ $retrievedDecryptedProfile['template']['description'] }}</p>
                             </div>
                         </div>
                     </div>
@@ -913,30 +913,30 @@
                         <div class="mb-3">
                             <label class="form-label">House / Street</label>
                             <input type="text" name="house_street" class="form-control"
-                                value="{{ $retrievedProfile->personal_info->house_street }}">
+                                value="{{ $retrievedDecryptedProfile['personal_info']['house_street'] }}">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Barangay</label>
                             <input type="text" name="barangay" class="form-control"
-                                value="{{ $retrievedProfile->personal_info->barangay }}">
+                                value="{{ $retrievedDecryptedProfile['personal_info']['barangay'] }}">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">City</label>
                             <input type="text" name="city" class="form-control"
-                                value="{{ $retrievedProfile->personal_info->city }}">
+                                value="{{ $retrievedDecryptedProfile['personal_info']['city'] }}">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Province</label>
                             <input type="text" name="province" class="form-control"
-                                value="{{ $retrievedProfile->personal_info->province }}">
+                                value="{{ $retrievedDecryptedProfile['personal_info']['province'] }}">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">About</label>
-                            <textarea name="description" rows="3" class="form-control">{{ $retrievedProfile->template->description }}</textarea>
+                            <textarea name="description" rows="3" class="form-control">{{ $retrievedDecryptedProfile['template']['description'] }}</textarea>
                         </div>
                     </div>
 

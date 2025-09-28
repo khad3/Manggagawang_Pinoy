@@ -49,6 +49,8 @@ Route::prefix('applicant')->group(function () {
 
     Route::get('register/verify', [ApplicantController::class, 'ShowVerifyForm'])->name('verification.display');
     Route::post('register/verify', [ApplicantController::class, 'Verify'])->name('applicant.verification.store');
+    Route::post('/verification/resend', [ApplicantController::class, 'resend'])->name('verification.resend');
+
 
     Route::get('login', [ApplicantController::class, 'ShowLoginForm'])->name('applicant.login.display');
     Route::post('login', [ApplicantController::class, 'Login'])->name('applicant.login.store');
