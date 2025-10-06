@@ -17,12 +17,13 @@
 </head>
 
 <body>
-  <nav>
+    <nav>
         <div class="navbar-container">
             <div class="nav-logo d-flex align-items-center">
-                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2" style="text-decoration:none;">
-                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home"/>
-                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2"/>
+                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2"
+                    style="text-decoration:none;">
+                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
+                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" />
                 </a>
             </div>
             <ul class="nav-links" id="navLinks">
@@ -50,7 +51,7 @@
             </div>
         </div>
     </nav>
-        <!-- Loader -->
+    <!-- Loader -->
     <div id="loader-wrapper">
         <div id="loader-content">
             <div
@@ -61,396 +62,403 @@
             <div id="loader-text">Please wait...</div>
         </div>
     </div>
-<!-- Step Content -->
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card form-card" style="margin-top:100px;">
-            <div class="card-header bg-white border-0 py-4">
-                <div class="container">
+    <!-- Step Content -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card form-card" style="margin-top:100px;">
+                <div class="card-header bg-white border-0 py-4">
+                    <div class="container">
 
-                    <!-- Header -->
-                    <div class="text-center mb-5">
-                        <h1 class="display-4 fw-bold text-dark mb-3">Worker Registration</h1>
-                        <p class="lead text-muted">Showcase your TESDA-certified skills and connect with employers who value your expertise.</p>
+                        <!-- Header -->
+                        <div class="text-center mb-5">
+                            <h1 class="display-4 fw-bold text-dark mb-3">Worker Registration</h1>
+                            <p class="lead text-muted">Showcase your TESDA-certified skills and connect with employers
+                                who value your expertise.</p>
+                        </div>
+
+                        <!-- Progress Stepper -->
+                        <div class="row justify-content-center mb-5">
+                            <div class="col-lg-10">
+                                <div class="d-flex align-items-center justify-content-between">
+
+                                    <!-- Step 1 -->
+                                    <div class="text-center">
+                                        <div class="step-indicator step-completed" id="step1">1</div>
+                                        <div class="mt-2">
+                                            <small class="fw-semibold text-muted">Account</small>
+                                            <br><small class="text-muted d-none d-sm-block">Account setup</small>
+                                        </div>
+                                    </div>
+                                    <div class="step-line step-line-completed" id="line2"></div>
+
+                                    <!-- Step 2 -->
+                                    <div class="text-center">
+                                        <div class="step-indicator step-active" id="step2">2</div>
+                                        <div class="mt-2">
+                                            <small class="fw-semibold text-dark">Verify</small>
+                                            <br><small class="text-muted d-none d-sm-block">Verification</small>
+                                        </div>
+                                    </div>
+                                    <div class="step-line" id="line3"></div>
+
+                                    <!-- Step 3 -->
+                                    <div class="text-center">
+                                        <div class="step-indicator step-inactive" id="step3">3</div>
+                                        <div class="mt-2">
+                                            <small class="fw-semibold text-muted">Personal</small>
+                                            <br><small class="text-muted d-none d-sm-block">Personal info</small>
+                                        </div>
+                                    </div>
+                                    <div class="step-line" id="line4"></div>
+
+                                    <!-- Step 4 -->
+                                    <div class="text-center">
+                                        <div class="step-indicator step-inactive" id="step4">4</div>
+                                        <div class="mt-2">
+                                            <small class="fw-semibold text-muted">Work</small>
+                                            <br><small class="text-muted d-none d-sm-block">Work details</small>
+                                        </div>
+                                    </div>
+                                    <div class="step-line" id="line5"></div>
+
+                                    <!-- Step 5 -->
+                                    <div class="text-center">
+                                        <div class="step-indicator step-inactive" id="step5">5</div>
+                                        <div class="mt-2">
+                                            <small class="fw-semibold text-muted">Profile</small>
+                                            <br><small class="text-muted d-none d-sm-block">Build profile</small>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div> <!-- End Stepper -->
+
+                    </div>
+                </div>
+
+                <!-- Form Content -->
+                <div class="form-content">
+                    <!-- Verification Icon -->
+                    <div class="verification-icon">
+                        <i class="bi bi-envelope-check" style="font-size: 32px; color: white;"></i>
                     </div>
 
-                    <!-- Progress Stepper -->
-                    <div class="row justify-content-center mb-5">
-                        <div class="col-lg-10">
-                            <div class="d-flex align-items-center justify-content-between">
 
-                                <!-- Step 1 -->
-                                <div class="text-center">
-                                    <div class="step-indicator step-completed" id="step1">1</div>
-                                    <div class="mt-2">
-                                        <small class="fw-semibold text-muted">Account</small>
-                                        <br><small class="text-muted d-none d-sm-block">Account setup</small>
-                                    </div>
-                                </div>
-                                <div class="step-line step-line-completed" id="line2"></div>
 
-                                <!-- Step 2 -->
-                                <div class="text-center">
-                                    <div class="step-indicator step-active" id="step2">2</div>
-                                    <div class="mt-2">
-                                        <small class="fw-semibold text-dark">Verify</small>
-                                        <br><small class="text-muted d-none d-sm-block">Verification</small>
-                                    </div>
-                                </div>
-                                <div class="step-line" id="line3"></div>
+                    <!-- Success/Error Messages -->
+                    @if (session('success'))
+                        <div class="alert alert-success">
 
-                                <!-- Step 3 -->
-                                <div class="text-center">
-                                    <div class="step-indicator step-inactive" id="step3">3</div>
-                                    <div class="mt-2">
-                                        <small class="fw-semibold text-muted">Personal</small>
-                                        <br><small class="text-muted d-none d-sm-block">Personal info</small>
-                                    </div>
-                                </div>
-                                <div class="step-line" id="line4"></div>
-
-                                <!-- Step 4 -->
-                                <div class="text-center">
-                                    <div class="step-indicator step-inactive" id="step4">4</div>
-                                    <div class="mt-2">
-                                        <small class="fw-semibold text-muted">Work</small>
-                                        <br><small class="text-muted d-none d-sm-block">Work details</small>
-                                    </div>
-                                </div>
-                                <div class="step-line" id="line5"></div>
-
-                                <!-- Step 5 -->
-                                <div class="text-center">
-                                    <div class="step-indicator step-inactive" id="step5">5</div>
-                                    <div class="mt-2">
-                                        <small class="fw-semibold text-muted">Profile</small>
-                                        <br><small class="text-muted d-none d-sm-block">Build profile</small>
-                                    </div>
-                                </div>
-
-                            </div>
+                            @if (session('email'))
+                                @php
+                                    $email = session('email');
+                                    $parts = explode('@', $email);
+                                    $masked =
+                                        substr($parts[0], 0, 2) .
+                                        str_repeat('*', strlen($parts[0]) - 2) .
+                                        '@' .
+                                        $parts[1];
+                                @endphp
+                                We've sent a 6-digit verification code to your email address.
+                                Please enter the code below to verify your account
+                                <strong>{{ $masked }}</strong>.
+                            @endif
                         </div>
-                    </div> <!-- End Stepper -->
+                    @endif
 
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <strong>Verification failed:</strong>
+                            <ul class="mt-2 mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <!-- Verification Form -->
+                    <form method="POST" action="{{ route('applicant.verification.store') }}" id="verificationForm">
+                        @csrf
+
+                        <!-- Hidden input for form submission -->
+                        <input type="hidden" name="verification_code" id="verification_code" required>
+
+                        <!-- Code Input Digits -->
+                        <div class="code-input-container">
+                            <input type="text" maxlength="1" class="code-digit" data-index="0"
+                                oninput="handleDigitInput(this)" onkeydown="handleKeyDown(event, this)"
+                                onpaste="handlePaste(event)">
+                            <input type="text" maxlength="1" class="code-digit" data-index="1"
+                                oninput="handleDigitInput(this)" onkeydown="handleKeyDown(event, this)">
+                            <input type="text" maxlength="1" class="code-digit" data-index="2"
+                                oninput="handleDigitInput(this)" onkeydown="handleKeyDown(event, this)">
+                            <input type="text" maxlength="1" class="code-digit" data-index="3"
+                                oninput="handleDigitInput(this)" onkeydown="handleKeyDown(event, this)">
+                            <input type="text" maxlength="1" class="code-digit" data-index="4"
+                                oninput="handleDigitInput(this)" onkeydown="handleKeyDown(event, this)">
+                            <input type="text" maxlength="1" class="code-digit" data-index="5"
+                                oninput="handleDigitInput(this)" onkeydown="handleKeyDown(event, this)">
+                        </div>
+
+                        <!-- Timer -->
+                        <div class="timer-container">
+                            <div class="timer-text">Code expires in:</div>
+                            <div class="timer-countdown" id="countdown">05:00</div>
+                        </div>
+
+                        <!-- Resend -->
+                        <div class="resend-container">
+                            <span style="color: #64748b; font-size: 14px;">Didn't receive the code?</span>
+                            <button type="button" class="resend-btn" id="resendBtn" onclick="resendCode()"
+                                disabled>
+                                Resend Code (<span id="countdown">30</span>s)
+                            </button>
+                        </div>
+
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="submit-btn" id="submitBtn" disabled>
+                            <i class="bi bi-shield-check me-2"></i>Verify Email
+                        </button>
+                    </form>
+
+                    <!-- Help Text -->
+                    <div class="help-text">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Make sure to check your spam folder if you don't see the email in your inbox.
+                    </div>
                 </div>
             </div>
 
-        <!-- Form Content -->
-       <div class="form-content">
-            <!-- Verification Icon -->
-            <div class="verification-icon">
-                <i class="bi bi-envelope-check" style="font-size: 32px; color: white;"></i>
-            </div>
+            <!-- Bootstrap JS -->
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <script>
+                let countdown = 30; // seconds
+                let resendBtn = document.getElementById('resendBtn');
+                let countdownSpan = document.getElementById('countdown');
 
-            @if (session('email'))
-                @php
-                    $email = session('email');
-                    $parts = explode('@', $email);
-                    $masked = substr($parts[0], 0, 2) . str_repeat('*', strlen($parts[0]) - 2) . '@' . $parts[1];
-                @endphp
-                We've sent a 6-digit verification code to your email address.
-                Please enter the code below to verify your account <strong>{{ $masked }}</strong>.
-            @endif
+                let timer = setInterval(function() {
+                    countdown--;
+                    countdownSpan.textContent = countdown;
 
+                    if (countdown <= 0) {
+                        clearInterval(timer);
+                        resendBtn.disabled = false;
+                        countdownSpan.textContent = '';
+                        resendBtn.textContent = 'Resend Code';
+                    }
+                }, 1000);
 
-            <!-- Success/Error Messages -->
-            @if (session('success'))
-                <div class="alert alert-success">
-                    <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
-                </div>
-            @endif
-
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <i class="bi bi-exclamation-triangle me-2"></i>
-                    <strong>Verification failed:</strong>
-                    <ul class="mt-2 mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
-            <!-- Verification Form -->
-            <form method="POST" action="{{ route('applicant.verification.store') }}" id="verificationForm">
-                @csrf
-
-                <!-- Hidden input for form submission -->
-                <input type="hidden" name="verification_code" id="verification_code" required>
-
-                <!-- Code Input Digits -->
-                <div class="code-input-container">
-                    <input type="text" maxlength="1" class="code-digit" data-index="0"
-                        oninput="handleDigitInput(this)" onkeydown="handleKeyDown(event, this)"
-                        onpaste="handlePaste(event)">
-                    <input type="text" maxlength="1" class="code-digit" data-index="1"
-                        oninput="handleDigitInput(this)" onkeydown="handleKeyDown(event, this)">
-                    <input type="text" maxlength="1" class="code-digit" data-index="2"
-                        oninput="handleDigitInput(this)" onkeydown="handleKeyDown(event, this)">
-                    <input type="text" maxlength="1" class="code-digit" data-index="3"
-                        oninput="handleDigitInput(this)" onkeydown="handleKeyDown(event, this)">
-                    <input type="text" maxlength="1" class="code-digit" data-index="4"
-                        oninput="handleDigitInput(this)" onkeydown="handleKeyDown(event, this)">
-                    <input type="text" maxlength="1" class="code-digit" data-index="5"
-                        oninput="handleDigitInput(this)" onkeydown="handleKeyDown(event, this)">
-                </div>
-
-                <!-- Timer -->
-                <div class="timer-container">
-                    <div class="timer-text">Code expires in:</div>
-                    <div class="timer-countdown" id="countdown">05:00</div>
-                </div>
-
-                <!-- Resend -->
-                <div class="resend-container">
-                    <span style="color: #64748b; font-size: 14px;">Didn't receive the code?</span>
-                    <button type="button" class="resend-btn" id="resendBtn" onclick="resendCode()" disabled>
-                        Resend Code (<span id="countdown">30</span>s)
-                    </button>
-                </div>
-
-
-                <!-- Submit Button -->
-                <button type="submit" class="submit-btn" id="submitBtn" disabled>
-                    <i class="bi bi-shield-check me-2"></i>Verify Email
-                </button>
-            </form>
-
-            <!-- Help Text -->
-            <div class="help-text">
-                <i class="bi bi-info-circle me-1"></i>
-                Make sure to check your spam folder if you don't see the email in your inbox.
-            </div>
-        </div>
-    </div>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        let countdown = 30; // seconds
-        let resendBtn = document.getElementById('resendBtn');
-        let countdownSpan = document.getElementById('countdown');
-
-        let timer = setInterval(function() {
-            countdown--;
-            countdownSpan.textContent = countdown;
-
-            if (countdown <= 0) {
-                clearInterval(timer);
-                resendBtn.disabled = false;
-                countdownSpan.textContent = '';
-                resendBtn.textContent = 'Resend Code';
-            }
-        }, 1000);
-
-        // Function to handle resend
-        function resendCode() {
-            resendBtn.disabled = true;
-            resendBtn.textContent = "Resending...";
-
-            // Example: send AJAX request to backend
-            fetch("{{ route('verification.resend') }}", {
-                    method: "POST",
-                    headers: {
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({})
-                })
-                .then(response => response.json())
-                .then(data => {
-                    alert(data.message || "A new code has been sent to your email.");
-                    // restart countdown
-                    countdown = 30;
-                    resendBtn.textContent = "Resend Code (30s)";
+                // Function to handle resend
+                function resendCode() {
                     resendBtn.disabled = true;
-                    timer = setInterval(function() {
-                        countdown--;
-                        resendBtn.textContent = "Resend Code (" + countdown + "s)";
-                        if (countdown <= 0) {
-                            clearInterval(timer);
+                    resendBtn.textContent = "Resending...";
+
+                    // Example: send AJAX request to backend
+                    fetch("{{ route('verification.resend') }}", {
+                            method: "POST",
+                            headers: {
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({})
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            alert(data.message || "A new code has been sent to your email.");
+                            // restart countdown
+                            countdown = 30;
+                            resendBtn.textContent = "Resend Code (30s)";
+                            resendBtn.disabled = true;
+                            timer = setInterval(function() {
+                                countdown--;
+                                resendBtn.textContent = "Resend Code (" + countdown + "s)";
+                                if (countdown <= 0) {
+                                    clearInterval(timer);
+                                    resendBtn.disabled = false;
+                                    resendBtn.textContent = "Resend Code";
+                                }
+                            }, 1000);
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
                             resendBtn.disabled = false;
                             resendBtn.textContent = "Resend Code";
-                        }
-                    }, 1000);
-                })
-                .catch(error => {
-                    console.error("Error:", error);
-                    resendBtn.disabled = false;
-                    resendBtn.textContent = "Resend Code";
-                });
-        }
-    </script>
+                        });
+                }
+            </script>
 
-    <script>
+            <script>
                 // Hide loader after page load
-        window.addEventListener("load", function() {
-            setTimeout(function() {
-                document.getElementById("loader-wrapper").style.display = "none";
-            }, 1500);
-        });
-        let timeLeft = 300; // 5 minutes in seconds
-        let timerInterval;
+                window.addEventListener("load", function() {
+                    setTimeout(function() {
+                        document.getElementById("loader-wrapper").style.display = "none";
+                    }, 1500);
+                });
+                let timeLeft = 300; // 5 minutes in seconds
+                let timerInterval;
 
-        // Start countdown timer
-        function startTimer() {
-            timerInterval = setInterval(function() {
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                // Start countdown timer
+                function startTimer() {
+                    timerInterval = setInterval(function() {
+                        const minutes = Math.floor(timeLeft / 60);
+                        const seconds = timeLeft % 60;
+                        const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
-                document.getElementById('countdown').textContent = display;
+                        document.getElementById('countdown').textContent = display;
 
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    document.getElementById('countdown').textContent = '00:00';
-                    document.getElementById('countdown').style.color = '#ef4444';
-                    document.getElementById('resendBtn').disabled = false;
+                        if (timeLeft <= 0) {
+                            clearInterval(timerInterval);
+                            document.getElementById('countdown').textContent = '00:00';
+                            document.getElementById('countdown').style.color = '#ef4444';
+                            document.getElementById('resendBtn').disabled = false;
 
-                    // Disable form
-                    const digits = document.querySelectorAll('.code-digit');
-                    digits.forEach(digit => digit.disabled = true);
-                    document.getElementById('submitBtn').disabled = true;
+                            // Disable form
+                            const digits = document.querySelectorAll('.code-digit');
+                            digits.forEach(digit => digit.disabled = true);
+                            document.getElementById('submitBtn').disabled = true;
+                        }
+
+                        timeLeft--;
+                    }, 1000);
                 }
 
-                timeLeft--;
-            }, 1000);
-        }
+                // Handle digit input
+                function handleDigitInput(input) {
+                    const index = parseInt(input.dataset.index);
+                    const value = input.value;
 
-        // Handle digit input
-        function handleDigitInput(input) {
-            const index = parseInt(input.dataset.index);
-            const value = input.value;
+                    // Only allow numbers
+                    input.value = value.replace(/[^0-9]/g, '');
 
-            // Only allow numbers
-            input.value = value.replace(/[^0-9]/g, '');
+                    if (input.value) {
+                        input.classList.add('filled');
 
-            if (input.value) {
-                input.classList.add('filled');
-
-                // Move to next input
-                if (index < 5) {
-                    const nextInput = document.querySelector(`[data-index="${index + 1}"]`);
-                    nextInput.focus();
-                }
-            } else {
-                input.classList.remove('filled');
-            }
-
-            updateVerificationCode();
-            checkFormValidity();
-        }
-
-        // Handle keyboard navigation
-        function handleKeyDown(event, input) {
-            const index = parseInt(input.dataset.index);
-
-            if (event.key === 'Backspace' && !input.value && index > 0) {
-                const prevInput = document.querySelector(`[data-index="${index - 1}"]`);
-                prevInput.focus();
-                prevInput.value = '';
-                prevInput.classList.remove('filled');
-                updateVerificationCode();
-                checkFormValidity();
-            } else if (event.key === 'ArrowLeft' && index > 0) {
-                const prevInput = document.querySelector(`[data-index="${index - 1}"]`);
-                prevInput.focus();
-            } else if (event.key === 'ArrowRight' && index < 5) {
-                const nextInput = document.querySelector(`[data-index="${index + 1}"]`);
-                nextInput.focus();
-            }
-        }
-
-        // Handle paste
-        function handlePaste(event) {
-            event.preventDefault();
-            const pastedData = event.clipboardData.getData('text').replace(/[^0-9]/g, '');
-
-            if (pastedData.length === 6) {
-                const digits = document.querySelectorAll('.code-digit');
-                for (let i = 0; i < 6; i++) {
-                    digits[i].value = pastedData[i] || '';
-                    if (digits[i].value) {
-                        digits[i].classList.add('filled');
+                        // Move to next input
+                        if (index < 5) {
+                            const nextInput = document.querySelector(`[data-index="${index + 1}"]`);
+                            nextInput.focus();
+                        }
                     } else {
-                        digits[i].classList.remove('filled');
+                        input.classList.remove('filled');
+                    }
+
+                    updateVerificationCode();
+                    checkFormValidity();
+                }
+
+                // Handle keyboard navigation
+                function handleKeyDown(event, input) {
+                    const index = parseInt(input.dataset.index);
+
+                    if (event.key === 'Backspace' && !input.value && index > 0) {
+                        const prevInput = document.querySelector(`[data-index="${index - 1}"]`);
+                        prevInput.focus();
+                        prevInput.value = '';
+                        prevInput.classList.remove('filled');
+                        updateVerificationCode();
+                        checkFormValidity();
+                    } else if (event.key === 'ArrowLeft' && index > 0) {
+                        const prevInput = document.querySelector(`[data-index="${index - 1}"]`);
+                        prevInput.focus();
+                    } else if (event.key === 'ArrowRight' && index < 5) {
+                        const nextInput = document.querySelector(`[data-index="${index + 1}"]`);
+                        nextInput.focus();
                     }
                 }
-                updateVerificationCode();
-                checkFormValidity();
-            }
-        }
 
-        // Update hidden verification code input
-        function updateVerificationCode() {
-            const digits = document.querySelectorAll('.code-digit');
-            let code = '';
-            digits.forEach(digit => {
-                code += digit.value;
-            });
-            document.getElementById('verification_code').value = code;
-        }
+                // Handle paste
+                function handlePaste(event) {
+                    event.preventDefault();
+                    const pastedData = event.clipboardData.getData('text').replace(/[^0-9]/g, '');
 
-        // Check if form is valid
-        function checkFormValidity() {
-            const code = document.getElementById('verification_code').value;
-            const submitBtn = document.getElementById('submitBtn');
-
-            if (code.length === 6) {
-                submitBtn.disabled = false;
-                submitBtn.classList.add('ready');
-            } else {
-                submitBtn.disabled = true;
-                submitBtn.classList.remove('ready');
-            }
-        }
-
-        // Resend code
-        function resendCode() {
-            // Reset timer
-            timeLeft = 300;
-            document.getElementById('countdown').style.color = '#3b82f6';
-            document.getElementById('resendBtn').disabled = true;
-
-            // Re-enable form
-            const digits = document.querySelectorAll('.code-digit');
-            digits.forEach(digit => {
-                digit.disabled = false;
-                digit.value = '';
-                digit.classList.remove('filled');
-            });
-
-            // Clear and focus first input
-            digits[0].focus();
-            updateVerificationCode();
-            checkFormValidity();
-
-            // Restart timer
-            startTimer();
-
-            // Here you would make an AJAX call to resend the verification code
-            // For now, we'll just show a success message
-            alert('Verification code has been resent to your email!');
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            startTimer();
-
-            // Focus first input
-            document.querySelector('[data-index="0"]').focus();
-
-            // Form submission handler
-            document.getElementById('verificationForm').addEventListener('submit', function(e) {
-                const code = document.getElementById('verification_code').value;
-                if (code.length !== 6) {
-                    e.preventDefault();
-                    alert('Please enter the complete 6-digit verification code.');
+                    if (pastedData.length === 6) {
+                        const digits = document.querySelectorAll('.code-digit');
+                        for (let i = 0; i < 6; i++) {
+                            digits[i].value = pastedData[i] || '';
+                            if (digits[i].value) {
+                                digits[i].classList.add('filled');
+                            } else {
+                                digits[i].classList.remove('filled');
+                            }
+                        }
+                        updateVerificationCode();
+                        checkFormValidity();
+                    }
                 }
-            });
-        });
-    </script>
+
+                // Update hidden verification code input
+                function updateVerificationCode() {
+                    const digits = document.querySelectorAll('.code-digit');
+                    let code = '';
+                    digits.forEach(digit => {
+                        code += digit.value;
+                    });
+                    document.getElementById('verification_code').value = code;
+                }
+
+                // Check if form is valid
+                function checkFormValidity() {
+                    const code = document.getElementById('verification_code').value;
+                    const submitBtn = document.getElementById('submitBtn');
+
+                    if (code.length === 6) {
+                        submitBtn.disabled = false;
+                        submitBtn.classList.add('ready');
+                    } else {
+                        submitBtn.disabled = true;
+                        submitBtn.classList.remove('ready');
+                    }
+                }
+
+                // Resend code
+                function resendCode() {
+                    // Reset timer
+                    timeLeft = 300;
+                    document.getElementById('countdown').style.color = '#3b82f6';
+                    document.getElementById('resendBtn').disabled = true;
+
+                    // Re-enable form
+                    const digits = document.querySelectorAll('.code-digit');
+                    digits.forEach(digit => {
+                        digit.disabled = false;
+                        digit.value = '';
+                        digit.classList.remove('filled');
+                    });
+
+                    // Clear and focus first input
+                    digits[0].focus();
+                    updateVerificationCode();
+                    checkFormValidity();
+
+                    // Restart timer
+                    startTimer();
+
+                    // Here you would make an AJAX call to resend the verification code
+                    // For now, we'll just show a success message
+                    alert('Verification code has been resent to your email!');
+                }
+
+                // Initialize
+                document.addEventListener('DOMContentLoaded', function() {
+                    startTimer();
+
+                    // Focus first input
+                    document.querySelector('[data-index="0"]').focus();
+
+                    // Form submission handler
+                    document.getElementById('verificationForm').addEventListener('submit', function(e) {
+                        const code = document.getElementById('verification_code').value;
+                        if (code.length !== 6) {
+                            e.preventDefault();
+                            alert('Please enter the complete 6-digit verification code.');
+                        }
+                    });
+                });
+            </script>
 </body>
 
 </html>

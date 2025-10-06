@@ -122,13 +122,41 @@
                         <select class="form-select" id="city" name="city" required
                             onchange="updateProgress(); updateBarangay()">
                             <option value="">Select City / Municipality</option>
-                            <option value="Silang" {{ old('city') == 'Silang' ? 'selected' : '' }}>Silang</option>
+                            <option value="Alfonso" {{ old('city') == 'Alfonso' ? 'selected' : '' }}>Alfonso</option>
+                            <option value="Amadeo" {{ old('city') == 'Amadeo' ? 'selected' : '' }}>Amadeo</option>
+                            <option value="Bacoor" {{ old('city') == 'Bacoor' ? 'selected' : '' }}>Bacoor</option>
+                            <option value="Carmona" {{ old('city') == 'Carmona' ? 'selected' : '' }}>Carmona</option>
+                            <option value="Cavite City" {{ old('city') == 'Cavite City' ? 'selected' : '' }}>Cavite
+                                City</option>
                             <option value="Dasmariñas" {{ old('city') == 'Dasmariñas' ? 'selected' : '' }}>Dasmariñas
                             </option>
+                            <option value="General Emilio Aguinaldo"
+                                {{ old('city') == 'General Emilio Aguinaldo' ? 'selected' : '' }}>General Emilio
+                                Aguinaldo</option>
+                            <option value="General Mariano Alvarez"
+                                {{ old('city') == 'General Mariano Alvarez' ? 'selected' : '' }}>General Mariano
+                                Alvarez</option>
                             <option value="Imus" {{ old('city') == 'Imus' ? 'selected' : '' }}>Imus</option>
-                            <option value="General Trias" {{ old('city') == 'General Trias' ? 'selected' : '' }}>
-                                General Trias</option>
-                            <option value="Bacoor" {{ old('city') == 'Bacoor' ? 'selected' : '' }}>Bacoor</option>
+                            <option value="Indang" {{ old('city') == 'Indang' ? 'selected' : '' }}>Indang</option>
+                            <option value="Kawit" {{ old('city') == 'Kawit' ? 'selected' : '' }}>Kawit</option>
+                            <option value="Magallanes" {{ old('city') == 'Magallanes' ? 'selected' : '' }}>Magallanes
+                            </option>
+                            <option value="Maragondon" {{ old('city') == 'Maragondon' ? 'selected' : '' }}>Maragondon
+                            </option>
+                            <option value="Mendez" {{ old('city') == 'Mendez' ? 'selected' : '' }}>Mendez</option>
+                            <option value="Naic" {{ old('city') == 'Naic' ? 'selected' : '' }}>Naic</option>
+                            <option value="Noveleta" {{ old('city') == 'Noveleta' ? 'selected' : '' }}>Noveleta
+                            </option>
+                            <option value="Rosario" {{ old('city') == 'Rosario' ? 'selected' : '' }}>Rosario</option>
+                            <option value="Silang" {{ old('city') == 'Silang' ? 'selected' : '' }}>Silang</option>
+                            <option value="Tagaytay" {{ old('city') == 'Tagaytay' ? 'selected' : '' }}>Tagaytay
+                            </option>
+                            <option value="Tanza" {{ old('city') == 'Tanza' ? 'selected' : '' }}>Tanza</option>
+                            <option value="Ternate" {{ old('city') == 'Ternate' ? 'selected' : '' }}>Ternate</option>
+                            <option value="Trece Martires" {{ old('city') == 'Trece Martires' ? 'selected' : '' }}>
+                                Trece Martires</option>
+
+
                         </select>
                     </div>
 
@@ -184,11 +212,120 @@
     <script>
         // Barangay data
         const barangayOptions = {
-            "Silang": ["Lalaan I", "Lalaan II", "Biga I", "Biga II", "Pook"],
-            "Dasmariñas": ["Burol", "Paliparan I", "Salitran II", "San Jose"],
-            "Imus": ["Anabu I-A", "Buhay na Tubig", "Pag-asa I"],
-            "General Trias": ["Manggahan", "San Francisco", "Bagumbayan"],
-            "Bacoor": ["Molino I", "Panapaan V", "Zapote I"]
+            "Dasmariñas": ["Burol I", "Langkaan I", "Langkaan II", "Paliparan I", "Victoria Reyes",
+                "Salitran I", "Salitran II", "San Jose", "San Juan", "Santa Maria",
+                "Santo Cristo", "Santo Niño I", "Santo Niño II"
+            ],
+
+            "Alfonso": ["Esperanza Ibaba", "Esperanza Ilaya", "Kaysuyo", "Kaytitinga I, II, and III",
+                "Luksuhin and Luksuhin Ilaya", "Mangas I and II"
+            ],
+
+            "Amadeo": ["Barangay I (Poblacion)", "Barangay II (Poblacion)", "Barangay III (Poblacion)",
+                "Barangay IV (Poblacion)", "Buho", "Dagatan", "Halang", "Loma", "Maitim I"
+            ],
+
+            "Bacoor": ["Alima", "Banalo", "Camposanto", "Daang Bukid", "Habay I", "Mambog I",
+                "Mambog IIQueens Row East", "Queens Row West", "San Nicolas IZapote I", "Zapote II"
+            ],
+
+            "Carmona": ["Bancal", "Cabilang Baybay", "Lantic", "Mabuhay", "Maduya", "Milagro"],
+
+            "Cavite City": ["Barangay 1", "Barangay 2", "Barangay 3", "Barangay 4", "Barangay 5",
+                "Barangay 6", "Barangay 7", "Barangay 8", "Barangay 9", "Barangay 10"
+            ],
+
+            "General Emilio Aguinaldo": ["A. Dalusag", "Batas Dao", "Castaños Cerca (urban)",
+                "Castaños Lejos (urban)", "Kabulusan", "Kaymisas", "Kaypaaba",
+                "Lumipa", "Narvaez", "Poblacion I (urban)", "Poblacion II"
+            ],
+
+            "General Mariano Alvarez": ["Aldiano Olaes", "Bernardo Pulido (Area H)",
+                "Epifanio Malia", "Fiorello Calimag (Area C)", "Francisco De Castro",
+                "San Gabriel (Area K)", "San Jose", "Severino De Las Alas (Area J)",
+                "Tiniente Tiago"
+            ],
+
+            "General Trias": ["Bacao I", "Bacao II", "Bagumbayan (Poblacion)", "Biclatan",
+                "Buenavista I", "Buenavista II", "Buenavista III",
+                "Corregidor (Poblacion)", "Dulongbayan",
+                "Governor Ferrer (Poblacion)", "Javalera", "Manggahan"
+            ],
+
+            "Imus": ["Anabu I-A", "Anabu I-B", "Anabu I-C",
+                "Malagasang I-A", "Malagasang I-B", "Malagasang I-C",
+                "Medicion I-A", "Medicion I-B", "Medicion I-C",
+                "Pag-asa I", "Pag-asa II", ,
+                "Poblacion I-A", "Poblacion I-B", "Poblacion I-C", "Poblacion II-A"
+            ],
+
+            "Indang": ["Agus-us", "Alulod", "Banaba Cerca", "Banaba Lejos", "Bancod",
+                "Mahabangkahoy Cerca", "Mahabangkahoy Lejos", "Mataas na Lupa",
+                "Pulo", "Tambo Balagbag", "Tambo Ilaya"
+            ],
+
+            "Kawit": ["Balsahan-Bisita", "Batong Dalig", "Binakayan-Aplaya", "Marulas",
+                "Manggahan-Lawin", "Tabon I", "Tabon II", "Tramo-Bantayan", "Wakas I"
+            ],
+
+            "Magallanes": ["Baliwag", "Bendita I", "Bendita II", "Barangay 1 (Poblacion)",
+                "Barangay 2 (Poblacion)", "Barangay 3 (Poblacion)", "Caluangan",
+                "Kabulusan", "Medina", "Pacheco", "Ramirez"
+            ],
+
+            "Maragondon": ["Bucal 1", "Bucal 2", "Bucal 3A", "Caingin Pob.", "Garita 1A",
+                "Garita 1B", "Layong Mabilog", "Mabato", "Pantihan 1",
+                "Pantihan 2", "Talipusngo", "Tulay Silangan", "Tulay Kanluran"
+            ],
+
+            "Mendez": ["Anuling Cerca I", "Anuling Cerca II", "Anuling Lejos I",
+                "Anuling Lejos II", "Banayad", "Bukal", "Galicia I",
+                "Galicia II", "Palocpoc I", "Palocpoc II", "Panungyan I",
+                "Panungyan II", "Poblacion I", "Poblacion II", "Poblacion III"
+            ],
+
+
+            "Naic": ["Bagong Karsada", "Balsahan", "Bancaan", "Bucana Malaki",
+                "Bucana Sasahan", "Calubcob", "Capt. C. Nazareno", "Gomez-Zamora",
+                "Latoria", "Mabolo", "Makina", "Malainen Bago", "Malainen Luma"
+            ],
+
+            "Noveleta": ["Magdiwang", "Poblacion", "Salcedo I", "Salcedo II",
+                "San Antonio I", "San Antonio II", "San Jose I",
+                "San Jose II", "Santa Rosa I", "Santa Rosa II"
+            ],
+
+            "Rosario": ["Bagbag I", "Bagbag II", "Kanluran", "Ligtong I", "Ligtong II",
+                "Muzon I", "Muzon II", "Poblacion", "Sapa I", "Sapa II",
+                "Tejeros Convention", "Wawa I", "Wawa II"
+            ],
+
+            "Silang": ["Acacia", "Adlas", "Anahaw I", "Anahaw II", "Biga I", "Biga II",
+                "Biluso", "Bucal", "Iba", "Inchican", "Lumil", "Maguyam", "Malabag",
+                "Mataas na Burol", "Malaking Tatiao", "Puting Kahoy", "Sabutan",
+                "San Vicente I", "San Vicente II"
+            ],
+
+            "Tagaytay": ["Asisan", "Bagong Tubig", "Calabuso", "Iruhin East", "Iruhin West",
+                "Mag-Asawang Ilat", "Maharlika East", "Maharlika West", "Silang Crossing East",
+                "Silang Crossing West", "Sungay East", "Sungay West"
+            ],
+
+            "Tanza": ["Amaya 1", "Amaya 2", "Amaya 3", "Biga", "Biwas", "Bucal",
+                "Bunga", "Calibuyo", "Julugan 1", "Julugan 2", "Julugan 3",
+                "Sahud Ulan", "Sanja Mayor", "Santol", "Tanauan", "Tres Cruses"
+            ],
+
+            "Ternate": ["Bucana", "Poblacion I", "Poblacion I A", "Poblacion II",
+                "Poblacion III", "San Jose", "San Juan I", "San Juan II",
+                "Sapang I", "Sapang II"
+            ],
+
+            "Trece Martires": ["Aguado", "Cabezas", "Cabuco", "Conchu", "De Ocampo",
+                "Gregorio", "Inocencio", "Lallana", "Lapidario", "Luciano",
+                "Osorio", "Perez", "San Agustin"
+            ]
+
         };
 
         // Update barangay dropdown
