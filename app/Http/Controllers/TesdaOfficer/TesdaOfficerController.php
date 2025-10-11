@@ -11,10 +11,23 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\Applicant\TesdaUploadCertificationModel;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+
 
 class TesdaOfficerController extends Controller
 {
+
+   private function safety_decrypt($value) {
+    try {
+        return decrypt($value);
+    } catch (\Exception $e) {
+        Log::error('Decryption error: ' . $e->getMessage());
+        return null; // fallback if decryption fails
+    }
+}
+
     
     public function homepage()
 {
@@ -22,6 +35,18 @@ class TesdaOfficerController extends Controller
 
     // Retrieve all applicant certificates
     $applicantCertificates = TesdaUploadCertificationModel::with('personal_info')->get();
+
+    //decrypt applicant names
+   foreach ($applicantCertificates as $certificate) {
+    $info = $certificate->personal_info;
+    if ($info) {
+        $info->first_name = $info->first_name ? $this->safety_decrypt($info->first_name) : 'N/A';
+        $info->last_name  = $info->last_name ? $this->safety_decrypt($info->last_name) : '';
+    }
+}
+
+
+    
 
     // Generate applicant ID
     $lastId = (RegisterModel::latest('id')->first()->id ?? 0) + 1;

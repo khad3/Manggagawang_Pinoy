@@ -161,9 +161,9 @@ class EmployerController extends Controller
         'zip_code' => 'required|digits:4',
 
         // Emergency Contact
-        'emergency_contact_name' => 'required|string',
-        'emergency_contact_number' => 'required|digits:11',
-        'emergency_contact_relationship' => 'required|in:Company_Owner,Manager/Supervisor,Safety-officer,HR-representative,Business-partner,Other',
+        'emergency_contact_name' => 'nullable|string',
+        'emergency_contact_number' => 'nullable|digits:11',
+        'emergency_contact_relationship' => 'nuallable|in:Company_Owner,Manager/Supervisor,Safety-officer,HR-representative,Business-partner,Other',
 
         // Communication Preferences
         'contact_method' => 'required|string|in:email,phone,sms',
@@ -213,11 +213,11 @@ class EmployerController extends Controller
 
     // --- Emergency Contact ---
     $emergencyContact = new EmergencyContact();
-    $emergencyContact->employer_id = $employer->id;
-    $emergencyContact->personal_info_id = $personalInfo->id;
-    $emergencyContact->first_name = $validated['emergency_contact_name'];
-    $emergencyContact->relation_to_company = $validated['emergency_contact_relationship']; // ✅ consistent column
-    $emergencyContact->phone_number = $validated['emergency_contact_number'];
+    $emergencyContact->employer_id = $employer->id ?? null;
+    $emergencyContact->personal_info_id = $personalInfo->id ?? null;
+    $emergencyContact->first_name = $validated['emergency_contact_name'] ?? null;
+    $emergencyContact->relation_to_company = $validated['emergency_contact_relationship'] ?? null; // ✅ consistent column
+    $emergencyContact->phone_number = $validated['emergency_contact_number'] ?? null;
     $emergencyContact->save();
 
     // --- Communication Preferences ---
@@ -467,12 +467,79 @@ public function login(Request $request)
 
 
 
+private function decryptMessage($encryptedMessage)
+{
+    try {
+        return Crypt::decryptString($encryptedMessage);
+    } catch (\Exception $e) {
+        return '[Unable to decrypt message]';
+    }
+}
+
+private function cleanDecryptedString($value)
+{
+    if (!$value) return null;
+
+    // Remove unwanted serialization patterns like s:8:"...";
+    if (preg_match('/^s:\d+:"(.+)";$/', $value, $matches)) {
+        return $matches[1];
+    }
+
+    return $value;
+}
+
+
 //View the homepage of employer
 public function ShowHomepage() {
 
 
     //retrieve the list of applicants
-    $retrievedApplicants = RegisterModel::with(['personal_info', 'work_background' ])->paginate(10);
+  $retrievedApplicants = RegisterModel::with(['personal_info', 'work_background'])->paginate(10);
+
+foreach ($retrievedApplicants as $applicant) {
+    // Decrypt personal info
+    if ($applicant->personal_info) {
+        $applicant->personal_info->first_name = $this->cleanDecryptedString(
+            $this->decryptMessage($applicant->personal_info->first_name)
+        );
+        $applicant->personal_info->last_name = $this->cleanDecryptedString(
+            $this->decryptMessage($applicant->personal_info->last_name)
+        );
+        $applicant->personal_info->city = $this->cleanDecryptedString(
+            $this->decryptMessage($applicant->personal_info->city)
+        );
+        $applicant->personal_info->province = $this->cleanDecryptedString(
+            $this->decryptMessage($applicant->personal_info->province)
+        );
+    }
+
+    // Decrypt work background
+    if ($applicant->work_background) {
+        $applicant->work_background->position = $this->cleanDecryptedString(
+            $this->decryptMessage($applicant->work_background->position)
+        );
+        $applicant->work_background->house_street = $this->cleanDecryptedString(
+            $this->decryptMessage($applicant->work_background->house_street)
+        );
+        $applicant->work_background->municipality = $this->cleanDecryptedString(
+            $this->decryptMessage($applicant->work_background->municipality)
+        );
+        $applicant->work_background->province = $this->cleanDecryptedString(
+            $this->decryptMessage($applicant->work_background->province)
+        );
+        $applicant->work_background->country = $this->cleanDecryptedString(
+            $this->decryptMessage($applicant->work_background->country)
+        );
+        $applicant->work_background->zip_code = $this->cleanDecryptedString(
+            $this->decryptMessage($applicant->work_background->zip_code)
+        );
+    
+    }
+}
+
+   
+
+
 
     if ($retrievedApplicants->isEmpty()) {
         return view('employer.homepage.homepage');
@@ -536,6 +603,7 @@ $retrieveMessages = SendMessage::with(['applicant.personal_info', 'employer'])
     return view('employer.homepage.homepage' , compact(
         'retrievePersonal' , 
     'retrievedApplicants' ,
+    
                 'JobPostRetrieved' , 
                 'retrievedApplicantApproved',
                 'retrieveMessages'));
@@ -546,10 +614,70 @@ $retrieveMessages = SendMessage::with(['applicant.personal_info', 'employer'])
 //Get the profile picture of the applicant
 public function viewApplicantProfile($applicantID) 
 {
-    $retrievedProfile = RegisterModel::with('personal_info', 'work_background', 'template')->find($applicantID);
-    if (!$retrievedProfile) {
-        abort(404);
-    }
+   $retrievedProfile = RegisterModel::with(['personal_info', 'work_background', 'template'])
+    ->find($applicantID);
+
+if (!$retrievedProfile) {
+    abort(404);
+}
+
+// Decrypt personal info
+if ($retrievedProfile->personal_info) {
+    $retrievedProfile->personal_info->first_name = $this->cleanDecryptedString(
+        $this->decryptMessage($retrievedProfile->personal_info->first_name)
+    );
+    $retrievedProfile->personal_info->last_name = $this->cleanDecryptedString(
+        $this->decryptMessage($retrievedProfile->personal_info->last_name)
+    );
+    $retrievedProfile->personal_info->city = $this->cleanDecryptedString(
+        $this->decryptMessage($retrievedProfile->personal_info->city)
+    );
+    $retrievedProfile->personal_info->province = $this->cleanDecryptedString(
+        $this->decryptMessage($retrievedProfile->personal_info->province)
+    );
+    $retrievedProfile->personal_info->house_street = $this->cleanDecryptedString(
+        $this->decryptMessage($retrievedProfile->personal_info->house_street)
+    );
+
+    $retrievedProfile->personal_info->zipcode = $this->cleanDecryptedString(
+        $this->decryptMessage($retrievedProfile->personal_info->zipcode)
+    );
+
+    $retrievedProfile->personal_info->barangay = $this->cleanDecryptedString(
+        $this->decryptMessage($retrievedProfile->personal_info->barangay)
+    );
+
+
+}
+
+// Decrypt work background
+if ($retrievedProfile->work_background) {
+    $retrievedProfile->work_background->position = $this->cleanDecryptedString(
+        $this->decryptMessage($retrievedProfile->work_background->position)
+    );
+    $retrievedProfile->work_background->house_street = $this->cleanDecryptedString(
+        $this->decryptMessage($retrievedProfile->work_background->house_street)
+    );
+    $retrievedProfile->work_background->municipality = $this->cleanDecryptedString(
+        $this->decryptMessage($retrievedProfile->work_background->municipality)
+    );
+    $retrievedProfile->work_background->province = $this->cleanDecryptedString(
+        $this->decryptMessage($retrievedProfile->work_background->province)
+    );
+    $retrievedProfile->work_background->country = $this->cleanDecryptedString(
+        $this->decryptMessage($retrievedProfile->work_background->country)
+    );
+    $retrievedProfile->work_background->zipcode = $this->cleanDecryptedString(
+        $this->decryptMessage($retrievedProfile->work_background->zipcode)
+    );
+}
+
+if($retrievedProfile->template) {
+
+    $retrievedProfile->template->description = $this->cleanDecryptedString(
+        $this->decryptMessage($retrievedProfile->template->description)
+    );
+}
 
 
     $applicant_id = $retrievedProfile->id; // or however you get the applicant ID

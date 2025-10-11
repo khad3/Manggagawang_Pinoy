@@ -4,6 +4,7 @@ namespace App\Models\Applicant;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Admin\AddTesdaOfficerModel as TesdaOfficer;
+use Faker\Provider\ar_EG\Person;
 
 class TesdaUploadCertificationModel extends Model
 {
@@ -29,10 +30,11 @@ class TesdaUploadCertificationModel extends Model
         return $this->belongsTo(RegisterModel::class, 'applicant_id');
     }
 
-    public function personal_info()
-    {
-        return $this->belongsTo(PersonalModel::class, 'applicant_id');
-    }
+   public function personal_info()
+{
+    return $this->hasOne(PersonalModel::class, 'applicant_id' , 'applicant_id');
+}
+
 
 
     public function tesda_officer()

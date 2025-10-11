@@ -126,11 +126,11 @@
                     <span>User Management</span>
                     <i class="fas fa-chevron-right chevron"></i>
                 </button>
-                <button class="menu-item" onclick="showSection('settings', this)">
+                {{-- <button class="menu-item" onclick="showSection('settings', this)">
                     <i class="fas fa-cog"></i>
                     <span>System Settings</span>
                     <i class="fas fa-chevron-right chevron"></i>
-                </button>
+                </button> --}}
 
                 <button class="menu-item" data-bs-toggle="modal" data-bs-target="#logoutModal">
                     <i class="fas fa-sign-out-alt"></i>
@@ -1092,7 +1092,7 @@
                     <!-- Recent Activity Log -->
                     <div class="report-card" style="grid-column: 1 / -1;">
                         <div class="report-card-header">
-                            <h3 class="report-title">Recent Admin Actions</h3>
+                            <h3 class="report-title">Recent Activity logs</h3>
                             <div class="report-actions">
                                 <button class="action-btn btn-view" title="View All">
                                     <i class="fas fa-list"></i>
@@ -1109,14 +1109,44 @@
                                             <i class="fas fa-check"></i>
                                         @elseif($log['action'] === 'suspended')
                                             <i class="fas fa-pause"></i>
+                                        @elseif($log['action'] === 'post')
+                                            <i class="fas fa-bullhorn"></i>
+                                        @elseif($log['action'] === 'login')
+                                            <i class="fas fa-sign-in-alt"></i>
+                                        @elseif($log['action'] === 'created_account')
+                                            <i class="fas fa-user-plus"></i>
+                                        @elseif($log['action'] === 'upload_certification')
+                                            <i class="fas fa-certificate" style="color: gold;"></i>
+                                        @elseif($log['action'] === 'approved_certification')
+                                            <i class="bi bi-patch-check-fill" style="color: green;"></i>
+                                        @elseif($log['action'] === 'rejected_certification')
+                                            <i class="bi bi-patch-minus-fill" style="color: red;"></i>
+                                        @elseif($log['action'] === 'request_revision_certification')
+                                            <i class="bi bi-patch-exclamation-fill" style="color: orange;"></i>
+                                        @elseif($log['action'] === 'apply_job')
+                                            <i class="bi bi-file-earmark-person-fill" style="color:brown;"></i>
+                                        @elseif($log['action'] === 'reject_job')
+                                            <i class="bi bi-x-circle-fill text-danger" style="color:red;"></i>
+                                        @elseif($log['action'] === 'post_announcement')
+                                            <i class="bi bi-megaphone-fill" style="color:green"></i>
                                         @endif
                                     </div>
                                     <div class="activity-content">
-                                        <h6>User {{ ucfirst($log['action']) }}</h6>
-                                        <p>{{ $log['description'] }}</p>
+                                        @php
+                                            $adminActions = ['banned', 'unbanned', 'suspended', 'post_announcement'];
+                                        @endphp
+
+                                        @if (in_array($log['action'], $adminActions))
+                                            <h6>Admin {{ ucfirst($log['action']) }}</h6>
+                                        @else
+                                            <h6>User {{ ucfirst($log['action']) }}</h6>
+                                        @endif
+
+                                        <p>{!! $log['description'] !!}</p>
                                     </div>
+
                                     <div class="activity-time">
-                                        {{ $log['created_at']->diffForHumans() }}
+                                        {{ \Carbon\Carbon::parse($log['created_at'])->diffForHumans() }}
                                     </div>
                                 </div>
                             @endforeach

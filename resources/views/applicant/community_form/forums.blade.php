@@ -82,17 +82,25 @@
 
                     <!-- Main Feed -->
                     <section class="forum-feed">
-
-                        <!-- Error Messages -->
-                        @if ($errors->any())
-                            <div class="error-alert">
-                                <h4>Please fix the following errors:</h4>
-                                <ul>
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
+                        {{-- Show success message --}}
+                        @if (session('success'))
+                            <div class="alert alert-success alert-dismissible fade show mt-3" role="alert"
+                                id="success-alert">
+                                <center>{{ session('success') }}</center>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
+
+                            <script>
+                                // Hide the alert after 5 seconds (5000 ms)
+                                setTimeout(() => {
+                                    let alert = document.getElementById('success-alert');
+                                    if (alert) {
+                                        alert.classList.remove('show'); // fade out
+                                        alert.classList.add('fade'); // keep bootstrap fade animation
+                                        setTimeout(() => alert.remove(), 500); // remove from DOM after fade
+                                    }
+                                }, 2000); // change to 2000 for 2 seconds
+                            </script>
                         @endif
 
                         <!-- Create Post Form -->
@@ -154,9 +162,40 @@
                                             <span class="upload-icon">📎</span>
                                             <span>Add Photo or Video</span>
                                             <input type="file" class="file-input" name="post_media"
-                                                accept="image/*,video/*">
+                                                accept="image/*,video/*" onchange="previewFile(event)">
                                         </label>
+                                        <!-- Preview container -->
+                                        <div id="file-preview" style="margin-top: 10px;"></div>
                                     </div>
+
+                                    <script>
+                                        function previewFile(event) {
+                                            const preview = document.getElementById('file-preview');
+                                            preview.innerHTML = ''; // clear previous preview
+
+                                            const file = event.target.files[0];
+                                            if (!file) return;
+
+                                            const fileType = file.type;
+
+                                            if (fileType.startsWith('image/')) {
+                                                const img = document.createElement('img');
+                                                img.src = URL.createObjectURL(file);
+                                                img.style.maxWidth = '200px';
+                                                img.style.borderRadius = '8px';
+                                                preview.appendChild(img);
+                                            } else if (fileType.startsWith('video/')) {
+                                                const video = document.createElement('video');
+                                                video.src = URL.createObjectURL(file);
+                                                video.controls = true;
+                                                video.style.maxWidth = '200px';
+                                                video.style.borderRadius = '8px';
+                                                preview.appendChild(video);
+                                            } else {
+                                                preview.textContent = 'File type not supported for preview.';
+                                            }
+                                        }
+                                    </script>
 
                                     <button type="submit" class="btn-submit">
                                         <span class="submit-icon">🚀</span>
@@ -170,9 +209,10 @@
                         <div class="posts-feed" id="postsContainer">
                             @inject('str', 'Illuminate\Support\Str')
 
-                            @forelse ($posts as $post)
-                                <article class="post-card" data-topic="{{ $post->category }}">
 
+
+                            @forelse ($posts as $index => $post)
+                                <article class="post-card" data-topic="{{ $post->category }}">
                                     <!-- Post Header -->
                                     <header class="post-header">
                                         <div class="author-info">
@@ -186,32 +226,30 @@
                                                 @else
                                                     <a href="">
                                                         <div class="avatar-placeholder">
-                                                            {{ substr($post->personalInfo->first_name ?? 'U', 0, 1) }}{{ substr($post->personalInfo->last_name ?? '', 0, 1) }}
+                                                            {{ substr($post->personalInfo->first_name ?? 'U', 0, 1) }}
+                                                            {{ substr($post->personalInfo->last_name ?? '', 0, 1) }}
                                                         </div>
                                                     </a>
                                                 @endif
                                             </div>
 
-                                            @foreach ($posts as $index => $post)
-                                                <div class="author-details">
-                                                    <h4 class="author-name">
-                                                        <a
-                                                            href="{{ route('applicant.getprofile.display', ['id' => $post->applicant_id]) }}">
-                                                            {{ $retrievedDecryptedPersonalInfo['personalInfo'][$index]['first_name'] ?? 'Unknown' }}
-                                                            {{ $retrievedDecryptedPersonalInfo['personalInfo'][$index]['last_name'] ?? '' }}
-                                                        </a>
-                                                    </h4>
-                                                    <p class="author-position">
-                                                        {{ $retrievedDecryptedPersonalInfo['workBackground'][$index]['position'] ?? 'Community Member' }}
-                                                    </p>
-                                                    <time
-                                                        class="post-timestamp">{{ $post->created_at->diffForHumans() }}</time>
-                                                </div>
-                                            @endforeach
-
+                                            {{-- ✅ FIXED: Removed the nested @foreach --}}
+                                            <div class="author-details">
+                                                <h4 class="author-name">
+                                                    <a
+                                                        href="{{ route('applicant.getprofile.display', ['id' => $post->applicant_id]) }}">
+                                                        {{ $retrievedDecryptedPersonalInfo['personalInfo'][$index]['first_name'] ?? 'Unknown' }}
+                                                        {{ $retrievedDecryptedPersonalInfo['personalInfo'][$index]['last_name'] ?? '' }}
+                                                    </a>
+                                                </h4>
+                                                <p class="author-position">
+                                                    {{ $retrievedDecryptedPersonalInfo['workBackground'][$index]['position'] ?? 'Community Member' }}
+                                                </p>
+                                                <time
+                                                    class="post-timestamp">{{ $post->created_at->diffForHumans() }}</time>
+                                            </div>
                                         </div>
                                     </header>
-
 
                                     <!-- Post Content -->
                                     <div class="post-content">
@@ -435,6 +473,7 @@
                                     </button>
                                 </div>
                             @endforelse
+
                         </div>
 
                     </section>

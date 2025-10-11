@@ -178,9 +178,10 @@
                                         @endauth
 
                                         <td>
-                                            {{ $application->personal_info?->first_name ?? 'N/A' }}
-                                            {{ $application->personal_info?->last_name ?? '' }}
+                                            {{ $application->personal_info && $application->personal_info->first_name ? $application->personal_info->first_name : 'N/A' }}
+                                            {{ $application->personal_info && $application->personal_info->last_name ? $application->personal_info->last_name : '' }}
                                         </td>
+
 
                                         <td>{{ $application->certification_program ?? 'N/A' }}</td>
                                         <td>{{ $application->created_at ? $application->created_at->format('M d, Y') : 'N/A' }}

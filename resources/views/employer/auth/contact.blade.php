@@ -13,12 +13,13 @@
 </head>
 
 <body>
- <nav>
+    <nav>
         <div class="navbar-container">
             <div class="nav-logo d-flex align-items-center">
-                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2" style="text-decoration:none;">
-                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home"/>
-                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2"/>
+                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2"
+                    style="text-decoration:none;">
+                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
+                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" />
                 </a>
             </div>
             <ul class="nav-links" id="navLinks">
@@ -46,72 +47,73 @@
             </div>
         </div>
     </nav>
-            <!-- Step Content -->
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <div class="card form-card">
-                          <div class="registration-container">
-        <div class="container">
-            <!-- Header -->
-            <div class="text-center mb-5">
-                <h1 class="display-4 fw-bold text-dark mb-3">
-                    Employer Registration
-                </h1>
-                <p class="lead text-muted">
-                    Find TESDA-certified skilled workers and blue collar professionals
-                    for your projects
-                </p>
-            </div>
+    <!-- Step Content -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card form-card">
+                <div class="registration-container">
+                    <div class="container">
+                        <!-- Header -->
+                        <div class="text-center mb-5">
+                            <h1 class="display-4 fw-bold text-dark mb-3">
+                                Employer Registration
+                            </h1>
+                            <p class="lead text-muted">
+                                Find TESDA-certified skilled workers and blue collar professionals
+                                for your projects
+                            </p>
+                        </div>
 
-            <!-- Progress Stepper -->
-            <div class="row justify-content-center mb-5">
-                <div class="col-lg-10">
-                    <div class="d-flex align-items-center justify-content-between">
+                        <!-- Progress Stepper -->
+                        <div class="row justify-content-center mb-5">
+                            <div class="col-lg-10">
+                                <div class="d-flex align-items-center justify-content-between">
 
 
-                        <!-- Step 1 -->
-                        <div class="text-center">
-                            <div class="step-indicator step-completed" id="step1">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="mt-2">
-                                <small class="fw-semibold text-dark">Job Details</small>
-                                <br /><small class="text-muted d-none d-sm-block">Position requirements</small>
+                                    <!-- Step 1 -->
+                                    <div class="text-center">
+                                        <div class="step-indicator step-completed" id="step1">
+                                            <i class="fas fa-check"></i>
+                                        </div>
+                                        <div class="mt-2">
+                                            <small class="fw-semibold text-dark">Job Details</small>
+                                            <br /><small class="text-muted d-none d-sm-block">Position
+                                                requirements</small>
+                                        </div>
+                                    </div>
+                                    <div class="step-line step-line-completed" id="line1"></div>
+
+                                    <!-- Step 2 -->
+                                    <div class="text-center">
+                                        <div class="step-indicator step-active" id="step2">2</div>
+                                        <div class="mt-2">
+                                            <small class="fw-semibold text-dark">Contact</small>
+                                            <br /><small class="text-muted d-none d-sm-block">Your contact info</small>
+                                        </div>
+                                    </div>
+                                    <div class="step-line" id="line2"></div>
+
+                                    <!-- Step 3 -->
+                                    <div class="text-center">
+                                        <div class="step-indicator step-inactive" id="step3">3</div>
+                                        <div class="mt-2">
+                                            <small class="fw-semibold text-muted">Preferences</small>
+                                            <br /><small class="text-muted d-none d-sm-block">Hiring preferences</small>
+                                        </div>
+                                    </div>
+                                    <div class="step-line" id="line3"></div>
+
+                                    <!-- Step 4 -->
+                                    <div class="text-center">
+                                        <div class="step-indicator step-inactive" id="step4">4</div>
+                                        <div class="mt-2">
+                                            <small class="fw-semibold text-muted">Review</small>
+                                            <br /><small class="text-muted d-none d-sm-block">Review & submit</small>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="step-line step-line-completed" id="line1"></div>
-
-                        <!-- Step 2 -->
-                        <div class="text-center">
-                            <div class="step-indicator step-active" id="step2">2</div>
-                            <div class="mt-2">
-                                <small class="fw-semibold text-dark">Contact</small>
-                                <br /><small class="text-muted d-none d-sm-block">Your contact info</small>
-                            </div>
-                        </div>
-                        <div class="step-line" id="line2"></div>
-
-                        <!-- Step 3 -->
-                        <div class="text-center">
-                            <div class="step-indicator step-inactive" id="step3">3</div>
-                            <div class="mt-2">
-                                <small class="fw-semibold text-muted">Preferences</small>
-                                <br /><small class="text-muted d-none d-sm-block">Hiring preferences</small>
-                            </div>
-                        </div>
-                        <div class="step-line" id="line3"></div>
-
-                        <!-- Step 4 -->
-                        <div class="text-center">
-                            <div class="step-indicator step-inactive" id="step4">4</div>
-                            <div class="mt-2">
-                                <small class="fw-semibold text-muted">Review</small>
-                                <br /><small class="text-muted d-none d-sm-block">Review & submit</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
                         <div class="card-header bg-white border-0">
                             <h3 class="card-title mb-2">Contact Information</h3>
                             <p class="text-muted mb-0">
@@ -166,7 +168,8 @@
                                         <div class="col-md-6">
                                             <label for="accountEmail" class="form-label">Email Address *</label>
                                             <input type="email" class="form-control" id="accountEmail"
-                                                name="account_email" placeholder="e.g. employer@company.com" required />
+                                                name="account_email" placeholder="e.g. employer@company.com"
+                                                required />
                                         </div>
                                     </div>
 
@@ -336,7 +339,7 @@
 
 
                                 <!-- Emergency Contact -->
-                                <div class="section-divider">
+                                {{-- <div class="section-divider">
                                     <h5 class="fw-bold mb-3">
                                         <i class="fas fa-phone text-danger me-2"></i>Emergency
                                         Contact (Optional)
@@ -379,7 +382,7 @@
                                             <option value="Other">Other</option>
                                         </select>
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 <!-- Communication Preferences -->
                                 <div class="section-divider">
@@ -464,7 +467,7 @@
                                 </div>
 
                                 <!-- Navigation Buttons -->
-                       <div class="row justify-content-center mt-4">
+                                <div class="row justify-content-center mt-4">
                                     <div class="col-lg-8">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <button type="button" class="btn btn-outline-secondary"
@@ -478,15 +481,15 @@
                                         </div>
                                     </div>
                                 </div>
-                                </div>
-                            </form>
                         </div>
+                        </form>
                     </div>
                 </div>
             </div>
-
-
         </div>
+
+
+    </div>
     </div>
     <script>
         function checkPasswordStrength(password) {

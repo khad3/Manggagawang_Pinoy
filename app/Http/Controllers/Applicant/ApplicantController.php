@@ -706,6 +706,14 @@ public function getUnreadCounts(Request $request)
     return response()->json(['unread_counts' => $unreadCounts]);
 }
 
+private function safe_decrypt($value)
+{
+    try {
+        return $value ? Crypt::decrypt($value) : null;
+    } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+        return $value; // return original if decryption fails
+    }
+}
 
 //View the calling carrd
 public function ViewCallingCard() {
@@ -724,6 +732,12 @@ public function ViewCallingCard() {
     $retrievedPortfolio = ApplicantPortfolioModel::with('personalInfo', 'workExperience')
         ->where('applicant_id', $applicantID)
         ->get();
+
+    //decrypt personal info of group creator
+    if ($retrievedProfile->personal_info) {
+        $retrievedProfile->personal_info->first_name = $this->safe_decrypt($retrievedProfile->personal_info->first_name);
+        $retrievedProfile->personal_info->last_name  = $this->safe_decrypt($retrievedProfile->personal_info->last_name);
+    }
  
     // Fetch youtube/video link (latest)
     $retrievedYoutube = ApplicantUrlModel::with('personalInfo', 'workExperience')
@@ -778,19 +792,25 @@ public function sendMessage(Request $request)
             'receiver_id' => 'required|exists:applicants,id',
         ]);
 
-        // Prevent sending empty messages without a photo
+        // Prevent sending completely empty messages
         if (empty($validatedData['message']) && !$request->hasFile('photo')) {
             return redirect()->back()->with('error', 'Cannot send an empty message.');
         }
 
-        // Create and populate message
+        // Encrypt message if it exists
+        $encryptedMessage = null;
+        if (!empty($validatedData['message'])) {
+            $encryptedMessage = Crypt::encryptString($validatedData['message']);
+        }
+
+        // Create new message
         $message = new SendMessage();
         $message->sender_id = $applicantID;
         $message->receiver_id = $validatedData['receiver_id'];
-        $message->message = $validatedData['message'] ?? null;
+        $message->message = $encryptedMessage;
         $message->is_read = false;
 
-        // Handle image upload if exists
+        // Handle photo upload
         if ($request->hasFile('photo')) {
             $photo = $request->file('photo');
             $photoName = time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
@@ -799,13 +819,6 @@ public function sendMessage(Request $request)
         }
 
         $message->save();
-
-    //     // Reset typing status
-    // $sender = RegisterModel::find(auth()->id());
-    // if ($sender) {
-    //     $sender->typing_indicator = false;
-    //     $sender->save();
-    // }
 
         return redirect()->back()->with('success', 'Message sent successfully.');
 
@@ -836,20 +849,45 @@ public function updateLastSeen()
 
 
 //resume builder
-public function ViewResume(){
+public function ViewResume()
+{
+    // Retrieve applicant profile with related data
+    $retrievedProfiles = RegisterModel::with('personal_info', 'work_background', 'template')
+        ->where('id', session('applicant_id'))
+        ->first();
 
-
-    //retrieve all the personal information
-    $retrievedProfiles = RegisterModel::with('personal_info' , 'work_background' , 'template')->where('id' , session('applicant_id'))->first();
-
-    if(!$retrievedProfiles) {
+    if (!$retrievedProfiles) {
         return back()->withErrors('No profile found');
     }
 
+    // Decrypt personal info if exists
+    if ($retrievedProfiles->personal_info) {
+        $retrievedProfiles->personal_info->first_name = $this->safe_decrypt($retrievedProfiles->personal_info->first_name);
+        $retrievedProfiles->personal_info->last_name  = $this->safe_decrypt($retrievedProfiles->personal_info->last_name);
+        $retrievedProfiles->personal_info->house_street = $this->safe_decrypt($retrievedProfiles->personal_info->house_street);
+        $retrievedProfiles->personal_info->city       = $this->safe_decrypt($retrievedProfiles->personal_info->city);
+        $retrievedProfiles->personal_info->province   = $this->safe_decrypt($retrievedProfiles->personal_info->province);
+        $retrievedProfiles->personal_info->zipcode    = $this->safe_decrypt($retrievedProfiles->personal_info->zipcode);
+        $retrievedProfiles->personal_info->barangay   = $this->safe_decrypt($retrievedProfiles->personal_info->barangay);
+       
+    }
+
+    // Decrypt work background if exists
+    if ($retrievedProfiles->work_background) {
+
+        $retrievedProfiles->work_background->position       = $this->safe_decrypt($retrievedProfiles->work_background->position);
+        $retrievedProfiles->work_background->other_position = $this->safe_decrypt($retrievedProfiles->work_background->other_position);
+    }
+
+    // Decrypt template if exists
+    if ($retrievedProfiles->template) {
+        $retrievedProfiles->template->description      = $this->safe_decrypt($retrievedProfiles->template->description);
+        $retrievedProfiles->template->sample_work_url  = $this->safe_decrypt($retrievedProfiles->template->sample_work_url);
+    }
+
     return view('applicant.resumebuilder.resume', compact('retrievedProfiles'));
-
-
 }
+
 
 //Unfriend button
 public function unFriend($id)

@@ -167,34 +167,6 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
     Route::post('apply-job', [ApplicantController::class, 'applyJob'])->name('jobs.apply.store');
     Route::delete('cancel-job', [ApplicantController::class, 'cancelApplication'])->name('jobs.cancel.delete');
 
-
-
-    // // Portfolio / YouTube
-    // Route::get('/applicant-portfolio/{applicant_id}', function($applicant_id) {
-    //     return DB::table('applicants_portfolio')
-    //         ->where('applicant_id', $applicant_id)
-    //         ->get();
-    // });
-
-    // Route::get('/applicant-youtube/{applicant_id}', function($applicant_id) {
-    //     return DB::table('applicants_sample_work_url')
-    //         ->where('applicant_id', $applicant_id)
-    //         ->get();
-    // });
-
-    // Route::post('/save-qr-data', function(Request $request) {
-    //     DB::table('ar_qr_logs')->insert([
-    //         'applicant_id' => $request->applicant_id,
-    //         'generated_at' => now()
-    //     ]);
-    //     return response()->json(['success' => true]);
-    // });
-
-    // // AR page
-    // Route::get('/mobile-ar', function(Request $request) {
-    //     $data = json_decode($request->get('data'), true);
-    //     return view('mobile-ar', compact('data'));
-    // });
 });
 
 //Public routes for employer

@@ -22,20 +22,21 @@ use Illuminate\Support\Facades\Crypt;
 
 class CommunityForumController extends Controller
 {
+
+    private function safe_decrypt($value)
+{
+    try {
+        return $value ? Crypt::decrypt($value) : null;
+    } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+        return $value; // fallback if it cannot be decrypted
+    } catch (\Exception $e) {
+        return $value; // catches unserialize errors and others
+    }
+}
  
     // Display the community forum with posts and categories
     public function ShowForum(){
-        if (!function_exists('safe_decrypt')) {
-    function safe_decrypt($value) {
-        try {
-            return $value ? Crypt::decrypt($value) : null;
-        } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
-            return $value; // fallback
-        }
-    }
-}
-
-        
+   
         $currentApplicantId = session('applicant_id');
 
         $posts = Post::with([
@@ -47,18 +48,20 @@ class CommunityForumController extends Controller
         ])->orderBy('created_at', 'desc')->get();
 
         $retrievedDecryptedPersonalInfo = $posts ? [
+        'personalInfo' => $posts->map(function ($post) {
+            return [
+                'first_name' => $post->personalInfo ? $this->safe_decrypt($post->personalInfo->first_name) : null,
+                'last_name'  => $post->personalInfo ? $this->safe_decrypt($post->personalInfo->last_name) : null,
+            ];
+        }),
+    ] : [];
 
-    'personalInfo' => $posts->map(function ($post) {
-        return [
-            'first_name' => $post->personalInfo ? safe_decrypt($post->personalInfo->first_name) : null,
-            'last_name'  => $post->personalInfo ? safe_decrypt($post->personalInfo->last_name) : null,
-        ];
-    }),
+    $retrievedDecryptedWorkBackground = $posts ? [
 
     'workBackground' => $posts->map(function ($post) {
         return [
-            'position'       => $post->workBackground ? safe_decrypt($post->workBackground->position) : null,
-            'other_position' => $post->workBackground ? safe_decrypt($post->workBackground->other_position) : null,
+            'position'       => $post->workBackground ? $this->safe_decrypt($post->workBackground->position) : null,
+            'other_position' => $post->workBackground ? $this->safe_decrypt($post->workBackground->other_position) : null,
         ];
     }),
 
@@ -87,7 +90,25 @@ class CommunityForumController extends Controller
 
         $categories = Post::distinct()->pluck('category')->toArray();
 
-        return view('applicant.community_form.forums', compact('posts', 'categories' , 'retrievedDecryptedPersonalInfo'));
+        //retrieve personal information and work background decrypted
+        // 🔽 Decrypt commenters and repliers
+    foreach ($posts as $post) {
+        foreach ($post->comments as $comment) {
+            if ($comment->applicant && $comment->applicant->personal_info) {
+                $comment->applicant->personal_info->first_name = $this->safe_decrypt($comment->applicant->personal_info->first_name);
+                $comment->applicant->personal_info->last_name  = $this->safe_decrypt($comment->applicant->personal_info->last_name);
+            }
+
+            foreach ($comment->replies as $reply) {
+                if ($reply->applicant && $reply->applicant->personal_info) {
+                    $reply->applicant->personal_info->first_name = $this->safe_decrypt($reply->applicant->personal_info->first_name);
+                    $reply->applicant->personal_info->last_name  = $this->safe_decrypt($reply->applicant->personal_info->last_name);
+                }
+            }
+        }
+    }
+
+        return view('applicant.community_form.forums', compact('posts', 'categories' , 'retrievedDecryptedPersonalInfo' , 'retrievedDecryptedWorkBackground'));
     }
 
 
@@ -212,7 +233,7 @@ class CommunityForumController extends Controller
 
         $reply->save();
 
-        return redirect()->route('applicant.forum.display')->with('success', 'Reply added successfully.');
+        return redirect()->route('applicant.forum.display')->with('success', 'reply successfully.');
     }
 
     //Delete reply comments child
@@ -265,8 +286,41 @@ class CommunityForumController extends Controller
     public function ViewMyPost() {
         $applicantId = session('applicant_id');
         $posts = Post::where('applicant_id', $applicantId)->get()->sortByDesc('created_at');
+        
+        // ✅ Decrypt data directly into $posts
+     foreach ($posts as $post) {
+
+        // --- Decrypt post owner ---
+        if ($post->personalInfo) {
+            $post->personalInfo->first_name = $this->safe_decrypt($post->personalInfo->first_name);
+            $post->personalInfo->last_name  = $this->safe_decrypt($post->personalInfo->last_name);
+        }
+
+        if ($post->workBackground) {
+            $post->workBackground->position       = $this->safe_decrypt($post->workBackground->position);
+            $post->workBackground->other_position = $this->safe_decrypt($post->workBackground->other_position);
+        }
+
+        // --- Decrypt commenters ---
+        foreach ($post->comments as $comment) {
+            if ($comment->applicant && $comment->applicant->personal_info) {
+                $comment->applicant->personal_info->first_name = $this->safe_decrypt($comment->applicant->personal_info->first_name);
+                $comment->applicant->personal_info->last_name  = $this->safe_decrypt($comment->applicant->personal_info->last_name);
+            }
+
+            // --- Decrypt repliers ---
+            foreach ($comment->replies as $reply) {
+                if ($reply->applicant && $reply->applicant->personal_info) {
+                    $reply->applicant->personal_info->first_name = $this->safe_decrypt($reply->applicant->personal_info->first_name);
+                    $reply->applicant->personal_info->last_name  = $this->safe_decrypt($reply->applicant->personal_info->last_name);
+                }
+            }
+        }
+    }
+
 
         $categories = Post::distinct()->pluck('category')->toArray();
+        
 
         return view('applicant.community_form.viewmypost', compact('posts' , 'categories')); 
     }
@@ -319,6 +373,14 @@ class CommunityForumController extends Controller
             ->withCount('members')
             ->orderByDesc('created_at')
             ->get();
+
+        //decrypt personal info
+        foreach ($listOfGroups as $group) {
+            if ($group->personalInfo) {
+                $group->personalInfo->first_name = $this->safe_decrypt($group->personalInfo->first_name);
+                $group->personalInfo->last_name  = $this->safe_decrypt($group->personalInfo->last_name);
+            }
+        }
 
         return view('applicant.community_form.viewgroup', compact('listOfGroups', 'applicant_id'));
     }
@@ -440,6 +502,12 @@ class CommunityForumController extends Controller
                 return redirect()->back()->with('error', 'Group not found.');
             }
 
+        //decrypt personal info of group creator
+        if ($group->personalInfo) {
+            $group->personalInfo->first_name = $this->safe_decrypt($group->personalInfo->first_name);
+            $group->personalInfo->last_name  = $this->safe_decrypt($group->personalInfo->last_name);
+        }
+
         $retrievePosts = GroupPost::with([
             'work_background',
             'likes',
@@ -455,6 +523,8 @@ class CommunityForumController extends Controller
         $members = $group->members->filter(fn($member) =>
         $member->pivot->status === 'approved' && $member->id !== $group->applicant_id
         );
+
+
 
         return view('applicant.community_form.viewspecificgroup', compact(
          'group', 'members', 'applicantId', 'retrievePosts'
@@ -812,6 +882,55 @@ public function ViewFriendlistPage(Request $request)
     ->where('status', 'pending')
     ->get();
 
+    //retrieve the personal info decrypted
+  //Decrypt the logged-in applicant’s info
+if ($retrievedApplicantInfo && $retrievedApplicantInfo->personal_info) {
+    $retrievedApplicantInfo->personal_info->first_name = $this->safe_decrypt($retrievedApplicantInfo->personal_info->first_name);
+    $retrievedApplicantInfo->personal_info->last_name  = $this->safe_decrypt($retrievedApplicantInfo->personal_info->last_name);
+}
+
+//Decrypt each friend’s personal info
+foreach ($retrievedFriends as $friend) {
+    if ($friend->sender && $friend->sender->personal_info) {
+        $friend->sender->personal_info->first_name = $this->safe_decrypt($friend->sender->personal_info->first_name);
+        $friend->sender->personal_info->last_name  = $this->safe_decrypt($friend->sender->personal_info->last_name);
+    }
+    if ($friend->receiver && $friend->receiver->personal_info) {
+        $friend->receiver->personal_info->first_name = $this->safe_decrypt($friend->receiver->personal_info->first_name);
+        $friend->receiver->personal_info->last_name  = $this->safe_decrypt($friend->receiver->personal_info->last_name);
+    }
+}
+
+//Decrypt each message
+// Safe decrypt for messages
+
+
+// Later when retrieving messages
+foreach ($retrievedMessages as $message) {
+    // Decrypt sender/receiver names
+    if ($message->sender && $message->sender->personal_info) {
+        $message->sender->personal_info->first_name = $this->safe_decrypt_string($message->sender->personal_info->first_name);
+        $message->sender->personal_info->last_name  = $this->safe_decrypt_string($message->sender->personal_info->last_name);
+    }
+    if ($message->receiver && $message->receiver->personal_info) {
+        $message->receiver->personal_info->first_name = $this->safe_decrypt_string($message->receiver->personal_info->first_name);
+        $message->receiver->personal_info->last_name  = $this->safe_decrypt_string($message->receiver->personal_info->last_name);
+    }
+
+    // Decrypt the actual message
+    if ($message->message) {
+        $message->message = $this->safe_decrypt_string($message->message);
+    }
+}
+
+
+//Decrypt sender names in friend requests
+foreach ($friendRequests as $requestItem) {
+    if ($requestItem->sender && $requestItem->sender->personal_info) {
+        $requestItem->sender->personal_info->first_name = $this->safe_decrypt($requestItem->sender->personal_info->first_name);
+        $requestItem->sender->personal_info->last_name  = $this->safe_decrypt($requestItem->sender->personal_info->last_name);
+    }
+}
 
 
 
@@ -828,6 +947,13 @@ public function ViewFriendlistPage(Request $request)
 }
 
 
-
+private function safe_decrypt_string($value)
+{
+    try {
+        return $value ? Crypt::decryptString($value) : null;
+    } catch (\Exception $e) {
+        return $value; // fallback to original if cannot decrypt
+    }
+}
 
 }

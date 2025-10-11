@@ -21,6 +21,9 @@ class AnnouncementModel extends Model
         'is_read',
     ];
 
-
+public function admin()
+    {
+        return $this->belongsTo(AccountAdminModel::class, 'admin_id');
+    }
     
 }
