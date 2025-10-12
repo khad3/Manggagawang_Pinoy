@@ -258,23 +258,27 @@
     </header>
 
     @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert" id="success-alert">
-            <center>{{ session('success') }}</center>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="container mt-3">
+            <div class="alert alert-success alert-dismissible fade show text-center" role="alert"
+                id="success-alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         </div>
 
         <script>
-            // Hide the alert after 5 seconds (5000 ms)
+            // Hide the alert after 2 seconds (2000 ms)
             setTimeout(() => {
-                let alert = document.getElementById('success-alert');
+                const alert = document.getElementById('success-alert');
                 if (alert) {
                     alert.classList.remove('show'); // fade out
                     alert.classList.add('fade'); // keep bootstrap fade animation
                     setTimeout(() => alert.remove(), 500); // remove from DOM after fade
                 }
-            }, 2000); // change to 2000 for 2 seconds
+            }, 2000);
         </script>
     @endif
+
 
     <!-- Main Content -->
     <div class="container">
@@ -511,7 +515,6 @@
                             <form action="{{ route('jobs.apply.store') }}" method="POST"
                                 enctype="multipart/form-data">
                                 @csrf
-                                <!-- FIXED: Changed name to match what's expected -->
                                 <input type="hidden" name="job_id" id="apply-job-id-input">
 
                                 <div class="modal-header">
@@ -522,7 +525,8 @@
                                         aria-label="Close"></button>
                                 </div>
 
-                                <div class="modal-body">
+                                <!-- Make body scrollable -->
+                                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
                                     <!-- Job Info -->
                                     <div class="row mb-4">
                                         <div class="col-12">
@@ -599,6 +603,7 @@
                     </div>
                 </div>
 
+
                 <!-- FIXED JavaScript -->
                 <script>
                     const applyJobModal = document.getElementById('applyJobModal');
@@ -633,18 +638,20 @@
 
 
 
-
                 <!-- View Details Modal -->
                 <div class="modal fade" id="viewDetailsModal" tabindex="-1" aria-labelledby="viewDetailsModalLabel"
                     aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
+                    <div class="modal-dialog modal-lg modal-dialog-scrollable"> <!-- Added modal-dialog-scrollable -->
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="viewDetailsModalLabel">Job Details</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
-                            <div class="modal-body">
+
+                            <!-- Modal Body Scrollable -->
+                            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                                <!-- Added max-height and scroll -->
                                 <h4 id="modalJobTitle"></h4>
                                 <p><strong>Company:</strong> <span id="modalCompanyName"></span></p>
                                 <p><strong>Industry:</strong> <span id="modalIndustry"></span></p>
@@ -654,14 +661,19 @@
                                 <p><strong>Salary:</strong> ₱<span id="modalSalary"></span> Monthly</p>
                                 <p><strong>Benefits:</strong> <span id="modalBenefits"></span></p>
                                 <p><strong>Experience Level:</strong> <span id="modalExperienceLevel"></span></p>
-                                <p><strong>TESDA Certification:</strong> <span id="modalTESDACertification"></span>
-                                </p>
+                                <p><strong>TESDA Certification:</strong> <span id="modalTESDACertification"></span></p>
                                 <p><strong>Other Certifications:</strong> <span
                                         id="modalNoneCertificationsQualification"></span></p>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">Close</button>
                             </div>
                         </div>
                     </div>
                 </div>
+
         </div>
 
 

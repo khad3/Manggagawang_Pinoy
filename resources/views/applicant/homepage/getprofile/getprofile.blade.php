@@ -1071,7 +1071,7 @@
     <div class="modal fade" id="editAboutModal" tabindex="-1" aria-labelledby="editAboutModalLabel"
         aria-hidden="true">
         <div class="modal-dialog">
-            <form action="" method="POST">
+            <form action="{{ route('applicant.editprofile', ['id' => $retrievedProfile->id]) }}" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="modal-content">

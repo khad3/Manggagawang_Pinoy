@@ -1402,6 +1402,7 @@
     </div>
 
     <!-- Edit About Modal -->
+    <!-- Edit About Modal -->
     <div class="modal fade" id="editAboutModal" tabindex="-1" aria-labelledby="editAboutModalLabel"
         aria-hidden="true">
         <div class="modal-dialog">
@@ -1419,36 +1420,36 @@
                         <div class="mb-3">
                             <label for="email" class="form-label">Email Address</label>
                             <input type="email" name="email" class="form-control"
-                                value="{{ $retrievedProfile->email }}" required>
+                                value="{{ $retrievedProfile->email ?? '' }}" required>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">House / Street</label>
                             <input type="text" name="house_street" class="form-control"
-                                value="{{ $retrievedProfile->personal_info->house_street }}">
+                                value="{{ $retrievedDecrytedProfile['personal_info']['house_street'] ?? '' }}">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Barangay</label>
                             <input type="text" name="barangay" class="form-control"
-                                value="{{ $retrievedProfile->personal_info->barangay }}">
+                                value="{{ $retrievedDecrytedProfile['personal_info']['barangay'] ?? '' }}">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">City</label>
                             <input type="text" name="city" class="form-control"
-                                value="{{ $retrievedProfile->personal_info->city }}">
+                                value="{{ $retrievedDecrytedProfile['personal_info']['city'] ?? '' }}">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Province</label>
                             <input type="text" name="province" class="form-control"
-                                value="{{ $retrievedProfile->personal_info->province }}">
+                                value="{{ $retrievedDecrytedProfile['personal_info']['province'] ?? '' }}">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">About</label>
-                            <textarea name="description" rows="3" class="form-control">{{ $retrievedProfile->template->description }}</textarea>
+                            <textarea name="description" rows="3" class="form-control">{{ $retrievedDecrytedProfile['template']['description'] ?? '' }}</textarea>
                         </div>
                     </div>
 
@@ -1457,10 +1458,10 @@
                         <button type="submit" class="btn btn-tesda btn-primary-tesda">Save Changes</button>
                     </div>
                 </div>
-
             </form>
         </div>
     </div>
+
 
 
     <!-- Bootstrap JS (v5) -->
