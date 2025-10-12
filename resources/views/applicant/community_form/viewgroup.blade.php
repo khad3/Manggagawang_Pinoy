@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/applicant/viewgroup.css') }}" />
+    <style></style>
 </head>
 
 <body>
@@ -40,24 +41,50 @@
         <div id="groupsContainer">
             @foreach ($listOfGroups as $group)
                 <div class="post-card mb-4">
-                    <div class="post-header">
-                        <div class="group-name">{{ $group->group_name }}</div>
-                        <div class="post-meta">
-                            @if ($group->personalInfo)
-                                @if ($group->applicant_id == session('applicant_id'))
-                                    <p>Created by: <strong>You</strong></p>
+                    <div class="post-header d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="group-name">{{ $group->group_name }}</div>
+                            <div class="post-meta">
+                                @if ($group->personalInfo)
+                                    @if ($group->applicant_id == session('applicant_id'))
+                                        <p>Created by: <strong>You</strong></p>
+                                    @else
+                                        <p>Created by: <strong>{{ $group->personalInfo->first_name }}
+                                                {{ $group->personalInfo->last_name }}</strong></p>
+                                    @endif
+                                    <p>Applicants Joined: <strong>{{ $group->members_count }}</strong></p>
                                 @else
-                                    <p>Created by: <strong>{{ $group->personalInfo->first_name }}
-                                            {{ $group->personalInfo->last_name }}</strong></p>
+                                    <span class="text-muted">Creator not available</span>
                                 @endif
-                                <p>Applicants Joined: <strong>{{ $group->members_count }}</strong></p>
-                            @else
-                                <span class="text-muted">Creator not available</span>
-                            @endif
-
-                            <span>{{ $group->created_at->diffForHumans() }}</span>
+                                <span>{{ $group->created_at->diffForHumans() }}</span>
+                            </div>
                         </div>
 
+                        {{-- 🔹 Only show dropdown if user is creator --}}
+                        @if ($group->applicant_id == session('applicant_id'))
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-light dropdown-toggle" type="button"
+                                    id="groupActionsDropdown{{ $group->id }}" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    Actions
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="groupActionsDropdown{{ $group->id }}">
+                                    <li>
+                                        <a class="dropdown-item" href="">
+                                            ✏️ Edit
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <form action="" method="POST"
+                                            onsubmit="return confirm('Are you sure you want to delete this group?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="dropdown-item text-danger" type="submit">❌ Delete</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        @endif
                     </div>
 
                     <div class="post-body">
