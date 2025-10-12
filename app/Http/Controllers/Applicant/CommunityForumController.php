@@ -18,6 +18,7 @@ use App\Models\Applicant\PostSpecificGroupModel as GroupPost;
 use App\Models\Applicant\GroupCommentModel as GroupComment;
 use App\Models\Applicant\GroupLikeModel as GroupLike;
 use App\Models\Applicant\SendMessageModel as SendMessage;
+use App\Models\Applicant\ParticipantModel as GroupJoinRequest;
 use Illuminate\Support\Facades\Crypt; 
 
 class CommunityForumController extends Controller
@@ -366,24 +367,35 @@ class CommunityForumController extends Controller
 
 
     //View list of group forum kumabaga ito yung display
-    public function DisplayGroupForum(){
-        $applicant_id = session('applicant_id');
+    public function DisplayGroupForum()
+{
+    $applicant_id = session('applicant_id');
 
-        $listOfGroups = Group::with(['members', 'personalInfo'])
-            ->withCount('members')
-            ->orderByDesc('created_at')
-            ->get();
+    $listOfGroups = Group::with(['members', 'personalInfo'])
+        ->withCount('members')
+        ->orderByDesc('created_at')
+        ->get();
 
-        //decrypt personal info
-        foreach ($listOfGroups as $group) {
-            if ($group->personalInfo) {
-                $group->personalInfo->first_name = $this->safe_decrypt($group->personalInfo->first_name);
-                $group->personalInfo->last_name  = $this->safe_decrypt($group->personalInfo->last_name);
-            }
+    // decrypt personal info and determine membership status per group
+    foreach ($listOfGroups as $group) {
+        if ($group->personalInfo) {
+            $group->personalInfo->first_name = $this->safe_decrypt($group->personalInfo->first_name);
+            $group->personalInfo->last_name  = $this->safe_decrypt($group->personalInfo->last_name);
         }
 
-        return view('applicant.community_form.viewgroup', compact('listOfGroups', 'applicant_id'));
+        // 🔐 Membership status for this specific group
+        $membership = $group->members->firstWhere('id', $applicant_id);
+
+        if ($membership) {
+            $group->membershipStatus = $membership->pivot->status; // 'pending', 'approved', 'rejected'
+        } else {
+            $group->membershipStatus = null; // not a member yet
+        }
     }
+
+    return view('applicant.community_form.viewgroup', compact('listOfGroups', 'applicant_id'));
+}
+
 
     //For request and join group forum
     public function RequestAndJoinGroup(Request $request){
@@ -488,48 +500,116 @@ class CommunityForumController extends Controller
         return redirect()->back()->with('success', 'Post added successfully.');
     }
 
-
+private function safeDecrypt($value) {
+    try {
+        return $value ? Crypt::decrypt($value) : null;
+    } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+        return $value; // fallback if it cannot be decrypted
+    } catch (\Exception $e) {
+        return $value; // catches unserialize errors and others
+    }
+}
     //View the specific group //SI applicant toj
-    public function ViewSpecificGroup($id){
-        $applicantId = session('applicant_id');
+   public function ViewSpecificGroup($id)
+{
+    $applicantId = session('applicant_id');
 
-        $group = Group::with([
-            'personalInfo',
-            'members.personal_info'
-        ])->withCount('members')->find($id);
+    $group = Group::with([
+        'personalInfo',
+        'members.personal_info'
+    ])->withCount('members')->find($id);
 
-            if (!$group) {
-                return redirect()->back()->with('error', 'Group not found.');
-            }
+    if (!$group) {
+        return redirect()->back()->with('error', 'Group not found.');
+    }
 
-        //decrypt personal info of group creator
-        if ($group->personalInfo) {
-            $group->personalInfo->first_name = $this->safe_decrypt($group->personalInfo->first_name);
-            $group->personalInfo->last_name  = $this->safe_decrypt($group->personalInfo->last_name);
-        }
+    // 🔐 Decrypt group creator name
+    if ($group->personalInfo) {
+        $group->personalInfo->first_name = $this->safeDecrypt($group->personalInfo->first_name);
+        $group->personalInfo->last_name  = $this->safeDecrypt($group->personalInfo->last_name);
+    }
 
-        $retrievePosts = GroupPost::with([
-            'work_background',
-            'likes',
-            'personalInfo',
-            'comments.personal_info',
-            'comments.applicant.work_background'
-        ])
-        ->withCount('comments') // <- this adds $post->comments_count
+    // 📩 Retrieve posts with related data
+    $retrievePosts = GroupPost::with([
+        'work_background',
+        'likes',
+        'personalInfo',
+        'comments.personal_info',
+        'comments.applicant.work_background'
+    ])
+        ->withCount('comments')
         ->where('group_community_id', $id)
         ->latest()
         ->get();
 
-        $members = $group->members->filter(fn($member) =>
-        $member->pivot->status === 'approved' && $member->id !== $group->applicant_id
-        );
+    // 🔐 Decrypt post author and commenters
+    foreach ($retrievePosts as $post) {
+        if ($post->personalInfo) {
+            $post->decryptedAuthor = [
+                'first_name' => $this->safeDecrypt($post->personalInfo->first_name),
+                'last_name'  => $this->safeDecrypt($post->personalInfo->last_name),
+            ];
+        } else {
+            $post->decryptedAuthor = null;
+        }
 
-
-
-        return view('applicant.community_form.viewspecificgroup', compact(
-         'group', 'members', 'applicantId', 'retrievePosts'
-        ));
+        foreach ($post->comments as $comment) {
+            if ($comment->personal_info) {
+                $comment->decryptedCommenter = [
+                    'first_name' => $this->safeDecrypt($comment->personal_info->first_name),
+                    'last_name'  => $this->safeDecrypt($comment->personal_info->last_name),
+                ];
+            } else {
+                $comment->decryptedCommenter = null;
+            }
+        }
     }
+
+    // 👥 Filter and 🔐 decrypt members
+    $members = $group->members
+        ->filter(fn($member) => $member->pivot->status === 'approved' && $member->id !== $group->applicant_id)
+        ->map(function ($member) {
+            if ($member->personal_info) {
+                $member->personal_info->first_name = $this->safeDecrypt($member->personal_info->first_name);
+                $member->personal_info->last_name  = $this->safeDecrypt($member->personal_info->last_name);
+            }
+            return $member;
+        });
+
+
+       $retrievedJoinRequests = $group->members()
+    ->wherePivot('status', 'pending')
+    ->with('personal_info')
+    ->withPivot('created_at') // ✅ load pivot created_at
+    ->get();
+
+    foreach ($retrievedJoinRequests as $request) {
+        if ($request->personal_info) {
+            $request->personal_info->first_name = $this->safeDecrypt($request->personal_info->first_name);
+            $request->personal_info->last_name  = $this->safeDecrypt($request->personal_info->last_name);
+        }
+    }
+
+    return view('applicant.community_form.viewspecificgroup', compact(
+        'group', 'members', 'applicantId', 'retrievePosts', 'retrievedJoinRequests'
+    ));
+}
+
+
+//Accept join request
+public function AcceptJoinRequest($groupId, $applicantId) {
+    $group = Group::findOrFail($groupId);
+    $group->members()->updateExistingPivot($applicantId, ['status' => 'approved']);
+    return redirect()->back()->with('success', 'Join request accepted.');
+}
+
+//Reject join request
+public function RejectJoinRequest($groupId, $applicantId) {
+    $group = Group::findOrFail($groupId);
+    $group->members()->updateExistingPivot($applicantId, ['status' => 'rejected']);
+    return redirect()->back()->with('success', 'Join request rejected.');
+}
+
 
 
     // View groups created by the logged-in applicant

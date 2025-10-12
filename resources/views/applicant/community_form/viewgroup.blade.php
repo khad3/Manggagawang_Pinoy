@@ -37,7 +37,6 @@
             <a href="{{ route('applicant.forum.viewgroupcreator.display') }}" class="btn btn-success btn-custom">View My
                 Created Groups</a>
         </div>
-
         <div id="groupsContainer">
             @foreach ($listOfGroups as $group)
                 <div class="post-card mb-4">
@@ -45,14 +44,20 @@
                         <div class="group-name">{{ $group->group_name }}</div>
                         <div class="post-meta">
                             @if ($group->personalInfo)
-                                <p>Created by: <strong>{{ $group->personalInfo->first_name }}
-                                        {{ $group->personalInfo->last_name }}</strong></p><br>
+                                @if ($group->applicant_id == session('applicant_id'))
+                                    <p>Created by: <strong>You</strong></p>
+                                @else
+                                    <p>Created by: <strong>{{ $group->personalInfo->first_name }}
+                                            {{ $group->personalInfo->last_name }}</strong></p>
+                                @endif
                                 <p>Applicants Joined: <strong>{{ $group->members_count }}</strong></p>
                             @else
                                 <span class="text-muted">Creator not available</span>
                             @endif
+
                             <span>{{ $group->created_at->diffForHumans() }}</span>
                         </div>
+
                     </div>
 
                     <div class="post-body">
@@ -60,7 +65,13 @@
                         <div class="post-content mb-3">{{ $group->group_description }}</div>
 
                         @php
-                            $isMember = $group->members->contains('id', $applicant_id);
+                            // 🔹 Membership logic per group
+                            $membership = $group->members->firstWhere('id', $applicant_id);
+                            $membershipStatus = $membership?->pivot->status ?? null;
+
+                            $isMember = $membershipStatus === 'approved';
+                            $isPending = $membershipStatus === 'pending';
+                            $isRejected = $membershipStatus === 'rejected';
                             $isCreator = $group->applicant_id == $applicant_id;
                         @endphp
 
@@ -71,7 +82,8 @@
                             </span>
 
                             <div class="d-flex gap-2">
-                                @if (!$isMember && !$isCreator)
+                                {{-- Not a member, no pending request, not rejected, not creator --}}
+                                @if (!$isMember && !$isPending && !$isRejected && !$isCreator)
                                     <form method="POST" action="{{ route('applicant.forum.joingroup.store') }}">
                                         @csrf
                                         <input type="hidden" name="group_id" value="{{ $group->id }}">
@@ -82,17 +94,33 @@
                                     </form>
                                 @endif
 
+                                {{-- Pending request --}}
+                                @if ($isPending)
+                                    <button class="btn btn-secondary btn-custom" disabled>
+                                        ⏳ Request Pending — Awaiting Creator's Approval
+                                    </button>
+                                @endif
+
+                                {{-- Rejected request --}}
+                                @if ($isRejected)
+                                    <button class="btn btn-danger btn-custom" disabled>
+                                        ❌ Your request to join this group was declined by the creator.
+                                    </button>
+                                @endif
+
+                                {{-- Approved member or creator --}}
                                 @if ($isMember || $isCreator)
                                     <a href="{{ route('applicant.forum.joinedgroup.display', $group->id) }}"
                                         class="btn btn-success btn-custom">View Group</a>
                                 @endif
                             </div>
                         </div>
-
                     </div>
                 </div>
             @endforeach
         </div>
+
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

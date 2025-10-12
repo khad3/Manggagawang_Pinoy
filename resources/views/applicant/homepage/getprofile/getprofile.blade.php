@@ -81,7 +81,26 @@
 
             </div>
         </div>
-    </div><br>
+    </div>
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert" id="success-alert">
+            <center>{{ session('success') }}</center>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <script>
+            // Hide the alert after 5 seconds (5000 ms)
+            setTimeout(() => {
+                let alert = document.getElementById('success-alert');
+                if (alert) {
+                    alert.classList.remove('show'); // fade out
+                    alert.classList.add('fade'); // keep bootstrap fade animation
+                    setTimeout(() => alert.remove(), 500); // remove from DOM after fade
+                }
+            }, 2000); // change to 2000 for 2 seconds
+        </script>
+    @endif
+    <br>
 
     <!-- Main Content -->
     <div class="profile-container animate-fade-in">
@@ -481,114 +500,273 @@
 
                     <div class="posts-body">
                         <!-- Post Item -->
+                        <div class="posts-body">
+                            <!-- Post Item -->
 
-                        @foreach ($retrievedPosts as $post)
-                            <div class="post-item mb-4">
-                                <div class="post-header d-flex justify-content-between align-items-start">
-                                    <div class="d-flex align-items-center">
-                                        <div class="post-avatar me-2">
-                                            @if (!empty($post->workBackground) && !empty($post->workBackground->profileimage_path))
-                                                <img src="{{ asset('storage/' . $post->workBackground->profileimage_path) }}"
-                                                    alt="User Avatar" class="rounded-circle"
-                                                    style="width: 40px; height: 40px; object-fit: cover;">
-                                            @else
-                                                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
-                                                    style="width: 40px; height: 40px;">
-                                                    {{ strtoupper(substr($post->personalInfo->first_name ?? 'U', 0, 1)) }}
+                            @foreach ($retrievedPosts as $post)
+                                <!-- Edit Post Modal -->
+                                <!-- Edit Post Modal -->
+
+                                <div class="modal fade" id="editPostModal-{{ $post->id }}" tabindex="-1"
+                                    aria-hidden="true" data-bs-backdrop="false">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <form
+                                                action="{{ route('applicant.applicantposts.update', ['id' => $post->id]) }}"
+                                                method="POST" enctype="multipart/form-data">
+                                                @csrf
+                                                @method('PUT')
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Edit Post</h5>
+                                                    <button type="button" class="btn-close"
+                                                        data-bs-dismiss="modal"></button>
                                                 </div>
-                                            @endif
-                                        </div>
-                                        <div>
-                                            <div class="post-author fw-bold">
-                                                {{ $post->personalInfo->first_name ?? 'Unknown' }}
-                                                {{ $post->personalInfo->last_name ?? '' }}
-                                            </div>
-                                            <div class="post-time text-muted small">
-                                                {{ $post->created_at->diffForHumans() }}
-                                            </div>
+                                                <div class="modal-body">
+                                                    <!-- Post Content -->
+                                                    <div class="mb-3">
+                                                        <label for="content-{{ $post->id }}"
+                                                            class="form-label">Post
+                                                            Content</label>
+                                                        <textarea name="content" id="content-{{ $post->id }}" class="form-control" rows="4">{{ $post->content }}</textarea>
+                                                    </div>
+
+                                                    <!-- Current Image Preview -->
+                                                    @if ($post->image_path)
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Current Image</label>
+                                                            <div>
+                                                                <img src="{{ asset('storage/' . $post->image_path) }}"
+                                                                    alt="Current Image" class="img-fluid rounded mb-2"
+                                                                    style="max-height: 250px; object-fit: cover;">
+                                                            </div>
+                                                        </div>
+                                                    @endif
+
+                                                    <!-- Upload New Image -->
+                                                    <div class="mb-3">
+                                                        <label for="image-{{ $post->id }}"
+                                                            class="form-label">Change
+                                                            Image</label>
+                                                        <input type="file" name="image"
+                                                            id="image-{{ $post->id }}" class="form-control">
+                                                        <small class="text-muted">Leave blank if you don't want to
+                                                            change
+                                                            the image.</small>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-primary">Save
+                                                        Changes</button>
+                                                </div>
+                                            </form>
                                         </div>
                                     </div>
+                                </div>
 
-                                    {{-- Edit/Delete dropdown only for **own posts** --}}
-                                    @if ($currentApplicantId == $post->applicant_id)
-                                        <div class="dropdown">
-                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                                                data-bs-toggle="dropdown">
-                                                <i class="bi bi-three-dots"></i>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                                        data-bs-target="#editPostModal-{{ $post->id }}"><i
-                                                            class="bi bi-pencil me-2"></i>Edit</a></li>
-                                                <li><a class="dropdown-item text-danger" href="#"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#deletePostModal-{{ $post->id }}"><i
-                                                            class="bi bi-trash me-2"></i>Delete</a></li>
-                                            </ul>
+                                <!-- Delete Post Modal -->
+                                <div class="modal fade" id="deletePostModal-{{ $post->id }}" tabindex="-1"
+                                    aria-hidden="true" data-bs-backdrop="false">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <form
+                                                action="{{ route('applicant.applicantposts.delete', ['id' => $post->id]) }}"
+                                                method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title text-danger">Delete Post</h5>
+                                                    <button type="button" class="btn-close"
+                                                        data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Are you sure you want to delete this post? This action cannot be
+                                                    undone.
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="post-item mb-4">
+                                    <div class="post-header d-flex justify-content-between align-items-start">
+                                        <div class="d-flex align-items-center">
+                                            <div class="post-avatar me-2">
+                                                @if (!empty($post->workBackground) && !empty($post->workBackground->profileimage_path))
+                                                    <img src="{{ asset('storage/' . $post->workBackground->profileimage_path) }}"
+                                                        alt="User Avatar" class="rounded-circle"
+                                                        style="width: 40px; height: 40px; object-fit: cover;">
+                                                @else
+                                                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
+                                                        style="width: 40px; height: 40px;">
+                                                        {{ strtoupper(substr($post->personalInfo->first_name ?? 'U', 0, 1)) }}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            <div>
+                                                <div class="post-author fw-bold">
+                                                    {{ $post->retrievedDecryptedProfile['personal_info']['first_name'] ?? 'Unknown' }}
+                                                    {{ $post->retrievedDecryptedProfile['personal_info']['last_name'] ?? '' }}
+                                                </div>
+                                                <div class="post-time text-muted small">
+                                                    {{ optional($post->created_at)->diffForHumans() ?? 'N/A' }}
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        @if (session('applicant_id') == $post->personal_info_id)
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                                    data-bs-toggle="dropdown">
+                                                    <i class="bi bi-three-dots"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    <li>
+                                                        <a class="dropdown-item" href="#"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#editPostModal-{{ $post->id }}">
+                                                            <i class="bi bi-pencil me-2"></i>Edit
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item text-danger" href="#"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#deletePostModal-{{ $post->id }}">
+                                                            <i class="bi bi-trash me-2"></i>Delete
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        @endif
+
+                                    </div>
+
+                                    <div class="post-content mt-2">
+                                        {{ $post->content }}
+                                    </div>
+
+                                    @if ($post->image_path)
+                                        <div class="post-image mt-3">
+                                            <img src="{{ asset('storage/' . $post->image_path) }}" alt="Post Image"
+                                                class="img-fluid rounded" />
                                         </div>
                                     @endif
-                                </div>
 
-                                <div class="post-content mt-2">{{ $post->content }}</div>
+                                    <div class="post-actions mt-3">
+                                        <!--like button-->
+                                        <form action="{{ route('applicant.likepost.store', $post->id) }}"
+                                            method="POST" class="d-inline">
+                                            @csrf
+                                            @php
+                                                $hasLiked = $post->likes
+                                                    ->where('applicant_id', session('applicant_id'))
+                                                    ->isNotEmpty();
+                                            @endphp
 
-                                @if ($post->image_path)
-                                    <div class="post-image mt-3">
-                                        <img src="{{ asset('storage/' . $post->image_path) }}" alt="Post Image"
-                                            class="img-fluid rounded" />
+                                            <button type="submit"
+                                                class="action-btn like-btn me-2 {{ $hasLiked ? 'text-danger' : '' }}">
+                                                <i class="bi {{ $hasLiked ? 'bi-heart-fill' : 'bi-heart' }}"></i>
+                                                <span class="like-count">{{ $post->likes->count() }}</span>
+                                                {{ $post->likes->count() === 1 ? 'Like' : 'Likes' }}
+                                            </button>
+                                        </form>
+
+
+
+                                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                                            onclick="toggleComments(this)">
+                                            <i class="bi bi-chat"></i>
+                                            <span class="comment-count"></span>
+                                            Comment ({{ $post->comments->count() }})
+                                        </button>
                                     </div>
-                                @endif
 
-                                <div class="post-actions mt-3">
-                                    <!-- Like button -->
-                                    <form action="{{ route('applicant.likepost.store', $post->id) }}" method="POST"
-                                        class="d-inline">
-                                        @csrf
-                                        @php
-                                            $hasLiked = $post->likes
-                                                ->where('applicant_id', $currentApplicantId)
-                                                ->isNotEmpty();
-                                        @endphp
-                                        <button type="submit"
-                                            class="action-btn like-btn me-2 {{ $hasLiked ? 'text-danger' : '' }}">
-                                            <i class="bi {{ $hasLiked ? 'bi-heart-fill' : 'bi-heart' }}"></i>
-                                            <span class="like-count">{{ $post->likes->count() }}</span>
-                                            {{ $post->likes->count() === 1 ? 'Like' : 'Likes' }}
-                                        </button>
-                                    </form>
 
-                                    <!-- Comment toggle -->
-                                    <button type="button" class="btn btn-sm btn-outline-secondary"
-                                        onclick="toggleComments(this)">
-                                        <i class="bi bi-chat"></i>
-                                        <span class="comment-count">{{ $post->comments->count() }}</span> Comment
-                                    </button>
-                                </div>
-
-                                <!-- Comments Section -->
-                                <div class="comments-section mt-3" style="display: none">
-                                    <form action="{{ route('applicantaddcomments.store', $post->id) }}"
-                                        method="POST">
-                                        @csrf
-                                        <div class="mb-2">
-                                            <input type="hidden" name="post_id" value="{{ $post->id }}">
-                                            <textarea class="form-control comment-input" name="comment" rows="2" placeholder="Write a comment..."></textarea>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="bi bi-send"></i> Comment
-                                        </button>
-                                    </form>
-
-                                    <div class="comments-list mt-2">
-                                        @foreach ($post->comments as $comment)
-                                            <div class="comment-item p-2 mb-2 rounded bg-light position-relative">
-                                                <strong>{{ $comment->applicant_id == $currentApplicantId ? 'Me' : $comment->applicant->personal_info->first_name ?? 'Unknown' }}:</strong>
-                                                {{ $comment->comment }}
+                                    <!-- Comments Section -->
+                                    <div class="comments-section mt-3" style="display: none">
+                                        <form action="{{ route('applicantaddcomments.store', $post->id) }}"
+                                            method="POST">
+                                            @csrf
+                                            <div class="mb-2">
+                                                <input type="hidden" name="post_id" value="{{ $post->id }}">
+                                                <textarea class="form-control comment-input" name="comment" rows="2" placeholder="Write a comment..."></textarea>
                                             </div>
-                                        @endforeach
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="bi bi-send"></i> Comment
+                                            </button>
+                                        </form>
+
+                                        <div class="comments-list mt-2">
+                                            @foreach ($post->comments as $comment)
+                                                <div class="comment-item p-2 mb-2 rounded bg-light position-relative">
+
+                                                    {{-- Show own comment --}}
+                                                    @if ($comment->applicant_id == session('applicant_id'))
+                                                        <strong>Me:</strong> {{ $comment->comment }}
+
+                                                        {{-- Inline delete button (subtle, like Facebook) --}}
+                                                        <form
+                                                            action="{{ route('applicant.comment.delete', $comment->id) }}"
+                                                            method="POST"
+                                                            class="d-inline-block position-absolute top-0 end-0 mt-1 me-2">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit"
+                                                                class="btn btn-sm btn-link text-muted p-0"
+                                                                style="font-size: 0.9rem;"
+                                                                onmouseover="this.style.color='red'"
+                                                                onmouseout="this.style.color='gray'">
+                                                                <i class="bi bi-x-circle"></i>
+                                                            </button>
+                                                        </form>
+                                                    @else
+                                                        <strong>{{ $comment->applicant->personal_info->first_name ?? 'Unknown' }}
+                                                            {{ $comment->applicant->personal_info->last_name ?? 'Anonymous' }}:</strong>
+                                                        {{ $comment->comment }}
+                                                    @endif
+
+                                                    {{-- Reply button (always visible like FB) --}}
+                                                    <div class="mt-1">
+                                                        <button class="btn btn-sm btn-link text-primary p-0"
+                                                            onclick="toggleReplyForm({{ $comment->id }})">
+                                                            Reply
+                                                        </button>
+                                                    </div>
+
+                                                    {{-- Hidden reply form --}}
+                                                    <div id="reply-form-{{ $comment->id }}" class="mt-2 d-none">
+                                                        <form action="" method="POST">
+                                                            @csrf
+                                                            <textarea name="reply" class="form-control mb-2" rows="2" placeholder="Write a reply..."></textarea>
+                                                            <button type="submit" class="btn btn-sm btn-success">
+                                                                <i class="bi bi-send"></i> Reply
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+
+                                        <script>
+                                            function toggleReplyForm(commentId) {
+                                                let form = document.getElementById('reply-form-' + commentId);
+                                                form.classList.toggle('d-none');
+                                            }
+                                        </script>
+
+
                                     </div>
                                 </div>
-                            </div>
-                        @endforeach
+                            @endforeach
+
+                        </div>
 
 
 

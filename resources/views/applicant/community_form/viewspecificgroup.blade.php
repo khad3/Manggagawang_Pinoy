@@ -81,6 +81,24 @@
     <div class="container py-5">
 
         <!-- Group Banner -->
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show mt-3" role="alert" id="success-alert">
+                <center>{{ session('success') }}</center>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <script>
+                // Hide the alert after 5 seconds (5000 ms)
+                setTimeout(() => {
+                    let alert = document.getElementById('success-alert');
+                    if (alert) {
+                        alert.classList.remove('show'); // fade out
+                        alert.classList.add('fade'); // keep bootstrap fade animation
+                        setTimeout(() => alert.remove(), 500); // remove from DOM after fade
+                    }
+                }, 2000); // change to 2000 for 2 seconds
+            </script>
+        @endif
         <div class="group-banner">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
@@ -168,14 +186,15 @@
 
                         <h5 class="mb-1">{{ $post->title }}</h5>
                         <p class="text-muted mb-0">
-                            Posted by {{ $post->personalInfo->first_name ?? 'Unknown' }}
-                            {{ $post->personalInfo->last_name ?? '' }} •
+                            Posted by {{ $post->decryptedAuthor['first_name'] ?? 'Unknown' }}
+                            {{ $post->decryptedAuthor['last_name'] ?? '' }} •
                             {{ \Carbon\Carbon::parse($post->created_at)->diffForHumans() }}
                         </p>
                         <p class="mt-2">{{ $post->content }}</p>
 
                         @if ($post->image_path)
-                            <img src="{{ Storage::url($post->image_path) }}" alt="Post Image" class="img-fluid mt-2">
+                            <img src="{{ Storage::url($post->image_path) }}" alt="Post Image"
+                                class="img-fluid mt-2">
                         @endif
 
 
@@ -300,12 +319,52 @@
                 @endforeach
             </div>
 
-            <!-- Pending Members Tab -->
+            <!-- 🕒 Pending Members Tab -->
             @if ($group->applicant_id == $applicantId)
                 <div class="tab-pane fade" id="pending" role="tabpanel">
-                    <div class="alert alert-secondary">Pending member approval list goes here...</div>
+                    @if ($retrievedJoinRequests->isEmpty())
+                        <div class="alert alert-secondary text-center">No pending member requests.</div>
+                    @else
+                        @foreach ($retrievedJoinRequests as $joinRequest)
+                            <div
+                                class="d-flex justify-content-between align-items-center border p-3 rounded mb-2 member-item">
+                                <div>
+                                    <strong>
+                                        {{ $joinRequest->personal_info->first_name ?? 'Unknown' }}
+                                        {{ $joinRequest->personal_info->last_name ?? '' }}
+                                    </strong>
+                                    <p class="text-muted mb-0">Requested to join
+                                        {{ \Carbon\Carbon::parse($joinRequest->pivot->created_at)->diffForHumans() }}
+                                    </p>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <!-- ✅ Accept -->
+                                    <form
+                                        action="{{ route('applicant.forum.groupmembers.accept', ['groupId' => $group->id, 'applicantId' => $joinRequest->id]) }}"
+                                        method="POST">
+                                        @csrf
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            Accept
+                                        </button>
+                                    </form>
+
+                                    <!-- ❌ Reject -->
+                                    <form
+                                        action="{{ route('applicant.forum.groupmembers.reject', ['groupId' => $group->id, 'applicantId' => $joinRequest->id]) }}"
+                                        method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            Reject
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        @endforeach
+                    @endif
                 </div>
             @endif
+
         </div>
     </div>
 

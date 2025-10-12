@@ -91,6 +91,9 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
     // Group-specific posts/comments/likes
     Route::post('communityforum/view-specific-group/{groupId}', [CommunityForumController::class, 'AddPostGroupCommunity'])->name('applicant.forum.addpostgroupcommunity.store');
     Route::get('communityforum/view-specific-group/{id}', [CommunityForumController::class, 'ViewSpecificGroup'])->name('applicant.forum.joinedgroup.display');
+    // Accept or reject join requests
+    Route::post('communityforum/groupmembers/{groupId}/accept/{applicantId}', [CommunityForumController::class, 'AcceptJoinRequest'])->name('applicant.forum.groupmembers.accept');
+    Route::delete('communityforum/groupmembers/{groupId}/reject/{applicantId}', [CommunityForumController::class, 'RejectJoinRequest'])->name('applicant.forum.groupmembers.reject');
 
     Route::get('communityforum/view-group-creator', [CommunityForumController::class, 'ViewGroupByCreator'])->name('applicant.forum.viewgroupcreator.display');
     Route::delete('communityforum/{id}/view-group-creator', [CommunityForumController::class, 'DeleteGroupByCreator'])->name('applicant.forum.deletegroupcreator.delete');

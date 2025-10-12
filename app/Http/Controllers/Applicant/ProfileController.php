@@ -62,11 +62,41 @@ class ProfileController extends Controller
             ]
         ]:[];
 
-        $retrievedPosts = ApplicantPostModel::with('personalInfo' , 'workBackground' ,'likes' , 'comments')->where('applicant_id' , $applicantID)->get()->reverse();
+      $retrievedPosts = ApplicantPostModel::with('personalInfo', 'workBackground', 'likes', 'comments')
+    ->where('applicant_id', $applicantID)
+    ->get()
+    ->reverse();
+
+// Attach decrypted info to each post
+foreach ($retrievedPosts as $post) {
+    if ($post->personalInfo) {
+        $post->retrievedDecryptedProfile = [
+            'personal_info' => [
+                'first_name'   => $this->safeDecrypt($post->personalInfo->first_name),
+                'last_name'    => $this->safeDecrypt($post->personalInfo->last_name),
+                'gender'       => $this->safeDecrypt($post->personalInfo->gender),
+                'house_street' => $this->safeDecrypt($post->personalInfo->house_street),
+                'city'         => $this->safeDecrypt($post->personalInfo->city),
+                'province'     => $this->safeDecrypt($post->personalInfo->province),
+                'zipcode'      => $this->safeDecrypt($post->personalInfo->zipcode),
+                'barangay'     => $this->safeDecrypt($post->personalInfo->barangay),
+            ],
+        ];
+    } else {
+        $post->retrievedDecryptedProfile = null;
+    }
+}
         $retrievedPortfolio = ApplicantPortfolioModel::with('personalInfo' , 'workExperience')->where('applicant_id' , $applicantID)->get()->reverse();
         $retrievedYoutube = ApplicantUrlModel::with('personalInfo' , 'workExperience')->where('applicant_id' , $applicantID)->get()->reverse();
         $retrievedTesdaCertifacation = TesdaCertification::where('applicant_id' , $applicantID)->get()->reverse();
-        return view('applicant.profile.profile' , compact('retrievedProfile' , 'retrievedPosts' , 'retrievedPortfolio' , 'retrievedYoutube' , 'retrievedTesdaCertifacation' , 'retrievedDecrytedProfile'));
+return view('applicant.profile.profile', compact(
+    'retrievedProfile',
+    'retrievedPosts',
+    'retrievedPortfolio',
+    'retrievedYoutube',
+    'retrievedTesdaCertifacation',
+    'retrievedDecrytedProfile',
+))->with('success', 'Your post has been successfully published.');
     }
 
     //add cover photo
@@ -299,10 +329,31 @@ class ProfileController extends Controller
 
    
         // Load target applicant's posts
-        $retrievedPosts = ApplicantPostModel::with(['personalInfo', 'workBackground', 'likes', 'comments.applicant.personal_info'])
-            ->where('applicant_id', $targetApplicantId)
-            ->latest()
-            ->get();
+      // Load target applicant's posts
+$retrievedPosts = ApplicantPostModel::with(['personalInfo', 'workBackground', 'likes', 'comments.applicant.personal_info'])
+    ->where('applicant_id', $targetApplicantId)
+    ->latest()
+    ->get();
+
+// Attach decrypted profile to each post
+foreach ($retrievedPosts as $post) {
+    if ($post->personalInfo) {
+        $post->retrievedDecryptedProfile = [
+            'personal_info' => [
+                'first_name'   => $this->safeDecrypt($post->personalInfo->first_name),
+                'last_name'    => $this->safeDecrypt($post->personalInfo->last_name),
+                'gender'       => $this->safeDecrypt($post->personalInfo->gender),
+                'house_street' => $this->safeDecrypt($post->personalInfo->house_street),
+                'city'         => $this->safeDecrypt($post->personalInfo->city),
+                'province'     => $this->safeDecrypt($post->personalInfo->province),
+                'zipcode'      => $this->safeDecrypt($post->personalInfo->zipcode),
+                'barangay'     => $this->safeDecrypt($post->personalInfo->barangay),
+            ],
+        ];
+    } else {
+        $post->retrievedDecryptedProfile = null;
+    }
+}
 
         $retrievedPortfolio = ApplicantPortfolioModel::with('personalInfo', 'workExperience')
             ->where('applicant_id', $id)->latest()->get();
@@ -330,7 +381,7 @@ class ProfileController extends Controller
         ->latest()
         ->get();
 
-        return view('applicant.homepage.getprofile.getprofile', compact('retrievedProfile', 'retrievedPosts', 'retrievedPortfolio','retrievedYoutube', 'tesdaCertification','currentApplicantId' , 'retrievedDecryptedProfile'));
+        return view('applicant.homepage.getprofile.getprofile', compact('retrievedProfile', 'retrievedPosts', 'retrievedPortfolio','retrievedYoutube', 'tesdaCertification','currentApplicantId' , 'retrievedDecryptedProfile'))->with('success', 'Your post has been successfully posted.');
     }
 
 

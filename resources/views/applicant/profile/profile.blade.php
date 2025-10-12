@@ -948,10 +948,13 @@
                                         </div>
                                         <div>
                                             <div class="post-author fw-bold">
-                                                {{ $post->personalInfo->first_name ?? 'Unknown' }}
-                                                {{ $post->personalInfo->last_name ?? '' }}</div>
+                                                {{ $post->retrievedDecryptedProfile['personal_info']['first_name'] ?? 'Unknown' }}
+                                                {{ $post->retrievedDecryptedProfile['personal_info']['last_name'] ?? '' }}
+                                            </div>
                                             <div class="post-time text-muted small">
-                                                {{ $post->created_at->diffForHumans() }}</div>
+                                                {{ optional($post->created_at)->diffForHumans() ?? 'N/A' }}
+                                            </div>
+
                                         </div>
                                     </div>
 
