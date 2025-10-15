@@ -10,6 +10,22 @@
     <link rel="stylesheet" href="{{ asset('css/applicant/login.css') }}">
     <link rel="stylesheet" href="{{ asset('css/applicant/landingpage/landingpage.css') }}">
 
+    <style>
+        .forgot-password {
+            font-size: 0.875rem;
+        }
+
+        .forgot-password a {
+            color: #007bff;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+    </style>
+
 </head>
 
 <body class="section1">
@@ -52,16 +68,22 @@
                     @error('password')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
+                    <!-- Forgot Password Link -->
+                    <div class="forgot-password text-end mt-1">
+                        <a href="{{ route('applicant.forgotpassword.display') }}">Forgot Password?</a>
+                    </div>
                 </div>
 
                 <button type="submit" class="sign-in-b login-btn w-100">Login</button>
-                <div class="form-text">Don't have an account? <a href="{{ route('applicant.register.display') }}">
-                        Register</a></div>
+                <div class="form-text">Don't have an account? <a
+                        href="{{ route('applicant.register.display') }}">Register</a></div>
             </form>
+
             <div class="divider"></div>
             <div class="login-alt-label"><strong>Sign in as employer</strong></div>
             <button class="sign-in-b employer-btn">Sign in as Employer</button>
         </div>
+
         <div class="login-right">
             <div class="centered-portrait">
                 <img src="https://png.pngtree.com/png-clipart/20250518/original/pngtree-construction-worker-standing-on-transparent-background-png-image_21018565.png"
@@ -69,6 +91,7 @@
             </div>
         </div>
     </div>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

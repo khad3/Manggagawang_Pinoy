@@ -965,34 +965,36 @@
         // Search and filter functionality for applicants
         const searchInput = document.getElementById('searchApplicants');
         const positionFilter = document.getElementById('positionFilter');
+        const certificationFilter = document.getElementById('certificationFilter');
         const applicantRows = document.querySelectorAll('#applicantsTable tbody tr');
 
         function filterApplicants() {
-            const searchValue = searchInput ? searchInput.value.toLowerCase() : '';
-            const selectedPosition = positionFilter ? positionFilter.value : '';
+            const searchValue = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const selectedPosition = positionFilter ? positionFilter.value.toLowerCase().trim() : '';
+            const certificationValue = certificationFilter ? certificationFilter.value.toLowerCase().trim() : '';
 
             applicantRows.forEach(row => {
                 const nameCell = row.querySelector('.applicant-details h6');
                 const positionCell = row.querySelector('td:nth-child(3) strong');
                 const locationCell = row.querySelector('td:nth-child(3) small');
 
-                const name = nameCell ? nameCell.textContent.toLowerCase() : '';
-                const position = positionCell ? positionCell.textContent.trim() : '';
-                const location = locationCell ? locationCell.textContent.toLowerCase() : '';
+                const name = nameCell ? nameCell.textContent.toLowerCase().trim() : '';
+                const position = positionCell ? positionCell.textContent.toLowerCase().trim() : '';
+                const location = locationCell ? locationCell.textContent.toLowerCase().trim() : '';
+                const certificationsText = (row.dataset.certifications || '').toLowerCase().trim();
 
-                const matchesSearch = name.includes(searchValue) || location.includes(searchValue);
-                const matchesPosition = !selectedPosition || position === selectedPosition;
+                const matchesSearch = !searchValue || name.includes(searchValue) || location.includes(searchValue);
+                const matchesPosition = !selectedPosition || position.includes(selectedPosition);
+                const matchesCertification = !certificationValue || certificationsText.includes(certificationValue);
 
-                row.style.display = (matchesSearch && matchesPosition) ? '' : 'none';
+                row.style.display = (matchesSearch && matchesPosition && matchesCertification) ? '' : 'none';
             });
         }
 
-        if (searchInput) {
-            searchInput.addEventListener('input', filterApplicants);
-        }
-        if (positionFilter) {
-            positionFilter.addEventListener('change', filterApplicants);
-        }
+        if (searchInput) searchInput.addEventListener('input', filterApplicants);
+        if (positionFilter) positionFilter.addEventListener('change', filterApplicants);
+        if (certificationFilter) certificationFilter.addEventListener('change', filterApplicants);
+
 
         // Close sidebar when clicking outside on mobile
         document.addEventListener('click', (e) => {

@@ -45,6 +45,168 @@ class ApplicantController extends Controller
 {
 
 
+    //Forgotpassword
+    public function forgotPassword(){
+        return view('applicant.forgotpassword.forgot_password');
+    }
+
+
+
+    public function forgotPasswordStore(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+    ]);
+
+    $user = RegisterModel::where('email', $request->email)->first();
+
+    if (!$user) {
+        return back()->withErrors([
+            'email' => 'No account found with this email address.'
+        ])->withInput()->with('step', 1);
+    }
+
+    // Generate a new code and set expiration
+    $newCode = mt_rand(100000, 999999);
+    $expiration = Carbon::now()->addMinutes(10);
+
+    $user->update([
+        'verification_code' => $newCode,
+        'email_verification_code_expires_at' => $expiration,
+    ]);
+
+    // Send verification code to email
+    Mail::to($user->email)->send(new VerifyEmail($newCode));
+
+    // Store email in session for later steps - FIXED: consistent key name
+    session()->put('email', $user->email);
+
+    // Return with only verification code for debugging (remove in production)
+    return back()
+        ->with('success', 'A verification code has been sent to your email address.')
+        ->with('step', 2)
+        ->with('code', $newCode); // 👈 show only the code in session (for testing)
+}
+
+
+//verify the email codes for forgot password
+public function verifyCode(Request $request)
+{
+    $request->validate([
+        'verification_code' => 'required|numeric|digits:6',
+    ]);
+
+    // FIXED: Use 'email' instead of 'forgot_email' to match forgotPasswordStore
+    $email = session('email');
+    if (!$email) {
+        return back()->withErrors(['verification_code' => 'Session expired. Please try again.'])->with('step', 1);
+    }
+
+    $user = RegisterModel::where('email', $email)
+        ->where('verification_code', $request->verification_code)
+        ->first();
+
+    if (!$user) {
+        return back()->withErrors(['verification_code' => 'Invalid verification code.'])->with('step', 2);
+    }
+
+    if ($user->email_verification_code_expires_at && $user->email_verification_code_expires_at < now()) {
+        return back()->withErrors(['verification_code' => 'Verification code has expired.'])->with('step', 2);
+    }
+
+    // FIXED: Don't mark as verified here, only after password reset
+    // Don't clear the verification code yet, we need it for the reset step
+    
+    // Keep email in session for password reset
+    session()->put('email', $email);
+    session()->put('code_verified', true); // Add verification flag
+
+    return back()->with('success', 'Email verified successfully.')
+                 ->with('step', 3);
+}
+
+/**
+ * Step 3: Reset Password
+ */
+public function resetPassword(Request $request)
+{
+    // ✅ Get stored email from session
+    $email = session('email');
+
+    if (!$email) {
+        return back()
+            ->withErrors(['email' => 'Your session has expired. Please request a new password reset.'])
+            ->with('step', 1);
+    }
+
+    // ✅ Check if code was verified
+    if (!session('code_verified')) {
+        return back()
+            ->withErrors(['verification_code' => 'Please verify your email first.'])
+            ->with('step', 2);
+    }
+
+    // ✅ Validate new password
+    $request->validate([
+        'password' => [
+            'required',
+            'string',
+            'min:8',               // At least 8 characters
+            'regex:/[a-z]/',       // Must contain lowercase
+            'regex:/[A-Z]/',       // Must contain uppercase
+            'regex:/[0-9]/',       // Must contain digits
+        ],
+        'password_confirmation' => 'required|same:password',
+    ], [
+        'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, and one number.',
+        'password.min'   => 'Password must be at least 8 characters long.',
+    ]);
+
+    // ✅ Find the user
+    $user = RegisterModel::where('email', $email)->first();
+
+    if (!$user) {
+        return back()
+            ->withErrors(['email' => 'No account found with this email address.'])
+            ->with('step', 1);
+    }
+
+    // ✅ Prevent using the same password
+    if (Hash::check($request->password, $user->password)) {
+        return back()
+            ->withErrors(['password' => 'Your new password must be different from your current password.'])
+            ->with('step', 3)
+            ->with('email', $email); // Keep email in session
+    }
+
+    // ✅ Update the password securely
+    $user->update([
+        'password' => Hash::make($request->password),
+        'verification_code' => null, // Clear the code
+        'email_verification_code_expires_at' => null,
+    ]);
+
+    // ✅ Mark as verified
+    $user->is_verified = 1;
+    $user->save();
+
+    // ✅ Clear the session after successful reset
+    session()->forget('email');
+    session()->forget('step');
+    session()->forget('code_verified');
+
+    // FIXED: Use redirect with success message
+    return redirect()->route('applicant.login.display')
+        ->with('password_reset_success', true)
+        ->with('success', 'Your password has been reset successfully. You may now log in.');
+}
+
+
+
+
+
+
+
     //index
     public function index(){
         return view('landingpage.index');

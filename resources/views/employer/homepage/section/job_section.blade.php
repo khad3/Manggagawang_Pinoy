@@ -159,7 +159,7 @@
                                <small>Shortlisted</small>
                            </div>
                            <div class="job-stat">
-                               <strong>3</strong>
+                               <strong>{{ $retrievedApplicantApproved }}</strong>
                                <small>Hired</small>
                            </div>
                        </div>
@@ -310,6 +310,7 @@
                                                                        class="mb-1 fw-bold text-truncate text-balanced-dark">
                                                                        {{ $application->applicant->personal_info->first_name ?? 'No name' }}
                                                                        {{ $application->applicant->personal_info->last_name ?? '' }}
+
                                                                    </h6>
                                                                    <div class="text-balanced-muted small">
                                                                        <div class="mb-1">

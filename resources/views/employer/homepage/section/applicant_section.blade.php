@@ -57,6 +57,7 @@
                      <input type="text" class="form-control" placeholder="Search by name or location..."
                          id="searchApplicants">
                  </div>
+                 <!--- Filter position ---->
                  <select class="form-select" id="positionFilter" style="width: auto;">
                      <option value="">Filter by Position</option>
                      @if (isset($retrievedApplicants))
@@ -65,6 +66,17 @@
                          @endforeach
                      @endif
                  </select>
+
+                 <!-- Filter by certification -->
+                 <select class="form-select" id="certificationFilter" style="width: auto;">
+                     <option value="">Filter by Certification</option>
+                     @if (isset($retrievedCertifications))
+                         @foreach ($retrievedCertifications as $certification)
+                             <option value="{{ $certification }}">{{ $certification }}</option>
+                         @endforeach
+                     @endif
+                 </select>
+
              </div>
          </div>
 
@@ -83,7 +95,8 @@
                  <tbody>
                      @if (isset($retrievedApplicants))
                          @foreach ($retrievedApplicants as $applicant)
-                             <tr>
+                             <tr
+                                 data-certifications="{{ implode(',', $applicant->certifications->pluck('certification_program')->toArray()) }}">
                                  <td><input type="checkbox" class="form-check-input"></td>
                                  <td>
                                      <div class="applicant-info">
@@ -138,18 +151,27 @@
 
 
                                  <td>
-                                     <a href="{{ route('employer.applicantsprofile.display', $applicant->id) }}"
-                                         class="action-btn primary" title="View Profile">
-                                         <i class="fas fa-eye"></i>
-                                     </a>
+                                     @if ($applicant->personal_info)
+                                         <a href="{{ route('employer.applicantsprofile.display', $applicant->id) }}"
+                                             class="action-btn primary" title="View Profile">
+                                             <i class="fas fa-eye"></i>
+                                         </a>
+                                     @else
+                                         <a href="{{ route('display.notfound') }}" class="action-btn secondary"
+                                             title="Profile Not Found">
+                                             <i class="fa-solid fa-triangle-exclamation text-danger"></i>
+                                         </a>
+                                     @endif
 
 
+                                     {{-- 
                                      <button class="action-btn success" title="Approve">
                                          <i class="fas fa-check"></i>
                                      </button>
                                      <button class="action-btn danger" title="Reject">
                                          <i class="fas fa-times"></i>
-                                     </button>
+                                     </button> --}}
+
                                      <button class="action-btn message-btn" title="Message"
                                          data-applicant-id="{{ $applicant->id }}"
                                          data-applicant-name="{{ $applicant->personal_info->first_name ?? '' }} {{ $applicant->personal_info->last_name ?? '' }}"

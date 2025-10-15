@@ -27,6 +27,7 @@ use App\Models\Applicant\ApplicantUrlModel as ApplicantUrlModel;
 use App\Models\Applicant\ApplicantPostModel as ApplicantPostModel;
 
 use App\Mail\Employer\VerifyEmail as EmployerVerificationMail;
+use App\Models\Applicant\TesdaUploadCertificationModel as Certification;
 use App\Models\Applicant\ApplyJobModel;
 use App\Models\Applicant\RegisterModel;
 use Illuminate\Support\Facades\Mail;
@@ -494,7 +495,16 @@ public function ShowHomepage() {
 
 
     //retrieve the list of applicants
-  $retrievedApplicants = RegisterModel::with(['personal_info', 'work_background'])->paginate(10);
+  $retrievedApplicants = RegisterModel::with(['personal_info', 'work_background', 'certifications'])->paginate(10);
+
+  //Check status if employed or unemployed
+  foreach ($retrievedApplicants as $applicant) {
+    if ($applicant->work_background && $applicant->work_background->employed === 'Yes') {
+        $applicant->employment_status = 'Employed';
+    } else {
+        $applicant->employment_status = 'Unemployed';
+    }
+}
 
 foreach ($retrievedApplicants as $applicant) {
     // Decrypt personal info
@@ -553,8 +563,30 @@ foreach ($retrievedApplicants as $applicant) {
         return redirect()->route('employer.login.display');
     }
 
-    $JobPostRetrieved = JobDetails::with('employer' , 'interviewScreening' , 'workerRequirement' , 'specialRequirement' , 'applications.applicant')->where('employer_id', $employerId)->get()->sortDesc();
+    $JobPostRetrieved = JobDetails::with('employer' , 'interviewScreening' , 'workerRequirement' , 'specialRequirement' , 'applications.applicant.personal_info')->where('employer_id', $employerId)->get()->sortDesc();
 
+    //Decrpyted
+    foreach ($JobPostRetrieved as $job) {
+        foreach ($job->applications as $application) {
+            if ($application->applicant && $application->applicant->personal_info) {
+                $personalInfo = $application->applicant->personal_info;
+
+                // Decrypt and clean first name
+                if ($personalInfo->first_name) {
+                    $personalInfo->first_name = $this->cleanDecryptedString(
+                        $this->decryptMessage($personalInfo->first_name)
+                    );
+                }
+
+                // Decrypt and clean last name
+                if ($personalInfo->last_name) {
+                    $personalInfo->last_name = $this->cleanDecryptedString(
+                      $this->decryptMessage($personalInfo->last_name)
+                    );
+                }
+            }
+        }
+    }
 
     //Rating
      //Rating
@@ -600,14 +632,30 @@ $retrieveMessages = SendMessage::with(['applicant.personal_info', 'employer'])
 
 
 
+  $applicantIds = RegisterModel::pluck('id');
+
+$retrievedCertifications = Certification::whereIn('applicant_id', $applicantIds)
+    ->where('status', 'approved') 
+    ->pluck('certification_program') 
+    ->unique();
+
+
     return view('employer.homepage.homepage' , compact(
         'retrievePersonal' , 
     'retrievedApplicants' ,
-    
+    'retrievedCertifications',
                 'JobPostRetrieved' , 
                 'retrievedApplicantApproved',
                 'retrieveMessages'));
 
+}
+
+function safe_unserialize($value) {
+    // Check if the value is a serialized string
+    if (is_string($value) && preg_match('/^s:\d+:"/', $value)) {
+        return @unserialize($value);
+    }
+    return $value; // return as is if not serialized
 }
 
 

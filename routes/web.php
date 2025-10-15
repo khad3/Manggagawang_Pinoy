@@ -27,6 +27,8 @@ Route::get('terms-and-conditions', [TermAnfConditionController::class, 'termsand
 Route::get('privacy-policy', [TermAnfConditionController::class, 'privacypolicy'])->name('display.privacypolicy');
 Route::get('data-sharing', [TermAnfConditionController::class, 'dataSharing'])->name('display.datasharing');
 
+//Not found page
+Route::get('not-found', [TermAnfConditionController::class, 'notFound'])->name('display.notfound');
 //Index
 Route::get('/index', [ApplicantController::class, 'index'])->name('display.index');
 
@@ -54,6 +56,12 @@ Route::prefix('applicant')->group(function () {
 
     Route::get('login', [ApplicantController::class, 'ShowLoginForm'])->name('applicant.login.display');
     Route::post('login', [ApplicantController::class, 'Login'])->name('applicant.login.store');
+
+    //Forgotpassword
+    Route::get('forgot-password', [ApplicantController::class, 'forgotPassword'])->name('applicant.forgotpassword.display');
+    Route::post('forgot-password', [ApplicantController::class, 'forgotPasswordStore'])->name('applicant.forgotpassword.store');
+    Route::post('verify-code', [ApplicantController::class, 'verifyCode'])->name('applicant.verifycode.store');
+    Route::post('reset-password', [ApplicantController::class, 'resetPassword'])->name('applicant.resetpassword.store');
 });
 
 //  Protected routes 

@@ -84,5 +84,9 @@ public function messages()
 }
 
 
+public function certifications()
+{
+    return $this->hasMany(TesdaUploadCertificationModel::class, 'applicant_id');
+}
 
 }

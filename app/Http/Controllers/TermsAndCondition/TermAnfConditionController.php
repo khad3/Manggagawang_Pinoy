@@ -21,4 +21,10 @@ class TermAnfConditionController extends Controller
         return view('terms&condition.data_sharing');
     }
 
+
+    //Not found page
+    public function notFound(){
+        return view('terms&condition.404');
+    }
+
 }
