@@ -695,16 +695,18 @@
                     </div>
                     <button id="sendCodeBtn" type="submit" class="btn b1"><span class="spinner"></span><span
                             class="t">Send Reset Code</span></button>
-                    <div class="back">
-                        <a href="{{ route('applicant.login.display') }}">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                style="width:16px;height:16px">
+                    <div class="back" style="display: flex; justify-content: center; margin-top: 15px;">
+                        <a href="{{ route('applicant.login.display') }}"
+                            style="color: #000; text-decoration: none; display: flex; align-items: center; gap: 6px;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#000" style="width:16px;height:16px;">
                                 <line x1="19" y1="12" x2="5" y2="12"></line>
                                 <polyline points="12,19 5,12 12,5"></polyline>
                             </svg>
                             Back to Login
                         </a>
                     </div>
+
+
                 </form>
 
                 <form id="verificationForm" action="{{ route('applicant.verifycode.store') }}" method="POST"

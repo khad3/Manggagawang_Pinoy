@@ -57,11 +57,14 @@ Route::prefix('applicant')->group(function () {
     Route::get('login', [ApplicantController::class, 'ShowLoginForm'])->name('applicant.login.display');
     Route::post('login', [ApplicantController::class, 'Login'])->name('applicant.login.store');
 
-    //Forgotpassword
+    //Forgotpassword applicant
     Route::get('forgot-password', [ApplicantController::class, 'forgotPassword'])->name('applicant.forgotpassword.display');
     Route::post('forgot-password', [ApplicantController::class, 'forgotPasswordStore'])->name('applicant.forgotpassword.store');
     Route::post('verify-code', [ApplicantController::class, 'verifyCode'])->name('applicant.verifycode.store');
     Route::post('reset-password', [ApplicantController::class, 'resetPassword'])->name('applicant.resetpassword.store');
+
+
+   
 });
 
 //  Protected routes 
@@ -205,6 +208,13 @@ Route::group(['prefix' => 'employer'], function () {
     //Display the login form
     Route::get('login', [EmployerController::class, 'ShowLoginForm'])->name('employer.login.display');
     Route::post('login', [EmployerController::class, 'login'])->name('employer.login.store');
+
+
+     //Forgot password employer
+    Route::get('forgot-password', [EmployerController::class, 'forgotPassword'])->name('employer.forgotpassword.display');
+    Route::post('forgot-password', [EmployerController::class, 'forgotPasswordStore'])->name('employer.forgotpassword.store');
+    Route::post('verify-code', [EmployerController::class, 'verifyCode'])->name('employer.verifycode.store');
+    Route::post('reset-password', [EmployerController::class, 'resetPassword'])->name('employer.resetpassword.store');
 
 });
 

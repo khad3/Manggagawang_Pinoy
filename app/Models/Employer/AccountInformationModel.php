@@ -18,6 +18,7 @@ class AccountInformationModel extends Model
         'email_verified_at',
         'verification_token ',
         'status',
+        'verification_code',
 
     ];
 
