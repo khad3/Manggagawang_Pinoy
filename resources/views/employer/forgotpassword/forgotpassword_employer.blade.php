@@ -667,7 +667,7 @@
                     </div>
                 </div>
 
-                <form id="emailForm" action="{{ route('applicant.forgotpassword.store') }}" method="POST"
+                <form id="emailForm" action="{{ route('employer.forgotpassword.store') }}" method="POST"
                     class="form-section {{ $step === 1 ? 'active' : '' }}">
                     @csrf
                     <div class="group">
@@ -696,7 +696,7 @@
                     <button id="sendCodeBtn" type="submit" class="btn b1"><span class="spinner"></span><span
                             class="t">Send Reset Code</span></button>
                     <div class="back" style="display: flex; justify-content: center; margin-top: 15px;">
-                        <a href="{{ route('applicant.login.display') }}"
+                        <a href="{{ route('employer.login.display') }}"
                             style="color: #000; text-decoration: none; display: flex; align-items: center; gap: 6px;">
                             <svg viewBox="0 0 24 24" fill="none" stroke="#000" style="width:16px;height:16px;">
                                 <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -709,7 +709,7 @@
 
                 </form>
 
-                <form id="verificationForm" action="{{ route('applicant.verifycode.store') }}" method="POST"
+                <form id="verificationForm" action="{{ route('employer.verifycode.store') }}" method="POST"
                     class="form-section {{ $step === 2 ? 'active' : '' }}">
                     @csrf
                     <div class="alert a-info">
@@ -766,7 +766,7 @@
                     </div>
                 </form>
 
-                <form action="{{ route('applicant.resetpassword.store') }}" method="POST"
+                <form action="{{ route('employer.resetpassword.store') }}" method="POST"
                     class="form-section {{ $step === 3 ? 'active' : '' }}">
                     @csrf
                     <div class="group">
@@ -846,7 +846,7 @@
                             </h2>
                             <p style="color:var(--muted);margin-bottom:16px">You can now login with your new password.
                             </p>
-                            <a href="{{ route('applicant.login.display') }}" class="btn b1"
+                            <a href="{{ route('employer.login.display') }}" class="btn b1"
                                 style="text-decoration:none">Go to Login</a>
                         </div>
                     @endif
