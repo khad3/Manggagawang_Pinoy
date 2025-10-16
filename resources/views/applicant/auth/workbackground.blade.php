@@ -12,50 +12,135 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="{{ asset('css/applicant/landingpage/landingpage.css') }}">
     <link rel="stylesheet" href="{{ asset('css/applicant/workbackground.css') }}">
 </head>
 
 <body>
-    <!-- Work Background Container -->
-    <div class="work-container">
-        <!-- Progress Bar -->
-        <div class="progress-container">
-            <div class="progress-steps">
-                <div class="progress-line">
-                    <div class="progress-line-fill"></div>
-                </div>
-                <div class="step completed" data-step="1">
-                    <i class="bi bi-check"></i>
-                </div>
-                <div class="step completed" data-step="2">
-                    <i class="bi bi-check"></i>
-                </div>
-                <div class="step completed" data-step="3">
-                    <i class="bi bi-check"></i>
-                </div>
-                <div class="step active" data-step="4">4</div>
-                <div class="step pending" data-step="5">5</div>
+<nav>
+        <div class="navbar-container">
+            <div class="nav-logo d-flex align-items-center">
+                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2" style="text-decoration:none;">
+                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home"/>
+                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2"/>
+                </a>
             </div>
-            <div class="step-labels">
-                <span class="step-label completed">Account</span>
-                <span class="step-label completed">Verify</span>
-                <span class="step-label completed">Personal</span>
-                <span class="step-label active">Work</span>
-                <span class="step-label">Profile</span>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#">Services</a></li>
+                <li><a href="{{ route('display.topworker') }}">Top Workers</a></li>
+                <li><a href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
+                <li><a href="{{ route('display.aboutus') }}">About Us</a></li>
+                <li><button class="sign-in-b">Sign in</button></li>
+
+                <!-- Sign Up Dropdown -->
+                <li class="dropdown">
+                    <button class="sign-up-b">Sign up ▾</button>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ route('applicant.register.display') }}">As Applicant</a></li>
+                        <li><a href="{{ route('employer.register.display') }}">As Employer</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+
+            <div class="hamburger" id="hamburger">
+                <div></div>
+                <div></div>
+                <div></div>
             </div>
         </div>
+    </nav>
+    <!-- Loader -->
+    <div id="loader-wrapper">
+        <div id="loader-content">
+            <div
+                style="width: 80px; height: 80px; background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.4)); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 24px; font-weight: 700; color: white;">
+                <img src="{{ asset('img/logo.png') }}" alt="Logo" style="max-width: 100px;">
+            </div>
+            <div id="loader"></div>
+            <div id="loader-text">Please wait...</div>
+        </div>
+    </div>
 
-        <!-- Form Content -->
-        <div class="form-content">
-            <!-- Header -->
-            <div class="form-header">
-                <div class="form-icon">
-                    <i class="bi bi-briefcase" style="font-size: 28px; color: white;"></i>
+<!-- Step Content -->
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card form-card" style="margin-top:100px;">
+            <div class="card-header bg-white border-0 py-4">
+                <div class="container">
+
+                    <!-- Header -->
+                    <div class="text-center mb-5">
+                        <h1 class="display-4 fw-bold text-dark mb-3">Worker Registration</h1>
+                        <p class="lead text-muted">Showcase your TESDA-certified skills and connect with employers who value your expertise.</p>
+                    </div>
+
+                    <!-- Progress Stepper -->
+                    <div class="row justify-content-center mb-5">
+                        <div class="col-lg-10">
+                            <div class="d-flex align-items-center justify-content-between">
+
+                                <!-- Step 1 -->
+                                <div class="text-center">
+                                    <div class="step-indicator step-completed" id="step1">1</div>
+                                    <div class="mt-2">
+                                        <small class="fw-semibold text-muted">Account</small>
+                                        <br><small class="text-muted d-none d-sm-block">Account setup</small>
+                                    </div>
+                                </div>
+                                <div class="step-line step-line-completed" id="line2"></div>
+
+                                <!-- Step 2 -->
+                                <div class="text-center">
+                                    <div class="step-indicator step-completed" id="step2">2</div>
+                                    <div class="mt-2">
+                                        <small class="fw-semibold text-muted">Verify</small>
+                                        <br><small class="text-muted d-none d-sm-block">Verification</small>
+                                    </div>
+                                </div>
+                                <div class="step-line step-line-completed" id="line3"></div>
+
+                                <!-- Step 3 -->
+                                <div class="text-center">
+                                    <div class="step-indicator step-completed" id="step3">3</div>
+                                    <div class="mt-2">
+                                        <small class="fw-semibold text-muted">Personal</small>
+                                        <br><small class="text-muted d-none d-sm-block">Personal info</small>
+                                    </div>
+                                </div>
+                                <div class="step-line step-line-completed" id="line4"></div>
+
+                                <!-- Step 4 -->
+                                <div class="text-center">
+                                    <div class="step-indicator step-active" id="step4">4</div>
+                                    <div class="mt-2">
+                                        <small class="fw-semibold text-dark">Work</small>
+                                        <br><small class="text-muted d-none d-sm-block">Work details</small>
+                                    </div>
+                                </div>
+                                <div class="step-line" id="line5"></div>
+
+                                <!-- Step 5 -->
+                                <div class="text-center">
+                                    <div class="step-indicator step-inactive" id="step5">5</div>
+                                    <div class="mt-2">
+                                        <small class="fw-semibold text-muted">Profile</small>
+                                        <br><small class="text-muted d-none d-sm-block">Build profile</small>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div> <!-- End Stepper -->
+
                 </div>
+            </div>
+        <!-- Form Content -->
+<div class="card-body p-4">
+
                 <h2 class="form-title">Work Background</h2>
                 <p class="form-subtitle">Tell us about your professional experience</p>
-            </div>
+
 
             <!-- Work Background Form -->
             <form action="{{ route('applicant.info.workbackground.store') }}" method="POST"
@@ -174,6 +259,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+               // Hide loader after page load
+        window.addEventListener("load", function() {
+            setTimeout(function() {
+                document.getElementById("loader-wrapper").style.display = "none";
+            }, 1500);
+        });
+
         // Toggle other position field
         function toggleOtherPosition() {
             const positionSelect = document.getElementById("position");
