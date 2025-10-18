@@ -85,7 +85,7 @@ class ApplicantController extends Controller
     return back()
         ->with('success', 'A verification code has been sent to your email address.')
         ->with('step', 2)
-        ->with('code', $newCode); // 👈 show only the code in session (for testing)
+        ->with('code', $newCode); //  show only the code in session (for testing)
 }
 
 
@@ -130,7 +130,7 @@ public function verifyCode(Request $request)
  */
 public function resetPassword(Request $request)
 {
-    // ✅ Get stored email from session
+    // Get stored email from session
     $email = session('email');
 
     if (!$email) {
@@ -139,14 +139,14 @@ public function resetPassword(Request $request)
             ->with('step', 1);
     }
 
-    // ✅ Check if code was verified
+    // Check if code was verified
     if (!session('code_verified')) {
         return back()
             ->withErrors(['verification_code' => 'Please verify your email first.'])
             ->with('step', 2);
     }
 
-    // ✅ Validate new password
+    // Validate new password
     $request->validate([
         'password' => [
             'required',
@@ -162,7 +162,7 @@ public function resetPassword(Request $request)
         'password.min'   => 'Password must be at least 8 characters long.',
     ]);
 
-    // ✅ Find the user
+    //  Find the user
     $user = RegisterModel::where('email', $email)->first();
 
     if (!$user) {
@@ -171,7 +171,7 @@ public function resetPassword(Request $request)
             ->with('step', 1);
     }
 
-    // ✅ Prevent using the same password
+    // Prevent using the same password
     if (Hash::check($request->password, $user->password)) {
         return back()
             ->withErrors(['password' => 'Your new password must be different from your current password.'])
@@ -179,18 +179,18 @@ public function resetPassword(Request $request)
             ->with('email', $email); // Keep email in session
     }
 
-    // ✅ Update the password securely
+    // Update the password securely
     $user->update([
         'password' => Hash::make($request->password),
         'verification_code' => null, // Clear the code
         'email_verification_code_expires_at' => null,
     ]);
 
-    // ✅ Mark as verified
+    //  Mark as verified
     $user->is_verified = 1;
     $user->save();
 
-    // ✅ Clear the session after successful reset
+    //  Clear the session after successful reset
     session()->forget('email');
     session()->forget('step');
     session()->forget('code_verified');

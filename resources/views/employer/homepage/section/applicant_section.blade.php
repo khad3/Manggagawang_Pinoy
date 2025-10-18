@@ -20,7 +20,7 @@
                  </div>
              </div>
          </div>
-         <div class="stat-card">
+         {{-- <div class="stat-card">
              <div class="stat-header">
                  <div>
                      <div class="stat-value">156</div>
@@ -30,11 +30,12 @@
                      <i class="fas fa-clock"></i>
                  </div>
              </div>
-         </div>
+         </div> --}}
          <div class="stat-card">
              <div class="stat-header">
                  <div>
-                     <div class="stat-value">89</div>
+                     <div class="stat-value">
+                         {{ isset($retrievedApplicantApproved) ? $retrievedApplicantApproved : '0' }}</div>
                      <div class="stat-label">Approved</div>
                  </div>
                  <div class="stat-icon success">

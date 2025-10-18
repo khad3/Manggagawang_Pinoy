@@ -149,20 +149,24 @@
                            @endif
                        </div>
 
-                       <div class="job-stats mt-3">
+                       <div class="job-stats mt-3 d-flex justify-content-center gap-4 text-center">
                            <div class="job-stat">
                                <strong>{{ $jobDetail->applications->count() }}</strong>
                                <small>Applications</small>
                            </div>
+                           {{-- <div class="job-stat">
+        <strong>12</strong>
+        <small>Shortlisted</small>
+    </div> --}}
                            <div class="job-stat">
-                               <strong>12</strong>
-                               <small>Shortlisted</small>
+                               @if (session('employer_id'))
+                                   <strong>{{ $totalApproved }}</strong>
+                                   <small>Hired</small>
+                               @endif
                            </div>
-                           <div class="job-stat">
-                               <strong>{{ $retrievedApplicantApproved }}</strong>
-                               <small>Hired</small>
-                           </div>
+
                        </div>
+
 
                        {{-- Button to open modal --}}
                        {{-- Button to open modal --}}

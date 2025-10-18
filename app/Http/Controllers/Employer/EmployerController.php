@@ -82,7 +82,7 @@ class EmployerController extends Controller
     return back()
         ->with('success', 'A verification code has been sent to your email address.')
         ->with('step', 2)
-        ->with('code', $newCode); // 👈 show only the code in session (for testing)
+        ->with('code', $newCode); // show only the code in session (for testing)
 }
 
 
@@ -136,14 +136,14 @@ public function resetPassword(Request $request)
             ->with('step', 1);
     }
 
-    // ✅ Check if code was verified
+    // Check if code was verified
     if (!session('code_verified')) {
         return back()
             ->withErrors(['verification_code' => 'Please verify your email first.'])
             ->with('step', 2);
     }
 
-    // ✅ Validate new password
+    // Validate new password
     $request->validate([
         'password' => [
             'required',
@@ -159,7 +159,7 @@ public function resetPassword(Request $request)
         'password.min'   => 'Password must be at least 8 characters long.',
     ]);
 
-    // ✅ Find the user
+    // Find the user
     $user = AccountInformation::where('email', $email)->first();
 
     if (!$user) {
@@ -168,7 +168,7 @@ public function resetPassword(Request $request)
             ->with('step', 1);
     }
 
-    // ✅ Prevent using the same password
+    // Prevent using the same password
     if (Hash::check($request->password, $user->password)) {
         return back()
             ->withErrors(['password' => 'Your new password must be different from your current password.'])
@@ -176,7 +176,7 @@ public function resetPassword(Request $request)
             ->with('email', $email); // Keep email in session
     }
 
-    // ✅ Update the password securely
+    //Update the password securely
     $user->update([
         'password' => Hash::make($request->password),
         'verification_code' => null, // Clear the code
@@ -186,7 +186,7 @@ public function resetPassword(Request $request)
   
     $user->save();
 
-    // ✅ Clear the session after successful reset
+    // Clear the session after successful reset
     session()->forget('email');
     session()->forget('step');
     session()->forget('code_verified');
@@ -799,14 +799,34 @@ $retrievedCertifications = Certification::whereIn('applicant_id', $applicantIds)
     ->pluck('certification_program') 
     ->unique();
 
+$employerId = session('employer_id'); // get employer_id from session
+
+$jobPosts = JobDetails::with('employer' , 'companyName')
+    ->where('employer_id', $employerId) // only jobs posted by this employer
+    ->withCount([
+        'applications as approved_count' => function ($query) {
+            $query->where('status', 'approved');
+        },
+        'applications as rejected_count' => function ($query) {
+            $query->where('status', 'rejected');
+        }
+    ])
+    ->get();
+
+    //Get the approved applicant count for each employer's job post
+   // ✅ Total approved applicants for all jobs of this employer
+$totalApproved = $jobPosts->sum('approved_count');
+
 
     return view('employer.homepage.homepage' , compact(
+        'jobPosts' ,
         'retrievePersonal' , 
     'retrievedApplicants' ,
     'retrievedCertifications',
                 'JobPostRetrieved' , 
                 'retrievedApplicantApproved',
-                'retrieveMessages'));
+                'retrieveMessages',
+                'totalApproved'));
 
 }
 

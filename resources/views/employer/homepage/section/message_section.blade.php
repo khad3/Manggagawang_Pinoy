@@ -175,6 +175,7 @@
     </div>
 </div>
 
+
 <script>
     const retrieveMessages = @json($retrieveMessages);
     const applicantsList = document.getElementById('applicantsList');
