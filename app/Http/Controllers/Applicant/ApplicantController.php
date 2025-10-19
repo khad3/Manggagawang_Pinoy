@@ -663,7 +663,7 @@ public function ShowHomepage()
     $publishedCounts = \App\Models\Employer\JobDetailModel::where('status_post', 'published')->count();
     $retrievedAddressCompany = \App\Models\Employer\CompanyAdressModel::get();
 
-    // ✅ Get applicant's saved jobs (job IDs only)
+    //  Get applicant's saved jobs (job IDs only)
     $savedJobIds = \DB::table('saved_job_table')
         ->where('applicant_id', $applicantId)
         ->pluck('job_id')
@@ -717,7 +717,7 @@ if ($suspendedApplicant && $suspension) {
     $endDate = $suspension->created_at->copy()->addDays($suspension->suspension_duration);
 
     if (now()->lt($endDate)) {
-        // ✅ Still suspended
+        // Still suspended
         $isSuspended = true;
 
         if ($suspendedApplicant->status !== 'suspended') {
@@ -725,7 +725,7 @@ if ($suspendedApplicant && $suspension) {
             $suspendedApplicant->save();
         }
     } else {
-        // ✅ Suspension expired
+        //  Suspension expired
         if ($suspendedApplicant->status !== 'active') {
             $suspendedApplicant->status = 'active';
             $suspendedApplicant->save();
@@ -752,10 +752,17 @@ $messages = EmployerSendMessage::with(['employer.addressCompany', 'employer.pers
     });
 
 
+    $reportedJobIds = \App\Models\Report\ReportModel::where('reporter_id', $applicantId)
+        ->where('reporter_type', 'applicant')
+        ->pluck('reported_id') // make sure reported_id is the job_id in your report table
+        ->toArray();
+
+
    
     return view('applicant.homepage.homepage', compact(
         'retrieveDataDecrypted',
         'retrievePersonal',
+        'reportedJobIds',
         'applicantCounts',
         'JobPostRetrieved',
         'publishedCounts',

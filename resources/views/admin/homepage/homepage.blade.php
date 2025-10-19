@@ -1129,6 +1129,10 @@
                                             <i class="bi bi-x-circle-fill text-danger" style="color:red;"></i>
                                         @elseif($log['action'] === 'post_announcement')
                                             <i class="bi bi-megaphone-fill" style="color:green"></i>
+                                        @elseif($log['action'] === 'report_job')
+                                            <i class="bi bi-flag-fill" style="color:darkred"></i>
+                                        @elseif($log['action'] === 'report_applicant')
+                                            <i class="bi bi-flag-fill" style="color:darkred"></i>
                                         @endif
                                     </div>
                                     <div class="activity-content">
@@ -1143,7 +1147,22 @@
                                         @endif
 
                                         <p>{!! $log['description'] !!}</p>
+
+                                        {{-- Display attachment as a button if exists --}}
+                                        @if (!empty($log['attachment']))
+                                            <div class="mt-2">
+                                                <strong>Attachment:</strong><br>
+                                                <a href="{{ $log['attachment'] }}" target="_blank"
+                                                    class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-eye me-1"></i> View Attachment
+                                                </a>
+                                            </div>
+                                        @endif
+
+
+
                                     </div>
+
 
                                     <div class="activity-time">
                                         {{ \Carbon\Carbon::parse($log['created_at'])->diffForHumans() }}
@@ -1289,15 +1308,26 @@
                                             </button>
                                             @if ($user['type'] === 'applicant')
                                                 <button type="button" class="action-btn btn-suspend"
-                                                    onclick="openSuspendModal({{ $user['data']->id }}, '{{ addslashes($user['data']->personal_info?->first_name ?? '') }}', 'applicant')">
+                                                    onclick="openSuspendModal(
+            {{ $user['data']->id }}, 
+            '{{ addslashes($user['data']->personal_info?->first_name ?? '') }}', 
+            'applicant',
+            {{ $user['reports_received'] ?? 0 }}
+        )">
                                                     <i class="fas fa-pause-circle"></i>
                                                 </button>
                                             @elseif ($user['type'] === 'employer')
                                                 <button type="button" class="action-btn btn-suspend"
-                                                    onclick="openSuspendModal({{ $user['data']->id }}, '{{ addslashes($user['data']->addressCompany?->company_name ?? '') }}', 'employer')">
+                                                    onclick="openSuspendModal(
+            {{ $user['data']->id }}, 
+            '{{ addslashes($user['data']->addressCompany?->company_name ?? '') }}', 
+            'employer',
+            {{ $user['reports_received'] ?? 0 }}
+        )">
                                                     <i class="fas fa-pause-circle"></i>
                                                 </button>
                                             @endif
+
                                             <!-- Ban User (smaller button like action-btn) -->
                                             @if ($user['data']->status === 'banned')
                                                 <!-- Unban Button -->
@@ -1513,12 +1543,15 @@
                         }
 
                         // Open suspend modal and set user ID
-                        function openSuspendModal(userId, userName = '', userType = '') {
+                        function openSuspendModal(userId, userName = '', userType = '', reportCount = 0) {
                             document.getElementById('suspendUserId').value = userId;
                             document.getElementById('suspendUserType').value = userType;
 
                             const infoDiv = document.getElementById('suspendUserInfo');
-                            infoDiv.innerHTML = userName ? `<p><strong>User:</strong> ${userName}</p>` : '';
+                            infoDiv.innerHTML = `
+        ${userName ? `<p><strong>User:</strong> ${userName}</p>` : ''}
+        <p><strong>Reports Received:</strong> ${reportCount}</p>
+    `;
 
                             openModal('suspendUserModals');
                         }
