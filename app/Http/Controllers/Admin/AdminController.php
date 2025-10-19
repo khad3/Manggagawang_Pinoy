@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Admin\AccountAdminModel as Admin;
 use App\Models\Admin\AddTesdaOfficerModel as AddTesdaOfficer;
 use App\Models\Applicant\TesdaUploadCertificationModel as TesdaCertification;
+use App\Models\Report\ReportModel;
 use Illuminate\Support\Str;
 use App\Models\Applicant\PostModel as Post;
 use App\Models\Admin\UserManagmentModel;
@@ -493,12 +494,137 @@ class AdminController extends Controller
                     ];
             });
 
+            $employerPostGotReports = ReportModel::with(['applicant.personal_info', 'job.employer.addressCompany'])
+            ->latest()
+            ->get()
+            ->map(function ($a) {
+                $applicant = $a->applicant;
+                $job = $a->job;
+                $employer = $job?->employer; // Employer who owns the job
+
+                // Map the reason to readable text
+                $reasonText = match($a->reason) {
+                    'fraudulent' => 'Fraudulent or Scam Job',
+                    'misleading' => 'Misleading Information',
+                    'discriminatory' => 'Discriminatory Content',
+                    'inappropriate' => 'Inappropriate Content',
+                    'other' => strip_tags(Str::limit($a->other_reason ?? 'Other', 100)),
+                    default => strip_tags(Str::limit($a->reason ?? 'Unknown', 100)),
+                };
+
+                // Prepare attachment URL if exists
+                $attachmentUrl = $a->attachment ? asset('storage/' . ltrim($a->attachment, '/')) : null;
+
+                return [
+                    'action' => 'report_job',
+                    'email' => $applicant?->email ?? 'Unknown Applicant',
+                    'author' => trim(($applicant?->personal_info?->first_name ?? '') . ' ' . ($applicant?->personal_info?->last_name ?? '')),
+                    'description' => '<strong>APPLICANT:</strong> ' . ($applicant?->email ?? 'Unknown Applicant') .
+                             ' has reported the job <strong>' . ($job?->title ?? 'Unknown Job') . '</strong>' .
+                             ' posted by <strong>' . ($employer?->addressCompany?->company_name ?? 'Unknown Company') . '</strong>' .
+                             ' (Email: ' . ($employer?->email ?? 'N/A') . ')' .
+                             ' for review. <br><strong>Reason:</strong> ' . $reasonText,
+                    'attachment' => $attachmentUrl,
+                    'created_at' => $a->created_at,
+                ];
+            });
+
+
+                // Map to include reports_received
+                $users = $users->map(function ($user) {
+
+                    if ($user['type'] === 'applicant') {
+                        // Applicant — direct reported_id
+                        $reportedId = $user['data']->id;
+
+                        $reportCount = \App\Models\Report\ReportModel::where('reported_id', $reportedId)
+                            ->where('reported_type', 'applicant')
+                            ->count();
+
+                        } elseif ($user['type'] === 'employer') {
+                        // Employer — use employer_id directly
+                        $employerId = $user['data']->id;
+
+                        $reportCount = \App\Models\Report\ReportModel::where(function ($query) use ($employerId) {
+                            $query->orWhere('employer_id', $employerId);
+                        })->count();
+                        } else { $reportCount = 0; }
+
+                        $user['reports_received'] = $reportCount;
+                        return $user;
+                    });
+
+
+          // Applicant Got Reports
+$applicantGotReports = \App\Models\Report\ReportModel::with(['applicant.personal_info', 'employer.personal_info'])
+    ->where('reported_type', 'applicant')
+    ->latest()
+    ->get()
+    ->map(function ($a) {
+        $applicant = $a->applicant;
+        $employer = $a->employer; // Employer who reported
+
+        // Map the reason to readable text
+        $reasonText = match($a->reason) {
+            'fraudulent' => 'Fraudulent or Scam Job',
+            'misleading' => 'Misleading Information',
+            'discriminatory' => 'Discriminatory Content',
+            'inappropriate' => 'Inappropriate Content',
+            'other' => strip_tags(Str::limit($a->other_reason ?? 'Other', 100)),
+            default => strip_tags(Str::limit($a->reason ?? 'Unknown', 100)),
+        };
+
+        // Prepare attachment URL if exists
+        $attachmentUrl = $a->attachment ? asset('storage/' . ltrim($a->attachment, '/')) : null;
+
+        // Get applicant full name
+        $applicantName = trim(
+            ($applicant?->personal_info?->first_name ?? '') . ' ' . 
+            ($applicant?->personal_info?->last_name ?? '')
+        );
+
+        // Get employer full name or company name
+        $employerName = trim(
+            ($employer?->personal_info?->first_name ?? '') . ' ' . 
+            ($employer?->personal_info?->last_name ?? '')
+        );
+
+        // Build professional description
+        $description = '<strong>EMPLOYER:</strong> ' . 
+                        ($employerName ?: 'Unknown Employer') . 
+                        ' (' . ($employer?->email ?? 'N/A') . ')' .
+                        ' has reported the applicant <strong>' . 
+                        ($applicantName ?: 'Unknown Applicant') . 
+                        '</strong> (' . ($applicant?->email ?? 'N/A') . ') for review.' .
+                        '<br><strong>Reason:</strong> ' . $reasonText;
+
+        return [
+            'action' => 'report_applicant',
+            'email' => $applicant?->email ?? 'Unknown Applicant',
+            'author' => $applicantName ?: 'Unknown Applicant',
+            'description' => $description,
+            'attachment' => $attachmentUrl,
+            'created_at' => $a->created_at,
+        ];
+    });
+
+
+
+
+
+
+
+
+
+
 
 
 
         
 
         $activityLogs = collect()
+            ->merge($applicantGotReports)
+            ->merge($employerPostGotReports)
             ->merge($adminPostedAnnouncements)
             ->merge($applicantRejectJobPosts)
             ->merge($applicantApplyJobPosts)

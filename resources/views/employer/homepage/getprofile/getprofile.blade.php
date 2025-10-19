@@ -566,6 +566,7 @@
             <button type="button" class="btn btn-success px-3">
                 <i class="fas fa-user-check me-1"></i> Approve & Hire
             </button>
+
         </div>
     </div>
 

@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\TesdaOfficer\TesdaOfficerController;
 use App\Http\Controllers\Employer\SendMessageController;
 use App\Http\Controllers\TermsAndCondition\TermAnfConditionController;
+use App\Http\Controllers\Applicant\ReportController;
 use App\Models\Employer\SendMessageModel;
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
@@ -79,6 +80,10 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
     Route::post('info/template', [ApplicantController::class, 'TemplateForm'])->name('applicant.info.template.store');
 
     Route::get('homepage', [ApplicantController::class, 'ShowHomepage'])->name('applicant.info.homepage.display');
+    
+    //Report the employer job post
+    Route::post('report/employer-job-post', [ReportController::class, 'reportEmployerJobPost'])->name('applicant.report.employerjobpost.store');
+    Route::post('report/applicant', [ReportController::class, 'reportApplicant'])->name('employer.report.applicant.store');
    // routes/web.php
     Route::post('notifications/{id}/read', [ApplicantController::class, 'ReadNotification']);
     Route::post('/notifications/mark-all-read', [ApplicantController::class, 'ReadlAllnotifications']);

@@ -180,6 +180,34 @@
                                          <i class="fas fa-envelope"></i>
                                      </button>
 
+                                     <!-- Report -->
+                                     <button class="report-applicant-btn" data-applicant-id="{{ $applicant->id }}"
+                                         data-applicant-name="{{ $applicant->personal_info->first_name ?? '' }} {{ $applicant->personal_info->last_name ?? '' }}"
+                                         data-applicant-email="{{ $applicant->email ?? '' }}" data-bs-toggle="modal"
+                                         data-bs-target="#reportApplicantModal" title="Report this applicant">
+                                         <i class="bi bi-flag-fill text-danger fs-5"></i>
+                                     </button>
+
+                                     <style>
+                                         .report-applicant-btn {
+                                             background: transparent;
+                                             border: none;
+                                             padding: 0;
+                                             margin-left: 6px;
+                                             cursor: pointer;
+                                             display: inline-flex;
+                                             align-items: center;
+                                             justify-content: center;
+                                             transition: transform 0.2s;
+                                         }
+
+                                         .report-applicant-btn:hover {
+                                             transform: scale(1.2);
+                                             color: #dc3545;
+                                             /* ensures icon stays red on hover */
+                                         }
+                                     </style>
+
 
                                      <script>
                                          document.querySelectorAll('.message-btn').forEach(btn => {
@@ -241,3 +269,202 @@
          @endif
      </div>
  </div>
+
+ <!--Modal --->
+
+ <!-- 🚨 Report Modal -->
+ <!-- Report Applicant Modal -->
+ <div class="modal fade" id="reportApplicantModal" tabindex="-1" aria-labelledby="reportApplicantModalLabel"
+     aria-hidden="true">
+     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+         <div class="modal-content">
+             <div class="modal-header bg-danger text-white">
+                 <h5 class="modal-title" id="reportApplicantModalLabel">
+                     <i class="bi bi-flag-fill me-2"></i> Report Applicant
+                 </h5>
+                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                     aria-label="Close"></button>
+             </div>
+
+             <form action="{{ route('employer.report.applicant.store') }}" method="POST" id="reportApplicantForm"
+                 enctype="multipart/form-data">
+                 @csrf
+                 <div class="modal-body" style="max-height:65vh; overflow-y:auto;">
+                     <input type="hidden" name="reported_id" id="report_applicant_id">
+                     <input type="hidden" name="reported_type" value="applicant">
+
+                     <!-- Applicant Info -->
+                     <div class="alert alert-light border mb-3">
+                         <div class="d-flex align-items-start">
+                             <i class="bi bi-person-fill text-primary me-2 mt-1"></i>
+                             <div>
+                                 <h6 class="mb-1 fw-bold" id="report_applicant_name">Applicant Name</h6>
+                                 <small class="text-muted" id="report_applicant_email">Email</small>
+                             </div>
+                         </div>
+                     </div>
+
+                     <!-- Reason -->
+                     <div class="mb-3">
+                         <label for="report_reason_applicant" class="form-label fw-semibold">
+                             Reason for Report <span class="text-danger">*</span>
+                         </label>
+                         <select class="form-select" id="report_reason_applicant" name="reason" required>
+                             <option value="">Select a reason...</option>
+                             <option value="fraudulent">Fraudulent or Scam Applicant</option>
+                             <option value="misleading">Misleading Information</option>
+                             <option value="discriminatory">Discriminatory Content</option>
+                             <option value="inappropriate">Inappropriate Content</option>
+                             <option value="other">Other</option>
+                         </select>
+                     </div>
+
+                     <!-- Other Reason -->
+                     <div class="mb-3 d-none" id="other_reason_applicant_wrapper">
+                         <label for="other_reason_applicant" class="form-label fw-semibold">
+                             Please specify your reason <span class="text-danger">*</span>
+                         </label>
+                         <input type="text" class="form-control" id="other_reason_applicant" name="other_reason"
+                             placeholder="Type your reason here...">
+                     </div>
+
+                     <!-- Details -->
+                     <div class="mb-3">
+                         <label for="report_details_applicant" class="form-label fw-semibold">
+                             Additional Details <span class="text-danger">*</span>
+                         </label>
+                         <textarea class="form-control" id="report_details_applicant" name="details" rows="4"
+                             placeholder="Provide details..." required minlength="20"></textarea>
+                         <small class="text-muted">Minimum 20 characters required</small>
+                     </div>
+
+                     <!-- Optional Screenshot -->
+                     <div class="mb-3">
+                         <label for="report_photo_applicant" class="form-label fw-semibold">
+                             Upload Screenshot / Photo (Optional)
+                         </label>
+                         <input type="file" class="form-control" id="report_photo_applicant" name="attachment"
+                             accept="image/*">
+                         <small class="text-muted">Max 5MB</small>
+
+                         <div class="mt-2 d-none" id="photo_preview_applicant_wrapper">
+                             <img id="photo_preview_applicant" src="" alt="Preview"
+                                 class="img-fluid rounded border" style="max-height:200px;">
+                         </div>
+                     </div>
+
+                     <!-- Warning -->
+                     <div class="alert alert-warning mb-0">
+                         <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                         <strong>Important:</strong> False reports may result in account restrictions.
+                     </div>
+                 </div>
+
+                 <div class="modal-footer">
+                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                         <i class="bi bi-x-circle me-1"></i> Cancel
+                     </button>
+                     <button type="submit" class="btn btn-danger">
+                         <i class="bi bi-flag-fill me-1"></i> Submit Report
+                     </button>
+                 </div>
+             </form>
+         </div>
+     </div>
+ </div>
+
+ <style>
+     .report-applicant-btn {
+         font-size: 1.1rem;
+         transition: all 0.3s ease;
+     }
+
+     .report-applicant-btn:hover {
+         color: #dc3545 !important;
+         transform: scale(1.1);
+     }
+
+     #reportApplicantModal .modal-content {
+         border: none;
+         box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+     }
+
+     #reportApplicantModal .alert-light {
+         background-color: #f8f9fa;
+     }
+
+     #reportApplicantModal .form-select:focus,
+     #reportApplicantModal .form-control:focus {
+         border-color: #dc3545;
+         box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+     }
+ </style>
+
+ <script>
+     document.addEventListener('DOMContentLoaded', function() {
+         const reportApplicantModal = document.getElementById('reportApplicantModal');
+
+         reportApplicantModal.addEventListener('show.bs.modal', function(event) {
+             const button = event.relatedTarget;
+             const applicantId = button.getAttribute('data-applicant-id');
+             const applicantName = button.getAttribute('data-applicant-name');
+             const applicantEmail = button.getAttribute('data-applicant-email');
+
+             document.getElementById('report_applicant_id').value = applicantId;
+             document.getElementById('report_applicant_name').textContent = applicantName;
+             document.getElementById('report_applicant_email').textContent = applicantEmail;
+         });
+
+         // Reset form on close
+         reportApplicantModal.addEventListener('hidden.bs.modal', function() {
+             document.getElementById('reportApplicantForm').reset();
+             document.getElementById('other_reason_applicant_wrapper').classList.add('d-none');
+         });
+
+         // Other reason toggle
+         const reasonSelect = document.getElementById('report_reason_applicant');
+         const otherWrapper = document.getElementById('other_reason_applicant_wrapper');
+         const otherInput = document.getElementById('other_reason_applicant');
+         reasonSelect.addEventListener('change', function() {
+             if (this.value === 'other') {
+                 otherWrapper.classList.remove('d-none');
+                 otherInput.setAttribute('required', 'required');
+             } else {
+                 otherWrapper.classList.add('d-none');
+                 otherInput.removeAttribute('required');
+                 otherInput.value = '';
+             }
+         });
+
+         // Min length validation
+         const form = document.getElementById('reportApplicantForm');
+         form.addEventListener('submit', function(e) {
+             const details = document.getElementById('report_details_applicant').value;
+             if (details.length < 20) {
+                 e.preventDefault();
+                 alert('Please provide at least 20 characters in the details section.');
+                 return false;
+             }
+         });
+
+         // Photo preview
+         const photoInput = document.getElementById('report_photo_applicant');
+         const photoWrapper = document.getElementById('photo_preview_applicant_wrapper');
+         const photoPreview = document.getElementById('photo_preview_applicant');
+
+         photoInput.addEventListener('change', (e) => {
+             const file = e.target.files[0];
+             if (file) {
+                 const reader = new FileReader();
+                 reader.onload = (event) => {
+                     photoPreview.src = event.target.result;
+                     photoWrapper.classList.remove('d-none');
+                 };
+                 reader.readAsDataURL(file);
+             } else {
+                 photoWrapper.classList.add('d-none');
+                 photoPreview.src = '';
+             }
+         });
+     });
+ </script>
