@@ -62,11 +62,12 @@
         </div>
 
         <!-- Worker Card -->
-        <div class="role-card" onclick="window.location.href='{{ route('applicant.register.display') }}">
-          <img id="workeroremployer" src="https://img.icons8.com/ios-filled/100/000000/worker-male.png" alt="Worker">
-          <h3>Worker</h3>
-          <button class="select-btn" a href="{{ route('applicant.register.display') }}">Select</button>
-        </div>
+       <div class="role-card" onclick="window.location.href='{{ route('applicant.register.display') }}'">
+     <img id="workeroremployer" src="https://img.icons8.com/ios-filled/100/000000/worker-male.png" alt="Worker">
+     <h3>Worker</h3>
+     <button class="select-btn">Select</button>
+    </div>
+
       </div>
       <button class="close-btn" id="closeModal">Cancel</button>
     </div>
