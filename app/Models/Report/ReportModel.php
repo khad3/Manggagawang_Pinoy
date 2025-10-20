@@ -35,4 +35,20 @@ class ReportModel extends Model
     {
         return $this->belongsTo(\App\Models\Employer\AccountInformationModel::class, 'employer_id', 'id');
     }
+
+
+    public function appplicantReported()
+    {
+        return $this->belongsTo(\App\Models\Applicant\RegisterModel::class, 'reported_id');
+    }
+
+    public function jobReporter()
+    {
+        return $this->belongsTo(\App\Models\Employer\JobDetailModel::class, 'reporter_id', 'id');
+    }
+
+    public function employerReporter()
+    {
+        return $this->belongsTo(\App\Models\Employer\AccountInformationModel::class, 'reporter_id', 'id');
+    }
 }

@@ -181,12 +181,20 @@
                                      </button>
 
                                      <!-- Report -->
+
+                                     @php
+                                         $alreadyReported = in_array($applicant->id, $reportedApplicantIds ?? []);
+                                     @endphp
+
                                      <button class="report-applicant-btn" data-applicant-id="{{ $applicant->id }}"
                                          data-applicant-name="{{ $applicant->personal_info->first_name ?? '' }} {{ $applicant->personal_info->last_name ?? '' }}"
                                          data-applicant-email="{{ $applicant->email ?? '' }}" data-bs-toggle="modal"
-                                         data-bs-target="#reportApplicantModal" title="Report this applicant">
+                                         data-bs-target="#reportApplicantModal"
+                                         title="{{ $alreadyReported ? 'Already reported' : 'Report this applicant' }}"
+                                         @if ($alreadyReported) disabled style="cursor: not-allowed; opacity: 0.5;" @endif>
                                          <i class="bi bi-flag-fill text-danger fs-5"></i>
                                      </button>
+
 
                                      <style>
                                          .report-applicant-btn {
@@ -291,7 +299,7 @@
                  @csrf
                  <div class="modal-body" style="max-height:65vh; overflow-y:auto;">
                      <input type="hidden" name="reported_id" id="report_applicant_id">
-                     <input type="hidden" name="reported_type" value="applicant">
+
 
                      <!-- Applicant Info -->
                      <div class="alert alert-light border mb-3">
@@ -333,7 +341,7 @@
                          <label for="report_details_applicant" class="form-label fw-semibold">
                              Additional Details <span class="text-danger">*</span>
                          </label>
-                         <textarea class="form-control" id="report_details_applicant" name="details" rows="4"
+                         <textarea class="form-control" id="report_details_applicant" name="additional_info" rows="4"
                              placeholder="Provide details..." required minlength="20"></textarea>
                          <small class="text-muted">Minimum 20 characters required</small>
                      </div>

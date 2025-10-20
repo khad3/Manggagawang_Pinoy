@@ -64,9 +64,9 @@ class ReportController extends Controller
     ]);
 
     // Get employer ID from auth guard
-    $employerId = auth()->guard('employer')->id();
+    $employerId = session('employer_id');
     if (!$employerId) {
-        return redirect()->route('employer.login')->with('error', 'Please log in as an employer.');
+        return redirect()->route('employer.login.display')->with('error', 'Please log in as an employer.');
     }
 
     // Handle file upload

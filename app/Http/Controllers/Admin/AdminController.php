@@ -25,6 +25,7 @@ use App\Models\Employer\AccountInformationModel as Employer;
 use App\Models\Applicant\RegisterModel;
 use App\Models\Employer\JobDetailModel;
 use App\Models\User;
+use Illuminate\Support\Facades\App;
 
 class AdminController extends Controller
 {
@@ -494,7 +495,8 @@ class AdminController extends Controller
                     ];
             });
 
-            $employerPostGotReports = ReportModel::with(['applicant.personal_info', 'job.employer.addressCompany'])
+           $employerPostGotReports = ReportModel::with(['applicant.personal_info', 'job.employer.addressCompany'])
+            ->where('reported_type', 'employer')
             ->latest()
             ->get()
             ->map(function ($a) {
@@ -502,7 +504,12 @@ class AdminController extends Controller
                 $job = $a->job;
                 $employer = $job?->employer; // Employer who owns the job
 
-                // Map the reason to readable text
+                // Decrypt applicant's personal information
+                $firstName = $this->safeDecrypt($applicant?->personal_info?->first_name);
+                $lastName  = $this->safeDecrypt($applicant?->personal_info?->last_name);
+                $applicantName = trim($firstName . ' ' . $lastName);
+
+                // Convert reason to readable text
                 $reasonText = match($a->reason) {
                     'fraudulent' => 'Fraudulent or Scam Job',
                     'misleading' => 'Misleading Information',
@@ -518,16 +525,18 @@ class AdminController extends Controller
                 return [
                     'action' => 'report_job',
                     'email' => $applicant?->email ?? 'Unknown Applicant',
-                    'author' => trim(($applicant?->personal_info?->first_name ?? '') . ' ' . ($applicant?->personal_info?->last_name ?? '')),
-                    'description' => '<strong>APPLICANT:</strong> ' . ($applicant?->email ?? 'Unknown Applicant') .
-                             ' has reported the job <strong>' . ($job?->title ?? 'Unknown Job') . '</strong>' .
-                             ' posted by <strong>' . ($employer?->addressCompany?->company_name ?? 'Unknown Company') . '</strong>' .
-                             ' (Email: ' . ($employer?->email ?? 'N/A') . ')' .
-                             ' for review. <br><strong>Reason:</strong> ' . $reasonText,
+                    'author' => $applicantName ?: 'Unknown Applicant',
+                    'description' => '<strong>APPLICANT:</strong> ' . ($applicantName ?: 'Unknown Applicant') .' (' . ($applicant?->email ?? 'N/A') . ')' .
+                    ' has reported the job post <strong>' . ($job?->title ?? 'Unknown Job') . '</strong>' .
+                    ' published by <strong>' . ($employer?->addressCompany?->company_name ?? 'Unknown Company') . '</strong>' .
+                    ' (Email: ' . ($employer?->email ?? 'N/A') . ') for further review.' .
+                    '<br><strong>Reason:</strong> ' . $reasonText .
+                    '<br><strong>Additional Details:</strong> ' . ($a->additional_info ?? 'No additional details provided.'),
                     'attachment' => $attachmentUrl,
                     'created_at' => $a->created_at,
                 ];
             });
+
 
 
                 // Map to include reports_received
@@ -555,72 +564,53 @@ class AdminController extends Controller
                     });
 
 
-          // Applicant Got Reports
-$applicantGotReports = \App\Models\Report\ReportModel::with(['applicant.personal_info', 'employer.personal_info'])
-    ->where('reported_type', 'applicant')
-    ->latest()
-    ->get()
-    ->map(function ($a) {
-        $applicant = $a->applicant;
-        $employer = $a->employer; // Employer who reported
+                // Applicant Got Reports
+            $applicantGotReports = \App\Models\Report\ReportModel::with(['appplicantReported.personal_info', 'employer.personal_info','jobReporter.employer.company'])
+             ->where('reported_type', 'applicant')
+             ->latest()
+             ->get()
+             ->map(function ($a) {
+                $applicant = $a->appplicantReported;
+                $employer = $a->employerReporter;
 
-        // Map the reason to readable text
-        $reasonText = match($a->reason) {
-            'fraudulent' => 'Fraudulent or Scam Job',
-            'misleading' => 'Misleading Information',
-            'discriminatory' => 'Discriminatory Content',
-            'inappropriate' => 'Inappropriate Content',
-            'other' => strip_tags(Str::limit($a->other_reason ?? 'Other', 100)),
-            default => strip_tags(Str::limit($a->reason ?? 'Unknown', 100)),
-        };
+                //  Convert reason to readable text
+                $reasonText = match($a->reason) {
+                    'fraudulent' => 'Fraudulent or Scam Job',
+                    'misleading' => 'Misleading Information',
+                    'discriminatory' => 'Discriminatory Content',
+                    'inappropriate' => 'Inappropriate Content',
+                    'other' => strip_tags(Str::limit($a->other_reason ?? 'Other', 100)),
+                    default => strip_tags(Str::limit($a->reason ?? 'Unknown', 100)),
+                };
 
-        // Prepare attachment URL if exists
-        $attachmentUrl = $a->attachment ? asset('storage/' . ltrim($a->attachment, '/')) : null;
+                //  Attachment URL
+                $attachmentUrl = $a->attachment ? asset('storage/' . ltrim($a->attachment, '/')) : null;
 
-        // Get applicant full name
-        $applicantName = trim(
-            ($applicant?->personal_info?->first_name ?? '') . ' ' . 
-            ($applicant?->personal_info?->last_name ?? '')
-        );
+                // Clean applicant names
+                $firstName = $this->safeDecrypt($applicant?->personal_info?->first_name);
+                $lastName  = $this->safeDecrypt($applicant?->personal_info?->last_name);
+                $applicantName = trim($firstName . ' ' . $lastName);
 
-        // Get employer full name or company name
-        $employerName = trim(
-            ($employer?->personal_info?->first_name ?? '') . ' ' . 
-            ($employer?->personal_info?->last_name ?? '')
-        );
+                // Employer company name
+                $companyName = $employer?->addressCompany?->company_name ?? 'Unknown Employer';
 
-        // Build professional description
-        $description = '<strong>EMPLOYER:</strong> ' . 
-                        ($employerName ?: 'Unknown Employer') . 
-                        ' (' . ($employer?->email ?? 'N/A') . ')' .
-                        ' has reported the applicant <strong>' . 
-                        ($applicantName ?: 'Unknown Applicant') . 
-                        '</strong> (' . ($applicant?->email ?? 'N/A') . ') for review.' .
-                        '<br><strong>Reason:</strong> ' . $reasonText;
+                // Description
+                $description = '<strong>EMPLOYER:</strong> ' . $companyName . ' has reported the applicant <strong>' .($applicantName ?: 'Unknown Applicant') .
+                    '</strong> (' . ($applicant?->email ?? 'N/A') . ') for further review.' .
+                    '<br><strong>Reason:</strong> ' . $reasonText .
+                    '<br><strong>Additional Details:</strong> ' . ($a->additional_info ?? 'No additional details provided.');
 
-        return [
-            'action' => 'report_applicant',
-            'email' => $applicant?->email ?? 'Unknown Applicant',
-            'author' => $applicantName ?: 'Unknown Applicant',
-            'description' => $description,
-            'attachment' => $attachmentUrl,
-            'created_at' => $a->created_at,
-        ];
-    });
+                    return [
+                        'action' => 'report_applicant',
+                        'email' => $applicant?->email ?? 'Unknown Applicant',
+                        'author' => $applicantName ?: 'Unknown Applicant',
+                        'description' => $description,
+                        'attachment' => $attachmentUrl,
+                        'created_at' => $a->created_at,
+                    ];
+            });
 
 
-
-
-
-
-
-
-
-
-
-
-
-        
 
         $activityLogs = collect()
             ->merge($applicantGotReports)
@@ -647,8 +637,46 @@ $applicantGotReports = \App\Models\Report\ReportModel::with(['applicant.personal
             ->sortByDesc('created_at')
             ->values();
 
+
+        // Total approved certifications
+        $totalIssueCertifications = \App\Models\Applicant\TesdaUploadCertificationModel::where('status', 'approved')->count();
+
+        // Current month
+        $currentMonth = Carbon::now()->month;
+        $currentYear = Carbon::now()->year;
+
+        // Approved certifications this month
+        $currentMonthCount = \App\Models\Applicant\TesdaUploadCertificationModel::where('status', 'approved')
+            ->whereYear('created_at', $currentYear)
+            ->whereMonth('created_at', $currentMonth)
+            ->count();
+
+        // Previous month
+        $previousMonth = Carbon::now()->subMonth();
+        $previousMonthCount = \App\Models\Applicant\TesdaUploadCertificationModel::where('status', 'approved')
+            ->whereYear('created_at', $previousMonth->year)
+            ->whereMonth('created_at', $previousMonth->month)
+            ->count();
+
+        // Calculate percentage change
+        if ($previousMonthCount == 0 && $currentMonthCount > 0) {
+            $percentageChange = 100; 
+        } elseif ($previousMonthCount == 0 && $currentMonthCount == 0) {
+            $percentageChange = 0;
+        } elseif ($currentMonthCount == 0) {
+            $percentageChange = 0; // avoid -100%
+        } else {
+            $percentageChange = (($currentMonthCount - $previousMonthCount) / $previousMonthCount) * 100;
+        }
+        // Format percentage
+        $percentageChange = round($percentageChange, 2);
+
         return view('admin.homepage.homepage', compact(
             'employerCount',
+            'totalIssueCertifications',
+
+            'currentMonthCount',
+            'percentageChange',
             'applicantsCount',
             'applicantsThisMonth',
             'change',

@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FriendChat</title>
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -23,7 +24,7 @@
         .top-nav {
             background: white;
             padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -65,7 +66,7 @@
         .chat-card {
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             display: grid;
             grid-template-columns: 350px 1fr;
@@ -133,7 +134,7 @@
         }
 
         .friend-card.active .friend-avatar {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             color: white;
         }
 
@@ -222,7 +223,7 @@
         .message.received .message-bubble {
             background: white;
             color: #333;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .message-time {
@@ -318,6 +319,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Top Navigation -->
     <div class="top-nav">
@@ -325,9 +327,11 @@
             <i class="fas fa-arrow-left"></i>
             <span>Back</span>
         </a>
-        
+
         <div class="user-info">
-            <div class="avatar">{{ substr($retrievedApplicantInfo->personal_info->first_name, 0, 1) }}{{ substr($retrievedApplicantInfo->personal_info->last_name, 0, 1) }}</div>
+            <div class="avatar">
+                {{ substr($retrievedApplicantInfo->personal_info->first_name, 0, 1) }}{{ substr($retrievedApplicantInfo->personal_info->last_name, 0, 1) }}
+            </div>
             <span class="name">{{ $retrievedApplicantInfo->username }}</span>
         </div>
     </div>
@@ -351,14 +355,15 @@
                         @endphp
 
                         @if ($friendUser && $friendUser->personal_info)
-                            <a href="?friend_id={{ $friendUser->id }}" 
-                               class="friend-card {{ $isActive ? 'active' : '' }}">
+                            <a href="?friend_id={{ $friendUser->id }}"
+                                class="friend-card {{ $isActive ? 'active' : '' }}">
                                 <div class="friend-avatar">
                                     {{ strtoupper(substr($friendUser->personal_info->first_name, 0, 1)) }}{{ strtoupper(substr($friendUser->personal_info->last_name, 0, 1)) }}
                                     <div class="status-dot"></div>
                                 </div>
                                 <div class="friend-details">
-                                    <h6>{{ $friendUser->personal_info->first_name }} {{ $friendUser->personal_info->last_name }}</h6>
+                                    <h6>{{ $friendUser->personal_info->first_name }}
+                                        {{ $friendUser->personal_info->last_name }}</h6>
                                     <small>Online now</small>
                                 </div>
                             </a>
@@ -372,7 +377,7 @@
                 @php
                     $selectedFriendId = request('friend_id');
                     $selectedFriend = null;
-                    
+
                     // Find the selected friend
                     if ($selectedFriendId) {
                         foreach ($retrievedFriends as $friend) {
@@ -383,18 +388,21 @@
                             }
                         }
                     }
-                    
+
                     // Filter messages for selected friend
                     $currentMessages = [];
                     if ($selectedFriend) {
-                        $currentMessages = $retrievedMessages->filter(function($message) use ($applicantID, $selectedFriendId) {
-                            return ($message->sender_id == $applicantID && $message->receiver_id == $selectedFriendId) ||
-                                   ($message->sender_id == $selectedFriendId && $message->receiver_id == $applicantID);
-                        })->sortBy('created_at');
+                        $currentMessages = $retrievedMessages
+                            ->filter(function ($message) use ($applicantID, $selectedFriendId) {
+                                return ($message->sender_id == $applicantID &&
+                                    $message->receiver_id == $selectedFriendId) ||
+                                    ($message->sender_id == $selectedFriendId && $message->receiver_id == $applicantID);
+                            })
+                            ->sortBy('created_at');
                     }
                 @endphp
 
-                @if($selectedFriend)
+                @if ($selectedFriend)
                     <!-- Chat Header -->
                     <div class="chat-header">
                         <div class="chat-user-info">
@@ -402,7 +410,8 @@
                                 {{ strtoupper(substr($selectedFriend->personal_info->first_name, 0, 1)) }}{{ strtoupper(substr($selectedFriend->personal_info->last_name, 0, 1)) }}
                             </div>
                             <div>
-                                <h6 class="mb-0">{{ $selectedFriend->personal_info->first_name }} {{ $selectedFriend->personal_info->last_name }}</h6>
+                                <h6 class="mb-0">{{ $selectedFriend->personal_info->first_name }}
+                                    {{ $selectedFriend->personal_info->last_name }}</h6>
                                 <small class="text-muted">Online now</small>
                             </div>
                         </div>
@@ -410,21 +419,21 @@
 
                     <!-- Messages Container -->
                     <div class="messages-container">
-                        @if($currentMessages->count() > 0)
-                            @foreach($currentMessages as $message)
+                        @if ($currentMessages->count() > 0)
+                            @foreach ($currentMessages as $message)
                                 @php
                                     $isSent = $message->sender_id == $applicantID;
                                     $messageTime = $message->created_at ? $message->created_at->format('H:i') : 'now';
                                 @endphp
-                                
+
                                 <div class="message {{ $isSent ? 'sent' : 'received' }}">
                                     <div class="message-bubble">
-                                        @if($message->photo)
-                                            <img src="{{ asset('public/uploads/messages/' . $message->photo) }}" 
-                                                 alt="Image" class="img-fluid">
+                                        @if ($message->photo)
+                                            <img src="{{ asset('public/uploads/messages/' . $message->photo) }}"
+                                                alt="Image" class="img-fluid">
                                         @endif
-                                        
-                                        @if($message->message)
+
+                                        @if ($message->message)
                                             {{ $message->message }}
                                         @endif
                                     </div>
@@ -441,22 +450,26 @@
                     </div>
 
                     <!-- Message Input -->
-                    <form method="POST" action="{{ route('applicant.sendmessage.store') }}" enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('applicant.sendmessage.store') }}"
+                        enctype="multipart/form-data">
                         @csrf
                         <input type="hidden" name="receiver_id" value="{{ $selectedFriend->id }}">
-                        
+
                         <div class="message-input">
                             <div class="input-container">
                                 <!-- File Input (Hidden) -->
-                                <input type="file" id="photoInput" accept="image/*" name="photo" style="display: none;">
+                                <input type="file" id="photoInput" accept="image/*" name="photo"
+                                    style="display: none;">
 
                                 <!-- Upload Button -->
-                                <button type="button" class="btn btn-light" onclick="document.getElementById('photoInput').click()" title="Attach Photo">
+                                <button type="button" class="btn btn-light"
+                                    onclick="document.getElementById('photoInput').click()" title="Attach Photo">
                                     <i class="fas fa-paperclip"></i>
                                 </button>
 
                                 <!-- Message Text Field -->
-                                <input type="text" class="message-field" placeholder="Type your message..." name="message" required>
+                                <input type="text" class="message-field" placeholder="Type your message..."
+                                    name="message" required>
 
                                 <!-- Send Button -->
                                 <button type="submit" class="send-btn">
@@ -487,7 +500,7 @@
         document.getElementById('photoInput').addEventListener('change', function() {
             const file = this.files[0];
             const preview = document.getElementById('photoPreview');
-            
+
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -508,4 +521,5 @@
         }
     </script>
 </body>
+
 </html>

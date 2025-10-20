@@ -83,7 +83,7 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
     
     //Report the employer job post
     Route::post('report/employer-job-post', [ReportController::class, 'reportEmployerJobPost'])->name('applicant.report.employerjobpost.store');
-    Route::post('report/applicant', [ReportController::class, 'reportApplicant'])->name('employer.report.applicant.store');
+   
    // routes/web.php
     Route::post('notifications/{id}/read', [ApplicantController::class, 'ReadNotification']);
     Route::post('/notifications/mark-all-read', [ApplicantController::class, 'ReadlAllnotifications']);
@@ -229,6 +229,9 @@ Route::middleware(['employer.authenticate'])->prefix('employer')->group(function
 
        //Homepage display
     Route::get('homepage', [EmployerController::class, 'ShowHomepage'])->name('employer.info.homepage.display');
+
+    //Report the applicant
+    Route::post('report/applicant', [ReportController::class, 'reportApplicant'])->name('employer.report.applicant.store');
 
     //Logout
     Route::post('logout', [EmployerController::class, 'logout'])->name('employer.logout.store');

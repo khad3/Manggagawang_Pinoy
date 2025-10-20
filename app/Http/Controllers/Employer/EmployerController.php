@@ -800,9 +800,8 @@ $retrievedCertifications = Certification::whereIn('applicant_id', $applicantIds)
     ->unique();
 
 $employerId = session('employer_id'); // get employer_id from session
-
-$jobPosts = JobDetails::with('employer' , 'companyName')
-    ->where('employer_id', $employerId) // only jobs posted by this employer
+$jobPosts = JobDetails::with('employer', 'companyName')
+    ->where('employer_id', $employerId)
     ->withCount([
         'applications as approved_count' => function ($query) {
             $query->where('status', 'approved');
@@ -813,20 +812,33 @@ $jobPosts = JobDetails::with('employer' , 'companyName')
     ])
     ->get();
 
-    //Get the approved applicant count for each employer's job post
-   // ✅ Total approved applicants for all jobs of this employer
+// Total approved applicants for specific jobs of this employer
 $totalApproved = $jobPosts->sum('approved_count');
+
+
+
+// IDs of applicants already reported by this employer
+$reportedApplicantIds = \App\Models\Report\ReportModel::where('reporter_id', $employerId)
+    ->where('reported_type', 'applicant')
+    ->pluck('reported_id')
+    ->toArray();
+
+
+    $isSuspended = \App\Models\Admin\SuspensionModel::where('employer_id', $employerId)->exists();
 
 
     return view('employer.homepage.homepage' , compact(
         'jobPosts' ,
+        'isSuspended' ,
+        'reportedApplicantIds',
         'retrievePersonal' , 
     'retrievedApplicants' ,
     'retrievedCertifications',
                 'JobPostRetrieved' , 
                 'retrievedApplicantApproved',
                 'retrieveMessages',
-                'totalApproved'));
+                'totalApproved'
+                ));
 
 }
 

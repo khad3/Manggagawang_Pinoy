@@ -66,7 +66,7 @@ class JobDetailModel extends Model
 
     public function applications()
 {
-    return $this->hasMany(ApplyJobModel::class, 'job_id');
+    return $this->hasMany(ApplyJobModel::class, 'job_id' , 'id');
 }
     
 }

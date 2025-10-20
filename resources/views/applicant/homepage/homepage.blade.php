@@ -5,9 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
     <title>Homepage</title>
-
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -24,127 +22,7 @@
 <body>
 
     <!--- Notification Modal ----->
-    @foreach ($notifications as $note)
-        <div class="modal fade" id="viewNotificationModal-{{ $note->id }}" tabindex="-1"
-            aria-labelledby="viewNotificationLabel-{{ $note->id }}" aria-hidden="true" data-bs-backdrop="static"
-            data-bs-keyboard="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"> {{-- scrollable --}}
-                <div class="modal-content border-0 shadow">
-
-                    {{-- Header --}}
-                    <div class="modal-header border-bottom-0 pb-2">
-                        <div class="d-flex align-items-center">
-                            @if ($note->created_by === 'admin')
-                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3"
-                                    style="width: 40px; height: 40px;">
-                                    <i class="bi bi-shield-check text-white"></i>
-                                </div>
-                            @else
-                                <div class="bg-info rounded-circle d-flex align-items-center justify-content-center me-3"
-                                    style="width: 40px; height: 40px;">
-                                    <i class="bi bi-bell text-white"></i>
-                                </div>
-                            @endif
-                            <div>
-                                <h6 class="modal-title fw-semibold mb-0" id="viewNotificationLabel-{{ $note->id }}">
-                                    {{ $note->created_by === 'admin' ? 'TESDA Administrative Office' : 'System Notification' }}
-                                </h6>
-                                <small class="text-muted">{{ $note->created_at->format('M d, Y • g:i A') }}</small>
-                            </div>
-                        </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-
-                    {{-- Body --}}
-                    <div class="modal-body px-4 py-3">
-                        {{-- Title --}}
-                        <h5 class="fw-bold text-dark mb-3">{{ $note->title }}</h5>
-
-                        {{-- Priority Badge --}}
-                        @if (!empty($note->priority))
-                            <div class="mb-3">
-                                @switch($note->priority)
-                                    @case('urgent')
-                                        <span class="badge bg-danger px-3 py-2 rounded-pill">
-                                            <i class="bi bi-exclamation-triangle-fill me-1"></i>Urgent
-                                        </span>
-                                    @break
-
-                                    @case('high')
-                                        <span class="badge bg-warning px-3 py-2 rounded-pill text-dark">
-                                            <i class="bi bi-exclamation-circle-fill me-1"></i>High Priority
-                                        </span>
-                                    @break
-
-                                    @case('medium')
-                                        <span class="badge bg-info px-3 py-2 rounded-pill">
-                                            <i class="bi bi-info-circle-fill me-1"></i>Medium Priority
-                                        </span>
-                                    @break
-
-                                    @default
-                                        <span class="badge bg-secondary px-3 py-2 rounded-pill">
-                                            <i class="bi bi-circle-fill me-1"></i>Normal Priority
-                                        </span>
-                                @endswitch
-                            </div>
-                        @endif
-
-                        {{-- Content --}}
-                        <div class="notification-content mb-4">
-                            <p class="text-dark lh-lg mb-0" style="font-size: 0.95rem;">
-                                {{ $note->content }}
-                            </p>
-                        </div>
-
-                        {{-- Image if exists --}}
-                        @if (!empty($note->image))
-                            <div class="text-center mb-4">
-                                <div class="border rounded-3 p-2 bg-light"> <img
-                                        src="{{ asset('storage/' . $note->image) }}" alt="Notification Image"
-                                        class="img-fluid rounded-2 shadow-sm" style="max-height: 300px; width: auto;">
-                                </div>
-                            </div>
-                        @endif
-
-                        {{-- Tags and Target Audience --}}
-                        <div class="d-flex flex-wrap gap-2 align-items-center">
-                            @if (!empty($note->tag))
-                                <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">
-                                    <i class="bi bi-tag me-1"></i>{{ $note->tag }}
-                                </span>
-                            @endif
-
-                            @if (!empty($note->target_audience))
-                                <span
-                                    class="badge bg-primary bg-opacity-10 text-primary border border-primary px-3 py-2 rounded-pill">
-                                    <i class="bi bi-people me-1"></i>
-                                    {{ ucfirst(str_replace('_', ' ', $note->target_audience)) }}
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-
-                    {{-- Footer --}}
-                    <div class="modal-footer border-top-0 pt-0 px-4 pb-4">
-                        <div class="d-flex justify-content-between w-100 align-items-center">
-                            <small class="text-muted">
-                                <i class="bi bi-calendar3 me-1"></i>
-                                Published:
-                                {{ $note->publication_date ? \Carbon\Carbon::parse($note->publication_date)->format('F j, Y') : 'Not set' }}
-                            </small>
-                            <button type="button" class="btn btn-outline-secondary rounded-pill px-4"
-                                data-bs-dismiss="modal">
-                                <i class="bi bi-x-lg me-1"></i>Close
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endforeach
-
-
+    @include('applicant.homepage.modal.notification')
 
     <!-- Header Navigation -->
     <header class="header">
@@ -259,8 +137,7 @@
 
     @if (session('success'))
         <div class="container mt-3">
-            <div class="alert alert-success alert-dismissible fade show text-center" role="alert"
-                id="success-alert">
+            <div class="alert alert-success alert-dismissible fade show text-center" role="alert" id="success-alert">
                 {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
@@ -303,8 +180,6 @@
                         <option value="industry">Sort by Industry</option>
                     </select>
                 </div>
-
-
                 <div class="employer-grid" id="employerGrid">
                     @foreach ($JobPostRetrieved as $jobDetail)
                         @if ($jobDetail->status_post === 'published')
@@ -339,14 +214,14 @@
                                         </span>
                                         <!-- Report Button -->
                                         @if (in_array($jobDetail->id, $reportedJobIds))
-                                            <!-- 🚫 If already reported -->
+                                            <!--  If already reported -->
                                             <button class="btn btn-link text-muted p-0 ms-2" disabled
                                                 title="You already reported this job">
                                                 <i class="bi bi-flag-fill text-danger"></i>
                                                 <!-- filled flag for visual cue -->
                                             </button>
                                         @else
-                                            <!-- 🏴 If not yet reported -->
+                                            <!--  If not yet reported -->
                                             <button class="btn btn-link text-muted p-0 ms-2 report-job-btn"
                                                 data-employer-id="{{ $jobDetail->employer_id ?? 'Unknown Employer' }}"
                                                 data-job-id="{{ $jobDetail->id }}"
@@ -493,425 +368,17 @@
                 </div>
 
                 <!-- Report Job Modal -->
-                <div class="modal fade" id="reportJobModal" tabindex="-1" aria-labelledby="reportJobModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                        <div class="modal-content">
-                            <div class="modal-header bg-danger text-white">
-                                <h5 class="modal-title" id="reportJobModalLabel">
-                                    <i class="bi bi-flag-fill me-2"></i>Report Job Post
-                                </h5>
-                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
+                @include('applicant.homepage.modal.report_job_modal')
 
-
-                            <form action="{{ route('applicant.report.employerjobpost.store') }}" method="POST"
-                                id="reportJobForm" enctype="multipart/form-data">
-                                @csrf
-                                <div class="modal-body" style="max-height: 65vh; overflow-y: auto;">
-                                    <input type="hidden" name="reported_id_job_id" id="report_job_id">
-                                    <input type="hidden" name="employer_id" id="report_employer_id">
-
-                                    <!-- Job Information -->
-                                    <div class="alert alert-light border mb-3">
-                                        <div class="d-flex align-items-start">
-                                            <i class="bi bi-briefcase-fill text-primary me-2 mt-1"></i>
-                                            <div>
-                                                <h6 class="mb-1 fw-bold" id="report_job_title">Job Title</h6>
-                                                <small class="text-muted">
-                                                    <i class="bi bi-building me-1"></i><span
-                                                        id="report_company_name">Company</span>
-                                                </small>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Report Reason -->
-                                    <div class="mb-3">
-                                        <label for="report_reason" class="form-label fw-semibold">
-                                            Reason for Report <span class="text-danger">*</span>
-                                        </label>
-                                        <select class="form-select" id="report_reason" name="reason" required>
-                                            <option value="">Select a reason...</option>
-                                            <option value="fraudulent">Fraudulent or Scam Job</option>
-                                            <option value="misleading">Misleading Information</option>
-                                            <option value="discriminatory">Discriminatory Content</option>
-                                            <option value="inappropriate">Inappropriate Content</option>
-                                            <option value="other">Other</option>
-                                        </select>
-                                    </div>
-
-                                    <!-- Other Reason (Hidden by default) -->
-                                    <div class="mb-3 d-none" id="other_reason_wrapper">
-                                        <label for="other_reason" class="form-label fw-semibold">
-                                            Please specify your reason <span class="text-danger">*</span>
-                                        </label>
-                                        <input type="text" class="form-control" id="other_reason"
-                                            name="other_reason" placeholder="Type your reason here...">
-                                    </div>
-
-                                    <script>
-                                        const reportReasonSelect = document.getElementById('report_reason');
-                                        const otherReasonWrapper = document.getElementById('other_reason_wrapper');
-                                        const otherReasonInput = document.getElementById('other_reason');
-
-                                        reportReasonSelect.addEventListener('change', function() {
-                                            if (this.value === 'other') {
-                                                otherReasonWrapper.classList.remove('d-none');
-                                                otherReasonInput.setAttribute('required', 'required');
-                                            } else {
-                                                otherReasonWrapper.classList.add('d-none');
-                                                otherReasonInput.removeAttribute('required');
-                                                otherReasonInput.value = '';
-                                            }
-                                        });
-                                    </script>
-
-                                    <!-- Additional Details -->
-                                    <div class="mb-3">
-                                        <label for="report_details" class="form-label fw-semibold">
-                                            Additional Details <span class="text-danger">*</span>
-                                        </label>
-                                        <textarea class="form-control" id="report_details" name="details" rows="4"
-                                            placeholder="Please provide specific details about your concern..." required minlength="20"></textarea>
-                                        <small class="text-muted">Minimum 20 characters required</small>
-                                    </div>
-
-                                    <!-- Insert Photo (optional) -->
-                                    <div class="mb-3">
-                                        <label for="report_photo" class="form-label fw-semibold">
-                                            Upload Screenshot / Photo (Optional)
-                                        </label>
-                                        <input type="file" class="form-control" id="report_photo"
-                                            name="attachment" accept="image/*">
-                                        <small class="text-muted">You may attach an image as evidence (max
-                                            5MB).</small>
-
-                                        <!-- Preview selected image -->
-                                        <div class="mt-2 d-none" id="photo_preview_wrapper">
-                                            <img id="photo_preview" src="" alt="Preview"
-                                                class="img-fluid rounded border" style="max-height: 200px;">
-                                        </div>
-                                    </div>
-
-                                    <script>
-                                        const photoInput = document.getElementById('report_photo');
-                                        const photoPreviewWrapper = document.getElementById('photo_preview_wrapper');
-                                        const photoPreview = document.getElementById('photo_preview');
-
-                                        photoInput.addEventListener('change', (e) => {
-                                            const file = e.target.files[0];
-                                            if (file) {
-                                                const reader = new FileReader();
-                                                reader.onload = (event) => {
-                                                    photoPreview.src = event.target.result;
-                                                    photoPreviewWrapper.classList.remove('d-none');
-                                                };
-                                                reader.readAsDataURL(file);
-                                            } else {
-                                                photoPreviewWrapper.classList.add('d-none');
-                                                photoPreview.src = '';
-                                            }
-                                        });
-                                    </script>
-
-                                    <!-- Warning Notice -->
-                                    <div class="alert alert-warning mb-0" role="alert">
-                                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                                        <strong>Important:</strong> False reports may result in account restrictions.
-                                        Please ensure your report is legitimate and accurate.
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                        <i class="bi bi-x-circle me-1"></i>Cancel
-                                    </button>
-                                    <button type="submit" class="btn btn-danger">
-                                        <i class="bi bi-flag-fill me-1"></i>Submit Report
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-
-
-                <style>
-                    .report-job-btn {
-                        font-size: 1.1rem;
-                        transition: all 0.3s ease;
-                    }
-
-                    .report-job-btn:hover {
-                        color: #dc3545 !important;
-                        transform: scale(1.1);
-                    }
-
-                    #reportJobModal .modal-content {
-                        border: none;
-                        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-                    }
-
-                    #reportJobModal .alert-light {
-                        background-color: #f8f9fa;
-                    }
-
-                    #reportJobModal .form-select:focus,
-                    #reportJobModal .form-control:focus {
-                        border-color: #dc3545;
-                        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
-                    }
-                </style>
-
-                <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        // Handle Report Job Modal
-                        const reportJobModal = document.getElementById('reportJobModal');
-                        if (reportJobModal) {
-                            reportJobModal.addEventListener('show.bs.modal', function(event) {
-                                const button = event.relatedTarget;
-                                const employerId = button.getAttribute('data-employer-id');
-                                const jobId = button.getAttribute('data-job-id');
-                                const jobTitle = button.getAttribute('data-title');
-                                const companyName = button.getAttribute('data-company');
-
-                                // Update modal content
-                                document.getElementById('report_employer_id').value = employerId;
-                                document.getElementById('report_job_id').value = jobId;
-                                document.getElementById('report_job_title').textContent = jobTitle;
-                                document.getElementById('report_company_name').textContent = companyName;
-                            });
-
-                            // Reset form when modal is closed
-                            reportJobModal.addEventListener('hidden.bs.modal', function() {
-                                document.getElementById('reportJobForm').reset();
-                            });
-                        }
-
-                        // Form validation
-                        const reportForm = document.getElementById('reportJobForm');
-                        if (reportForm) {
-                            reportForm.addEventListener('submit', function(e) {
-                                const details = document.getElementById('report_details').value;
-                                if (details.length < 20) {
-                                    e.preventDefault();
-                                    alert('Please provide at least 20 characters in the details section.');
-                                    return false;
-                                }
-                            });
-                        }
-                    });
-                </script>
-
-                <div class="modal fade" id="cancelApplicationModal" tabindex="-1"
-                    aria-labelledby="cancelApplicationModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <form method="POST" action="{{ route('jobs.cancel.delete') }}">
-                                @csrf
-                                @method('DELETE')
-                                <input type="hidden" name="job_id" id="cancelJobId">
-
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="cancelApplicationModalLabel">
-                                        <i class="fas fa-exclamation-triangle text-danger me-2"></i>Cancel Application
-                                    </h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-
-                                <div class="modal-body">
-                                    <p>Are you sure you want to cancel your application for this job?</p>
-                                    <p class="text-muted mb-0"><small>This action cannot be undone.</small></p>
-                                </div>
-
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                        <i class="fas fa-times me-1"></i>Close
-                                    </button>
-                                    <button type="submit" class="btn btn-danger">
-                                        <i class="fas fa-trash me-1"></i>Yes, Cancel
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
+                <!-- Cancel job modal---->
+                @include('applicant.homepage.modal.cancel_job')
                 <!-- Apply Job Modal -->
-                <div class="modal fade" id="applyJobModal" tabindex="-1" aria-labelledby="applyJobModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                        <div class="modal-content">
-                            <form action="{{ route('jobs.apply.store') }}" method="POST"
-                                enctype="multipart/form-data">
-                                @csrf
-                                <input type="hidden" name="job_id" id="apply-job-id-input">
-
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="applyJobModalLabel">
-                                        <i class="fas fa-paper-plane me-2"></i>Apply for Position
-                                    </h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-
-                                <!-- Make body scrollable -->
-                                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
-                                    <!-- Job Info -->
-                                    <div class="row mb-4">
-                                        <div class="col-12">
-                                            <div class="p-3 bg-light rounded">
-                                                <h6 class="fw-bold mb-2" id="apply-job-title">Job Title</h6>
-                                                <p class="mb-1 text-muted" id="apply-company-name">Company Name</p>
-                                                <p class="mb-0 text-muted">
-                                                    <i class="fas fa-map-marker-alt me-1"></i>
-                                                    <span id="apply-job-location">Location</span>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Phone -->
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label fw-semibold">Phone Number *</label>
-                                                <input type="tel" class="form-control" name="phone_number"
-                                                    placeholder="+63 912 345 6789" required>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Resume -->
-                                    <div class="mb-3">
-                                        <label class="form-label fw-semibold">Resume/CV *</label>
-                                        <input type="file" class="form-control" name="resume"
-                                            accept=".pdf,.doc,.docx" required>
-                                        <div class="form-text">Accepted formats: PDF, DOC, DOCX (Max 5MB)</div>
-                                    </div>
-
-                                    <!-- TESDA Cert -->
-                                    <div class="mb-3">
-                                        <label class="form-label">Upload TESDA Certificate (PDF, DOC)</label>
-                                        <input type="file" name="tesda_certificate" class="form-control"
-                                            accept=".pdf,.doc,.docx"
-                                            @if (!$tesdaCertification || $tesdaCertification->status != 'approved') disabled @endif>
-
-                                        @if ($tesdaCertification && $tesdaCertification->status == 'pending')
-                                            <p class="text-warning mt-2">Your TESDA Certificate is under review.</p>
-                                        @elseif (!$tesdaCertification || $tesdaCertification->status != 'approved')
-                                            <p class="text-danger mt-2">Please upload your TESDA Certificate before
-                                                applying.</p>
-                                        @endif
-                                    </div>
-
-                                    <!-- Cover Letter -->
-                                    <div class="mb-3">
-                                        <label class="form-label fw-semibold">Cover Letter</label>
-                                        <textarea class="form-control" name="cover_letter" rows="4"
-                                            placeholder="Tell us why you're interested in this position..."></textarea>
-                                    </div>
-
-                                    <!-- Additional Info -->
-                                    <div class="mb-3">
-                                        <label class="form-label fw-semibold">Additional Information</label>
-                                        <textarea class="form-control" name="additional_info" rows="3"
-                                            placeholder="Any additional information you'd like to share..."></textarea>
-                                    </div>
-                                </div>
-
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                        <i class="fas fa-times me-2"></i>Cancel
-                                    </button>
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="fas fa-paper-plane me-2"></i>Submit Application
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-
-
-                <script>
-                    const applyJobModal = document.getElementById('applyJobModal');
-                    if (applyJobModal) {
-                        applyJobModal.addEventListener('show.bs.modal', function(event) {
-                            const button = event.relatedTarget;
-                            const jobId = button.getAttribute('data-job-id');
-                            const jobTitle = button.getAttribute('data-title');
-                            const companyName = button.getAttribute('data-company');
-                            const jobLocation = button.getAttribute('data-location');
-
-                            // Update modal content
-                            document.getElementById('apply-job-title').textContent = jobTitle || 'Job Title';
-                            document.getElementById('apply-company-name').textContent = companyName || 'Company';
-                            document.getElementById('apply-job-location').textContent = jobLocation || 'Location';
-                            document.getElementById('apply-job-id-input').value = jobId;
-
-                            // Update modal title
-                            document.getElementById('applyJobModalLabel').innerHTML =
-                                `<i class="fas fa-paper-plane me-2"></i>Apply for ${jobTitle || 'Position'}`;
-                        });
-                    }
-
-                    // Handle Cancel Application Modal
-                    const cancelModal = document.getElementById("cancelApplicationModal");
-                    cancelModal.addEventListener("show.bs.modal", function(event) {
-                        let button = event.relatedTarget;
-                        let jobId = button.getAttribute("data-job-id");
-                        document.getElementById("cancelJobId").value = jobId;
-                    });
-                </script>
-
-
+                @include('applicant.homepage.modal.apply_job')
 
                 <!-- View Details Modal -->
-                <div class="modal fade" id="viewDetailsModal" tabindex="-1" aria-labelledby="viewDetailsModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-lg modal-dialog-scrollable"> <!-- Added modal-dialog-scrollable -->
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="viewDetailsModalLabel">Job Details</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-
-                            <!-- Modal Body Scrollable -->
-                            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
-                                <!-- Added max-height and scroll -->
-                                <h4 id="modalJobTitle"></h4>
-                                <p><strong>Company:</strong> <span id="modalCompanyName"></span></p>
-                                <p><strong>Industry:</strong> <span id="modalIndustry"></span></p>
-                                <p><strong>Location:</strong> <span id="modalLocation"></span></p>
-                                <p><strong>Description:</strong></p>
-                                <p id="modalDescription"></p>
-                                <p><strong>Salary:</strong> ₱<span id="modalSalary"></span> Monthly</p>
-                                <p><strong>Benefits:</strong> <span id="modalBenefits"></span></p>
-                                <p><strong>Experience Level:</strong> <span id="modalExperienceLevel"></span></p>
-                                <p><strong>TESDA Certification:</strong> <span id="modalTESDACertification"></span></p>
-                                <p><strong>Other Certifications:</strong> <span
-                                        id="modalNoneCertificationsQualification"></span></p>
-                            </div>
-
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary"
-                                    data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @include('applicant.homepage.modal.view_detail_job')
 
         </div>
-
-
-
-
-
         <!-- No Results Message -->
         <div class="no-results hidden" id="noResults">
             <i class="bi bi-search"></i>
@@ -944,7 +411,77 @@
         </div>
     </div>
 
+    <script>
+        const applyJobModal = document.getElementById('applyJobModal');
+        if (applyJobModal) {
+            applyJobModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const jobId = button.getAttribute('data-job-id');
+                const jobTitle = button.getAttribute('data-title');
+                const companyName = button.getAttribute('data-company');
+                const jobLocation = button.getAttribute('data-location');
 
+                // Update modal content
+                document.getElementById('apply-job-title').textContent = jobTitle || 'Job Title';
+                document.getElementById('apply-company-name').textContent = companyName || 'Company';
+                document.getElementById('apply-job-location').textContent = jobLocation || 'Location';
+                document.getElementById('apply-job-id-input').value = jobId;
+
+                // Update modal title
+                document.getElementById('applyJobModalLabel').innerHTML =
+                    `<i class="fas fa-paper-plane me-2"></i>Apply for ${jobTitle || 'Position'}`;
+            });
+        }
+
+        // Handle Cancel Application Modal
+        const cancelModal = document.getElementById("cancelApplicationModal");
+        cancelModal.addEventListener("show.bs.modal", function(event) {
+            let button = event.relatedTarget;
+            let jobId = button.getAttribute("data-job-id");
+            document.getElementById("cancelJobId").value = jobId;
+        });
+    </script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle Report Job Modal
+            const reportJobModal = document.getElementById('reportJobModal');
+            if (reportJobModal) {
+                reportJobModal.addEventListener('show.bs.modal', function(event) {
+                    const button = event.relatedTarget;
+                    const employerId = button.getAttribute('data-employer-id');
+                    const jobId = button.getAttribute('data-job-id');
+                    const jobTitle = button.getAttribute('data-title');
+                    const companyName = button.getAttribute('data-company');
+
+                    // Update modal content
+                    document.getElementById('report_employer_id').value = employerId;
+                    document.getElementById('report_job_id').value = jobId;
+                    document.getElementById('report_job_title').textContent = jobTitle;
+                    document.getElementById('report_company_name').textContent = companyName;
+                });
+
+                // Reset form when modal is closed
+                reportJobModal.addEventListener('hidden.bs.modal', function() {
+                    document.getElementById('reportJobForm').reset();
+                });
+            }
+
+            // Form validation
+            const reportForm = document.getElementById('reportJobForm');
+            if (reportForm) {
+                reportForm.addEventListener('submit', function(e) {
+                    const details = document.getElementById('report_details').value;
+                    if (details.length < 20) {
+                        e.preventDefault();
+                        alert('Please provide at least 20 characters in the details section.');
+                        return false;
+                    }
+                });
+            }
+        });
+    </script>
 
 
     <script>

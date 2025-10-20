@@ -4,9 +4,47 @@
                <h2 class="mb-2 fw-bold">Job Posts Management</h2>
                <p class="text-muted mb-0">Create and manage your job postings</p>
            </div>
-           <button class="btn-modern btn-primary-modern" data-bs-toggle="modal" data-bs-target="#newJobModal">
-               <i class="fas fa-plus"></i> Post New Job
+           @php
+               $employerId = session('employer_id');
+
+               // Get the latest suspension for this employer
+               $suspension = \App\Models\Admin\SuspensionModel::where('employer_id', $employerId)->latest()->first();
+
+               $isSuspended = false;
+               $remainingDaysText = '';
+
+               if ($suspension) {
+                   $startDate = \Carbon\Carbon::parse($suspension->created_at);
+                   $endDate = $startDate->copy()->addDays($suspension->suspension_duration);
+
+                   if (\Carbon\Carbon::now()->lt($endDate)) {
+                       $isSuspended = true;
+
+                       // Calculate remaining days, rounding up
+                       $remainingDays = $endDate->diffInDays(\Carbon\Carbon::now());
+
+                       // Ensure remainingDays is at least 1 and at most suspension_duration
+                       $remainingDays = max(1, min($remainingDays, $suspension->suspension_duration));
+
+                       $remainingDaysText = $remainingDays . ' day(s)';
+                   }
+               }
+           @endphp
+
+           <button class="btn-modern {{ $isSuspended ? 'btn-secondary' : 'btn-primary-modern' }}"
+               @if ($isSuspended) disabled @else data-bs-toggle="modal" data-bs-target="#newJobModal" @endif>
+               <i class="fas fa-plus"></i>
+               @if ($isSuspended)
+                   You are suspended for {{ $remainingDaysText }}
+                   (Reason: {{ ucfirst(str_replace('_', ' ', $suspension->reason)) }}
+                   {{ $suspension->additional_info ? '- ' . $suspension->additional_info : '' }})
+               @else
+                   Post New Job
+               @endif
            </button>
+
+
+
        </div>
 
        <!-- Job Stats Cards -->
