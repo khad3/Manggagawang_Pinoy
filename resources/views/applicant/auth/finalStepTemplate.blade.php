@@ -140,17 +140,10 @@
         <div class="form-content">
             <!-- Profile Header -->
             <div class="profile-header">
-                @php
-                    $profilePath = $workBackgroundDecrypted['profileimage_path'] ?? null;
-                    $profileUrl = null;
-
-                    if ($profilePath && \Illuminate\Support\Facades\Storage::disk('public')->exists($profilePath)) {
-                        $profileUrl = \Illuminate\Support\Facades\Storage::disk('public')->url($profilePath);
-                    }
-                @endphp
 
                 <div class="profile-image-container">
-                    <img src="{{ $profileUrl ?? 'https://via.placeholder.com/100x100/667eea/ffffff?text=Avatar' }}"
+                    <img src="{{ Storage::url($workBackgroundDecrypted['profileimage_path'] ?? '') ?: 'https://via.placeholder.com/100x100/667eea/ffffff?text=Avatar' }}"
+
                          alt="Profile Image" class="profile-image">
                     <div class="profile-badge">
                         <i class="bi bi-check" style="color: white; font-size: 12px;"></i>
