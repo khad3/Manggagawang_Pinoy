@@ -57,7 +57,8 @@
             content without prior written permission. Downloads or screenshots are permitted only for personal,
             non-commercial use. </p>
         <h4>9. Privacy Policy</h4>
-        <p> Please review our <a href="[insert privacy policy link]">Privacy Policy</a> to understand how we collect,
+        <p> Please review our <a href="{{ route('display.privacypolicy') }}">Privacy Policy</a> to understand how we
+            collect,
             use, and protect your data. </p>
         <h4>10. Access</h4>
         <p> Limited access is granted for lawful job-seeking and recruitment purposes only. Report suspicious activity

@@ -157,7 +157,7 @@
                                         placeholder="e.g. Skilled Welder, Electrician, Carpenter" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="department" class="form-label">Department</label>
+                                    <label for="department" class="form-label">Department *</label>
                                     <select class="form-select" name= "job_department" id="department">
                                         <option value="">Select department</option>
                                         <option value="Construction">Construction</option>
@@ -213,7 +213,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="salaryRange" class="form-label">Salary Range</label>
+                                    <label for="salaryRange" class="form-label">Salary Range *</label>
                                     <input type="text" name="job_salary_range" class="form-control"
                                         id="salaryRange" placeholder="e.g. 18,000 - 35,000/month or 500-800/day">
                                 </div>
@@ -228,7 +228,8 @@
 
                             <!-- Requirements -->
                             <div class="mb-4">
-                                <label for="requirements" class="form-label">Additional Requirements</label>
+                                <label for="requirements" class="form-label">Additional Requirements
+                                    (comma-separated)</label>
                                 <textarea class="form-control" name="job_additional_requirements" id="requirements" rows="3"
                                     placeholder="List any additional qualifications, education, or experience requirements..."></textarea>
                             </div>
@@ -507,7 +508,7 @@
         }
 
         function previousStep() {
-            window.location.href = 'employer-registration.html';
+            window.location.href = '{{ route('employer.login.display') }}';
         }
 
         // Allow enter key to add custom skills

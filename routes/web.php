@@ -232,6 +232,8 @@ Route::middleware(['employer.authenticate'])->prefix('employer')->group(function
 
     //Report the applicant
     Route::post('report/applicant', [ReportController::class, 'reportApplicant'])->name('employer.report.applicant.store');
+    //Remove the applicant report
+    Route::delete('remove/report/applicant/{id}', [ReportController::class, 'removeReportByEmployer'])->name('employer.remove.report.applicant.store');
 
     //Logout
     Route::post('logout', [EmployerController::class, 'logout'])->name('employer.logout.store');

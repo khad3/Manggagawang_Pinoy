@@ -47,39 +47,48 @@
 
      <!-- Applicants Table -->
      <div class="content-section">
-         <div class="section-header">
-             <div class="section-title">
-                 <i class="fas fa-users"></i>
-                 All Applicants
+         <div
+             class="section-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 w-100">
+             <!-- Section Title -->
+             <div class="section-title mb-3 mb-md-0 d-flex align-items-center">
+                 <i class="fas fa-users me-2"></i>
+                 <h4 class="mb-0">All Applicants</h4>
              </div>
-             <div class="section-actions">
-                 <div class="search-input">
-                     <i class="fas fa-search"></i>
-                     <input type="text" class="form-control" placeholder="Search by name or location..."
+
+             <!-- Section Actions: Search + Filters -->
+             <div class="d-flex flex-column flex-md-row gap-2 w-100 align-items-stretch align-items-md-center">
+
+                 <!-- Search Input: flex-grow to fill space -->
+                 <div class="search-input flex-grow-1 position-relative">
+                     <i class="fas fa-search position-absolute top-50 translate-middle-y ms-3 text-muted"></i>
+                     <input type="text" class="form-control ps-5" placeholder="Search by name or location..."
                          id="searchApplicants">
                  </div>
-                 <!--- Filter position ---->
-                 <select class="form-select" id="positionFilter" style="width: auto;">
-                     <option value="">Filter by Position</option>
-                     @if (isset($retrievedApplicants))
-                         @foreach ($retrievedApplicants->pluck('work_background.position')->filter()->unique() as $position)
-                             <option value="{{ $position }}">{{ $position }}</option>
-                         @endforeach
-                     @endif
-                 </select>
 
-                 <!-- Filter by certification -->
-                 <select class="form-select" id="certificationFilter" style="width: auto;">
-                     <option value="">Filter by Certification</option>
-                     @if (isset($retrievedCertifications))
-                         @foreach ($retrievedCertifications as $certification)
-                             <option value="{{ $certification }}">{{ $certification }}</option>
-                         @endforeach
-                     @endif
-                 </select>
+                 <!-- Filters Container: fixed width -->
+                 <div class="d-flex gap-2 mt-2 mt-md-0">
+                     <select class="form-select" id="positionFilter" style="min-width: 180px;">
+                         <option value="">Filter by Position</option>
+                         @if (isset($retrievedApplicants))
+                             @foreach ($retrievedApplicants->pluck('work_background.position')->filter()->unique() as $position)
+                                 <option value="{{ $position }}">{{ $position }}</option>
+                             @endforeach
+                         @endif
+                     </select>
+
+                     <select class="form-select" id="certificationFilter" style="min-width: 180px;">
+                         <option value="">Filter by Certification</option>
+                         @if (isset($retrievedCertifications))
+                             @foreach ($retrievedCertifications as $certification)
+                                 <option value="{{ $certification }}">{{ $certification }}</option>
+                             @endforeach
+                         @endif
+                     </select>
+                 </div>
 
              </div>
          </div>
+
 
          <div class="table-responsive">
              <table class="table modern-table" id="applicantsTable">
@@ -121,11 +130,19 @@
                                          @endif
                                      </strong><br>
                                      <small class="text-muted">
-                                         {{ isset($applicant->work_background->employed) && $applicant->work_background->employed ? 'Employed' : 'Not Employed' }}
-                                         •
+                                         @php
+                                             $employedStatus = isset($applicant->work_background->employed)
+                                                 ? ($applicant->work_background->employed == 'No' ||
+                                                 $applicant->work_background->employed == false
+                                                     ? 'Unemployed'
+                                                     : 'Employed')
+                                                 : 'Not Specified';
+                                         @endphp
+                                         {{ $employedStatus }} •
                                          {{ $applicant->personal_info->city ?? '' }}
                                          {{ $applicant->personal_info->province ?? '' }}
                                      </small>
+
                                  </td>
                                  <td>
                                      <span class="badge bg-success">

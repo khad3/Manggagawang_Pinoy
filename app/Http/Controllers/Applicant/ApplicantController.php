@@ -691,7 +691,7 @@ public function ShowHomepage()
     
 
      // Get only announcements targeted to applicants and published
-    $notifications = AnnouncementModel::where('target_audience', 'applicants')
+    $notifications = AnnouncementModel::whereIn('target_audience', ['applicants' , 'all'])
         ->where('status',['published','scheduled'])
         ->orderBy('created_at', 'desc')
         ->take(5) // limit to 5 latest

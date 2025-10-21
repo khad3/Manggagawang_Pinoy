@@ -90,4 +90,27 @@ class ReportController extends Controller
 }
 
 
+//remove the report of the employer
+public function removeReportByEmployer($id)
+{
+    $employerId = session('employer_id');
+
+    if (!$employerId) {
+        return redirect()->route('employer.login.display')->with('error', 'Please log in as an employer.');
+    }
+
+    $deleted = \App\Models\Report\ReportModel::where('id', $id)
+        ->where('reported_type', 'applicant')
+        ->where('reporter_id', $employerId)
+        ->where('reporter_type', 'employer')
+        ->delete();
+
+    if ($deleted) {
+        return redirect()->back()->with('success', 'Report removed successfully.');
+    }
+
+    return redirect()->back()->with('error', 'Failed to remove report or report not found.');
+}
+
+
 }

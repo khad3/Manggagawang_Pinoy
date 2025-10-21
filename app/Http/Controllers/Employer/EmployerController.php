@@ -28,6 +28,7 @@ use App\Models\Applicant\ApplicantPostModel as ApplicantPostModel;
 
 use App\Mail\Employer\VerifyEmail as EmployerVerificationMail;
 use App\Models\Applicant\TesdaUploadCertificationModel as Certification;
+use App\Models\Admin\AnnouncementModel;
 use App\Models\Applicant\ApplyJobModel;
 use App\Models\Applicant\RegisterModel;
 use Illuminate\Support\Facades\Mail;
@@ -826,9 +827,54 @@ $reportedApplicantIds = \App\Models\Report\ReportModel::where('reporter_id', $em
 
     $isSuspended = \App\Models\Admin\SuspensionModel::where('employer_id', $employerId)->exists();
 
+    $retrievedApplicantReported = \App\Models\Report\ReportModel::where('reported_type', 'applicant')
+    ->with('appplicantReported.personal_info' ,  'appplicantReported.work_background') // assuming you have a relationship
+    ->get();
+
+    //decrypted
+    foreach ($retrievedApplicantReported as $report) {
+        if ($report->appplicantReported && $report->appplicantReported->personal_info) {
+            $personalInfo = $report->appplicantReported->personal_info;
+
+            // Decrypt and clean first name
+            if ($personalInfo->first_name) {
+                $personalInfo->first_name = $this->cleanDecryptedString(
+                    $this->decryptMessage($personalInfo->first_name)
+                );
+            }
+
+            // Decrypt and clean last name
+            if ($personalInfo->last_name) {
+                $personalInfo->last_name = $this->cleanDecryptedString(
+                    $this->decryptMessage($personalInfo->last_name)
+                );
+            }
+
+            if ($report->appplicantReported->work_background) {
+                $report->appplicantReported->work_background->position = $this->cleanDecryptedString(
+                    $this->decryptMessage($report->appplicantReported->work_background->position)
+                );
+            }
+        }
+    }
+
+      // Get only announcements targeted to applicants and published
+    $notifications = AnnouncementModel::whereIn('target_audience', ['employers' ,'all'])
+        ->where('status',['published','scheduled'])
+        ->orderBy('created_at', 'desc')
+        ->take(5) // limit to 5 latest
+        ->get();
+
+
+     $unreadCount = AnnouncementModel::where('target_audience', 'employers')
+    ->where('is_read', false)
+    ->count();
+
 
     return view('employer.homepage.homepage' , compact(
         'jobPosts' ,
+        'notifications',
+        'retrievedApplicantReported' ,
         'isSuspended' ,
         'reportedApplicantIds',
         'retrievePersonal' , 

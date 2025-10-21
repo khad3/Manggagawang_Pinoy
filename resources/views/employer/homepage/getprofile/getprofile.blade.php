@@ -153,8 +153,8 @@
                                             <i class="fas fa-pen-nib me-2"></i> Applicant Post
                                         </h5>
                                         <small class="text-muted">
-                                            Posted by {{ $post->personalInfo->first_name }}
-                                            {{ $post->personalInfo->last_name }} •
+                                            Posted by {{ $retrievedProfile->personal_info->first_name }}
+                                            {{ $retrievedProfile->personal_info->last_name }} •
                                             {{ $post->created_at->diffForHumans() }}
                                         </small>
                                     </div>
@@ -489,8 +489,12 @@
                             </div>
 
                             <div class="assessment-item">
-                                <span class="assessment-label">Completed Jobs:</span>
-                                <span class="assessment-value good">{{ $retrievedPortfolio->count() }} Jobs</span>
+                                <span class="assessment-label">Work Experience(based on Upload work portfolio):</span>
+                                @if ($retrievedPortfolio->count() > 1)
+                                    <span class="assessment-value good">{{ $retrievedPortfolio->count() }} Jobs</span>
+                                @else
+                                    <span class="assessment-value good">{{ $retrievedPortfolio->count() }} Job</span>
+                                @endif
                             </div>
 
                             <div class="assessment-item">
@@ -539,14 +543,14 @@
                         </div>
 
                         <!-- Employer Options -->
-                        <div class="quick-actions mt-3">
+                        {{-- <div class="quick-actions mt-3">
                             <button class="btn btn-sm btn-outline-success">
                                 <i class="fas fa-user-plus"></i> Add to Shortlist
                             </button>
                             <button class="btn btn-sm btn-outline-info">
                                 <i class="fas fa-comments"></i> Send Message
                             </button>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
 
@@ -559,9 +563,6 @@
         <div class="sticky-hiring-bar d-flex justify-content-end gap-2 mt-4">
             <button type="button" class="btn btn-outline-danger px-3">
                 <i class="fas fa-user-times me-1"></i> Reject
-            </button>
-            <button type="button" class="btn btn-outline-warning px-3">
-                <i class="fas fa-envelope me-1"></i> Send Message
             </button>
             <button type="button" class="btn btn-success px-3">
                 <i class="fas fa-user-check me-1"></i> Approve & Hire
