@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Employer;
 
 use App\Http\Controllers\Controller;
+use App\Models\Employer\PersonalInformationModel;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
 use App\Models\Employer\JobDetailModel as JobDetails;
@@ -25,6 +27,7 @@ use App\Models\Applicant\PersonalModel as Applicants;
 use App\Models\Applicant\ApplicantPortfolioModel as ApplicantPortfolioModel;
 use App\Models\Applicant\ApplicantUrlModel as ApplicantUrlModel;
 use App\Models\Applicant\ApplicantPostModel as ApplicantPostModel;
+use App\Models\Employer\CompanyAdressModel;
 
 use App\Mail\Employer\VerifyEmail as EmployerVerificationMail;
 use App\Models\Applicant\TesdaUploadCertificationModel as Certification;
@@ -35,7 +38,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Mail\Applicant\VerifyEmail;
-
+use App\Models\Employer\TesdaPriorityModel;
+use Faker\Provider\ar_EG\Company;
 use Faker\Provider\ar_EG\Person;
 use Illuminate\Contracts\Queue\Job;
 use Illuminate\Support\Facades\Hash;
@@ -724,7 +728,56 @@ foreach ($retrievedApplicants as $applicant) {
         return redirect()->route('employer.login.display');
     }
 
-    $JobPostRetrieved = JobDetails::with('employer' , 'interviewScreening' , 'workerRequirement' , 'specialRequirement' , 'applications.applicant.personal_info')->where('employer_id', $employerId)->get()->sortDesc();
+    $JobPostRetrieved = JobDetails::with([
+        'employer',
+        'companyName',
+        'interviewScreening',
+        'workerRequirement',
+        'specialRequirement',
+        'applications.applicant.personal_info',
+        'appalicationsApproved.applicant.personal_info'
+    ])
+    ->where('employer_id', $employerId)
+    ->withCount([
+        'applications as approved_count' => function ($query) {
+            $query->where('status', 'approved');
+        },
+        'applications as rejected_count' => function ($query) {
+            $query->where('status', 'rejected');
+        },
+        'applications as pending_count' => function ($query) {
+            $query->where('status', 'pending');
+        }
+    ])
+    ->get()
+    ->sortDesc();
+
+    
+function safeDecrypt($value) {
+    if (empty($value)) return null;
+    try {
+        // Attempt decryption
+        return Crypt::decryptString($value);
+    } catch (\Exception $e) {
+        // If decryption fails, return original value (already plain text)
+        return $value;
+    }
+}
+
+foreach ($JobPostRetrieved as $job) {
+    foreach ($job->applications as $application) {
+        $info = $application->applicant->personal_info ?? null;
+        if ($info) {
+            try {
+                $info->first_name = safeDecrypt($info->first_name);
+                $info->last_name = safeDecrypt($info->last_name);
+
+            } catch (\Exception $e) {
+                // ignore if already decrypted
+            }
+        }
+    }
+}
 
     //Decrpyted
     foreach ($JobPostRetrieved as $job) {
@@ -801,7 +854,11 @@ $retrievedCertifications = Certification::whereIn('applicant_id', $applicantIds)
     ->unique();
 
 $employerId = session('employer_id'); // get employer_id from session
-$jobPosts = JobDetails::with('employer', 'companyName')
+$jobPosts = JobDetails::with([
+        'employer',
+        'companyName',
+        'applications.applicant.personal_info'
+    ])
     ->where('employer_id', $employerId)
     ->withCount([
         'applications as approved_count' => function ($query) {
@@ -809,12 +866,15 @@ $jobPosts = JobDetails::with('employer', 'companyName')
         },
         'applications as rejected_count' => function ($query) {
             $query->where('status', 'rejected');
-        }
+        },
+        'applications as pending_count' => function ($query) {
+            $query->where('status', 'pending');
+        },
     ])
     ->get();
 
-// Total approved applicants for specific jobs of this employer
-$totalApproved = $jobPosts->sum('approved_count');
+    $totalApproved = $jobPosts->sum('approved_count');
+
 
 
 
@@ -871,8 +931,12 @@ $reportedApplicantIds = \App\Models\Report\ReportModel::where('reporter_id', $em
     ->count();
 
 
+    $retrievedPersonalInformation = AccountInformation::where('id', $employerId)->with('addressCompany')->first();
+
+
     return view('employer.homepage.homepage' , compact(
         'jobPosts' ,
+        'retrievedPersonalInformation' ,
         'notifications',
         'retrievedApplicantReported' ,
         'isSuspended' ,
@@ -888,6 +952,71 @@ $reportedApplicantIds = \App\Models\Report\ReportModel::where('reporter_id', $em
 
 }
 
+//Update the company name of the employer
+public function updateCompanyName(Request $request) {
+    $employerId = session('employer_id'); // get employer_id from session
+    $companyName = $request->input('company_name');
+
+    CompanyAdressModel::where('employer_id', $employerId)->update(['company_name' => $companyName]);
+
+    return back()->with('success', 'Company name updated successfully.');
+}
+
+
+//Update the company password of the employer
+public function updateCompanyPassword(Request $request)
+{
+    $employerId = session('employer_id');
+
+    if (!$employerId) {
+        return back()->with('error', 'You must be logged in to change your password.');
+    }
+
+    $employer = AccountInformation::find($employerId);
+
+    if (!$employer) {
+        return back()->with('error', 'Employer not found.');
+    }
+
+    // Validate inputs
+    $validator = Validator::make($request->all(), [
+        'old_password' => ['required'],
+        'new_password' => [
+            'required',
+            'string',
+            'min:8',
+            'regex:/[A-Z]/',      // at least one uppercase
+            'regex:/[a-z]/',      // at least one lowercase
+            'regex:/[0-9]/',      // at least one number
+            'regex:/[@$!%*?&#]/', // at least one special char
+            'same:confirm_password'
+        ],
+        'confirm_password' => ['required'],
+    ], [
+        'new_password.regex' => 'Password must include at least one uppercase letter, one lowercase letter, one number, and one special character.',
+        'new_password.same' => 'New password and confirmation do not match.',
+    ]);
+
+    if ($validator->fails()) {
+        return back()->withErrors($validator)->withInput();
+    }
+
+    // Check if old password matches
+    if (!Hash::check($request->old_password, $employer->password)) {
+        return back()->with('error', 'Old password is incorrect.');
+    }
+
+    // Prevent reusing the same password
+    if (Hash::check($request->new_password, $employer->password)) {
+        return back()->with('error', 'New password cannot be the same as your current password.');
+    }
+
+    // Update password
+    $employer->password = Hash::make($request->new_password);
+    $employer->save();
+
+    return back()->with('success', 'Password updated successfully!');
+}
 function safe_unserialize($value) {
     // Check if the value is a serialized string
     if (is_string($value) && preg_match('/^s:\d+:"/', $value)) {
@@ -1262,4 +1391,48 @@ public function rejectApplicant($id) {
     return back()->with('success', 'Application rejected successfully.');   
 
 }
+
+
+public function deleteAccount($id)
+{
+    try {
+        // Find the employer account
+        $account = AccountInformation::findOrFail($id);
+
+        // Delete all related data using employer_id
+        JobDetails::where('employer_id', $id)->delete();
+        CommunicationPreference::where('employer_id', $id)->delete();
+        InterviewScreening::where('employer_id', $id)->delete();
+        SpecialRequirement::where('employer_id', $id)->delete();
+        Rating::where('employer_id', $id)->delete();
+        SendMessage::where('applicant_id', $id)->orWhere('employer_id', $id)->delete();
+        HiringTimeline::where('employer_id', $id)->delete();
+        PersonalInformationModel::where('employer_id', $id)->delete();
+        TesdaPriorityModel::where('employer_id', $id)->delete();
+        WorkerRequirement::where('employer_id', $id)->delete();
+        EmergencyContact::where('employer_id', $id)->delete();
+        CompanyAddress::where('employer_id', $id)->delete();
+        AdditionalInformation::where('employer_id', $id)->delete();
+
+
+        // Delete the main employer account
+        $account->delete();
+
+        // Clear employer session (log out)
+        session()->forget('employer_id');
+        session()->invalidate();
+        session()->regenerateToken();
+
+        // Redirect to employer login with goodbye message
+        return redirect()
+            ->route('employer.login.display')
+            ->with('deleted', 'We will miss you, our dear employer! 💛 Your account has been permanently deleted.');
+    } catch (\Exception $e) {
+        return back()->with('error', 'An error occurred while deleting your account: ' . $e->getMessage());
+    }
+}
+
+
+
+
 }

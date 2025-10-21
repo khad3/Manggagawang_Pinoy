@@ -197,16 +197,13 @@
         <small>Shortlisted</small>
     </div> --}}
                            <div class="job-stat">
-                               @if (session('employer_id'))
-                                   <strong>{{ $totalApproved }}</strong>
-                                   <small>Hired</small>
-                               @endif
+                               <strong>{{ $jobDetail->appalicationsApproved->count() }}</strong>
+                               <small>Hired</small>
                            </div>
 
                        </div>
 
 
-                       {{-- Button to open modal --}}
                        {{-- Button to open modal --}}
                        <button class="btn btn-outline-primary w-100 mt-3" data-bs-toggle="modal"
                            data-bs-target="#applicationsModal-{{ $jobDetail->id }}">

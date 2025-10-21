@@ -69,4 +69,9 @@ class JobDetailModel extends Model
     return $this->hasMany(ApplyJobModel::class, 'job_id' , 'id');
 }
     
+public function appalicationsApproved()
+{
+    return $this->hasMany(ApplyJobModel::class, 'job_id', 'id')
+                ->where('status', 'approved');
+}
 }

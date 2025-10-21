@@ -27,6 +27,6 @@ class ApplyJobModel extends Model
 
     public function applicant()
     {
-        return $this->belongsTo(RegisterModel::class, 'applicant_id');
+        return $this->belongsTo(RegisterModel::class, 'applicant_id','id');
     }
 }

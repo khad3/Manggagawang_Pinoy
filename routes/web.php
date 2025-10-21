@@ -46,44 +46,32 @@ Route::get('/', function () {
 // Public routes 
 Route::prefix('applicant')->group(function () {
     
-
     Route::get('register', [ApplicantController::class, 'ShowRegistrationForm'])->name('applicant.register.display');
     Route::post('register', [ApplicantController::class, 'Register'])->name('applicant.register.store');
-
     Route::get('register/verify', [ApplicantController::class, 'ShowVerifyForm'])->name('verification.display');
     Route::post('register/verify', [ApplicantController::class, 'Verify'])->name('applicant.verification.store');
     Route::post('/verification/resend', [ApplicantController::class, 'resend'])->name('verification.resend');
-
-
     Route::get('login', [ApplicantController::class, 'ShowLoginForm'])->name('applicant.login.display');
     Route::post('login', [ApplicantController::class, 'Login'])->name('applicant.login.store');
-
     //Forgotpassword applicant
     Route::get('forgot-password', [ApplicantController::class, 'forgotPassword'])->name('applicant.forgotpassword.display');
     Route::post('forgot-password', [ApplicantController::class, 'forgotPasswordStore'])->name('applicant.forgotpassword.store');
     Route::post('verify-code', [ApplicantController::class, 'verifyCode'])->name('applicant.verifycode.store');
     Route::post('reset-password', [ApplicantController::class, 'resetPassword'])->name('applicant.resetpassword.store');
 
-
-   
 });
 
 //  Protected routes 
 Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(function () {
     Route::get('info', [ApplicantController::class, 'ShowPersonalInfoForm'])->name('info.personal');
     Route::post('info', [ApplicantController::class, 'PersonalInfo'])->name('applicant.info.personal.stores');
-
     Route::get('info/background', [ApplicantController::class, 'ShowWorkBackgroundForm'])->name('applicant.info.workbackground.display');
     Route::post('info/background', [ApplicantController::class, 'WorkBackground'])->name('applicant.info.workbackground.store');
-
     Route::get('info/template', [ApplicantController::class, 'ShowTemplateFormForm'])->name('applicant.info.template.display');
     Route::post('info/template', [ApplicantController::class, 'TemplateForm'])->name('applicant.info.template.store');
-
     Route::get('homepage', [ApplicantController::class, 'ShowHomepage'])->name('applicant.info.homepage.display');
-    
     //Report the employer job post
     Route::post('report/employer-job-post', [ReportController::class, 'reportEmployerJobPost'])->name('applicant.report.employerjobpost.store');
-   
    // routes/web.php
     Route::post('notifications/{id}/read', [ApplicantController::class, 'ReadNotification']);
     Route::post('/notifications/mark-all-read', [ApplicantController::class, 'ReadlAllnotifications']);
@@ -103,33 +91,27 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
     Route::post('communityforum/create-group', [CommunityForumController::class, 'AddGroupForum'])->name('applicant.forum.group.store');
     Route::get('communityforum/group-community', [CommunityForumController::class, 'DisplayGroupForum'])->name('applicant.forum.groupcommunity.display');
     Route::post('communityforum/join-group', [CommunityForumController::class, 'RequestAndJoinGroup'])->name('applicant.forum.joingroup.store');
-
     // Group-specific posts/comments/likes
     Route::post('communityforum/view-specific-group/{groupId}', [CommunityForumController::class, 'AddPostGroupCommunity'])->name('applicant.forum.addpostgroupcommunity.store');
     Route::get('communityforum/view-specific-group/{id}', [CommunityForumController::class, 'ViewSpecificGroup'])->name('applicant.forum.joinedgroup.display');
-    // Accept or reject join requests
+    // Accept or reject join request
     Route::post('communityforum/groupmembers/{groupId}/accept/{applicantId}', [CommunityForumController::class, 'AcceptJoinRequest'])->name('applicant.forum.groupmembers.accept');
     Route::delete('communityforum/groupmembers/{groupId}/reject/{applicantId}', [CommunityForumController::class, 'RejectJoinRequest'])->name('applicant.forum.groupmembers.reject');
-
     Route::get('communityforum/view-group-creator', [CommunityForumController::class, 'ViewGroupByCreator'])->name('applicant.forum.viewgroupcreator.display');
     Route::delete('communityforum/{id}/view-group-creator', [CommunityForumController::class, 'DeleteGroupByCreator'])->name('applicant.forum.deletegroupcreator.delete');
-
     Route::get('communityforum/view-specific-creator/view-group/{groupId}', [CommunityForumController::class, 'ViewGroupByCreatorPage'])->name('applicant.forum.creatorviewpage.display');
     Route::post('communityforum/view-specific-creator/view-group/{groupId}', [CommunityForumController::class, 'AddPostGroupSpecific'])->name('applicant.forum.addpostgroup.store');
     Route::post('communityforum/view-specific-creator/view-group/{groupId}/comment', [CommunityForumController::class, 'AddCommentGroupSpecific'])->name('applicant.forum.groupcomments.store');
     Route::delete('communityforum/view-specific-creator/view-group/{groupId}/comment/{commentId}', [CommunityForumController::class, 'DeleteCommentGroup'])->name('applicant.forum.groupcomments.delete');
     Route::post('communityforum/view-specific-creator/view-group/{groupId}/like/{postId}', [CommunityForumController::class, 'AddLikeGroup'])->name('applicant.forum.groupaddlike.store');
-
     // Post editing
     Route::get('communityforum/{id}/edit-post', [CommunityForumController::class, 'ShowPostPage'])->name('applicant.forum.editpost.display');
     Route::put('communityforum/{id}/update', [CommunityForumController::class, 'EditPost'])->name('applicant.forum.update');
-
     // Friend
     Route::post('communityforum/add-friend/{id}', [CommunityForumController::class, 'AddFriend'])->name('applicant.forum.addfriend.store');
     Route::delete('communityforum/cancel-friend-request/{id}', [CommunityForumController::class, 'CancelFriendRequest'])->name('applicant.forum.friend.cancel');
     Route::put('communityforum/accept-friend-request/{id}', [CommunityForumController::class, 'AcceptFriendRequest'])->name('applicant.forum.friend.accept');
     Route::get('communityforum/view-friend-list', [CommunityForumController::class, 'ViewFriendlistPage'])->name('applicant.forum.viewfriendlist.display');
-
     // Profile
     Route::get('profile', [ProfileController::class, 'ViewProfilePage'])->name('applicant.profile.display');
     Route::post('add-cover-photo', [ProfileController::class, 'AddCoverPhoto'])->name('applicant.coverphoto.store');
@@ -152,24 +134,18 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
     Route::delete('delete-certification/{id}', [ProfileController::class, 'deleteTesdaCertificate'])->name('applicant.certification.delete');
     //Applicant messages the employer
     Route::post('send-message/employer', [MessageController::class, 'sendMessage'])->name('applicant.sendmessageemployer.store');
-    
-
     // Calling card
     Route::get('callingcard', [ApplicantController::class, 'ViewCallingCard'])->name('applicant.callingcard.display');
-
     //Resume builder
     Route::get('resume', [ApplicantController::class, 'ViewResume'])->name('applicant.resume.display');
-
     // Logout
     Route::post('logout', [ApplicantController::class, 'logout'])->name('applicant.logout.store');
-
     // Chat/messaging
     Route::delete('unfriend/{id}', [ApplicantController::class, 'unFriend'])->name('applicant.unfriend.store');
     Route::post('send-message', [ApplicantController::class, 'sendMessage'])->name('applicant.sendmessage.store');
     Route::post('/friend-request/send/{id}', [ApplicantController::class, 'sendFriendRequest'])->name('applicant.friend.send');
     Route::post('update-lastseen', [ApplicantController::class, 'updateLastSeen'])->name('applicant.updatelastseen.store');
     Route::get('messages/{friend_id}', [ApplicantController::class, 'viewMessages'])->name('applicant.messages.view');
-
     // Typing indicators
     Route::get('/fetch-messages/{id}', [ApplicantController::class, 'fetchMessages']);
     Route::post('/mark-read/{id}', [ApplicantController::class, 'markAsRead']);
@@ -177,8 +153,6 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
     Route::post('/stop-typing', [ApplicantController::class, 'stopTyping'])->name('applicant.typing.stop');
     Route::get('/check-typing/{receiver_id}', [ApplicantController::class, 'checkTyping'])->name('applicant.check.typing');
     Route::get('/get-unread-counts', [ApplicantController::class, 'getUnreadCounts'])->name('applicant.get.unread.counts');
-
-
     //Application status and page
     Route::get('application-status', [ApplicantController::class, 'ViewApplicationStatus'])->name('applicant.application.status.display');
     Route::post('/jobs/{job}/toggle-save', [ApplicantController::class, 'toggleSaveJob'])->name('jobs.toggleSave');
@@ -225,22 +199,21 @@ Route::group(['prefix' => 'employer'], function () {
 
 //Protected routes for employer
 Route::middleware(['employer.authenticate'])->prefix('employer')->group(function () {
-
-
+    //delete account
+    Route::delete('delete-account/{id}', [EmployerController::class, 'deleteAccount'])->name('employer.deleteaccount.destroy');
        //Homepage display
     Route::get('homepage', [EmployerController::class, 'ShowHomepage'])->name('employer.info.homepage.display');
-
     //Report the applicant
     Route::post('report/applicant', [ReportController::class, 'reportApplicant'])->name('employer.report.applicant.store');
     //Remove the applicant report
     Route::delete('remove/report/applicant/{id}', [ReportController::class, 'removeReportByEmployer'])->name('employer.remove.report.applicant.store');
-
+    //Update the company name of the employer
+    Route::put('update-company-name', [EmployerController::class, 'updateCompanyName'])->name('employer.updatecompanyname.store');
+    Route::put('update-company-password', [EmployerController::class, 'updateCompanyPassword'])->name('employer.updatecompanypassword.store');
     //Logout
     Route::post('logout', [EmployerController::class, 'logout'])->name('employer.logout.store');
-
     //show the applicants profile modal
     Route::get('applicant/{id}/profile', [EmployerController::class, 'viewApplicantProfile'])->name('employer.applicantsprofile.display');
-
     //Add job post
     Route::post('add-job-post', [EmployerController::class, 'addJobPost'])->name('employer.jobsposts.store');
     Route::put('job-post/{id}/update', [EmployerController::class, 'updateJobStatus'])->name('employer.updatejobpost.store');
@@ -248,12 +221,8 @@ Route::middleware(['employer.authenticate'])->prefix('employer')->group(function
     //Pending applicants
     Route::put('approve-applicant{id}', [EmployerController::class, 'approveApplicant'])->name('employer.approveapplicant.store');
     Route::put('reject-applicant/{id}', [EmployerController::class, 'rejectApplicant'])->name('employer.rejectapplicant.store');
-
-
     //Send rating 
     Route::post('send-rating', [EmployerController::class, 'sendReview'])->name('employer.sendrating.store');
-
-
     //Send message to applicant
     Route::post('send-message', [SendMessageController::class, 'sendMessage'])->name('employer.sendmessage.store');
     Route::get('conversation/{employerId}/{applicantId}', [SendMessageController::class, 'getConversation'])
@@ -261,17 +230,11 @@ Route::middleware(['employer.authenticate'])->prefix('employer')->group(function
 
 });
 
-
-
 Route::prefix('admin')->group(function () {
-    
     
     Route::get('login', [AdminController::class, 'loginDisplay'])->name('admin.login.display');
     Route::post('login', [AdminController::class, 'login'])->name('admin.login.store');
     
-
-
-  
 });
 
 Route::middleware(['admin.authenticate'])->prefix('admin')->group(function () {
@@ -294,7 +257,6 @@ Route::middleware(['admin.authenticate'])->prefix('admin')->group(function () {
     //Excel
     Route::get('export', [UserManagementController::class, 'exportData'])->name('admin.export');
 
-
 });
 
 
@@ -310,10 +272,8 @@ Route::prefix('tesda-officer')->group(function () {
  Route::middleware(['tesda-officer.authenticate'])->prefix('tesda-officer')->group(function () {
 
     Route::get('homepage' , [TesdaOfficerController::class, 'homepage'])->name('homepage.display');
-
     Route::post('sent-review', [TesdaOfficerController::class, 'approvedOfficer'])->name('tesda-officer.approved.store');
     Route::delete('delete-review', [TesdaOfficerController::class, 'deleteOfficerReview'])->name('tesda-officer.delete');
-
     Route::post('logout', [TesdaOfficerController::class, 'logout'])->name('tesda-officer.logout.store');
 
 });
