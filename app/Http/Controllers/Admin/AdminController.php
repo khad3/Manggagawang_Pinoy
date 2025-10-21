@@ -609,6 +609,43 @@ class AdminController extends Controller
                         'created_at' => $a->created_at,
                     ];
             });
+            function safeDecrypt($value) {
+                if (empty($value)) return null;
+
+                // If serialized, unserialize first
+                if (@unserialize($value) !== false || $value === 'b:0;') {
+                     $value = unserialize($value);
+                }
+
+                try {
+                    return Crypt::decryptString($value);
+                } catch (\Exception $e) {
+                    return $value; // return original if not encrypted
+                }
+            }
+
+            $employerJobPosts = \App\Models\Applicant\ApplyJobModel::with(['applicant.personal_info', 'job.employer.addressCompany'])
+            ->where('status', 'approved')
+            ->latest()
+            ->get()
+            ->map(function ($a) {
+                $info = $a->applicant->personal_info ?? null;
+                $job = $a->job ?? null;
+
+                $firstName = $info ? $this->safeDecrypt($info->first_name) : 'Unknown';
+                $lastName = $info ? $this->safeDecrypt($info->last_name) : 'Applicant';
+
+                return [
+                    'action' => 'approved_job',
+                    'email' => $info ? safeDecrypt($info->email) : 'No email',
+                    'author' => $firstName . ' ' . $lastName,
+                    'description' => 'EMPLOYER: <strong>' . ($job->employer->addressCompany->company_name ?? 'Unknown Company') . '</strong>' .
+                    ' — The job "<strong>' . ($job->title ?? 'N/A') . '</strong>" applied by <strong>' . $firstName . ' ' . $lastName . '</strong>' .
+                    ' has been approved.',
+
+                    'created_at' => $a->created_at,
+                ];
+            });
 
 
 

@@ -344,6 +344,8 @@
                                    <i class="bi bi-flag-fill" style="color:darkred"></i>
                                @elseif($log['action'] === 'report_applicant')
                                    <i class="bi bi-flag-fill" style="color:darkred"></i>
+                               @elseif($log['action'] === 'approved_job')
+                                   <i class="bi bi-patch-check-fill" style="color:green;"></i>
                                @endif
                            </div>
                            <div class="activity-content">
