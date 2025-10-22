@@ -33,6 +33,7 @@
     <div class="login-wrapper">
         <a href="{{ route('display.index') }}" class="close-btnn" title="Go to Landing Page">&times;</a>
         <div class="login-left">
+            <div class="form-container">
             <h2 style="margin-top: 18px;">Manggagawang Pinoy</h2>
             <p class="subtitle">Log in as a worker</p>
             <form class="login-form" method="POST" action="{{ route('applicant.login.store') }}">
@@ -83,13 +84,14 @@
             <div class="login-alt-label"><strong>Sign in as employer</strong></div>
             <button class="sign-in-b employer-btn">Sign in as Employer</button>
         </div>
-
+</div>
         <div class="login-right">
             <div class="centered-portrait">
                 <img src="https://png.pngtree.com/png-clipart/20250518/original/pngtree-construction-worker-standing-on-transparent-background-png-image_21018565.png"
                     alt="User Illustration">
             </div>
-        </div>
+            </div>
+        
     </div>
 
 
