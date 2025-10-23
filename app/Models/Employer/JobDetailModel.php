@@ -58,6 +58,9 @@ class JobDetailModel extends Model
         return $this->belongsTo(CompanyAdressModel::class, 'job_id');
     }
 
+    public function companyAddress(){
+        return $this->belongsTo(CompanyAdressModel::class, 'employer_id' , 'employer_id');
+    }
 
      //new
     public function companyName(){

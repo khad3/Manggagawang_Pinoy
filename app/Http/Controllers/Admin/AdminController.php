@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Admin\AccountAdminModel as Admin;
 use App\Models\Admin\AddTesdaOfficerModel as AddTesdaOfficer;
 use App\Models\Applicant\TesdaUploadCertificationModel as TesdaCertification;
+use App\Models\Employer\JobDetailModel as JobDetails;
 use App\Models\Report\ReportModel;
 use Illuminate\Support\Str;
 use App\Models\Applicant\PostModel as Post;
@@ -227,6 +228,9 @@ class AdminController extends Controller
         }
 
         $certificationsColors = ['#43A047', '#FB8C00', '#E53935', '#1E88E5'];
+
+
+
 
         // Activity logs
         $activityLogs = collect();
@@ -753,7 +757,141 @@ class AdminController extends Controller
         // Format percentage
         $percentageChange = round($percentageChange, 2);
 
+
+        //Chart
+       $allMonths = collect(range(1, 12))->map(function ($m) {
+    return Carbon::create(null, $m, 1)->format('Y-m');
+});
+
+// ✅ Get approved applicants grouped by month
+$approvedApplicants = ApplyJobModel::selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as total")
+    ->where('status', 'approved')
+    ->groupBy('month')
+    ->orderBy('month')
+    ->pluck('total', 'month');
+
+// ✅ Build chart data with all months
+$approvedChartData = [];
+$approvedChartData[] = "['Month', 'Approved Applicants']";
+
+foreach ($allMonths as $month) {
+    $monthLabel = Carbon::createFromFormat('Y-m', $month)->format('M');
+    $count = $approvedApplicants->get($month, 0); // show 0 if no data
+    $approvedChartData[] = "['{$monthLabel}', {$count}]";
+}
+
+// ✅ Chart color
+$colors = ['#43A047'];
+
+    $topJobs = ApplyJobModel::selectRaw('job_id, COUNT(*) as total')
+    ->where('status', 'approved')
+    ->groupBy('job_id')
+    ->orderByDesc('total')
+    ->limit(10)
+    ->with('job')
+    ->get();
+
+$topJobsChartData = [];
+$topJobsChartData[] = "['Job Title', 'Hired Applicants']";
+
+foreach ($topJobs as $record) {
+    $jobTitle = addslashes($record->job->title ?? 'Unknown Job');
+    $topJobsChartData[] = "['{$jobTitle}', {$record->total}]";
+}
+
+$topJobsColors = ['#FF9800'];
+
+
+        // Applicant Per Location
+$approvedByLocation = ApplyJobModel::where('status', 'approved')
+    ->with('applicant.personal_info') // to access city
+    ->get()
+    ->groupBy(function ($record) {
+        try {
+            $cityValue = $record->applicant->personal_info->city ?? 'Unknown';
+
+            // ✅ Check if the value looks encrypted (encrypted values are usually long base64 strings)
+            if (preg_match('/^[A-Za-z0-9+\/=]{80,}$/', $cityValue)) {
+                return Crypt::decryptString($cityValue);
+            }
+
+            // ✅ Otherwise, return as-is (already plain text)
+            return $cityValue ?: 'Unknown City';
+        } catch (\Exception $e) {
+            return 'Unknown City';
+        }
+    })
+    ->map(function ($group) {
+        return $group->count();
+    });
+
+// ✅ Build chart data
+$locationChartData = [];
+$locationChartData[] = "['City', 'Approved Applicants']";
+
+foreach ($approvedByLocation as $city => $count) {
+    $safeCity = addslashes($city);
+    $locationChartData[] = "['{$safeCity}', {$count}]";
+}
+
+// ✅ Chart color
+
+$locationColors = ['#43A047']; // green tone
+
+
+
+// Get all jobs with employer info
+$jobsByLocation = JobDetails::where('status_post', 'published')->with('employer.AddressCompany')
+    ->get()
+    ->groupBy(function ($job) {
+        try {
+            $cityValue = $job->employer->addressCompany->company_municipality ?? 'Unknown';
+
+            if ($cityValue) {
+                // 🔹 Check if it looks encrypted (base64-like string)
+                if (preg_match('/^[A-Za-z0-9+\/=]{80,}$/', $cityValue)) {
+                    // ✅ Decrypt if encrypted
+                    return Crypt::decryptString($cityValue);
+                } else {
+                    // ✅ Already decrypted / plain text
+                    return $cityValue;
+                }
+            } else {
+                return 'Unknown City';
+            }
+        } catch (\Exception $e) {
+            return 'Unknown City';
+        }
+    })
+    ->map(function ($group) {
+        return $group->count(); // count jobs per city
+    });
+
+// ✅ Build chart data
+$jobsLocationChartData = [];
+$jobsLocationChartData[] = "['City', 'Jobs Posted']";
+
+foreach ($jobsByLocation as $city => $count) {
+    $safeCity = addslashes($city);
+    $jobsLocationChartData[] = "['{$safeCity}', {$count}]";
+}
+
+// ✅ Chart color
+$jobsLocationColors = ['#1E88E5']; // blue tone
+
+        
+
         return view('admin.homepage.homepage', compact(
+            'jobsLocationChartData',
+            'jobsLocationColors',
+            'locationChartData',
+            'locationColors',
+            'locationChartData',
+            'jobTitle',
+            'topJobsChartData',
+            'topJobsColors',
+            'approvedChartData',
+            'colors',
             'employerCount',
             'totalIssueCertifications',
 

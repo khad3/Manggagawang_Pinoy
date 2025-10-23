@@ -146,35 +146,16 @@
 
 
 
-      @php
-          // ✅ Example dummy data for approved hires this year
-          $chartData = [
-              "['Month', 'Approved Hires']",
-              "['January', 8]",
-              "['February', 14]",
-              "['March', 22]",
-              "['April', 19]",
-              "['May', 25]",
-              "['June', 21]",
-              "['July', 28]",
-              "['August', 32]",
-              "['September', 30]",
-              "['October', 35]",
-              "['November', 40]",
-              "['December', 45]",
-          ];
 
-          // 🎨 Chart color (you can change it if you like)
-          $colors = ['#2196F3']; // blue tone
-      @endphp
-
+      <!-- Chart Container -->
       <div class="chart-container">
-          <h3 class="chart-title">Approved Hires Per Month</h3>
+          <h3 class="chart-title">Approved Applicants Per Month</h3>
           <div class="chart-placeholder">
-              <div id="approvedHiresChart" style="width: 100%; height: 400px;"></div>
+              <div id="approvedApplicantsChart" style="width: 100%; height: 350px;"></div>
           </div>
       </div>
 
+      <!--  Google Charts Script -->
       <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
       <script type="text/javascript">
           google.charts.load('current', {
@@ -183,63 +164,61 @@
           google.charts.setOnLoadCallback(drawChart);
 
           function drawChart() {
-              // ✅ Convert PHP data into Google Chart format
+              // Data
               var data = google.visualization.arrayToDataTable([
-                  {!! implode(',', $chartData) !!}
+                  {!! implode(',', $approvedChartData) !!}
               ]);
 
-              // ✅ Chart configuration
+              // Options
               var options = {
-                  title: 'Approved Hires Per Month (2025)',
+                  title: 'Approved Applicants Per Month (2025)',
                   chartArea: {
-                      width: '70%'
+                      width: '70%',
+                      height: '40%'
                   },
+                  bar: {
+                      groupWidth: '30%'
+                  }, // thinner bars → more space between months
                   hAxis: {
-                      title: 'Month'
+                      title: 'Month',
+                      textStyle: {
+                          fontSize: 11
+                      }
                   },
                   vAxis: {
-                      title: 'Total Approved Hires',
+                      title: 'Total Approved Applicants',
                       minValue: 0,
                       gridlines: {
                           count: 5
                       },
+                      textStyle: {
+                          fontSize: 11
+                      },
                       format: '0'
                   },
-                  colors: {!! json_encode($colors) !!}
+                  colors: {!! json_encode($colors) !!},
+                  legend: {
+                      position: 'none'
+                  },
+                  titleTextStyle: {
+                      fontSize: 15
+                  }
               };
 
-              // ✅ Draw the chart
+              // Draw the chart
               var chart = new google.visualization.ColumnChart(
-                  document.getElementById('approvedHiresChart')
+                  document.getElementById('approvedApplicantsChart')
               );
               chart.draw(data, options);
           }
       </script>
 
-      @php
-          // ✅ Dummy data for Top 10 Jobs (Approved Applicants)
-          $chartData = [
-              "['Job Title', 'Approved Applicants']",
-              "['Software Developer', 48]",
-              "['Graphic Designer', 36]",
-              "['Customer Support', 33]",
-              "['Web Developer', 30]",
-              "['Data Analyst', 27]",
-              "['IT Technician', 25]",
-              "['Marketing Assistant', 22]",
-              "['Accountant', 20]",
-              "['HR Coordinator', 18]",
-              "['Delivery Driver', 15]",
-          ];
-
-          // 🎨 Example color palette
-          $colors = ['#FF9800']; // orange tone
-      @endphp
 
       <div class="chart-container">
-          <h3 class="chart-title">Top 10 Jobs with Most Approved Applicants</h3>
+          <h3 class="chart-title">Top 10 Jobs with Most Hired Applicants</h3>
           <div class="chart-placeholder">
-              <div id="topJobsChart" style="width: 100%; height: 400px;"></div>
+              <!--  Reduced chart height -->
+              <div id="topJobsChart" style="width: 100%; height: 300px;"></div>
           </div>
       </div>
 
@@ -248,38 +227,52 @@
           google.charts.load('current', {
               packages: ['corechart']
           });
-          google.charts.setOnLoadCallback(drawChart);
+          google.charts.setOnLoadCallback(drawTopJobsChart);
 
-          function drawChart() {
-              // ✅ Convert PHP data into chart format
+          function drawTopJobsChart() {
+
               var data = google.visualization.arrayToDataTable([
-                  {!! implode(',', $chartData) !!}
+                  {!! implode(',', $topJobsChartData) !!}
               ]);
 
-              // ✅ Chart options
               var options = {
-                  title: 'Top 10 Jobs with Most Approved Applicants (2025)',
+                  title: 'Top 10 Jobs with Most Hired Applicants (2025)',
                   chartArea: {
-                      width: '70%'
-                  },
+                      width: '70%',
+                      height: '40%'
+                  }, // controls chart area
+                  bar: {
+                      groupWidth: '20%'
+                  }, // smaller bar width
                   hAxis: {
-                      title: 'Job Title'
+                      title: 'Job Title',
+                      textStyle: {
+                          fontSize: 10
+                      },
+                      slantedText: true,
+                      slantedTextAngle: 45
                   },
                   vAxis: {
-                      title: 'Approved Applicants',
+                      title: 'Hired Applicants',
                       minValue: 0,
                       gridlines: {
                           count: 5
                       },
+                      textStyle: {
+                          fontSize: 10
+                      },
                       format: '0'
                   },
-                  colors: {!! json_encode($colors) !!},
-                  bar: {
-                      groupWidth: '60%'
+                  colors: {!! json_encode($topJobsColors) !!},
+                  legend: {
+                      position: 'none'
                   },
+                  titleTextStyle: {
+                      fontSize: 14
+                  }
               };
 
-              // ✅ Draw chart
+
               var chart = new google.visualization.ColumnChart(
                   document.getElementById('topJobsChart')
               );
@@ -287,30 +280,12 @@
           }
       </script>
 
-      @php
-          // ✅ Dummy data for applicants by location
-          $locationChartData = [
-              "['Location', 'Total Applicants']",
-              "['Indang', 40]",
-              "['Silang', 55]",
-              "['Dasmariñas', 60]",
-              "['Trece Martires', 35]",
-              "['General Trias', 45]",
-              "['Tagaytay', 25]",
-              "['Amadeo', 20]",
-              "['Carmona', 30]",
-              "['Alfonso', 15]",
-              "['Mendez', 10]",
-          ];
 
-          // 🎨 Chart color (green tone)
-          $locationColors = ['#4CAF50'];
-      @endphp
 
       <div class="chart-container">
-          <h3 class="chart-title">Applicants by Location</h3>
+          <h3 class="chart-title">Hired Applicants by Location</h3>
           <div class="chart-placeholder">
-              <div id="applicantsByLocationChart" style="width: 100%; height: 400px;"></div>
+              <div id="approvedByLocationChart" style="width: 100%; height: 350px;"></div>
           </div>
       </div>
 
@@ -319,62 +294,61 @@
           google.charts.load('current', {
               packages: ['corechart']
           });
-          google.charts.setOnLoadCallback(drawLocationChart);
+          google.charts.setOnLoadCallback(drawChart);
 
-          function drawLocationChart() {
+          function drawChart() {
               var data = google.visualization.arrayToDataTable([
                   {!! implode(',', $locationChartData) !!}
               ]);
 
               var options = {
-                  title: 'Applicants by Location (2025)',
+                  title: 'Hired Applicants by Location (2025)',
                   chartArea: {
-                      width: '70%'
+                      width: '70%',
+                      height: '40%'
                   },
+                  bar: {
+                      groupWidth: '20%'
+                  }, // thinner bars
                   hAxis: {
-                      title: 'Location'
+                      title: 'City',
+                      textStyle: {
+                          fontSize: 11
+                      },
+                      slantedText: true,
+                      slantedTextAngle: 30 // tilt labels for readability
                   },
                   vAxis: {
-                      title: 'Total Applicants',
+                      title: 'Approved Applicants',
                       minValue: 0,
                       gridlines: {
                           count: 5
-                      }
+                      },
+                      textStyle: {
+                          fontSize: 11
+                      },
+                      format: '0'
                   },
-                  colors: {!! json_encode($locationColors) !!}
+                  colors: {!! json_encode($locationColors) !!},
+                  legend: {
+                      position: 'none'
+                  },
+                  titleTextStyle: {
+                      fontSize: 14
+                  }
               };
 
               var chart = new google.visualization.ColumnChart(
-                  document.getElementById('applicantsByLocationChart')
+                  document.getElementById('approvedByLocationChart')
               );
               chart.draw(data, options);
           }
       </script>
 
-      @php
-          // 🏢 Dummy data for employers by location
-          $employerLocationChartData = [
-              "['Location', 'Number of Employers']",
-              "['Indang', 8]",
-              "['Silang', 12]",
-              "['Dasmariñas', 15]",
-              "['Trece Martires', 9]",
-              "['General Trias', 10]",
-              "['Tagaytay', 6]",
-              "['Amadeo', 4]",
-              "['Carmona', 7]",
-              "['Alfonso', 5]",
-              "['Mendez', 3]",
-          ];
-
-          // 🎨 Chart color (purple tone)
-          $employerLocationColors = ['#9C27B0'];
-      @endphp
-
       <div class="chart-container">
-          <h3 class="chart-title">Employers by Location</h3>
+          <h3 class="chart-title">Jobs Posted by Employers per Location</h3>
           <div class="chart-placeholder">
-              <div id="employersByLocationChart" style="width: 100%; height: 400px;"></div>
+              <div id="jobsByLocationChart" style="width: 100%; height: 350px;"></div>
           </div>
       </div>
 
@@ -383,41 +357,57 @@
           google.charts.load('current', {
               packages: ['corechart']
           });
-          google.charts.setOnLoadCallback(drawEmployersByLocationChart);
+          google.charts.setOnLoadCallback(drawJobsByLocationChart);
 
-          function drawEmployersByLocationChart() {
-              // ✅ Convert Blade array to chart data
+          function drawJobsByLocationChart() {
               var data = google.visualization.arrayToDataTable([
-                  {!! implode(',', $employerLocationChartData) !!}
+                  {!! implode(',', $jobsLocationChartData) !!}
               ]);
 
-              // ✅ Chart setup
               var options = {
-                  title: 'Employers by Location (2025)',
+                  title: 'Jobs Posted by Employers per Location (2025)',
                   chartArea: {
-                      width: '70%'
+                      width: '70%',
+                      height: '70%'
+                  },
+                  bar: {
+                      groupWidth: '50%'
                   },
                   hAxis: {
-                      title: 'Location'
+                      title: 'City',
+                      textStyle: {
+                          fontSize: 11
+                      },
+                      slantedText: true,
+                      slantedTextAngle: 30
                   },
                   vAxis: {
-                      title: 'Number of Employers',
+                      title: 'Jobs Posted',
                       minValue: 0,
                       gridlines: {
                           count: 5
                       },
+                      textStyle: {
+                          fontSize: 11
+                      },
                       format: '0'
                   },
-                  colors: {!! json_encode($employerLocationColors) !!}
+                  colors: {!! json_encode($jobsLocationColors) !!},
+                  legend: {
+                      position: 'none'
+                  },
+                  titleTextStyle: {
+                      fontSize: 14
+                  }
               };
 
-              // ✅ Draw chart
               var chart = new google.visualization.ColumnChart(
-                  document.getElementById('employersByLocationChart')
+                  document.getElementById('jobsByLocationChart')
               );
               chart.draw(data, options);
           }
       </script>
+
 
       @php
           // 📈 Dummy data for employment rate by location (percentage of applicants hired)
@@ -487,6 +477,8 @@
               chart.draw(data, options);
           }
       </script>
+
+
 
 
   </section>
