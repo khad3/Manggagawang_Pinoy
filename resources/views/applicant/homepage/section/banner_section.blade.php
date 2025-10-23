@@ -6,7 +6,7 @@
         <div class="hero-stats">
             <div class="stat-card">
                 @if ($applicantCounts == 1)
-                    <span class="stat-number">{{ $applicantCounts }}+</span>
+                    <span class="stat-number">{{ $applicantCounts }}</span>
                     <div class="stat-label">Skilled Workers Registered</div>
                 @else
                     <span class="stat-number">{{ $applicantCounts }}+</span>

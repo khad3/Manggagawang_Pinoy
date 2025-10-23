@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Applicant\CommunityForumController;
+use App\Http\Controllers\Applicant\SettingController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Applicant\ApplicantController; 
 use App\Http\Controllers\Employer\EmployerController;
@@ -15,8 +16,10 @@ use App\Http\Controllers\TesdaOfficer\TesdaOfficerController;
 use App\Http\Controllers\Employer\SendMessageController;
 use App\Http\Controllers\TermsAndCondition\TermAnfConditionController;
 use App\Http\Controllers\Applicant\ReportController;
+use App\Http\Controllers\Applicant\ReportEmployerController;
 use App\Models\Employer\SendMessageModel;
 use App\Models\User;
+use Hamcrest\Core\Set;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\App;
 
@@ -63,6 +66,15 @@ Route::prefix('applicant')->group(function () {
 
 //  Protected routes 
 Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(function () {
+    //Report display file
+    Route::get('report-list', [ReportEmployerController::class, 'index'])->name('applicant.report.display');
+    Route::delete('report-list/{id}', [ReportEmployerController::class, 'removeReport'])->name('applicant.report.delete');
+    //Setting
+    Route::get('setting', [SettingController::class, 'index'])->name('applicant.setting.display');
+    Route::put('setting-update-password', [SettingController::class, 'updatePassword'])->name('applicant.setting.update.password.store');
+    //Delete account 
+    Route::delete('delete-account', [SettingController::class, 'deleteAccount'])->name('applicant.deleteaccount.destroy');
+
     Route::get('info', [ApplicantController::class, 'ShowPersonalInfoForm'])->name('info.personal');
     Route::post('info', [ApplicantController::class, 'PersonalInfo'])->name('applicant.info.personal.stores');
     Route::get('info/background', [ApplicantController::class, 'ShowWorkBackgroundForm'])->name('applicant.info.workbackground.display');

@@ -308,7 +308,7 @@ class AdminController extends Controller
                 'email' => $p->applicant->email ?? 'Unknown Applicant',
                 'author' => trim(($p->applicant->personal_info->first_name ?? '') . ' ' . ($p->applicant->personal_info->last_name ?? '')),
                 'description' => "<strong>APPLICANT:</strong>  {$p->applicant->email} has posted a new post to community forum: " . "<strong>" . strip_tags(Str::limit($p->content, 100)). "</strong>",
-                'created_at' => $p->created_at,
+                'created_at' =>  $p->updated_at ?? $p->created_at,
             ]);
 
         //Applicant logins
@@ -320,7 +320,7 @@ class AdminController extends Controller
                     'action' => 'login',
                     'email' => $u->email,
                     'description' => "<strong>APPLICANT:</strong> {$u->email} logged in",
-                    'created_at' => $u->last_login,
+                    'created_at' =>  $u->updated_at ?? $u->created_at,
                 ];
             });
 
@@ -358,7 +358,7 @@ class AdminController extends Controller
                     'action' => 'login',
                     'email' => $u->email,
                     'description' => "<strong>EMPLOYER:</strong> {$u->email} logged in",
-                    'created_at' => $u->last_login,
+                    'created_at' =>  $u->updated_at ?? $u->created_at,
                 ];
             });
 
@@ -373,7 +373,7 @@ class AdminController extends Controller
                         'email' => $employer?->email ?? 'Unknown Employer',
                         'author' => trim(($employer?->personal_info?->first_name ?? '') . ' ' . ($employer?->personal_info?->last_name ?? '')),
                         'description' => "<strong>EMPLOYER:</strong>  " . ($employer?->email ?? 'Unknown Employer') . " has posted a new job:  " ."<strong>". strip_tags(Str::limit($p->job_description, 100)). "</strong>",
-                        'created_at' => $p->created_at,
+                        'created_at' =>  $p->updated_at ?? $p->created_at,
                     ];
             });
 
@@ -391,7 +391,7 @@ class AdminController extends Controller
                         'email' => $applicant?->email ?? 'Unknown Applicant',
                         'author' => trim(($applicant?->personal_info?->first_name ?? '') . ' ' . ($applicant?->personal_info?->last_name ?? '')),
                         'description' =>  ($applicant?->email ?? 'Unknown Applicant') . " has uploaded a new certification " . "<strong>".strip_tags(Str::limit($c->certification_program, 100)). "</strong>",
-                        'created_at' => $c->created_at,
+                        'created_at' =>  $c->updated_at ?? $c->created_at,
                     ];
             });
 
@@ -408,7 +408,7 @@ class AdminController extends Controller
                         'email' => $applicant?->email ?? 'Unknown Applicant',
                         'author' => trim(($applicant?->personal_info?->first_name ?? '') . ' ' . ($applicant?->personal_info?->last_name ?? '')),
                         'description' => ($applicant?->email ?? 'Unknown Applicant') . " certification of " .($c->certification_program ?? 'Unknown Certification') . " has been approved  by tesda_officer : " . ($approver?->first_name ?? 'Unknown tesda_officer') . " " . strip_tags(Str::limit($c->officer_comment, 100)),
-                        'created_at' => $c->created_at,
+                        'created_at' =>  $c->updated_at ?? $c->created_at,
                     ];
             });
 
@@ -425,7 +425,7 @@ class AdminController extends Controller
                         'email' => $applicant?->email ?? 'Unknown Applicant',
                         'author' => trim(($applicant?->personal_info?->first_name ?? '') . ' ' . ($applicant?->personal_info?->last_name ?? '')),
                         'description' => "Rejected certification by tesda_officer  " . ($approver?->first_name ?? 'Unknown tesda_officer') . " " . strip_tags(Str::limit($c->officer_comment, 100)),
-                        'created_at' => $c->created_at,
+                        'created_at' =>  $c->updated_at ?? $c->created_at,
                     ];
             });
 
@@ -442,7 +442,7 @@ class AdminController extends Controller
                         'email' => $applicant?->email ?? 'Unknown Applicant',
                         'author' => trim(($applicant?->personal_info?->first_name ?? '') . ' ' . ($applicant?->personal_info?->last_name ?? '')),
                          'description' => ($applicant?->email ?? 'Unknown Applicant') . " certification of " .($c->certification_program ?? 'Unknown Certification') . " has been requested revision by tesda_officer  " . ($approver?->first_name ?? 'Unknown tesda_officer') . " : " ."<strong>" . strip_tags(Str::limit($c->officer_comment, 100)). "</strong>",
-                        'created_at' => $c->created_at,
+                        'created_at' =>  $c->updated_at ?? $c->created_at,
                     ];
             });
 
@@ -458,7 +458,7 @@ class AdminController extends Controller
                             'action' => 'apply_job',
                             'email' => $applicant?->email ?? 'Unknown Applicant',
                             'author' => trim(($applicant?->personal_info?->first_name ?? '') . ' ' . ($applicant?->personal_info?->last_name ?? '')),
-                            'description' => '<strong>APPLICANT:</strong> ' . ($applicant?->email ?? 'Unknown Applicant') . ' applied for the job <strong>' . ($job?->title ?? 'Unknown Job') . '</strong>','created_at' => $a->created_at,
+                            'description' => '<strong>APPLICANT:</strong> ' . ($applicant?->email ?? 'Unknown Applicant') . ' applied for the job <strong>' . ($job?->title ?? 'Unknown Job') . '</strong>','created_at' => $a-> $a->updated_at ?? $a->created_at,
                         ];
             });
 
@@ -476,7 +476,7 @@ class AdminController extends Controller
                             'action' => 'reject_job',
                             'email' => $applicant?->email ?? 'Unknown Applicant',
                             'author' => trim(($applicant?->personal_info?->first_name ?? '') . ' ' . ($applicant?->personal_info?->last_name ?? '')),
-                            'description' => '<strong>EMPLOYER:</strong> Rejected the application of ' . ($applicant?->email ?? 'Unknown Applicant') . ' for the job <strong>' . ($job?->title ?? 'Unknown Job') . '</strong>', 'created_at' => $a->created_at,
+                            'description' => '<strong>EMPLOYER:</strong> Rejected the application of ' . ($applicant?->email ?? 'Unknown Applicant') . ' for the job <strong>' . ($job?->title ?? 'Unknown Job') . '</strong>', 'created_at' =>  $a->updated_at ?? $a->created_at,
                         ];
             });
 
@@ -491,7 +491,7 @@ class AdminController extends Controller
                         'action' => 'post_announcement',
                         'email' => $admin?->email ?? 'Unknown Admin',
                         'author' => trim(($admin?->first_name ?? '') . ' ' . ($admin?->last_name ?? '')),
-                        'description' => '<strong>ANNOUNCEMENT:</strong> ' . strip_tags(Str::limit($a->title, 100)), strip_tags(Str::limit($a->content, 100)),'created_at' => $a->created_at,
+                        'description' => '<strong>ANNOUNCEMENT:</strong> ' . strip_tags(Str::limit($a->title, 100)), strip_tags(Str::limit($a->content, 100)),'created_at' =>  $a->updated_at ?? $a->created_at,
                     ];
             });
 
@@ -533,7 +533,7 @@ class AdminController extends Controller
                     '<br><strong>Reason:</strong> ' . $reasonText .
                     '<br><strong>Additional Details:</strong> ' . ($a->additional_info ?? 'No additional details provided.'),
                     'attachment' => $attachmentUrl,
-                    'created_at' => $a->created_at,
+                    'created_at' =>  $a->updated_at ?? $a->created_att,
                 ];
             });
 
@@ -606,7 +606,7 @@ class AdminController extends Controller
                         'author' => $applicantName ?: 'Unknown Applicant',
                         'description' => $description,
                         'attachment' => $attachmentUrl,
-                        'created_at' => $a->created_at,
+                        'created_at' =>  $a->updated_at ?? $a->created_at,
                     ];
             });
             function safeDecrypt($value) {
@@ -643,13 +643,58 @@ class AdminController extends Controller
                     ' — The job "<strong>' . ($job->title ?? 'N/A') . '</strong>" applied by <strong>' . $firstName . ' ' . $lastName . '</strong>' .
                     ' has been approved.',
 
-                    'created_at' => $a->created_at,
+                    'created_at' =>  $a->updated_at ?? $a->created_at,
                 ];
             });
+
+            // Employer job posts
+            $employerJobPost = \App\Models\Employer\JobDetailModel::with(['employer.addressCompany'])
+            ->where('status_post', 'published')
+            ->latest()
+            ->get()
+            ->map(function ($a) {
+                $info = $a->employer->addressCompany ?? null;
+
+                return [
+                    'action' => 'published_job',
+                    'email' => $info ? safeDecrypt($info->email) : 'No email',
+                    'author' => $info ? safeDecrypt($info->company_name) : 'Unknown Company',
+                    'description' => '<strong>EMPLOYER:</strong> <strong>' . 
+                        ($info ? safeDecrypt($info->company_name) : 'Unknown Company') . 
+                        '</strong> — The job "<strong>' . 
+                        ($a->title ?? 'N/A') . 
+                        '</strong>" has been approved and published.',
+                    'created_at' =>  $a->updated_at ?? $a->created_at,
+                ];
+            });
+
+            //Employer draft job posts
+            $employerDraftJobPost = \App\Models\Employer\JobDetailModel::with(['employer.addressCompany'])
+            ->where('status_post', 'draft')
+            ->latest()
+            ->get()
+            ->map(function ($a) {
+                $info = $a->employer->addressCompany ?? null;
+
+                return [
+                    'action' => 'draft_job',
+                    'email' => $info ? safeDecrypt($info->email) : 'No email',
+                    'author' => $info ? safeDecrypt($info->company_name) : 'Unknown Company',
+                    'description' => '<strong>EMPLOYER:</strong> <strong>' . 
+                        ($info ? safeDecrypt($info->company_name) : 'Unknown Company') . 
+                        '</strong> — The job "<strong>' . 
+                        ($a->title ?? 'N/A') . 
+                        '</strong>" has been saved as a draft.',
+                    'created_at' =>  $a->updated_at ?? $a->created_at,
+                ];
+            });
+            
 
 
 
         $activityLogs = collect()
+            ->merge($employerDraftJobPost)
+            ->merge($employerJobPost)
             ->merge($applicantGotReports)
             ->merge($employerPostGotReports)
             ->merge($adminPostedAnnouncements)

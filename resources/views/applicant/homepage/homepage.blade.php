@@ -109,9 +109,13 @@
                                     <i class="bi bi-bookmark"></i>
                                     Saved Jobs
                                 </a> -->
-                                <a href="#" class="dropdown-item">
+                                <a href="{{ route('applicant.setting.display') }}" class="dropdown-item">
                                     <i class="bi bi-gear"></i>
                                     Settings
+                                </a>
+                                <a href="{{ route('applicant.report.display') }}" class="dropdown-item">
+                                    <i class="bi bi-flag"></i>
+                                    Report
                                 </a>
                                 <hr class="dropdown-divider">
                                 <form method="POST" action="{{ route('applicant.logout.store') }}">
