@@ -99,6 +99,7 @@
           </div>
       </div>
 
+      <!---- User Registration Trends --->
       <div class="chart-container">
           <h3 class="chart-title">User Registration Trends</h3>
           <div class="chart-placeholder">
@@ -121,8 +122,12 @@
               var options = {
                   title: 'User Registration Trends',
                   chartArea: {
-                      width: '70%'
+                      width: '70%',
+                      height: '40%'
                   },
+                  bar: {
+                      groupWidth: '45%'
+                  }, // thinner bars → more space between months
                   hAxis: {
                       title: 'Month'
                   },
@@ -146,7 +151,7 @@
 
 
 
-
+      <!----Approved Applicants Per Month---->
       <!-- Chart Container -->
       <div class="chart-container">
           <h3 class="chart-title">Approved Applicants Per Month</h3>
@@ -177,7 +182,7 @@
                       height: '40%'
                   },
                   bar: {
-                      groupWidth: '30%'
+                      groupWidth: '45%'
                   }, // thinner bars → more space between months
                   hAxis: {
                       title: 'Month',
@@ -196,7 +201,7 @@
                       },
                       format: '0'
                   },
-                  colors: {!! json_encode($colors) !!},
+                  colors: {!! json_encode($Approvedcolors) !!},
                   legend: {
                       position: 'none'
                   },
@@ -213,7 +218,7 @@
           }
       </script>
 
-
+      <!---- Top 10 Jobs with Most Hired Applicants --->
       <div class="chart-container">
           <h3 class="chart-title">Top 10 Jobs with Most Hired Applicants</h3>
           <div class="chart-placeholder">
@@ -242,7 +247,7 @@
                       height: '40%'
                   }, // controls chart area
                   bar: {
-                      groupWidth: '20%'
+                      groupWidth: '15%'
                   }, // smaller bar width
                   hAxis: {
                       title: 'Job Title',
@@ -281,7 +286,7 @@
       </script>
 
 
-
+      <!--- Hired Applicants by Location ---->
       <div class="chart-container">
           <h3 class="chart-title">Hired Applicants by Location</h3>
           <div class="chart-placeholder">
@@ -308,7 +313,7 @@
                       height: '40%'
                   },
                   bar: {
-                      groupWidth: '20%'
+                      groupWidth: '15%'
                   }, // thinner bars
                   hAxis: {
                       title: 'City',
@@ -345,6 +350,7 @@
           }
       </script>
 
+      <!--- Jobs Posted by Employers per Location --->
       <div class="chart-container">
           <h3 class="chart-title">Jobs Posted by Employers per Location</h3>
           <div class="chart-placeholder">
@@ -368,10 +374,10 @@
                   title: 'Jobs Posted by Employers per Location (2025)',
                   chartArea: {
                       width: '70%',
-                      height: '70%'
+                      height: '40%'
                   },
                   bar: {
-                      groupWidth: '50%'
+                      groupWidth: '15%'
                   },
                   hAxis: {
                       title: 'City',
@@ -408,29 +414,9 @@
           }
       </script>
 
-
-      @php
-          // 📈 Dummy data for employment rate by location (percentage of applicants hired)
-          $employmentRateChartData = [
-              "['Location', 'Employment Rate (%)']",
-              "['Silang', 85]",
-              "['Dasmariñas', 80]",
-              "['General Trias', 75]",
-              "['Indang', 70]",
-              "['Trece Martires', 65]",
-              "['Carmona', 60]",
-              "['Tagaytay', 55]",
-              "['Amadeo', 50]",
-              "['Alfonso', 45]",
-              "['Mendez', 40]",
-          ];
-
-          // 🎨 Chart color (gold tone)
-          $employmentRateColors = ['#FFC107']; // amber
-      @endphp
-
+      <!---Employement Rate by Employer City--->
       <div class="chart-container">
-          <h3 class="chart-title">Employment Rate by Location</h3>
+          <h3 class="chart-title">Employment Rate by Employer City</h3>
           <div class="chart-placeholder">
               <div id="employmentRateChart" style="width: 100%; height: 400px;"></div>
           </div>
@@ -444,39 +430,57 @@
           google.charts.setOnLoadCallback(drawEmploymentRateChart);
 
           function drawEmploymentRateChart() {
-              // ✅ Convert Blade array to Google Chart data
+
               var data = google.visualization.arrayToDataTable([
                   {!! implode(',', $employmentRateChartData) !!}
               ]);
 
-              // ✅ Chart setup
               var options = {
-                  title: 'Employment Rate by Location (2025)',
+                  title: 'Employment Rate by Employer City (2025)',
                   chartArea: {
                       width: '70%'
                   },
+                  bar: {
+                      groupWidth: '15%'
+                  },
                   hAxis: {
-                      title: 'Location'
+                      title: 'City'
                   },
                   vAxis: {
                       title: 'Employment Rate (%)',
                       minValue: 0,
                       maxValue: 100,
+                      format: '#\'%\'',
                       gridlines: {
                           count: 5
-                      },
-                      format: '#\'%\''
+                      }
                   },
-                  colors: {!! json_encode($employmentRateColors) !!}
+                  colors: {!! json_encode($employmentRateColors) !!},
+                  legend: {
+                      position: 'none'
+                  }
               };
 
-              // ✅ Draw chart
               var chart = new google.visualization.ColumnChart(
                   document.getElementById('employmentRateChart')
               );
               chart.draw(data, options);
+
+
+              google.visualization.events.addListener(chart, 'select', function() {
+                  var selection = chart.getSelection();
+                  if (selection.length > 0) {
+                      var row = selection[0].row;
+                      var city = data.getValue(row, 0);
+                      var approved = data.getValue(row, 2); // approved count column
+                      alert('📍 ' + city + '\n Approved Applicants: ' + approved);
+                  }
+              });
           }
       </script>
+
+
+
 
 
 
