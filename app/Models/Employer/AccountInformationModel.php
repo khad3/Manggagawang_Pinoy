@@ -39,5 +39,8 @@ class AccountInformationModel extends Model
         return $this->hasMany(SendMessageModel::class, 'employer_id');
     }
 
+    public function interviewPreparation() {
+        return $this->hasMany(InterviewScreeningModel::class, 'employer_id');
+    }
     
 }

@@ -80,8 +80,8 @@
            <div class="stat-card">
                <div class="stat-header">
                    <div>
-                       <div class="stat-value">{{ $retrievedApplicantApproved }}</div>
-                       @if ($retrievedApplicantApproved == 1)
+                       <div class="stat-value">{{ $totalApprovedApplicant }}</div>
+                       @if ($totalApprovedApplicant == 1)
                            <div class="stat-label">Total Applicant Approved</div>
                        @else
                            <div class="stat-label">Total Applicants Approved</div>
@@ -93,6 +93,30 @@
                    </div>
                </div>
            </div>
+
+           <div class="stat-card">
+               <div class="stat-header d-flex justify-content-between align-items-center">
+                   <div>
+                       <div class="stat-value">{{ $retrieveInterviewCount }}</div>
+                       @if ($retrieveInterviewCount == 1)
+                           <div class="stat-label">
+                               <i class="fas fa-calendar me-1 text-white"></i> Interview Screening
+                           </div>
+                       @else
+                           <div class="stat-label">
+                               <i class="fas fa-calendar me-1 text-white"></i> Interview Screenings
+                           </div>
+                       @endif
+                   </div>
+                   <div class="stat-icon bg-info-balanced text-white rounded-circle d-flex align-items-center justify-content-center"
+                       style="width: 45px; height: 45px;">
+                       <i class="fas fa-calendar"></i>
+                   </div>
+               </div>
+           </div>
+
+
+
        </div>
 
 
@@ -349,7 +373,6 @@
                                                                        class="mb-1 fw-bold text-truncate text-balanced-dark">
                                                                        {{ $application->applicant->personal_info->first_name ?? 'No name' }}
                                                                        {{ $application->applicant->personal_info->last_name ?? '' }}
-
                                                                    </h6>
                                                                    <div class="text-balanced-muted small">
                                                                        <div class="mb-1">
@@ -372,10 +395,10 @@
                                                                class="d-flex flex-column align-items-start align-items-sm-end gap-1">
                                                                <span
                                                                    class="badge fw-medium px-3 py-1 rounded-pill shadow-sm
-                                @if ($application->status == 'approved') bg-success-balanced text-white
-                                @elseif($application->status == 'rejected') bg-danger-balanced text-white
-                                @elseif($application->status == 'interview') bg-info-balanced text-white
-                                @else bg-warning-balanced text-dark @endif">
+                            @if ($application->status == 'approved') bg-success-balanced text-white
+                            @elseif($application->status == 'rejected') bg-danger-balanced text-white
+                            @elseif($application->status == 'interview') bg-info-balanced text-white
+                            @else bg-warning-balanced text-dark @endif">
                                                                    <i class="fas fa-circle me-1"
                                                                        style="font-size: 6px;"></i>
                                                                    {{ ucfirst($application->status ?? 'Pending') }}
@@ -392,31 +415,25 @@
                                                <div class="p-3">
                                                    <div class="row g-3">
                                                        <div class="col-12 col-lg-6">
-                                                           <div class="content-section">
-                                                               <h6 class="text-accent-blue mb-2 fw-semibold">
-                                                                   <i class="fas fa-file-alt me-1"></i> Cover
-                                                                   Letter
-                                                               </h6>
-                                                               <div
-                                                                   class="bg-balanced-tertiary p-3 rounded border-start border-3 border-accent-blue">
-                                                                   <p class="mb-0 text-balanced-dark small lh-base">
-                                                                       {{ Str::limit($application->cover_letter ?? 'No cover letter provided.', 100) }}
-                                                                   </p>
-                                                               </div>
+                                                           <h6 class="text-accent-blue mb-2 fw-semibold">
+                                                               <i class="fas fa-file-alt me-1"></i> Cover Letter
+                                                           </h6>
+                                                           <div
+                                                               class="bg-balanced-tertiary p-3 rounded border-start border-3 border-accent-blue">
+                                                               <p class="mb-0 text-balanced-dark small lh-base">
+                                                                   {{ Str::limit($application->cover_letter ?? 'No cover letter provided.', 100) }}
+                                                               </p>
                                                            </div>
                                                        </div>
                                                        <div class="col-12 col-lg-6">
-                                                           <div class="content-section">
-                                                               <h6 class="text-accent-purple mb-2 fw-semibold">
-                                                                   <i class="fas fa-info-circle me-1"></i>
-                                                                   Additional Info
-                                                               </h6>
-                                                               <div
-                                                                   class="bg-balanced-tertiary p-3 rounded border-start border-3 border-accent-purple">
-                                                                   <p class="mb-0 text-balanced-dark small lh-base">
-                                                                       {{ Str::limit($application->additional_information ?? 'No additional information provided.', 100) }}
-                                                                   </p>
-                                                               </div>
+                                                           <h6 class="text-accent-purple mb-2 fw-semibold">
+                                                               <i class="fas fa-info-circle me-1"></i> Additional Info
+                                                           </h6>
+                                                           <div
+                                                               class="bg-balanced-tertiary p-3 rounded border-start border-3 border-accent-purple">
+                                                               <p class="mb-0 text-balanced-dark small lh-base">
+                                                                   {{ Str::limit($application->additional_information ?? 'No additional information provided.', 100) }}
+                                                               </p>
                                                            </div>
                                                        </div>
                                                    </div>
@@ -429,34 +446,29 @@
                                                            <div class="d-flex flex-wrap gap-2">
                                                                @if ($application->resume)
                                                                    <a href="{{ asset('storage/' . $application->resume) }}"
-                                                                       target="_blank"
+                                                                       target="_blank" rel="noopener noreferrer"
                                                                        class="btn btn-outline-balanced btn-sm text-accent-blue border-accent-blue">
-                                                                       <i class="fas fa-file-pdf me-1"></i>
-                                                                       <span class="d-none d-sm-inline">View
-                                                                       </span>Resume
+                                                                       <i class="fas fa-file-pdf me-1"></i> Resume
                                                                    </a>
                                                                @else
                                                                    <button
                                                                        class="btn btn-outline-muted-balanced btn-sm text-balanced-muted"
                                                                        disabled>
-                                                                       <i class="fas fa-file-times me-1"></i>
-                                                                       No Resume
+                                                                       <i class="fas fa-file-times me-1"></i> No Resume
                                                                    </button>
                                                                @endif
 
                                                                @if ($application->tesda_certification)
                                                                    <a href="{{ asset('storage/' . $application->tesda_certification) }}"
-                                                                       target="_blank"
+                                                                       target="_blank" rel="noopener noreferrer"
                                                                        class="btn btn-outline-balanced btn-sm text-accent-orange border-accent-orange">
-                                                                       <i class="fas fa-certificate me-1"></i>
-                                                                       <span class="d-none d-sm-inline">TESDA</span>
+                                                                       <i class="fas fa-certificate me-1"></i> TESDA
                                                                    </a>
                                                                @else
                                                                    <button
                                                                        class="btn btn-outline-muted-balanced btn-sm text-balanced-muted"
                                                                        disabled>
-                                                                       <i class="fas fa-certificate me-1"></i>
-                                                                       No TESDA
+                                                                       <i class="fas fa-certificate me-1"></i> No TESDA
                                                                    </button>
                                                                @endif
                                                            </div>
@@ -465,51 +477,113 @@
                                                            <div
                                                                class="d-flex justify-content-start justify-content-md-end gap-1 flex-wrap">
                                                                <!-- Approve Button -->
-                                                               <form
-                                                                   action="{{ route('employer.approveapplicant.store', $application->id) }}"
-                                                                   method="POST" class="d-inline">
-                                                                   @csrf
-                                                                   @method('PUT')
-                                                                   <button type="submit"
-                                                                       class="btn btn-success-balanced btn-sm text-white shadow-sm">
-                                                                       <i class="fas fa-check me-1"></i>
-                                                                       <span class="d-none d-sm-inline">Approve</span>
-                                                                   </button>
-                                                               </form>
-                                                               <button
-                                                                   class="btn btn-info-balanced btn-sm text-white shadow-sm">
-                                                                   <i class="fas fa-calendar me-1"></i>
-                                                                   <span class="d-none d-sm-inline">Interview</span>
+                                                               <button type="button"
+                                                                   class="btn btn-success-balanced btn-sm text-white shadow-sm status-btn"
+                                                                   data-action="{{ route('employer.approveapplicant.store', $application->id) }}"
+                                                                   data-status="approved"
+                                                                   data-current="{{ $application->status }}"
+                                                                   data-application-id="{{ $application->id }}">
+                                                                   <i class="fas fa-check me-1"></i> Approve
                                                                </button>
 
-                                                               <!-- Modified Reject Button with JavaScript -->
-                                                               <form
-                                                                   action="{{ route('employer.rejectapplicant.store', $application->id) }}"
-                                                                   method="POST" class="d-inline reject-form">
-                                                                   @csrf
-                                                                   @method('PUT')
-                                                                   <button type="submit"
-                                                                       class="btn btn-outline-balanced btn-sm text-accent-red border-accent-red reject-btn"
-                                                                       data-application-id="{{ $application->id }}">
-                                                                       <i class="fas fa-times me-1"></i>
-                                                                       <span class="d-none d-sm-inline">Reject</span>
-                                                                   </button>
-                                                               </form>
+                                                               <!-- Interview Button -->
+                                                               <button type="button"
+                                                                   class="btn btn-info-balanced btn-sm text-white shadow-sm status-btn"
+                                                                   data-action="{{ route('employer.scheduleinterview.store', $application->id) }}"
+                                                                   data-status="interview"
+                                                                   data-current="{{ $application->status }}"
+                                                                   data-application-id="{{ $application->id }}">
+                                                                   <i class="fas fa-calendar me-1"></i> Interview
+                                                               </button>
+
+                                                               <!-- Reject Button -->
+                                                               <button type="button"
+                                                                   class="btn btn-outline-balanced btn-sm text-accent-red border-accent-red shadow-sm status-btn"
+                                                                   data-action="{{ route('employer.rejectapplicant.store', $application->id) }}"
+                                                                   data-status="rejected"
+                                                                   data-current="{{ $application->status }}"
+                                                                   data-application-id="{{ $application->id }}">
+                                                                   <i class="fas fa-times me-1"></i> Reject
+                                                               </button>
                                                            </div>
                                                        </div>
+                                                   </div>
+                                               </div>
+
+                                               <!-- ✅ Confirmation Modal (Unique per application) -->
+                                               <div class="status-modal position-fixed top-50 start-50 translate-middle bg-white border shadow-lg rounded-3 text-center px-4 py-3 d-none"
+                                                   data-application-id="{{ $application->id }}"
+                                                   style="z-index: 9999; max-width: 300px; width: 90%;">
+                                                   <p class="status-message mb-3 fw-semibold text-dark"></p>
+                                                   <div class="d-flex justify-content-center gap-2">
+                                                       <button
+                                                           class="confirm-status btn btn-sm btn-success-balanced text-white px-3">Yes</button>
+                                                       <button
+                                                           class="cancel-status btn btn-sm btn-outline-balanced border-accent-red text-accent-red px-3">No</button>
                                                    </div>
                                                </div>
                                            </div>
                                        @empty
                                            <div class="text-center py-5" id="no-applications">
-                                               <div class="mb-3">
-                                                   <i class="fas fa-inbox fa-3x text-balanced-muted opacity-50"></i>
-                                               </div>
+                                               <i class="fas fa-inbox fa-3x text-balanced-muted opacity-50 mb-3"></i>
                                                <h6 class="text-balanced-muted mb-2">No Applications Yet</h6>
-                                               <p class="text-balanced-muted small">Applications will appear here
-                                                   when candidates apply.</p>
+                                               <p class="text-balanced-muted small">Applications will appear here when
+                                                   candidates apply.</p>
                                            </div>
                                        @endforelse
+
+                                       <script>
+                                           document.querySelectorAll('.status-btn').forEach(btn => {
+                                               btn.addEventListener('click', function() {
+                                                   const newStatus = this.dataset.status;
+                                                   const currentStatus = this.dataset.current;
+                                                   const action = this.dataset.action;
+                                                   const applicationId = this.dataset.applicationId;
+
+                                                   // Find the modal for this specific application
+                                                   const modal = document.querySelector(
+                                                       `.status-modal[data-application-id="${applicationId}"]`);
+                                                   const msg = modal.querySelector('.status-message');
+                                                   const confirmBtn = modal.querySelector('.confirm-status');
+                                                   const cancelBtn = modal.querySelector('.cancel-status');
+
+                                                   if (newStatus === currentStatus) {
+                                                       msg.textContent = `You already set this applicant as ${newStatus}.`;
+                                                       confirmBtn.style.display = 'none';
+                                                       cancelBtn.textContent = 'OK';
+                                                       modal.classList.remove('d-none');
+
+                                                       cancelBtn.onclick = () => {
+                                                           modal.classList.add('d-none');
+                                                           confirmBtn.style.display = '';
+                                                           cancelBtn.textContent = 'No';
+                                                       };
+                                                       return;
+                                                   }
+
+                                                   modal.classList.remove('d-none');
+                                                   msg.textContent = `Are you sure you want to change status to "${newStatus}"?`;
+                                                   confirmBtn.style.display = '';
+                                                   cancelBtn.textContent = 'No';
+
+                                                   confirmBtn.onclick = () => {
+                                                       modal.classList.add('d-none');
+                                                       const form = document.createElement('form');
+                                                       form.method = 'POST';
+                                                       form.action = action;
+                                                       form.innerHTML = `
+                    @csrf
+                    @method('PUT')
+                `;
+                                                       document.body.appendChild(form);
+                                                       form.submit();
+                                                   };
+
+                                                   cancelBtn.onclick = () => modal.classList.add('d-none');
+                                               });
+                                           });
+                                       </script>
+
                                    </div>
 
                                    <script>

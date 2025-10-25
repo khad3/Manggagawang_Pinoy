@@ -20,14 +20,51 @@ use Illuminate\Support\Facades\Crypt;
 class ProfileController extends Controller
 {   
     //Decrrpyted
-    private function safeDecrypt($value)
+    private function isSerialized($value)
 {
-    try {
-        return $value ? Crypt::decrypt($value) : null;
-    } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
-        return $value; // return original if decryption fails
-    }
+    if (!is_string($value)) return false;
+    return preg_match('/^([adObis]):/', $value) === 1;
 }
+
+private function cleanDecryptedString($value)
+{
+    if (empty($value)) return '';
+
+    // Remove serialized fragments (like s:7:"Name";)
+    $value = preg_replace('/s:\d+:"([^"]+)";/', '$1', $value);
+
+    // Remove leftover symbols and trim spaces
+    $value = trim(preg_replace('/[^A-Za-z0-9\s,.@-]/', '', $value));
+
+    return $value;
+}
+
+
+private function safeDecrypt($value)
+{
+    if (empty($value)) return null;
+
+    try {
+        // Try decrypting first
+        $decrypted = Crypt::decryptString($value);
+    } catch (\Exception $e) {
+        // Not encrypted, use as-is
+        $decrypted = $value;
+    }
+
+    // 🧹 If decrypted value looks serialized (like s:7:"Rogelio";), unserialize it safely
+    if ($this->isSerialized($decrypted)) {
+        try {
+            $decrypted = unserialize($decrypted);
+        } catch (\Exception $e) {
+            // Ignore if unserialize fails
+        }
+    }
+
+    // 🧽 Clean any remaining serialized fragments
+    return $this->cleanDecryptedString($decrypted);
+}
+
     
     //View profile page
     public function ViewProfilePage() {
@@ -295,36 +332,37 @@ return view('applicant.profile.profile', compact(
         $currentApplicantId = session('applicant_id'); // logged-in applicant
         $targetApplicantId = $id; // the profile being stalked
 
-        // Load main applicant profile and relationships
-        $retrievedProfile = RegisterModel::with(['personal_info', 'work_background', 'template'])->findOrFail($id);
+       // Load main applicant profile and relationships
+    $retrievedProfile = RegisterModel::with(['personal_info', 'work_background', 'template'])->findOrFail($id);
 
-          $retrievedDecryptedProfile = $retrievedProfile ? [
-            'personal_info' => [
-                'first_name' => $this->safeDecrypt($retrievedProfile->personal_info->first_name),
-                'last_name' => $this->safeDecrypt($retrievedProfile->personal_info->last_name),
-                'gender' => $this->safeDecrypt($retrievedProfile->personal_info->gender),
-                'house_street' => $this->safeDecrypt($retrievedProfile->personal_info->house_street),
-                'city' => $this->safeDecrypt($retrievedProfile->personal_info->city),
-                'province' => $this->safeDecrypt($retrievedProfile->personal_info->province),
-                'zipcode' => $this->safeDecrypt($retrievedProfile->personal_info->zipcode),
-                'barangay' => $this->safeDecrypt($retrievedProfile->personal_info->barangay),
-            ],
+    // Return decrypted profile safely
+    $retrievedDecryptedProfile = $retrievedProfile ? [
+        'personal_info' => [
+            'first_name' => $this->safeDecrypt($retrievedProfile->personal_info->first_name ?? ''),
+            'last_name' => $this->safeDecrypt($retrievedProfile->personal_info->last_name ?? ''),
+            'gender' => $this->safeDecrypt($retrievedProfile->personal_info->gender ?? ''),
+            'house_street' => $this->safeDecrypt($retrievedProfile->personal_info->house_street ?? ''),
+            'city' => $this->safeDecrypt($retrievedProfile->personal_info->city ?? ''),
+            'province' => $this->safeDecrypt($retrievedProfile->personal_info->province ?? ''),
+            'zipcode' => $this->safeDecrypt($retrievedProfile->personal_info->zipcode ?? ''),
+            'barangay' => $this->safeDecrypt($retrievedProfile->personal_info->barangay ?? ''),
+        ],
 
-            'work_background' => [
-                'position' => $this->safeDecrypt($retrievedProfile->work_background->position),
-                'other_position' => $this->safeDecrypt($retrievedProfile->work_background->other_position),
-                'work_duration' => $retrievedProfile->work_background->work_duration,
-                'work_duration_unit' => $retrievedProfile->work_background->work_duration_unit,
-                'profileimage_path' => $retrievedProfile->work_background->profileimage_path,
-                'cover_photo_path' => $retrievedProfile->work_background->cover_photo_path,
-            ],
+        'work_background' => [
+            'position' => $this->safeDecrypt($retrievedProfile->work_background->position ?? ''),
+            'other_position' => $this->safeDecrypt($retrievedProfile->work_background->other_position ?? ''),
+            'work_duration' => $retrievedProfile->work_background->work_duration ?? '',
+            'work_duration_unit' => $retrievedProfile->work_background->work_duration_unit ?? '',
+            'profileimage_path' => $retrievedProfile->work_background->profileimage_path ?? '',
+            'cover_photo_path' => $retrievedProfile->work_background->cover_photo_path ?? '',
+        ],
 
-            'template' => [
-                'description' => $this->safeDecrypt($retrievedProfile->template->description),
-                'sample_work' => $this->safeDecrypt($retrievedProfile->template->sample_work),
-                'sample_work_url' => $this->safeDecrypt($retrievedProfile->template->sample_work_url),
-            ]
-        ]:[];
+        'template' => [
+            'description' => $this->safeDecrypt($retrievedProfile->template->description ?? ''),
+            'sample_work' => $this->safeDecrypt($retrievedProfile->template->sample_work ?? ''),
+            'sample_work_url' => $this->safeDecrypt($retrievedProfile->template->sample_work_url ?? ''),
+        ]
+    ] : [];
 
 
    
@@ -352,6 +390,21 @@ foreach ($retrievedPosts as $post) {
         ];
     } else {
         $post->retrievedDecryptedProfile = null;
+    }
+
+     // 🔹 Decrypt each comment’s applicant personal info
+    if ($post->comments && $post->comments->count() > 0) {
+        foreach ($post->comments as $comment) {
+            if ($comment->applicant && $comment->applicant->personal_info) {
+                $comment->decryptedPersonalInfo = [
+                    'first_name' => $this->safeDecrypt($comment->applicant->personal_info->first_name),
+                    'last_name'  => $this->safeDecrypt($comment->applicant->personal_info->last_name),
+                    'gender'     => $this->safeDecrypt($comment->applicant->personal_info->gender),
+                ];
+            } else {
+                $comment->decryptedPersonalInfo = null;
+            }
+        }
     }
 }
 

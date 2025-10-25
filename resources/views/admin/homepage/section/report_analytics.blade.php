@@ -350,6 +350,8 @@
                                    <i class="bi bi-briefcase-fill text-success"></i>
                                @elseif($log['action'] === 'draft_job')
                                    <i class="bi bi-briefcase text-warning"></i>
+                               @elseif($log['action'] === 'interview_job')
+                                   <i class="fas fa-calendar text-info-balanced me-1" style="color: blue;"></i>
                                @endif
                            </div>
                            <div class="activity-content">

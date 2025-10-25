@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Applicant;
 
 use App\Http\Controllers\Controller;
 use App\Models\Applicant\ApplicantPortfolioModel;
+use App\Models\Employer\InterviewScreeningModel;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
@@ -757,9 +758,25 @@ $messages = EmployerSendMessage::with(['employer.addressCompany', 'employer.pers
         ->pluck('reported_id') // make sure reported_id is the job_id in your report table
         ->toArray();
 
+       $notificationsSchedule = \App\Models\Employer\SendNotificationToApplicantModel::where('receiver_id', $applicantId)
+    ->where('type', 'scheduled_interview') // double-check this value in DB
+
+    ->orderBy('created_at', 'desc')
+    ->take(5)
+    ->get();
+
+    $unreadCountNotificationSchedule = \App\Models\Employer\SendNotificationToApplicantModel::where('receiver_id', $applicantId)
+    ->where('type', 'scheduled_interview') // double-check this value in DB
+    ->where('is_read', false)
+    ->count();
+
+    // Merge both collections
+$allNotifications = $notifications->merge($notificationsSchedule)->sortByDesc('created_at');
 
    
     return view('applicant.homepage.homepage', compact(
+        'allNotifications',
+        'notificationsSchedule',
         'retrieveDataDecrypted',
         'retrievePersonal',
         'reportedJobIds',
@@ -1150,7 +1167,24 @@ $pendingInterviewsCounts['total'] = ApplyJob::where('applicant_id', $applicantId
         }
     ])->where('applicant_id', $applicantId)->get();
 
+
+    //Retrieve the employer Preferred interview location
+    $preferredScreening = ApplyJob::with([
+        'job' => function ($query) {
+            $query->with([
+                'employer.addressCompany',   // employer + company address
+                'employer.interviewPreparation',
+                'workerRequirement',
+                'specialRequirement',
+                'employer.personal_info',
+            ]);
+        }
+    ])->where('applicant_id', $applicantId)->whereIn('status', ['pending', 'interview', 'approved', 'rejected', 'being_reviewed'])->latest('updated_at') // ✅ get the most recent status
+->first();;
+   
+
     return view('applicant.my_application.applicantion', compact(
+        'preferredScreening',
         'retrievedSavedJobs',
         'publishedCounts',
         'tesdaCertification',

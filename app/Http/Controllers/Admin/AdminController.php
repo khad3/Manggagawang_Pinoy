@@ -692,11 +692,41 @@ class AdminController extends Controller
                     'created_at' =>  $a->updated_at ?? $a->created_at,
                 ];
             });
+
+            //Interview
+         $employerInterview = \App\Models\Applicant\ApplyJobModel::with([
+    'applicant.personal_info',
+    'job.employer.addressCompany'
+])
+->where('status', 'interview')
+->latest()
+->get()
+->map(function ($a) {
+    $info = $a->applicant->personal_info ?? null;
+    $job = $a->job ?? null;
+
+    $firstName = $info ? $this->safeDecrypt($info->first_name) : 'Unknown';
+    $lastName = $info ? $this->safeDecrypt($info->last_name) : 'Applicant';
+    $email = $info ? $this->safeDecrypt($info->email) : 'No email';
+    $companyName = $job->employer->addressCompany->company_name ?? 'Unknown Company';
+    $jobTitle = $job->title ?? 'N/A';
+
+    return [
+        'action' => 'interview_job',
+        'email' => $email,
+        'author' => $firstName . ' ' . $lastName,
+        'description' => 'EMPLOYER: <strong>' . $companyName . '</strong>' .
+                         ' — The job "<strong>' . $jobTitle . '</strong>" applied by <strong>' . 
+                         $firstName . ' ' . $lastName . '</strong> has been scheduled for an <strong>INTERVIEW</strong>.',
+        'created_at' => $a->updated_at ?? $a->created_at,
+    ];
+});
             
 
 
 
         $activityLogs = collect()
+            ->merge($employerInterview)
             ->merge($employerDraftJobPost)
             ->merge($employerJobPost)
             ->merge($applicantGotReports)

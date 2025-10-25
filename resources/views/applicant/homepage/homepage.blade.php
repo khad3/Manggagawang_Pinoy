@@ -118,12 +118,15 @@
                                     Report
                                 </a>
                                 <hr class="dropdown-divider">
-                                <form method="POST" action="{{ route('applicant.logout.store') }}">
+                                <form id="logoutForm" method="POST" action="{{ route('applicant.logout.store') }}">
                                     @csrf
-                                    <button type="submit" class="dropdown-item">
+                                    <button type="submit" class="dropdown-item" onclick="return confirmLogout(event)">
                                         <i class="bi bi-box-arrow-right me-2"></i> Logout
                                     </button>
                                 </form>
+
+
+
 
                             </div>
                         </div>
@@ -300,31 +303,56 @@
                                         </form>
 
                                         @php
-                                            // Check if applicant has applied for this job
-                                            $applicationRecord = \App\Models\Applicant\ApplyJobModel::where(
-                                                'job_id',
-                                                $jobDetail->id ?? null,
-                                            )
-                                                ->where('applicant_id', session('applicant_id'))
-                                                ->first(); // Use first() instead of exists() to get the actual record
+                                            // Get applicant's application record for this job
+$applicationRecord = \App\Models\Applicant\ApplyJobModel::where(
+    'job_id',
+    $jobDetail->id ?? null,
+)
+    ->where('applicant_id', session('applicant_id'))
+    ->first();
 
-                                            // Determine if applicant has an active application (not rejected)
-                                            $hasActiveApplication =
-                                                $applicationRecord && $applicationRecord->status !== 'rejected';
+// Determine if applicant has an active application (any except rejected)
+$hasActiveApplication =
+    $applicationRecord && $applicationRecord->status !== 'rejected';
                                         @endphp
 
                                         @if ($hasActiveApplication)
-                                            <!-- Cancel Application Button - Show only if application is pending/approved/interview -->
-                                            <button type="button" class="btn btn-danger btn-sm"
-                                                data-bs-toggle="modal" data-bs-target="#cancelApplicationModal"
-                                                data-job-id="{{ $jobDetail->id }}"
-                                                data-title="{{ $jobDetail->title }}"
-                                                data-company="{{ $retrievedAddressCompany->first()->company_name ?? 'Unknown Company' }}"
-                                                data-location="{{ $jobDetail->location }}">
-                                                <i class="fas fa-times me-1"></i> Cancel Application
-                                            </button>
+                                            {{-- ✅ Handle based on specific application status --}}
+                                            @if ($applicationRecord->status === 'pending')
+                                                <button type="button" class="btn btn-warning btn-sm"
+                                                    data-bs-toggle="modal" data-bs-target="#cancelApplicationModal"
+                                                    data-job-id="{{ $jobDetail->id }}"
+                                                    data-title="{{ $jobDetail->title }}"
+                                                    data-company="{{ $retrievedAddressCompany->first()->company_name ?? 'Unknown Company' }}"
+                                                    data-location="{{ $jobDetail->location }}">
+                                                    <i class="bi bi-hourglass-split me-1"></i> Pending — Cancel
+                                                    Application
+                                                </button>
+                                            @elseif ($applicationRecord->status === 'interview')
+                                                <button type="button" class="btn btn-info btn-sm"
+                                                    data-bs-toggle="modal" data-bs-target="#cancelApplicationModal"
+                                                    data-job-id="{{ $jobDetail->id }}"
+                                                    data-title="{{ $jobDetail->title }}"
+                                                    data-company="{{ $retrievedAddressCompany->first()->company_name ?? 'Unknown Company' }}"
+                                                    data-location="{{ $jobDetail->location }}">
+                                                    <i class="bi bi-calendar-check me-1"></i> Interview Scheduled —
+                                                    Cancel
+                                                </button>
+                                            @elseif ($applicationRecord->status === 'approved')
+                                                <button class="btn btn-success btn-sm" disabled>
+                                                    <i class="bi bi-check-circle-fill me-1"></i> Approved
+                                                </button>
+                                            @elseif ($applicationRecord->status === 'hired')
+                                                <button class="btn btn-primary btn-sm" disabled>
+                                                    <i class="bi bi-briefcase-fill me-1"></i> Hired
+                                                </button>
+                                            @elseif ($applicationRecord->status === 'completed')
+                                                <button class="btn btn-secondary btn-sm" disabled>
+                                                    <i class="bi bi-flag-fill me-1"></i> Completed
+                                                </button>
+                                            @endif
                                         @else
-                                            {{-- Check if applicant is suspended --}}
+                                            {{-- 🚫 Check if suspended --}}
                                             @if ($isSuspended)
                                                 <button class="btn btn-secondary btn-sm" disabled>
                                                     <i class="bi bi-slash-circle"></i>
@@ -338,32 +366,28 @@
                                                     </small>
                                                 </div>
                                             @else
-                                                <!-- Apply Job Button - Show if never applied OR application was rejected -->
+                                                {{-- 🟢 Apply or Reapply --}}
                                                 <button class="btn btn-success btn-sm apply-btn"
                                                     data-job-id="{{ $jobDetail->id }}"
                                                     data-title="{{ $jobDetail->title }}"
                                                     data-company="{{ $retrievedAddressCompany->first()->company_name ?? 'Unknown Company' }}"
                                                     data-location="{{ $jobDetail->location }}" data-bs-toggle="modal"
                                                     data-bs-target="#applyJobModal">
-                                                    <i class="bi bi-send-check"></i>
-                                                    @if ($applicationRecord && $applicationRecord->status === 'rejected')
-                                                        Re-apply Job
-                                                    @else
-                                                        Apply Job
-                                                    @endif
+                                                    <i class="bi bi-send-check me-1"></i>
+                                                    {{ $applicationRecord && $applicationRecord->status === 'rejected' ? 'Re-apply Job' : 'Apply Job' }}
                                                 </button>
 
                                                 @if ($applicationRecord && $applicationRecord->status === 'rejected')
-                                                    <!-- Show rejection notice -->
                                                     <div class="mt-2">
                                                         <small class="text-danger">
-                                                            <i class="fas fa-exclamation-triangle me-1"></i>
+                                                            <i class="bi bi-exclamation-triangle me-1"></i>
                                                             Your previous application was rejected. You can apply again.
                                                         </small>
                                                     </div>
                                                 @endif
                                             @endif
                                         @endif
+
                                     </div>
                                 </div>
                             </div>
@@ -880,6 +904,16 @@
         document.addEventListener('mousemove', resetTimers);
         document.addEventListener('keydown', resetTimers);
         document.addEventListener('click', resetTimers);
+    </script>
+
+    <script>
+        function confirmLogout(event) {
+            event.preventDefault(); // Stop form from submitting immediately
+
+            if (confirm("Are you sure you want to logout?")) {
+                document.getElementById('logoutForm').submit();
+            }
+        }
     </script>
 
 </body>

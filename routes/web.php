@@ -211,6 +211,10 @@ Route::group(['prefix' => 'employer'], function () {
 
 //Protected routes for employer
 Route::middleware(['employer.authenticate'])->prefix('employer')->group(function () {
+    //Schedule interview
+    Route::post('schedule-interview/{id}', [EmployerController::class, 'setScheduleInterviewByEmployer'])->name('employer.scheduleinterview.store');
+
+
     //delete account
     Route::delete('delete-account/{id}', [EmployerController::class, 'deleteAccount'])->name('employer.deleteaccount.destroy');
        //Homepage display
@@ -233,6 +237,7 @@ Route::middleware(['employer.authenticate'])->prefix('employer')->group(function
     //Pending applicants
     Route::put('approve-applicant{id}', [EmployerController::class, 'approveApplicant'])->name('employer.approveapplicant.store');
     Route::put('reject-applicant/{id}', [EmployerController::class, 'rejectApplicant'])->name('employer.rejectapplicant.store');
+    Route::put('schedule-interview/{id}', [EmployerController::class, 'scheduleInterview'])->name('employer.scheduleinterview.store');
     //Send rating 
     Route::post('send-rating', [EmployerController::class, 'sendReview'])->name('employer.sendrating.store');
     //Send message to applicant

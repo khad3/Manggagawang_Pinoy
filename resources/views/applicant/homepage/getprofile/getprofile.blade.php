@@ -711,7 +711,7 @@
                                                     @if ($comment->applicant_id == session('applicant_id'))
                                                         <strong>Me:</strong> {{ $comment->comment }}
 
-                                                        {{-- Inline delete button (subtle, like Facebook) --}}
+                                                        {{-- Inline delete button --}}
                                                         <form
                                                             action="{{ route('applicant.comment.delete', $comment->id) }}"
                                                             method="POST"
@@ -727,12 +727,14 @@
                                                             </button>
                                                         </form>
                                                     @else
-                                                        <strong>{{ $comment->applicant->personal_info->first_name ?? 'Unknown' }}
-                                                            {{ $comment->applicant->personal_info->last_name ?? 'Anonymous' }}:</strong>
+                                                        <strong>
+                                                            {{ $comment->decryptedPersonalInfo['first_name'] ?? 'Unknown' }}
+                                                            {{ $comment->decryptedPersonalInfo['last_name'] ?? 'Anonymous' }}:
+                                                        </strong>
                                                         {{ $comment->comment }}
                                                     @endif
 
-                                                    {{-- Reply button (always visible like FB) --}}
+                                                    {{-- Reply button --}}
                                                     <div class="mt-1">
                                                         <button class="btn btn-sm btn-link text-primary p-0"
                                                             onclick="toggleReplyForm({{ $comment->id }})">
@@ -752,6 +754,7 @@
                                                     </div>
                                                 </div>
                                             @endforeach
+
                                         </div>
 
                                         <script>

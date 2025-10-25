@@ -659,59 +659,33 @@ private function cleanDecryptedString($value)
 public function ShowHomepage() {
 
 
-    //retrieve the list of applicants
-  $retrievedApplicants = RegisterModel::with(['personal_info', 'work_background', 'certifications'])->paginate(10);
+   // Retrieve the list of applicants
+$retrievedApplicants = RegisterModel::with(['personal_info', 'work_background', 'certifications'])->paginate(10);
 
-  //Check status if employed or unemployed
-  foreach ($retrievedApplicants as $applicant) {
-    if ($applicant->work_background && $applicant->work_background->employed === 'Yes') {
-        $applicant->employment_status = 'Employed';
-    } else {
-        $applicant->employment_status = 'Unemployed';
-    }
-}
-
+// Check status if employed or unemployed
 foreach ($retrievedApplicants as $applicant) {
-    // Decrypt personal info
+    $applicant->employment_status = ($applicant->work_background && $applicant->work_background->employed === 'Yes') 
+        ? 'Employed' 
+        : 'Unemployed';
+    
+    // Decrypt personal info safely
     if ($applicant->personal_info) {
-        $applicant->personal_info->first_name = $this->cleanDecryptedString(
-            $this->decryptMessage($applicant->personal_info->first_name)
-        );
-        $applicant->personal_info->last_name = $this->cleanDecryptedString(
-            $this->decryptMessage($applicant->personal_info->last_name)
-        );
-        $applicant->personal_info->city = $this->cleanDecryptedString(
-            $this->decryptMessage($applicant->personal_info->city)
-        );
-        $applicant->personal_info->province = $this->cleanDecryptedString(
-            $this->decryptMessage($applicant->personal_info->province)
-        );
+        $applicant->personal_info->first_name = $this->safeDecryptField($applicant->personal_info->first_name);
+        $applicant->personal_info->last_name  = $this->safeDecryptField($applicant->personal_info->last_name);
+        $applicant->personal_info->city       = $this->safeDecryptField($applicant->personal_info->city);
+        $applicant->personal_info->province   = $this->safeDecryptField($applicant->personal_info->province);
     }
 
-    // Decrypt work background
+    // Decrypt work background safely
     if ($applicant->work_background) {
-        $applicant->work_background->position = $this->cleanDecryptedString(
-            $this->decryptMessage($applicant->work_background->position)
-        );
-        $applicant->work_background->house_street = $this->cleanDecryptedString(
-            $this->decryptMessage($applicant->work_background->house_street)
-        );
-        $applicant->work_background->municipality = $this->cleanDecryptedString(
-            $this->decryptMessage($applicant->work_background->municipality)
-        );
-        $applicant->work_background->province = $this->cleanDecryptedString(
-            $this->decryptMessage($applicant->work_background->province)
-        );
-        $applicant->work_background->country = $this->cleanDecryptedString(
-            $this->decryptMessage($applicant->work_background->country)
-        );
-        $applicant->work_background->zip_code = $this->cleanDecryptedString(
-            $this->decryptMessage($applicant->work_background->zip_code)
-        );
-    
+        $applicant->work_background->position     = $this->safeDecryptField($applicant->work_background->position);
+        $applicant->work_background->house_street = $this->safeDecryptField($applicant->work_background->house_street);
+        $applicant->work_background->municipality = $this->safeDecryptField($applicant->work_background->municipality);
+        $applicant->work_background->province     = $this->safeDecryptField($applicant->work_background->province);
+        $applicant->work_background->country      = $this->safeDecryptField($applicant->work_background->country);
+        $applicant->work_background->zip_code     = $this->safeDecryptField($applicant->work_background->zip_code);
     }
 }
-
    
 
 
@@ -728,7 +702,7 @@ foreach ($retrievedApplicants as $applicant) {
         return redirect()->route('employer.login.display');
     }
 
-    $JobPostRetrieved = JobDetails::with([
+ $JobPostRetrieved = JobDetails::with([
         'employer',
         'companyName',
         'interviewScreening',
@@ -752,55 +726,34 @@ foreach ($retrievedApplicants as $applicant) {
     ->get()
     ->sortDesc();
 
-    
-function safeDecrypt($value) {
-    if (empty($value)) return null;
-    try {
-        // Attempt decryption
-        return Crypt::decryptString($value);
-    } catch (\Exception $e) {
-        // If decryption fails, return original value (already plain text)
-        return $value;
-    }
-}
 
+
+// Decrypt all applicants' personal info safely
 foreach ($JobPostRetrieved as $job) {
-    foreach ($job->applications as $application) {
-        $info = $application->applicant->personal_info ?? null;
-        if ($info) {
-            try {
-                $info->first_name = safeDecrypt($info->first_name);
-                $info->last_name = safeDecrypt($info->last_name);
 
-            } catch (\Exception $e) {
-                // ignore if already decrypted
-            }
+    // all applications
+    foreach ($job->applications as $application) {
+        $applicant = $application->applicant ?? null;
+        if ($applicant && $applicant->personal_info) {
+            $p = $applicant->personal_info;
+            $p->first_name = $this->safeDecryptField($p->first_name);
+            $p->last_name  = $this->safeDecryptField($p->last_name);
+            // if you want city/province later:
+            // $p->city = $this->safeDecryptField($p->city);
+            // $p->province = $this->safeDecryptField($p->province);
+        }
+    }
+
+    // approved applications (if you keep this relationship)
+    foreach ($job->appalicationsApproved ?? [] as $application) {
+        $applicant = $application->applicant ?? null;
+        if ($applicant && $applicant->personal_info) {
+            $p = $applicant->personal_info;
+            $p->first_name = $this->safeDecryptField($p->first_name);
+            $p->last_name  = $this->safeDecryptField($p->last_name);
         }
     }
 }
-
-    //Decrpyted
-    foreach ($JobPostRetrieved as $job) {
-        foreach ($job->applications as $application) {
-            if ($application->applicant && $application->applicant->personal_info) {
-                $personalInfo = $application->applicant->personal_info;
-
-                // Decrypt and clean first name
-                if ($personalInfo->first_name) {
-                    $personalInfo->first_name = $this->cleanDecryptedString(
-                        $this->decryptMessage($personalInfo->first_name)
-                    );
-                }
-
-                // Decrypt and clean last name
-                if ($personalInfo->last_name) {
-                    $personalInfo->last_name = $this->cleanDecryptedString(
-                      $this->decryptMessage($personalInfo->last_name)
-                    );
-                }
-            }
-        }
-    }
 
     //Rating
      //Rating
@@ -934,8 +887,56 @@ $reportedApplicantIds = \App\Models\Report\ReportModel::where('reporter_id', $em
     $retrievedPersonalInformation = AccountInformation::where('id', $employerId)->with('addressCompany')->first();
 
 
+    $retrieveInterviewCount = \App\Models\Applicant\ApplyJobModel::where('status', 'interview')
+    ->whereHas('job', function ($query) use ($employerId) {
+        $query->where('employer_id', $employerId);
+    })
+    ->count();
+
+ // Retrieve all approved applicants for the employer, decrypt fields, and remove duplicates
+$retrievedApproveApplicants = \App\Models\Applicant\ApplyJobModel::where('status', 'approved')
+    ->whereHas('job', function ($query) use ($employerId) {
+        $query->where('employer_id', $employerId);
+    })
+    ->with('applicant.personal_info', 'applicant.work_background')
+    ->get()
+    ->map(function ($app) {
+        $personal = $app->applicant->personal_info ?? null;
+        $work = $app->applicant->work_background ?? null;
+
+        if ($personal) {
+            $personal->first_name = $this->safeDecryptField($personal->first_name);
+            $personal->last_name  = $this->safeDecryptField($personal->last_name);
+            $personal->email      = $personal->email ? $this->safeDecryptField($personal->email) : null;
+            $personal->city       = $this->safeDecryptField($personal->city);
+            $personal->province   = $this->safeDecryptField($personal->province);
+        }
+
+        if ($work) {
+            $work->position = $work->position ? $this->safeDecryptField($work->position) : null;
+        }
+
+        return $app;
+    })
+    // Remove duplicate applicants by applicant ID
+    ->unique('applicant_id')
+    ->values();
+
+    //Retrieve the total number of approved applicants and distinct applicants
+    $totalApprovedApplicant = \App\Models\Applicant\ApplyJobModel::where('status', 'approved')
+    ->whereHas('job', function ($query) use ($employerId) {
+        $query->where('employer_id', $employerId);
+    })
+    ->distinct('applicant_id')
+    ->count();
+
+
+
     return view('employer.homepage.homepage' , compact(
+        'totalApprovedApplicant' ,
+        'retrievedApproveApplicants' ,
         'jobPosts' ,
+        'retrieveInterviewCount' ,
         'retrievedPersonalInformation' ,
         'notifications',
         'retrievedApplicantReported' ,
@@ -950,6 +951,33 @@ $reportedApplicantIds = \App\Models\Report\ReportModel::where('reporter_id', $em
                 'totalApproved'
                 ));
 
+}
+
+// ✅ Safe decrypt helper (using your decryptMessage + cleanDecryptedString)
+private function safeDecryptField($value)
+{
+    // If null/empty -> return as-is (or return empty string if you prefer)
+    if (is_null($value) || $value === '') {
+        return $value;
+    }
+
+    try {
+        // Attempt decryption
+        $decrypted = $this->decryptMessage($value);
+
+        // If decryptMessage() returns a sentinel or empty result, fall back to original
+        if (!$decrypted || $decrypted === '[Unable to decrypt message]') {
+            // Clean the original (plain) value and return
+            return $this->cleanDecryptedString($value);
+        }
+
+        // Successful decrypt -> clean and return
+        return $this->cleanDecryptedString($decrypted);
+
+    } catch (\Throwable $e) {
+        // Unexpected error: fallback to cleaned original value
+        return $this->cleanDecryptedString($value);
+    }
 }
 
 //Update the company name of the employer
@@ -1029,69 +1057,38 @@ function safe_unserialize($value) {
 //Get the profile picture of the applicant
 public function viewApplicantProfile($applicantID) 
 {
-   $retrievedProfile = RegisterModel::with(['personal_info', 'work_background', 'template'])
+  // Usage:
+$retrievedProfile = RegisterModel::with(['personal_info', 'work_background', 'template'])
     ->find($applicantID);
 
 if (!$retrievedProfile) {
     abort(404);
 }
 
-// Decrypt personal info
+// Decrypt personal info safely
 if ($retrievedProfile->personal_info) {
-    $retrievedProfile->personal_info->first_name = $this->cleanDecryptedString(
-        $this->decryptMessage($retrievedProfile->personal_info->first_name)
-    );
-    $retrievedProfile->personal_info->last_name = $this->cleanDecryptedString(
-        $this->decryptMessage($retrievedProfile->personal_info->last_name)
-    );
-    $retrievedProfile->personal_info->city = $this->cleanDecryptedString(
-        $this->decryptMessage($retrievedProfile->personal_info->city)
-    );
-    $retrievedProfile->personal_info->province = $this->cleanDecryptedString(
-        $this->decryptMessage($retrievedProfile->personal_info->province)
-    );
-    $retrievedProfile->personal_info->house_street = $this->cleanDecryptedString(
-        $this->decryptMessage($retrievedProfile->personal_info->house_street)
-    );
-
-    $retrievedProfile->personal_info->zipcode = $this->cleanDecryptedString(
-        $this->decryptMessage($retrievedProfile->personal_info->zipcode)
-    );
-
-    $retrievedProfile->personal_info->barangay = $this->cleanDecryptedString(
-        $this->decryptMessage($retrievedProfile->personal_info->barangay)
-    );
-
-
+    $retrievedProfile->personal_info->first_name = $this->safeDecryptField($retrievedProfile->personal_info->first_name);
+    $retrievedProfile->personal_info->last_name = $this->safeDecryptField($retrievedProfile->personal_info->last_name);
+    $retrievedProfile->personal_info->city = $this->safeDecryptField($retrievedProfile->personal_info->city);
+    $retrievedProfile->personal_info->province = $this->safeDecryptField($retrievedProfile->personal_info->province);
+    $retrievedProfile->personal_info->house_street = $this->safeDecryptField($retrievedProfile->personal_info->house_street);
+    $retrievedProfile->personal_info->zipcode = $this->safeDecryptField($retrievedProfile->personal_info->zipcode);
+    $retrievedProfile->personal_info->barangay = $this->safeDecryptField($retrievedProfile->personal_info->barangay);
 }
 
-// Decrypt work background
+// Decrypt work background safely
 if ($retrievedProfile->work_background) {
-    $retrievedProfile->work_background->position = $this->cleanDecryptedString(
-        $this->decryptMessage($retrievedProfile->work_background->position)
-    );
-    $retrievedProfile->work_background->house_street = $this->cleanDecryptedString(
-        $this->decryptMessage($retrievedProfile->work_background->house_street)
-    );
-    $retrievedProfile->work_background->municipality = $this->cleanDecryptedString(
-        $this->decryptMessage($retrievedProfile->work_background->municipality)
-    );
-    $retrievedProfile->work_background->province = $this->cleanDecryptedString(
-        $this->decryptMessage($retrievedProfile->work_background->province)
-    );
-    $retrievedProfile->work_background->country = $this->cleanDecryptedString(
-        $this->decryptMessage($retrievedProfile->work_background->country)
-    );
-    $retrievedProfile->work_background->zipcode = $this->cleanDecryptedString(
-        $this->decryptMessage($retrievedProfile->work_background->zipcode)
-    );
+    $retrievedProfile->work_background->position = $this->safeDecryptField($retrievedProfile->work_background->position);
+    $retrievedProfile->work_background->house_street = $this->safeDecryptField($retrievedProfile->work_background->house_street);
+    $retrievedProfile->work_background->municipality = $this->safeDecryptField($retrievedProfile->work_background->municipality);
+    $retrievedProfile->work_background->province = $this->safeDecryptField($retrievedProfile->work_background->province);
+    $retrievedProfile->work_background->country = $this->safeDecryptField($retrievedProfile->work_background->country);
+    $retrievedProfile->work_background->zipcode = $this->safeDecryptField($retrievedProfile->work_background->zipcode);
 }
 
-if($retrievedProfile->template) {
-
-    $retrievedProfile->template->description = $this->cleanDecryptedString(
-        $this->decryptMessage($retrievedProfile->template->description)
-    );
+// Decrypt template safely
+if ($retrievedProfile->template) {
+    $retrievedProfile->template->description = $this->safeDecryptField($retrievedProfile->template->description);
 }
 
 
@@ -1129,9 +1126,24 @@ if($retrievedProfile->template) {
     ->orderBy('updated_at', 'desc')
     ->get();
 
+    $employer_id = session('employer_id');
+    //Get the employer's prefered interview screening
+    $retrievedInterviewScreening = \App\Models\Employer\InterviewScreeningModel::where('employer_id', $employer_id)->first();
 
+
+
+    //Approved Applicants
+    //Retrieve the total number of approved applicants and distinct applicants
+    $retrievedApprovedApplicants = \App\Models\Applicant\ApplyJobModel::where('status', 'approved')->where('applicant_id', $applicant_id)
+    ->whereHas('job', function ($query) use ($employer_id) {
+        $query->where('employer_id', $employer_id);
+    })->get();
+   
+    
     return view('employer.homepage.getprofile.getprofile', compact(
+        'retrievedApprovedApplicants',
         'retrievedProfile',
+        'retrievedInterviewScreening',
         'retrievedPosts',
         'retrievedPortfolio',
         'retrievedYoutube',
@@ -1143,7 +1155,43 @@ if($retrievedProfile->template) {
     ));
 }
 
+//Set schedule interview by employer
+public function setScheduleInterviewByEmployer(Request $request)
+{
+    $employer_id = session('employer_id');
 
+    $request->validate([
+        'interview_datetime' => 'required|date',
+        'additional_notes' => 'nullable|string',
+        'preferred_screening_method' => 'required|array',
+        'interview_location' => 'required|string',
+        'applicant_id' => 'required|exists:applicants,id',
+    ]);
+
+    $interview = new \App\Models\Employer\SetInterviewModel();
+    $interview->employer_id = $employer_id;
+    $interview->applicant_id = $request->input('applicant_id');
+    $interview->date = date('Y-m-d', strtotime($request->input('interview_datetime')));
+    $interview->time = date('H:i:s', strtotime($request->input('interview_datetime')));
+    $interview->preferred_location = $request->input('interview_location');
+    $interview->preferred_screening_method = json_encode($request->input('preferred_screening_method'));
+    $interview->additional_notes = $request->input('additional_notes');
+    $interview->save();
+
+    // ✅ Send notification to applicant
+    $notification = new \App\Models\Employer\SendNotificationToApplicantModel();
+    $notification->sender_id = $employer_id;
+    $notification->receiver_id = $request->input('applicant_id');
+    $notification->title = 'Interview Scheduled';
+    $notification->message = 'Your interview has been scheduled on ' . 
+                             date('F d, Y g:i A', strtotime($request->input('interview_datetime'))) .
+                             ' at ' . $request->input('interview_location') . '.';
+    $notification->type = 'schedule_interview';
+    $notification->is_read = false;
+    $notification->save();
+
+    return back()->with('success', 'Interview scheduled successfully and notification sent to applicant.');
+}
 
 
 
@@ -1375,6 +1423,21 @@ public function approveApplicant($id) {
 
     return back()->with('success', 'Application approved successfully.');
 
+}
+
+//Schedule Interview
+public function scheduleInterview($id) {
+    $application = ApplyJobModel::findOrFail($id);
+
+    if($application->status == 'interview') {
+        return back()->with('info', 'Application is already scheduled for interview.');
+    }
+
+    $application->status = 'interview';
+    $application->save();
+
+
+    return back()->with('success', 'Application scheduled for interview.');
 }
 
 //Reject the applicant job post

@@ -17,6 +17,27 @@
     <a href="{{ route('employer.info.homepage.display') }}" class="back-button"><i class="fas fa-arrow-left"></i>
         Back</a>
     <div class="container py-5">
+        @if (session('success'))
+            <div class="container mt-3">
+                <div class="alert alert-success alert-dismissible fade show text-center" role="alert"
+                    id="success-alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+
+            <script>
+                // Hide the alert after 2 seconds (2000 ms)
+                setTimeout(() => {
+                    const alert = document.getElementById('success-alert');
+                    if (alert) {
+                        alert.classList.remove('show'); // fade out
+                        alert.classList.add('fade'); // keep bootstrap fade animation
+                        setTimeout(() => alert.remove(), 500); // remove from DOM after fade
+                    }
+                }, 2000);
+            </script>
+        @endif
 
         <div class="candidate-overview-card mb-4">
             <!-- Candidate Overview Card -->
@@ -558,18 +579,153 @@
             </div>
         </div>
 
+        @php
+            // Assume $retrievedProfile contains the current applicant's profile
+$applicant = $retrievedProfile;
 
-        <!-- Hiring Decision Bar -->
-        <div class="sticky-hiring-bar d-flex justify-content-end gap-2 mt-4">
-            <button type="button" class="btn btn-outline-danger px-3">
-                <i class="fas fa-user-times me-1"></i> Reject
-            </button>
-            <button type="button" class="btn btn-success px-3">
-                <i class="fas fa-user-check me-1"></i> Approve & Hire
-            </button>
+$employer_id = session('employer_id');
 
+// Retrieve applications for this applicant and employer
+$applicantApplications = \App\Models\Applicant\ApplyJobModel::where('applicant_id', $applicant->id)
+    ->whereHas('job', function ($query) use ($employer_id) {
+        $query->where('employer_id', $employer_id);
+    })
+    ->orderBy('created_at', 'desc') // get the latest status
+                ->get();
+
+            // Determine the status for the sticky bar
+            $latestStatus = $applicantApplications->first()->status ?? null;
+        @endphp
+
+        @if ($latestStatus === 'approved')
+            <!-- Friendly message if applicant is approved -->
+            <div class="sticky-hiring-bar d-flex align-items-center justify-content-center gap-2 mt-4 p-3 rounded shadow-sm"
+                style="background: linear-gradient(90deg, #4caf50, #81c784); color: white; font-weight: 600; font-size: 16px;">
+                <i class="fas fa-check-circle fs-4"></i>
+                <span>Hey! This applicant has been recently approved. 🎉</span>
+            </div>
+        @elseif ($latestStatus === 'interview')
+            <!-- Message if applicant is scheduled for interview -->
+            <div class="sticky-hiring-bar d-flex align-items-center justify-content-center gap-2 mt-4 p-3 rounded shadow-sm"
+                style="background: linear-gradient(90deg, #42a5f5, #64b5f6); color: white; font-weight: 600; font-size: 16px;">
+                <i class="fas fa-calendar-check fs-4"></i>
+                <span>This applicant is scheduled for an interview. 🗓️</span>
+            </div>
+        @else
+            <!-- Schedule Interview button if applicant not approved or not scheduled -->
+            <div class="sticky-hiring-bar d-flex justify-content-end gap-2 mt-4">
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#hireModal">
+                    <i class="fas fa-user-check me-1"></i> Schedule Interview
+                </button>
+            </div>
+        @endif
+
+
+
+
+
+
+    </div>
+
+    <!-- Hire / Schedule Interview Modal -->
+    <!-- Hire / Schedule Interview Modal -->
+    <div class="modal fade" id="hireModal" tabindex="-1" aria-labelledby="hireModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="hireModalLabel">
+                        <i class="fas fa-user-check me-2"></i>Schedule Interview
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+
+                <form action="{{ route('employer.scheduleinterview.store', $retrievedInterviewScreening->id) }}"
+                    method="POST">
+                    @csrf
+                    <input type="hidden" name="applicant_id" value="{{ $retrievedProfile->id }}">
+
+
+                    <div class="modal-body">
+                        <!-- Preferred Screening Methods -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Employer's Preferred Screening Methods</label>
+                            <ul class="list-group">
+                                @foreach (json_decode($retrievedInterviewScreening->preferred_screening_method ?? '[]', true) as $method)
+                                    <li class="list-group-item">
+                                        <input type="hidden" name="preferred_screening_method[]"
+                                            value="{{ $method }}">
+                                        {{ $method }}
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+
+                        <!-- Interview Location -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Interview Location</label>
+                            <select class="form-select" name="interview_location" required>
+                                <option value="">Select location</option>
+                                <option value="Our office/headquarters"
+                                    {{ ($retrievedInterviewScreening->preferred_interview_location ?? '') == 'Our office/headquarters' ? 'selected' : '' }}>
+                                    Our office/headquarters
+                                </option>
+                                <option value="Job site/project location"
+                                    {{ ($retrievedInterviewScreening->preferred_interview_location ?? '') == 'Job site/project location' ? 'selected' : '' }}>
+                                    Job site/project location
+                                </option>
+                                <option value="Neutral location (cafe, etc.)"
+                                    {{ ($retrievedInterviewScreening->preferred_interview_location ?? '') == 'Neutral location (cafe, etc.)' ? 'selected' : '' }}>
+                                    Neutral location (cafe, etc.)
+                                </option>
+                                <option value="Online/Video call only"
+                                    {{ ($retrievedInterviewScreening->preferred_interview_location ?? '') == 'Online/Video call only' ? 'selected' : '' }}>
+                                    Online/Video call only
+                                </option>
+                                <option value="Flexible - worker's choice"
+                                    {{ ($retrievedInterviewScreening->preferred_interview_location ?? '') == 'Flexible - worker\'s choice' ? 'selected' : '' }}>
+                                    Flexible - worker's choice
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Interview Date & Time -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Interview Date & Time</label>
+                            <input type="datetime-local" class="form-control" name="interview_datetime"
+                                value="{{ old('interview_datetime') }}" required>
+                        </div>
+
+                        <!-- Additional Notes -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Additional Notes</label>
+                            <textarea name="additional_notes" class="form-control" rows="3"
+                                placeholder="Any additional instructions or comments">{{ old('additional_notes') }}</textarea>
+                        </div>
+
+                        <!-- Employer Verification -->
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" name="employer_verified"
+                                id="employerVerified" required>
+                            <label class="form-check-label fw-bold" for="employerVerified">
+                                I have reviewed and agree with the applicant's interview preferences
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
+                            <i class="fas fa-user-times me-1"></i> Cancel
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-user-check me-1"></i> Approve & Schedule
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
+
 
 
     <!-- Bootstrap Scripts -->

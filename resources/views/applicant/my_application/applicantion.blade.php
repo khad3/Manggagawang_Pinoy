@@ -258,6 +258,27 @@
                                             </div>
                                         </div>
                                         <div class="col-12 col-lg-4 text-lg-end mt-3 mt-lg-0">
+                                            @php
+                                                // Get interview preparation data for this job
+                                                $interviewPrep =
+                                                    $job->job->employer->interviewPreparation->first() ?? null;
+
+                                                // Decode screening method (if stored as JSON)
+                                                $screeningMethods =
+                                                    $interviewPrep &&
+                                                    is_string($interviewPrep->preferred_screening_method)
+                                                        ? json_decode($interviewPrep->preferred_screening_method, true)
+                                                        : [];
+
+                                                // Convert to readable text
+                                                $screeningText = !empty($screeningMethods)
+                                                    ? implode(', ', $screeningMethods)
+                                                    : $interviewPrep->preferred_screening_method ?? 'N/A';
+
+                                                $interviewLocation =
+                                                    $interviewPrep->preferred_interview_location ?? 'N/A';
+                                            @endphp
+
                                             <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#viewApplicationDetailsModal"
                                                 data-job-id="{{ $job->job_id ?? 'No job ID' }}"
@@ -272,7 +293,9 @@
                                                 data-employer-first-name-application="{{ $job->job->employer->personal_info->first_name ?? 'No first name' }}"
                                                 data-employer-last-name-application="{{ $job->job->employer->personal_info->last_name ?? 'No last name' }}"
                                                 data-job-type-application="{{ $job->job->job_type ?? 'N/A' }}"
-                                                data-job-additional-requirements-application="{{ $job->job->additional_requirements ?? 'N/A' }}">
+                                                data-job-additional-requirements-application="{{ $job->job->additional_requirements ?? 'N/A' }}"
+                                                data-screening-method-application="{{ $screeningText }}"
+                                                data-interview-location-application="{{ $interviewLocation }}">
                                                 <i class="fas fa-eye me-2"></i>View Details
                                             </button>
                                         </div>
@@ -439,6 +462,7 @@
         </div>
     </div>
 
+
     <!-- Application Details Modal -->
     <div class="modal fade" id="viewApplicationDetailsModal" tabindex="-1"
         aria-labelledby="viewApplicationDetailsModalLabel" aria-hidden="true">
@@ -455,7 +479,7 @@
                         <div class="col-md-6">
                             <div class="modal-detail-item">
                                 <div class="detail-label">Position</div>
-                                <div class="detail-value" id="modal-job-title-application"> Loading...</div>
+                                <div class="detail-value" id="modal-job-title-application">Loading...</div>
                             </div>
                             <div class="modal-detail-item">
                                 <div class="detail-label">Company</div>
@@ -463,7 +487,7 @@
                             </div>
                             <div class="modal-detail-item">
                                 <div class="detail-label">Location</div>
-                                <div class="detail-value" id="modal-job-location-application">Houston, TX</div>
+                                <div class="detail-value" id="modal-job-location-application">Loading...</div>
                             </div>
                             <div class="modal-detail-item">
                                 <div class="detail-label">Salary Range</div>
@@ -471,12 +495,12 @@
                             </div>
                             <div class="modal-detail-item">
                                 <div class="detail-label">Application Date</div>
-                                <div class="detail-value">1/15/2024</div>
+                                <div class="detail-value" id="modal-application-date">Loading...</div>
                             </div>
                             <div class="modal-detail-item">
                                 <div class="detail-label">Application Status</div>
                                 <div class="detail-value">
-                                    <span class="status-badge status-interview">
+                                    <span class="status-badge" id="modal-application-status-badge">
                                         <i class="fas fa-chart-line"></i>
                                         Loading...
                                     </span>
@@ -494,18 +518,19 @@
                             <div class="modal-detail-item">
                                 <div class="detail-label">Contact Email</div>
                                 <div class="detail-value" id="modal-employer-email-application">
-                                    <a
-                                        href="mailto:rogelio.cerenado@metroconstruction.com">rogelio.cerenado@metroconstruction.com</a>
+                                    <a href="mailto:">Loading...</a>
                                 </div>
                             </div>
+
+                            <!-- Dynamic Application Notes - populated by JavaScript -->
                             <div class="modal-detail-item">
                                 <div class="detail-label">Application Notes</div>
-                                <div class="detail-value">Interview scheduled for January 25th at 10:00 AM</div>
+                                <div class="detail-value" id="modal-application-notes">Loading...</div>
                             </div>
+
                             <div class="modal-detail-item">
                                 <div class="detail-label">Next Steps</div>
-                                <div class="detail-value">Prepare for upcoming interview - Review job requirements and
-                                    company background</div>
+                                <div class="detail-value" id="modal-next-steps">Loading...</div>
                             </div>
                         </div>
                     </div>
@@ -519,8 +544,7 @@
                                 <div class="detail-label">Requirements</div>
                                 <div class="detail-value" id="modal-job-additional-requirements-application">
                                     <ul class="mb-0">
-                                        <li>...</li>
-
+                                        <li>Loading...</li>
                                     </ul>
                                 </div>
                             </div>
@@ -528,8 +552,7 @@
                                 <div class="detail-label">Benefits</div>
                                 <div class="detail-value">
                                     <ul class="mb-0" id="modal-job-benefits-application">
-                                        <li>...</li>
-
+                                        <li>Loading...</li>
                                     </ul>
                                 </div>
                             </div>
@@ -550,6 +573,149 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('viewApplicationDetailsModal');
+
+            modal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+
+                // Get all data attributes
+                const jobTitle = button.getAttribute('data-job-title-application');
+                const jobCompany = button.getAttribute('data-job-company-application');
+                const jobLocation = button.getAttribute('data-job-location-application');
+                const jobSalary = button.getAttribute('data-job-salary-application');
+                const jobDescription = button.getAttribute('data-job-description-application');
+                const jobBenefits = button.getAttribute('data-job-benefits-application');
+                const jobRequirements = button.getAttribute('data-job-additional-requirements-application');
+                const applicationStatus = button.getAttribute('data-apply-job-status-application');
+                const employerEmail = button.getAttribute('data-employer-email-application');
+                const employerFirstName = button.getAttribute('data-employer-first-name-application');
+                const employerLastName = button.getAttribute('data-employer-last-name-application');
+                const companyName = jobCompany;
+                const screeningMethod = button.getAttribute('data-screening-method-application');
+                const interviewLocation = button.getAttribute('data-interview-location-application');
+
+                // Update basic fields
+                document.getElementById('modal-job-title-application').textContent = jobTitle;
+                document.getElementById('modal-job-company-application').textContent = jobCompany;
+                document.getElementById('modal-job-location-application').textContent = jobLocation;
+                document.getElementById('modal-job-salary-application').textContent = jobSalary;
+                document.getElementById('modal-job-description-application').textContent = jobDescription;
+                document.getElementById('modal-employer-first-name-application').textContent =
+                    employerFirstName;
+                document.getElementById('modal-employer-last-name-application').textContent =
+                    employerLastName;
+
+                // Update email with mailto link
+                const emailElement = document.getElementById('modal-employer-email-application');
+                emailElement.innerHTML = `<a href="mailto:${employerEmail}">${employerEmail}</a>`;
+
+                // Update status badge
+                const statusBadge = document.getElementById('modal-application-status-badge');
+                statusBadge.className = 'status-badge'; // Reset classes
+
+                let statusIcon = 'fa-clock';
+                let statusText = applicationStatus;
+
+                switch (applicationStatus.toLowerCase()) {
+                    case 'approved':
+                        statusBadge.classList.add('status-approved');
+                        statusIcon = 'fa-check-circle';
+                        statusText = 'Approved';
+                        break;
+                    case 'interview':
+                        statusBadge.classList.add('status-interview');
+                        statusIcon = 'fa-calendar-check';
+                        statusText = 'Interview Scheduled';
+                        break;
+                    case 'rejected':
+                        statusBadge.classList.add('status-rejected');
+                        statusIcon = 'fa-times-circle';
+                        statusText = 'Rejected';
+                        break;
+                    default:
+                        statusBadge.classList.add('status-pending');
+                        statusIcon = 'fa-clock';
+                        statusText = 'Under Review';
+                }
+
+                statusBadge.innerHTML = `<i class="fas ${statusIcon}"></i> ${statusText}`;
+
+                // Update Application Notes and Next Steps based on status
+                const notesElement = document.getElementById('modal-application-notes');
+                const nextStepsElement = document.getElementById('modal-next-steps');
+
+                switch (applicationStatus.toLowerCase()) {
+                    case 'approved':
+                        notesElement.className = 'detail-value text-success fw-semibold';
+                        notesElement.innerHTML =
+                            `🎉 Hey, congratulations! You were recently <strong>approved</strong> by <strong>${companyName}</strong>.`;
+                        nextStepsElement.className = 'detail-value';
+                        nextStepsElement.textContent =
+                            'The employer will contact you soon regarding your onboarding or job start date. Please keep your lines open!';
+                        break;
+
+                    case 'interview':
+                        notesElement.className = 'detail-value';
+                        let interviewDetails =
+                            `Your application is progressing! An interview has been scheduled with <strong>${companyName}</strong>`;
+
+                        if (screeningMethod && screeningMethod !== 'N/A') {
+                            interviewDetails += ` via <strong>${screeningMethod}</strong>`;
+                        }
+                        if (interviewLocation && interviewLocation !== 'N/A') {
+                            interviewDetails += ` at <strong>${interviewLocation}</strong>`;
+                        }
+                        interviewDetails += '.';
+
+                        notesElement.innerHTML = interviewDetails;
+                        nextStepsElement.className = 'detail-value';
+                        nextStepsElement.innerHTML =
+                            `Please prepare for your interview — review the job requirements and learn more about <strong>${companyName}</strong>.`;
+                        break;
+
+                    case 'rejected':
+                        notesElement.className = 'detail-value text-danger fw-semibold';
+                        notesElement.innerHTML =
+                            `We appreciate your effort, but unfortunately your application was not selected by <strong>${companyName}</strong>.`;
+                        nextStepsElement.className = 'detail-value text-muted';
+                        nextStepsElement.textContent =
+                            "Don't be discouraged — explore more opportunities that better match your skills.";
+                        break;
+
+                    default:
+                        notesElement.className = 'detail-value text-muted';
+                        notesElement.innerHTML =
+                            `Your application is currently being reviewed by <strong>${companyName}</strong>. Please wait for updates from the employer.`;
+                        nextStepsElement.className = 'detail-value text-muted';
+                        nextStepsElement.textContent =
+                            'The employer will contact you if your application progresses to the next stage.';
+                }
+
+                // Update Benefits
+                if (jobBenefits && jobBenefits !== 'N/A') {
+                    const benefitsList = jobBenefits.split(',').map(b => b.trim());
+                    document.getElementById('modal-job-benefits-application').innerHTML =
+                        benefitsList.map(benefit => `<li>${benefit}</li>`).join('');
+                } else {
+                    document.getElementById('modal-job-benefits-application').innerHTML =
+                        '<li>No benefits listed</li>';
+                }
+
+                // Update Requirements
+                if (jobRequirements && jobRequirements !== 'N/A') {
+                    const reqList = jobRequirements.split(',').map(r => r.trim());
+                    document.getElementById('modal-job-additional-requirements-application').innerHTML =
+                        reqList.map(req => `<li>${req}</li>`).join('');
+                } else {
+                    document.getElementById('modal-job-additional-requirements-application').innerHTML =
+                        '<li>No additional requirements</li>';
+                }
+            });
+        });
+    </script>
 
     <!-- Saved Job Details Modal -->
     <div class="modal fade" id="viewSavedJobModal" tabindex="-1" aria-labelledby="viewSavedJobModalLabel"
