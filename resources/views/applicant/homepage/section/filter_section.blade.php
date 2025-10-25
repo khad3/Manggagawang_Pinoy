@@ -9,11 +9,17 @@
               <label class="filter-label">Industry</label>
               <select id="industryFilter" class="filter-select">
                   <option value="">All TESDA Industries</option>
-                  @foreach ($JobPostRetrieved as $job)
-                      @if ($job->status_post === 'published')
-                          <option value="{{ $job->department }}">{{ $job->department }}</option>
-                      @endif
+                  @php
+                      $departments = $JobPostRetrieved
+                          ->where('status_post', 'published')
+                          ->pluck('department')
+                          ->unique();
+                  @endphp
+
+                  @foreach ($departments as $department)
+                      <option value="{{ $department }}">{{ $department }}</option>
                   @endforeach
+
               </select>
           </div>
 

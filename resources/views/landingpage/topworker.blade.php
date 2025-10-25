@@ -5,15 +5,443 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Top Workers</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+        integrity="sha512-pap9kM+7PPRL+3xLCZjWJ1qvPgn3hC/Zw9f+5sBczkRjcRzWrV23u0GOKfTQ4gBBY6CkDZnF7UeNj0H3v2lYKw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Add this in your main Blade layout (head section) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+
     <link rel="stylesheet" href="{{ asset('css/applicant/landingpage/topworker.css') }}">
     <link rel="stylesheet" href="{{ asset('css/applicant/landingpage/landingpage.css') }}">
+
+    <style>
+        /* Worker Row Stars */
+        .tw-row {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            gap: 15px;
+            cursor: pointer;
+        }
+
+        .tw-row:hover {
+            background-color: #f8f9fa;
+        }
+
+        .tw-col {
+            flex: 1;
+        }
+
+        .stars i.fas,
+        .stars i.far {
+            color: #ffc107;
+            /* Bright yellow */
+        }
+
+        /* Rating stars */
+        .stars {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            font-size: 14px;
+        }
+
+        .stars i {
+            margin-right: 2px;
+        }
+
+        .stars small {
+            margin-left: 5px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* Dropdown styles */
+        .tw-dropdown {
+            display: none;
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .tw-dropdown-content {
+            display: flex;
+            gap: 15px;
+        }
+
+        .tw-profile-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .tw-profile-info {
+            flex: 1;
+        }
+
+        .tw-profile-actions {
+            margin-top: 5px;
+        }
+
+        .tw-btn.tw-view-profile {
+            padding: 6px 12px;
+            font-size: 13px;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 4px;
+            text-decoration: none;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+        }
+
+        .tw-btn.tw-view-profile:hover {
+            background-color: #0056b3;
+        }
+
+        /* Dropdown toggle */
+        .tw-dropdown-btn {
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: #666;
+            transition: transform 0.3s;
+        }
+
+        .tw-dropdown-btn.open {
+            transform: rotate(180deg);
+        }
+
+        /* Modal Styles - Remove backdrop */
+        .modal-backdrop {
+            display: none !important;
+        }
+
+        .modal {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.show {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-dialog {
+            max-width: 600px;
+            width: 90%;
+            margin: 1.75rem auto;
+        }
+
+        .modal-content {
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            background-color: #007bff;
+            color: white;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            padding: 15px 20px;
+        }
+
+        .modal-title {
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .modal-body {
+            max-height: 60vh;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+        .review-item {
+            padding: 12px 15px;
+            margin-bottom: 12px;
+            border-left: 4px solid #007bff;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .review-item strong {
+            color: #007bff;
+            font-size: 15px;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .review-item p {
+            margin: 8px 0;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        .review-stars {
+            margin: 5px 0;
+        }
+
+        .review-stars i {
+            color: #ffc107;
+            font-size: 13px;
+        }
+
+        .review-date {
+            color: #999;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .tw-row {
+                flex-wrap: wrap;
+                font-size: 13px;
+                padding: 12px 8px;
+            }
+
+            .tw-col {
+                flex: 1 1 48%;
+                min-width: 100px;
+                margin-bottom: 8px;
+            }
+
+            .tw-col.actions {
+                flex: 0 0 100%;
+                text-align: center;
+                margin-top: 8px;
+            }
+
+            .tw-dropdown {
+                padding: 15px;
+                margin: 10px 0;
+            }
+
+            .tw-dropdown-content {
+                flex-direction: row;
+                align-items: flex-start;
+                text-align: left;
+                gap: 12px;
+            }
+
+            .tw-profile-img {
+                width: 70px;
+                height: 70px;
+                flex-shrink: 0;
+            }
+
+            .tw-profile-info strong {
+                font-size: 15px;
+                margin-bottom: 6px;
+            }
+
+            .tw-profile-info p {
+                font-size: 13px;
+                line-height: 1.4;
+                margin-bottom: 8px;
+            }
+
+            .tw-btn.tw-view-profile {
+                padding: 6px 14px;
+                font-size: 12px;
+            }
+
+            .stars {
+                font-size: 12px;
+            }
+
+            .stars small {
+                font-size: 11px;
+            }
+
+            /* Modal responsive */
+            .modal-dialog {
+                width: 95%;
+                max-width: 500px;
+                margin: 10px auto;
+            }
+
+            .modal-body {
+                max-height: 50vh;
+                padding: 15px;
+            }
+
+            .modal-title {
+                font-size: 16px;
+            }
+
+            .review-item {
+                padding: 10px 12px;
+                margin-bottom: 10px;
+            }
+
+            .review-item strong {
+                font-size: 14px;
+            }
+
+            .review-item p {
+                font-size: 13px;
+            }
+
+            .review-stars i {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tw-row {
+                font-size: 12px;
+                padding: 10px 5px;
+            }
+
+            .tw-col {
+                flex: 1 1 100%;
+                margin-bottom: 6px;
+            }
+
+            .tw-dropdown {
+                padding: 12px 8px;
+            }
+
+            .tw-dropdown-content {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .tw-profile-img {
+                width: 80px;
+                height: 80px;
+            }
+
+            .tw-profile-info {
+                width: 100%;
+            }
+
+            .tw-profile-info strong {
+                font-size: 14px;
+            }
+
+            .tw-profile-info p {
+                font-size: 12px;
+            }
+
+            .tw-btn.tw-view-profile {
+                padding: 8px 16px;
+                font-size: 12px;
+                width: 100%;
+                max-width: 200px;
+            }
+
+            /* Modal mobile optimized */
+            .modal-dialog {
+                width: 96%;
+                max-width: 400px;
+                margin: 5px auto;
+            }
+
+            .modal-content {
+                border-radius: 8px;
+            }
+
+            .modal-header {
+                padding: 12px 15px;
+            }
+
+            .modal-title {
+                font-size: 14px;
+                line-height: 1.3;
+            }
+
+            .modal-body {
+                max-height: 65vh;
+                padding: 12px;
+            }
+
+            .modal-footer {
+                padding: 10px 15px;
+            }
+
+            .review-item {
+                padding: 8px 10px;
+                margin-bottom: 8px;
+            }
+
+            .review-item strong {
+                font-size: 13px;
+                margin-bottom: 4px;
+            }
+
+            .review-item p {
+                font-size: 12px;
+                line-height: 1.4;
+                margin: 6px 0;
+            }
+
+            .review-stars i {
+                font-size: 11px;
+            }
+
+            .review-date {
+                font-size: 10px;
+            }
+
+            .btn-secondary {
+                font-size: 13px;
+                padding: 6px 12px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .modal-dialog {
+                width: 98%;
+                max-width: 340px;
+            }
+
+            .modal-title {
+                font-size: 13px;
+            }
+
+            .modal-body {
+                max-height: 60vh;
+                padding: 10px;
+            }
+
+            .review-item {
+                padding: 6px 8px;
+            }
+
+            .review-item strong {
+                font-size: 12px;
+            }
+
+            .review-item p {
+                font-size: 11px;
+            }
+        }
+    </style>
 </head>
 
 <body>
     <nav>
         <div class="navbar-container">
             <div class="nav-logo">
-
                 <a href="{{ route('display.index') }}"><img src="{{ asset('img/logo.png') }}" alt="MP Logo"
                         id="home2" /> </a>
             </div>
@@ -36,208 +464,127 @@
     <div class="top-workers-table">
         <div class="tw-header">
             <span class="tw-col name">Name</span>
-            <span class="tw-col age">Age</span>
-            <span class="tw-col hire-rate">Hire Rate</span>
+            <span class="tw-col hire-rate">Rating</span>
             <span class="tw-col location">Location</span>
             <span class="tw-col industry">Industry</span>
             <span class="tw-col actions"></span>
         </div>
 
-        <!-- Worker Row -->
-        <div class="tw-row">
-            <span class="tw-col name">Rogelio Ceranado Jr.</span>
-            <span class="tw-col age">56</span>
-            <span class="tw-col hire-rate">31.91%</span>
-            <span class="tw-col location">$982 782 981</span>
-            <span class="tw-col industry">Automotive</span>
-            <button class="tw-dropdown-btn" aria-label="Show details">&#9660;</button>
-        </div>
-        <div class="tw-dropdown">
-            <div class="tw-dropdown-content">
-                <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="Profile" class="tw-profile-img" />
-                <div class="tw-profile-info">
-                    <strong>Rogelio Ceranado Jr.</strong>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                        labore et dolore magna aliqua.</p>
-                    <div class="tw-profile-actions">
-                        <a href="#" class="tw-btn tw-view-profile">View Profile</a>
-                        <a href="#" class="tw-btn tw-add-fav">Add to Favorites</a>
+        @foreach ($topApplicants as $applicant)
+            <div class="tw-row">
+                <span class="tw-col name">
+                    {{ $applicant->personal_info->first_name ?? '' }}
+                    {{ $applicant->personal_info->last_name ?? '' }}
+                </span>
+
+                <span class="tw-col hire-rate">
+                    @php
+                        $averageRating = $applicant->average_rating ?? 0;
+                    @endphp
+                    <div class="stars d-flex align-items-center">
+                        @for ($i = 1; $i <= 5; $i++)
+                            @if ($i <= floor($averageRating))
+                                <i class="fas fa-star text-warning"></i>
+                            @elseif($i - $averageRating < 1)
+                                <i class="fas fa-star-half-alt text-warning"></i>
+                            @else
+                                <i class="far fa-star text-warning"></i>
+                            @endif
+                        @endfor
+                        <small class="ms-1 text-muted">{{ number_format($averageRating, 1) }}</small>
+                    </div>
+                </span>
+
+                <span class="tw-col location">
+                    {{ $applicant->personal_info->city ?? '' }}
+                    {{ $applicant->personal_info->province ?? '' }}
+                </span>
+
+                <span class="tw-col industry">{{ $applicant->work_background->position ?? 'N/A' }}</span>
+
+                <button class="tw-dropdown-btn" aria-label="Show details">&#9660;</button>
+            </div>
+
+            <div class="tw-dropdown">
+                <div class="tw-dropdown-content">
+                    <img src="{{ $applicant->work_background->profileimage_path
+                        ? asset('storage/' . $applicant->work_background->profileimage_path)
+                        : asset('storage/default-profile.png') }}"
+                        alt="Profile" class="tw-profile-img" />
+
+                    <div class="tw-profile-info">
+                        <strong>{{ $applicant->personal_info->first_name ?? '' }}
+                            {{ $applicant->personal_info->last_name ?? '' }}</strong>
+                        <p>{{ $applicant->template->description ?? 'No description available' }}</p>
+
+                        <div class="tw-profile-actions">
+                            <button class="tw-btn tw-view-profile"
+                                onclick="openModal('commentsModal{{ $applicant->id }}')">
+                                View review comments
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Duplicate for more workers -->
-        <div class="tw-row">
-            <span class="tw-col name">Rogelio Ceranado Jr.</span>
-            <span class="tw-col age">56</span>
-            <span class="tw-col hire-rate">31.91%</span>
-            <span class="tw-col location">$982 782 981</span>
-            <span class="tw-col industry">Automotive</span>
-            <button class="tw-dropdown-btn" aria-label="Show details">&#9660;</button>
-        </div>
-        <div class="tw-dropdown">
-            <div class="tw-dropdown-content">
-                <img src="https://randomuser.me/api/portraits/men/2.jpg" alt="Profile" class="tw-profile-img" />
-                <div class="tw-profile-info">
-                    <strong>Rogelio Ceranado Jr.</strong>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                        labore et dolore magna aliqua.</p>
-                    <div class="tw-profile-actions">
-                        <a href="#" class="tw-btn tw-view-profile">View Profile</a>
-                        <a href="#" class="tw-btn tw-add-fav">Add to Favorites</a>
+            <!-- Unique Modal for Each Applicant -->
+            <div class="modal fade" id="commentsModal{{ $applicant->id }}" tabindex="-1"
+                aria-labelledby="commentsModalLabel{{ $applicant->id }}" aria-hidden="true" data-bs-backdrop="false">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="commentsModalLabel{{ $applicant->id }}">
+                                Employer Review Comments - {{ $applicant->personal_info->first_name ?? '' }}
+                                {{ $applicant->personal_info->last_name ?? '' }}
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            @php
+                                // Get all reviews for this applicant from the $topWorkers collection
+                                $reviewsForApplicant = $topWorkers->where('applicant.id', $applicant->id);
+                            @endphp
+
+                            @if ($reviewsForApplicant->isEmpty())
+                                <p class="text-muted">No reviews available for this applicant yet.</p>
+                            @else
+                                @foreach ($reviewsForApplicant as $review)
+                                    <div class="review-item mb-3">
+                                        <strong>{{ $review->employer->addressCompany->company_name ?? 'Unknown Company' }}</strong>
+                                        <div class="review-stars">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                @if ($i <= $review->rating)
+                                                    <i class="fas fa-star text-warning"></i>
+                                                @else
+                                                    <i class="far fa-star text-warning"></i>
+                                                @endif
+                                            @endfor
+                                        </div>
+                                        <p>{{ $review->review_comments ?? 'No comments provided.' }}</p>
+                                        <small class="text-muted">Posted on:
+                                            {{ $review->created_at->format('M d, Y') }}</small>
+                                    </div>
+                                @endforeach
+                            @endif
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="tw-row">
-            <span class="tw-col name">Rogelio Ceranado Jr.</span>
-            <span class="tw-col age">56</span>
-            <span class="tw-col hire-rate">31.91%</span>
-            <span class="tw-col location">$982 782 981</span>
-            <span class="tw-col industry">Automotive</span>
-            <button class="tw-dropdown-btn" aria-label="Show details">&#9660;</button>
-        </div>
-        <div class="tw-dropdown">
-            <div class="tw-dropdown-content">
-                <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="Profile" class="tw-profile-img" />
-                <div class="tw-profile-info">
-                    <strong>Rogelio Ceranado Jr.</strong>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                        labore et dolore magna aliqua.</p>
-                    <div class="tw-profile-actions">
-                        <a href="#" class="tw-btn tw-view-profile">View Profile</a>
-                        <a href="#" class="tw-btn tw-add-fav">Add to Favorites</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Duplicate for more workers -->
-        <div class="tw-row">
-            <span class="tw-col name">Rogelio Ceranado Jr.</span>
-            <span class="tw-col age">56</span>
-            <span class="tw-col hire-rate">31.91%</span>
-            <span class="tw-col location">$982 782 981</span>
-            <span class="tw-col industry">Automotive</span>
-            <button class="tw-dropdown-btn" aria-label="Show details">&#9660;</button>
-        </div>
-        <div class="tw-dropdown">
-            <div class="tw-dropdown-content">
-                <img src="https://randomuser.me/api/portraits/men/2.jpg" alt="Profile" class="tw-profile-img" />
-                <div class="tw-profile-info">
-                    <strong>Rogelio Ceranado Jr.</strong>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                        labore et dolore magna aliqua.</p>
-                    <div class="tw-profile-actions">
-                        <a href="#" class="tw-btn tw-view-profile">View Profile</a>
-                        <a href="#" class="tw-btn tw-add-fav">Add to Favorites</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="tw-row">
-            <span class="tw-col name">Rogelio Ceranado Jr.</span>
-            <span class="tw-col age">56</span>
-            <span class="tw-col hire-rate">31.91%</span>
-            <span class="tw-col location">$982 782 981</span>
-            <span class="tw-col industry">Automotive</span>
-            <button class="tw-dropdown-btn" aria-label="Show details">&#9660;</button>
-        </div>
-        <div class="tw-dropdown">
-            <div class="tw-dropdown-content">
-                <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="Profile" class="tw-profile-img" />
-                <div class="tw-profile-info">
-                    <strong>Rogelio Ceranado Jr.</strong>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                        labore et dolore magna aliqua.</p>
-                    <div class="tw-profile-actions">
-                        <a href="#" class="tw-btn tw-view-profile">View Profile</a>
-                        <a href="#" class="tw-btn tw-add-fav">Add to Favorites</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Duplicate for more workers -->
-        <div class="tw-row">
-            <span class="tw-col name">Rogelio Ceranado Jr.</span>
-            <span class="tw-col age">56</span>
-            <span class="tw-col hire-rate">31.91%</span>
-            <span class="tw-col location">$982 782 981</span>
-            <span class="tw-col industry">Automotive</span>
-            <button class="tw-dropdown-btn" aria-label="Show details">&#9660;</button>
-        </div>
-        <div class="tw-dropdown">
-            <div class="tw-dropdown-content">
-                <img src="https://randomuser.me/api/portraits/men/2.jpg" alt="Profile" class="tw-profile-img" />
-                <div class="tw-profile-info">
-                    <strong>Rogelio Ceranado Jr.</strong>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                        labore et dolore magna aliqua.</p>
-                    <div class="tw-profile-actions">
-                        <a href="#" class="tw-btn tw-view-profile">View Profile</a>
-                        <a href="#" class="tw-btn tw-add-fav">Add to Favorites</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="tw-row">
-            <span class="tw-col name">Rogelio Ceranado Jr.</span>
-            <span class="tw-col age">56</span>
-            <span class="tw-col hire-rate">31.91%</span>
-            <span class="tw-col location">$982 782 981</span>
-            <span class="tw-col industry">Automotive</span>
-            <button class="tw-dropdown-btn" aria-label="Show details">&#9660;</button>
-        </div>
-        <div class="tw-dropdown">
-            <div class="tw-dropdown-content">
-                <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="Profile" class="tw-profile-img" />
-                <div class="tw-profile-info">
-                    <strong>Rogelio Ceranado Jr.</strong>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                        labore et dolore magna aliqua.</p>
-                    <div class="tw-profile-actions">
-                        <a href="#" class="tw-btn tw-view-profile">View Profile</a>
-                        <a href="#" class="tw-btn tw-add-fav">Add to Favorites</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Duplicate for more workers -->
-        <div class="tw-row">
-            <span class="tw-col name">Rogelio Ceranado Jr.</span>
-            <span class="tw-col age">56</span>
-            <span class="tw-col hire-rate">31.91%</span>
-            <span class="tw-col location">$982 782 981</span>
-            <span class="tw-col industry">Automotive</span>
-            <button class="tw-dropdown-btn" aria-label="Show details">&#9660;</button>
-        </div>
-        <div class="tw-dropdown">
-            <div class="tw-dropdown-content">
-                <img src="https://randomuser.me/api/portraits/men/2.jpg" alt="Profile" class="tw-profile-img" />
-                <div class="tw-profile-info">
-                    <strong>Rogelio Ceranado Jr.</strong>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                        labore et dolore magna aliqua.</p>
-                    <div class="tw-profile-actions">
-                        <a href="#" class="tw-btn tw-view-profile">View Profile</a>
-                        <a href="#" class="tw-btn tw-add-fav">Add to Favorites</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        @endforeach
 
         <!-- View More Button -->
         <div style="text-align:center;margin-top:18px;">
             <button class="tw-view-more">View more</button>
         </div>
     </div>
+
+
     <footer class="footer">
         <div class="footer-col about">
             <img src="imgs/MPlogo.png" class="logo-placeholder">
@@ -281,14 +628,29 @@
         </div>
     </footer>
 
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
     <script>
+        // Function to open modal
+        function openModal(modalId) {
+            const modal = new bootstrap.Modal(document.getElementById(modalId), {
+                backdrop: false,
+                keyboard: true
+            });
+            modal.show();
+        }
+
         // Dropdown logic for multiple rows
         document.querySelectorAll('.tw-row').forEach(function(row, idx) {
             row.addEventListener('click', function(e) {
-                // Prevent toggling when clicking the button itself
-                if (e.target.classList.contains('tw-dropdown-btn')) {
-                    e.stopPropagation();
+                // Prevent toggling when clicking the button or view profile button
+                if (e.target.classList.contains('tw-dropdown-btn') ||
+                    e.target.classList.contains('tw-view-profile') ||
+                    e.target.closest('.tw-view-profile')) {
+                    return;
                 }
+
                 // Toggle dropdown for this row
                 const dropdowns = document.querySelectorAll('.tw-dropdown');
                 const btns = document.querySelectorAll('.tw-dropdown-btn');

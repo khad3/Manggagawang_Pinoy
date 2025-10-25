@@ -2,6 +2,7 @@
 
 namespace App\Models\Employer;
 
+use App\Models\Applicant\RegisterModel;
 use Illuminate\Database\Eloquent\Model;
 
 class SendRatingModel extends Model
@@ -31,6 +32,10 @@ class SendRatingModel extends Model
     public function personalInfo() {
     return $this->belongsTo(PersonalInformationModel::class, 'employer_id', 'employer_id');
 }
+
+    public function applicant() {
+        return $this->belongsTo(RegisterModel::class, 'applicant_id');
+    }
 
     
 }

@@ -825,7 +825,7 @@ class AdminController extends Controller
     $topJobsChartData[] = "['Job Title', 'Hired Applicants']";
 
     foreach ($topJobs as $record) {
-        $jobTitle = addslashes($record->job->title ?? 'Unknown Job');
+        $jobTitle = addslashes($record->job->department ?? 'Unknown Department').' - '. addslashes($record->job->title ?? 'Unknown Job title') ;
         $topJobsChartData[] = "['{$jobTitle}', {$record->total}]";
     }
 

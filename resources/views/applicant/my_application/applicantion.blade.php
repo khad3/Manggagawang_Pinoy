@@ -10,6 +10,207 @@
     <link href="{{ asset('css/applicant/my_application/applicantion.css') }}" rel="stylesheet">
 
 </head>
+<!-- Add this right before </body> -->
+<script>
+    // Application Status Filter System
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.querySelector('.search-input');
+        const statusFilter = document.querySelector('.form-select');
+        const applicationCards = document.querySelectorAll('.application-card');
+
+        // Function to filter applications
+        function filterApplications() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const selectedStatus = statusFilter.value.toLowerCase();
+
+            let visibleCount = 0;
+
+            applicationCards.forEach(card => {
+                // Get card data
+                const jobTitle = card.querySelector('.job-title')?.textContent.toLowerCase() || '';
+                const companyName = card.querySelector('.company-name')?.textContent.toLowerCase() ||
+                    '';
+                const statusBadge = card.querySelector('.status-badge')?.textContent.toLowerCase() ||
+                    '';
+                const location = card.querySelector('.fa-map-marker-alt')?.parentElement?.textContent
+                    .toLowerCase() || '';
+
+                // Normalize status from badge
+                let cardStatus = 'all';
+                if (statusBadge.includes('pending')) cardStatus = 'pending';
+                else if (statusBadge.includes('being reviewed') || statusBadge.includes('reviewed'))
+                    cardStatus = 'reviewed';
+                else if (statusBadge.includes('interview')) cardStatus = 'interview';
+                else if (statusBadge.includes('approved') || statusBadge.includes('accepted'))
+                    cardStatus = 'accepted';
+                else if (statusBadge.includes('rejected')) cardStatus = 'rejected';
+
+                // Check search match
+                const matchesSearch = searchTerm === '' ||
+                    jobTitle.includes(searchTerm) ||
+                    companyName.includes(searchTerm) ||
+                    location.includes(searchTerm);
+
+                // Check status match
+                const matchesStatus = selectedStatus === 'all' || cardStatus === selectedStatus;
+
+                // Show or hide card
+                if (matchesSearch && matchesStatus) {
+                    card.style.display = 'block';
+                    card.style.animation = 'fadeIn 0.3s ease-in';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Show "no results" message if needed
+            showNoResultsMessage(visibleCount);
+        }
+
+        // Function to show/hide "no results" message
+        function showNoResultsMessage(count) {
+            let noResultsDiv = document.getElementById('no-results-message');
+
+            if (count === 0) {
+                if (!noResultsDiv) {
+                    noResultsDiv = document.createElement('div');
+                    noResultsDiv.id = 'no-results-message';
+                    noResultsDiv.className = 'text-center py-5';
+                    noResultsDiv.innerHTML = `
+                    <div class="mb-4">
+                        <i class="fas fa-search fa-3x text-muted opacity-50"></i>
+                    </div>
+                    <h5 class="text-muted mb-2">No Applications Found</h5>
+                    <p class="text-muted">Try adjusting your filters or search terms.</p>
+                    <button class="btn btn-primary btn-sm mt-3" onclick="resetFilters()">
+                        <i class="fas fa-redo me-2"></i>Reset Filters
+                    </button>
+                `;
+
+                    const applicationsTab = document.querySelector('#applications .p-4');
+                    if (applicationsTab) {
+                        applicationsTab.appendChild(noResultsDiv);
+                    }
+                } else {
+                    noResultsDiv.style.display = 'block';
+                }
+            } else {
+                if (noResultsDiv) {
+                    noResultsDiv.style.display = 'none';
+                }
+            }
+        }
+
+        // Event listeners
+        if (searchInput) {
+            searchInput.addEventListener('input', filterApplications);
+        }
+
+        if (statusFilter) {
+            statusFilter.addEventListener('change', filterApplications);
+        }
+
+        // Reset filters function
+        window.resetFilters = function() {
+            if (searchInput) searchInput.value = '';
+            if (statusFilter) statusFilter.value = 'all';
+            filterApplications();
+        };
+
+        // Add fade-in animation
+        const style = document.createElement('style');
+        style.textContent = `
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .application-card {
+            transition: all 0.3s ease;
+        }
+    `;
+        document.head.appendChild(style);
+
+        // Update status counts in dropdown
+        function updateStatusCounts() {
+            const counts = {
+                all: 0,
+                pending: 0,
+                reviewed: 0,
+                interview: 0,
+                accepted: 0,
+                rejected: 0
+            };
+
+            applicationCards.forEach(card => {
+                const statusBadge = card.querySelector('.status-badge')?.textContent.toLowerCase() ||
+                    '';
+                counts.all++;
+
+                if (statusBadge.includes('pending')) counts.pending++;
+                else if (statusBadge.includes('being reviewed') || statusBadge.includes('reviewed'))
+                    counts.reviewed++;
+                else if (statusBadge.includes('interview')) counts.interview++;
+                else if (statusBadge.includes('approved') || statusBadge.includes('accepted')) counts
+                    .accepted++;
+                else if (statusBadge.includes('rejected')) counts.rejected++;
+            });
+
+            // Update select options with counts
+            if (statusFilter) {
+                const options = statusFilter.querySelectorAll('option');
+                options.forEach(option => {
+                    const value = option.value.toLowerCase();
+                    const originalText = option.textContent.split(' (')[0];
+
+                    if (counts.hasOwnProperty(value)) {
+                        option.textContent = `${originalText} (${counts[value]})`;
+                    }
+                });
+            }
+        }
+
+        updateStatusCounts();
+
+        // Make stat cards clickable to filter
+        const statCards = document.querySelectorAll('.stat-card');
+
+        statCards.forEach(card => {
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', function() {
+                const cardText = this.textContent.toLowerCase();
+                let filterValue = 'all';
+
+                if (cardText.includes('pending review')) filterValue = 'pending';
+                else if (cardText.includes('being reviewed')) filterValue = 'reviewed';
+                else if (cardText.includes('interviews')) filterValue = 'interview';
+                else if (cardText.includes('accepted')) filterValue = 'accepted';
+                else if (cardText.includes('rejected')) filterValue = 'rejected';
+
+                // Switch to applications tab
+                const applicationsTab = document.getElementById('applications-tab');
+                if (applicationsTab) {
+                    applicationsTab.click();
+                }
+
+                // Apply filter
+                setTimeout(() => {
+                    if (statusFilter) {
+                        statusFilter.value = filterValue;
+                        filterApplications();
+                    }
+                }, 100);
+            });
+        });
+    });
+</script>
 
 <body>
 
@@ -563,12 +764,7 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="fas fa-times me-2"></i>Close
                     </button>
-                    <button type="button" class="btn btn-primary">
-                        <i class="fas fa-edit me-2"></i>Update Application
-                    </button>
-                    <button type="button" class="btn btn-success">
-                        <i class="fas fa-calendar me-2"></i>Schedule Interview
-                    </button>
+
                 </div>
             </div>
         </div>
@@ -1202,6 +1398,288 @@
             // Show apply modal
             new bootstrap.Modal(document.getElementById('applyJobModal')).show();
         }
+
+        // Application Status Filter System
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.querySelector('.search-input');
+            const statusFilter = document.querySelector('.form-select');
+            const applicationCards = document.querySelectorAll('.application-card');
+
+            // Function to filter applications
+            function filterApplications() {
+                const searchTerm = searchInput.value.toLowerCase().trim();
+                const selectedStatus = statusFilter.value.toLowerCase();
+
+                let visibleCount = 0;
+
+                applicationCards.forEach(card => {
+                    // Get card data
+                    const jobTitle = card.querySelector('.job-title')?.textContent.toLowerCase() || '';
+                    const companyName = card.querySelector('.company-name')?.textContent.toLowerCase() ||
+                        '';
+                    const statusBadge = card.querySelector('.status-badge')?.textContent.toLowerCase() ||
+                        '';
+                    const location = card.querySelector('.fa-map-marker-alt')?.parentElement?.textContent
+                        .toLowerCase() || '';
+
+                    // Normalize status from badge
+                    let cardStatus = 'all';
+                    if (statusBadge.includes('pending')) cardStatus = 'pending';
+                    else if (statusBadge.includes('being reviewed') || statusBadge.includes('reviewed'))
+                        cardStatus = 'reviewed';
+                    else if (statusBadge.includes('interview')) cardStatus = 'interview';
+                    else if (statusBadge.includes('approved') || statusBadge.includes('accepted'))
+                        cardStatus = 'accepted';
+                    else if (statusBadge.includes('rejected')) cardStatus = 'rejected';
+
+                    // Check search match
+                    const matchesSearch = searchTerm === '' ||
+                        jobTitle.includes(searchTerm) ||
+                        companyName.includes(searchTerm) ||
+                        location.includes(searchTerm);
+
+                    // Check status match
+                    const matchesStatus = selectedStatus === 'all' || cardStatus === selectedStatus;
+
+                    // Show or hide card
+                    if (matchesSearch && matchesStatus) {
+                        card.style.display = 'block';
+                        card.style.animation = 'fadeIn 0.3s ease-in';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Show "no results" message if needed
+                showNoResultsMessage(visibleCount);
+            }
+
+            // Function to show/hide "no results" message
+            function showNoResultsMessage(count) {
+                let noResultsDiv = document.getElementById('no-results-message');
+
+                if (count === 0) {
+                    if (!noResultsDiv) {
+                        noResultsDiv = document.createElement('div');
+                        noResultsDiv.id = 'no-results-message';
+                        noResultsDiv.className = 'text-center py-5';
+                        noResultsDiv.innerHTML = `
+                    <div class="mb-4">
+                        <i class="fas fa-search fa-3x text-muted opacity-50"></i>
+                    </div>
+                    <h5 class="text-muted mb-2">No Applications Found</h5>
+                    <p class="text-muted">Try adjusting your filters or search terms.</p>
+                    <button class="btn btn-primary btn-sm mt-3" onclick="resetFilters()">
+                        <i class="fas fa-redo me-2"></i>Reset Filters
+                    </button>
+                `;
+
+                        const applicationsTab = document.querySelector('#applications .p-4');
+                        if (applicationsTab) {
+                            applicationsTab.appendChild(noResultsDiv);
+                        }
+                    } else {
+                        noResultsDiv.style.display = 'block';
+                    }
+                } else {
+                    if (noResultsDiv) {
+                        noResultsDiv.style.display = 'none';
+                    }
+                }
+            }
+
+            // Event listeners
+            if (searchInput) {
+                searchInput.addEventListener('input', filterApplications);
+            }
+
+            if (statusFilter) {
+                statusFilter.addEventListener('change', filterApplications);
+            }
+
+            // Reset filters function (global scope)
+            window.resetFilters = function() {
+                if (searchInput) searchInput.value = '';
+                if (statusFilter) statusFilter.value = 'all';
+                filterApplications();
+            };
+
+            // Add fade-in animation
+            const style = document.createElement('style');
+            style.textContent = `
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .application-card {
+            transition: all 0.3s ease;
+        }
+        
+        .application-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+    `;
+            document.head.appendChild(style);
+
+            // Add status count badges
+            function updateStatusCounts() {
+                const counts = {
+                    all: 0,
+                    pending: 0,
+                    reviewed: 0,
+                    interview: 0,
+                    accepted: 0,
+                    rejected: 0
+                };
+
+                applicationCards.forEach(card => {
+                    const statusBadge = card.querySelector('.status-badge')?.textContent.toLowerCase() ||
+                        '';
+                    counts.all++;
+
+                    if (statusBadge.includes('pending')) counts.pending++;
+                    else if (statusBadge.includes('being reviewed') || statusBadge.includes('reviewed'))
+                        counts.reviewed++;
+                    else if (statusBadge.includes('interview')) counts.interview++;
+                    else if (statusBadge.includes('approved') || statusBadge.includes('accepted')) counts
+                        .accepted++;
+                    else if (statusBadge.includes('rejected')) counts.rejected++;
+                });
+
+                // Update select options with counts
+                if (statusFilter) {
+                    const options = statusFilter.querySelectorAll('option');
+                    options.forEach(option => {
+                        const value = option.value.toLowerCase();
+                        const originalText = option.textContent.split(' (')[0]; // Remove existing count
+
+                        if (counts.hasOwnProperty(value)) {
+                            option.textContent = `${originalText} (${counts[value]})`;
+                        }
+                    });
+                }
+            }
+
+            // Initial count update
+            updateStatusCounts();
+
+            // Optional: Add keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Focus search on Ctrl+F or Cmd+F
+                if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                    e.preventDefault();
+                    if (searchInput) {
+                        searchInput.focus();
+                        searchInput.select();
+                    }
+                }
+
+                // Clear filters on Escape
+                if (e.key === 'Escape') {
+                    if (searchInput === document.activeElement) {
+                        searchInput.value = '';
+                        searchInput.blur();
+                        filterApplications();
+                    }
+                }
+            });
+
+            // Add clear button to search input
+            if (searchInput) {
+                const clearBtn = document.createElement('button');
+                clearBtn.type = 'button';
+                clearBtn.className = 'btn btn-link position-absolute end-0 top-50 translate-middle-y text-muted';
+                clearBtn.style.cssText =
+                    'z-index: 10; display: none; padding: 0.25rem 0.5rem; text-decoration: none;';
+                clearBtn.innerHTML = '<i class="fas fa-times"></i>';
+
+                const searchContainer = searchInput.closest('.search-container');
+                if (searchContainer) {
+                    searchContainer.style.position = 'relative';
+                    searchContainer.appendChild(clearBtn);
+
+                    searchInput.addEventListener('input', function() {
+                        clearBtn.style.display = this.value ? 'block' : 'none';
+                    });
+
+                    clearBtn.addEventListener('click', function() {
+                        searchInput.value = '';
+                        clearBtn.style.display = 'none';
+                        filterApplications();
+                        searchInput.focus();
+                    });
+                }
+            }
+        });
+
+        // Export filter function for external use
+        window.filterApplicationsByStatus = function(status) {
+            const statusFilter = document.querySelector('.form-select');
+            if (statusFilter) {
+                statusFilter.value = status;
+                statusFilter.dispatchEvent(new Event('change'));
+            }
+        };
+
+        // Add this to your existing script to integrate with stat cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const statCards = document.querySelectorAll('.stat-card');
+
+            statCards.forEach(card => {
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', function() {
+                    // Get the status from the card text
+                    const cardText = this.textContent.toLowerCase();
+                    let filterValue = 'all';
+
+                    if (cardText.includes('pending')) filterValue = 'pending';
+                    else if (cardText.includes('being reviewed')) filterValue = 'reviewed';
+                    else if (cardText.includes('interview')) filterValue = 'interview';
+                    else if (cardText.includes('accepted') || cardText.includes('approved'))
+                        filterValue = 'accepted';
+                    else if (cardText.includes('rejected')) filterValue = 'rejected';
+
+                    // Switch to applications tab
+                    const applicationsTab = document.getElementById('applications-tab');
+                    if (applicationsTab) {
+                        applicationsTab.click();
+                    }
+
+                    // Apply filter
+                    setTimeout(() => {
+                        window.filterApplicationsByStatus(filterValue);
+
+                        // Scroll to applications
+                        const applicationsSection = document.getElementById('applications');
+                        if (applicationsSection) {
+                            applicationsSection.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
+                    }, 100);
+                });
+
+                // Add hover effect
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                    this.style.transition = 'transform 0.2s ease';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        });
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

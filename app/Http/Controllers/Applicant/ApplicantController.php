@@ -213,9 +213,103 @@ public function resetPassword(Request $request)
         return view('landingpage.index');
     }
 
-    public function topWorkers(){
-        return view('landingpage.topworker');
+public function topWorkers()
+{
+    $topWorkers = \App\Models\Employer\SendRatingModel::with([
+        'applicant.personal_info',
+        'applicant.work_background',
+        'applicant.template',
+        'employer.addressCompany',
+
+    ])
+    ->get(); // get all ratings first
+
+    $applicants = [];
+
+    foreach ($topWorkers as $worker) {
+        $applicantId = $worker->applicant->id ?? null;
+        if (!$applicantId) continue;
+
+        // Initialize if first time
+        if (!isset($applicants[$applicantId])) {
+            $applicant = $worker->applicant;
+
+            // Personal Info
+            if ($applicant && $applicant->personal_info) {
+                $personalInfo = $applicant->personal_info;
+                $personalInfo->first_name = $this->safeDecryptField($personalInfo->first_name);
+                $personalInfo->last_name  = $this->safeDecryptField($personalInfo->last_name);
+                $personalInfo->city       = $this->safeDecryptField($personalInfo->city);
+                $personalInfo->province   = $this->safeDecryptField($personalInfo->province);
+            }
+
+            // Work Background
+            if ($applicant && $applicant->work_background) {
+                $workBackground = $applicant->work_background;
+                $workBackground->position = $this->safeDecryptField($workBackground->position);
+            }
+
+            // Template
+            if ($applicant && $applicant->template) {
+                $template = $applicant->template;
+                $template->description = $this->safeDecryptField($template->description);
+            }
+
+            $applicants[$applicantId] = [
+                'applicant' => $applicant,
+                'ratings' => []
+            ];
+        }
+
+        // Add current rating
+        $applicants[$applicantId]['ratings'][] = $worker->rating ?? 0;
     }
+
+    // Calculate average rating per applicant
+    $topApplicants = collect($applicants)->map(function($data) {
+        $applicant = $data['applicant'];
+        $ratings = $data['ratings'];
+        $applicant->average_rating = $ratings ? array_sum($ratings) / count($ratings) : 0;
+        return $applicant;
+    })
+    ->sortByDesc('average_rating') // top rated first
+    ->take(10); // limit to top 10
+
+    return view('landingpage.topworker', compact('topApplicants' , 'topWorkers'));
+}
+
+/**
+ * Safe decrypt helper for fields
+ */
+private function safeDecryptField($value)
+{
+    if (is_null($value) || $value === '') {
+        return '';
+    }
+
+    if (!is_string($value)) {
+        return $value;
+    }
+
+    // Try to unserialize first (some fields may be serialized)
+    $unserialized = @unserialize($value);
+    if ($unserialized !== false || $value === 'b:0;') {
+        return $unserialized;
+    }
+
+    // Then try Laravel decrypt
+    try {
+        if (str_starts_with($value, 'base64:') || strlen($value) > 50) {
+            return decrypt($value);
+        }
+    } catch (\Exception $e) {
+        // Decryption failed, return original
+        return $value;
+    }
+
+    // Return original if not encrypted or serialized
+    return $value;
+}
 
     public function aboutUs(){
         return view('landingpage.aboutus');
