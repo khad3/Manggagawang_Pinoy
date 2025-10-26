@@ -229,7 +229,7 @@
                         <div class="form-group fade-in" style="animation-delay: 0.4s;">
                             <label class="form-label">
                                 <i class="bi bi-camera me-2"></i>Upload Profile Picture
-                                <span style="font-weight: 400; color: #6b7280; font-size: 14px;">(Optional)</span>
+                                <span style="font-weight: 400; color: #6b7280; font-size: 14px;">(Required)</span>
                             </label>
 
                             <div class="file-upload-area" onclick="document.getElementById('profile_picture').click()"

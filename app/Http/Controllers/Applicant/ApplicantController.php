@@ -1030,6 +1030,11 @@ public function ViewCallingCard() {
         $retrievedProfile->personal_info->first_name = $this->safe_decrypt($retrievedProfile->personal_info->first_name);
         $retrievedProfile->personal_info->last_name  = $this->safe_decrypt($retrievedProfile->personal_info->last_name);
     }
+
+    if ($retrievedProfile->work_background) {
+        $retrievedProfile->work_background->position = $this->safe_decrypt($retrievedProfile->work_background->position);
+        $retrievedProfile->work_background->other_position = $this->safe_decrypt($retrievedProfile->work_background->other_position);
+    }
  
     // Fetch youtube/video link (latest)
     $retrievedYoutube = ApplicantUrlModel::with('personalInfo', 'workExperience')
