@@ -592,7 +592,7 @@
                 Manggagawang Pinoy is a web-based job-matching platform designed to help blue-collar Filipino workers
                 connect with employers.
             </p>
-            <a href="#">Our Team</a>
+            <a href="{{ route('display.aboutus') }}">Our Team</a>
         </div>
         <div class="footer-col contact">
             <h4>Contact</h4>
@@ -615,7 +615,7 @@
                             d="M5.5 25.8332C4.74375 25.8332 4.09063 25.5856 3.54063 25.0905C3.01354 24.5738 2.75 23.9603 2.75 23.2498V7.74984C2.75 7.03942 3.01354 6.43664 3.54063 5.9415C4.09063 5.42484 4.74375 5.1665 5.5 5.1665H27.5C28.2563 5.1665 28.8979 5.42484 29.425 5.9415C29.975 6.43664 30.25 7.03942 30.25 7.74984V23.2498C30.25 23.9603 29.975 24.5738 29.425 25.0905C28.8979 25.5856 28.2563 25.8332 27.5 25.8332H5.5ZM16.5 16.7915L27.5 10.3332V7.74984L16.5 14.2082L5.5 7.74984V10.3332L16.5 16.7915Z"
                             fill="#1D1B20" />
                     </svg>
-                </span>wongkhadleyo@gmail.com</p>
+                </span>mangaggawangpinoycompany@gmail.com</p>
         </div>
         <div class="footer-col links">
             <h4>Links</h4>

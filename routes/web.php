@@ -82,6 +82,9 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
     Route::get('info/template', [ApplicantController::class, 'ShowTemplateFormForm'])->name('applicant.info.template.display');
     Route::post('info/template', [ApplicantController::class, 'TemplateForm'])->name('applicant.info.template.store');
     Route::get('homepage', [ApplicantController::class, 'ShowHomepage'])->name('applicant.info.homepage.display');
+
+    //Send rating
+    Route::post('send-rating', [ApplicantController::class, 'sendRating'])->name('applicant.sendrating.store');
     //Report the employer job post
     Route::post('report/employer-job-post', [ReportController::class, 'reportEmployerJobPost'])->name('applicant.report.employerjobpost.store');
    // routes/web.php
@@ -128,7 +131,7 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
     Route::get('profile', [ProfileController::class, 'ViewProfilePage'])->name('applicant.profile.display');
     Route::post('add-cover-photo', [ProfileController::class, 'AddCoverPhoto'])->name('applicant.coverphoto.store');
     Route::delete('delete-cover-photo', [ProfileController::class, 'DeleteCoverPhoto'])->name('applicant.coverphoto.delete');
-    Route::put('profile/edit-update/{applicant_id}', [ProfileController::class, 'EditProfile'])->name('applicant.profile.info.update');
+    Route::put('profile/edit-update/{id}', [ProfileController::class, 'EditProfile'])->name('applicant.profile.info.update');
     Route::post('profile/add-post', [ProfileController::class, 'ApplicantPost'])->name('applicant.applicantposts.store');
     Route::put('profile/update-post/{id}', [ProfileController::class, 'ApplicantEditPost'])->name('applicant.applicantposts.update');
     Route::delete('profile/delete-post/{id}', [ProfileController::class, 'ApplicantDeletePost'])->name('applicant.applicantposts.delete');

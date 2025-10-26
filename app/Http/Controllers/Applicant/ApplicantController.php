@@ -752,7 +752,8 @@ public function ShowHomepage()
         'employer',
         'interviewScreening',
         'workerRequirement',
-        'specialRequirement'
+        'specialRequirement',
+        'ratings.applicant',
     )->get()->sortDesc();
 
     $publishedCounts = \App\Models\Employer\JobDetailModel::where('status_post', 'published')->count();
@@ -867,8 +868,19 @@ $messages = EmployerSendMessage::with(['employer.addressCompany', 'employer.pers
     // Merge both collections
 $allNotifications = $notifications->merge($notificationsSchedule)->sortByDesc('created_at');
 
+
+//retrieve the rating by applicant to show every job post
+    $retrieveRating = \App\Models\Applicant\SendRatingToJobPostModel::with('jobPost')->where('applicant_id', $applicantId)->get();
+
+    $avarageRating = $retrieveRating->avg('rating');
+    $total = $retrieveRating->count();
+
+    
    
     return view('applicant.homepage.homepage', compact(
+        'retrieveRating',
+        'avarageRating',
+        'total',
         'allNotifications',
         'notificationsSchedule',
         'retrieveDataDecrypted',
@@ -1392,6 +1404,33 @@ public function cancelApplication(Request $request)
     return back()->with('success', 'Application cancelled successfully.');
 }
 
+
+//Send rating to job post
+public function sendRating(Request $request)
+{
+    $request->validate([
+        'job_post_id' => 'required|exists:job_details_employer,id',
+        'rating' => 'required|integer|min:1|max:5',
+        'feedback' => 'nullable|string', // optional
+    ]);
+
+    $jobId = $request->input('job_post_id');
+
+    // Optional: check if job exists
+    $job = \App\Models\Employer\JobDetailModel::find($jobId);
+    if (!$job) {
+        return back()->withErrors(['error' => 'Job not found.']);
+    }
+
+    $rating = new \App\Models\Applicant\SendRatingToJobPostModel();
+    $rating->applicant_id = session('applicant_id');
+    $rating->job_post_id = $jobId;
+    $rating->rating = $request->input('rating');
+    $rating->review_comments = $request->input('feedback');
+    $rating->save();
+
+    return back()->with('success', 'Rating sent successfully.');
+}
 
 
 }

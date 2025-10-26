@@ -159,7 +159,7 @@ return view('applicant.profile.profile', compact(
     }
 
     //Add the edit profile page 
-    public function EditProfile(Request $request, $applicant_id){
+    public function EditProfile(Request $request, $id){
         $request->validate([
             'first_name'         => 'required|string',
             'last_name'          => 'required|string',
@@ -171,13 +171,13 @@ return view('applicant.profile.profile', compact(
         ]);
 
         //Update Personal Info
-        $applicant = PersonalInfo::findOrFail($applicant_id);
+        $applicant = PersonalInfo::findOrFail($id);
         $applicant->first_name = $request->first_name;
         $applicant->last_name  = $request->last_name;
         $applicant->save();
 
         //Update or Create Work Background
-        $workBackground = WorkBackground::firstOrNew(['applicant_id' => $applicant_id]);
+        $workBackground = WorkBackground::firstOrNew(['applicant_id' => $id]);
 
         //If "Other" is selected, use the custom input
         $workBackground->position = $request->position === 'Other' ? $request->other_position : $request->position;

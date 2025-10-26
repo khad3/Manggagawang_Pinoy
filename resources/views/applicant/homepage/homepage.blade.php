@@ -16,7 +16,6 @@
     <!-- fav icon -->
     <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
     <link rel="stylesheet" href="{{ asset('css/applicant/homepage.css') }}">
-
 </head>
 
 <body>
@@ -187,6 +186,7 @@
                         <option value="industry">Sort by Industry</option>
                     </select>
                 </div>
+
                 <div class="employer-grid" id="employerGrid">
                     @foreach ($JobPostRetrieved as $jobDetail)
                         @if ($jobDetail->status_post === 'published')
@@ -222,10 +222,9 @@
                                         <!-- Report Button -->
                                         @if (in_array($jobDetail->id, $reportedJobIds))
                                             <!--  If already reported -->
-                                            <button class="btn btn-link text-muted p-0 ms-2" disabled
+                                            <button class="btn btn-link text-muted p-0 ms-2 report-job-btn" disabled
                                                 title="You already reported this job">
                                                 <i class="bi bi-flag-fill text-danger"></i>
-                                                <!-- filled flag for visual cue -->
                                             </button>
                                         @else
                                             <!--  If not yet reported -->
@@ -239,7 +238,6 @@
                                                 <i class="bi bi-flag"></i>
                                             </button>
                                         @endif
-
                                     </div>
                                 </div>
 
@@ -268,6 +266,54 @@
 
                                     <!-- Action Buttons -->
                                     <div class="card-actions d-flex gap-2 mt-2">
+                                        <!-- Rating Display & Buttons -->
+                                        <div class="w-100 mt-2">
+                                            @php
+                                                $jobRating = $jobRatings[$jobDetail->id] ?? null;
+                                                $userRating = $applicantRatings[$jobDetail->id] ?? null;
+                                            @endphp
+
+                                            @if ($jobRating)
+                                                <div class="d-flex align-items-center gap-2 mb-2">
+                                                    <div class="display-rating">
+                                                        @for ($i = 1; $i <= 5; $i++)
+                                                            @if ($i <= floor($jobRating->average_rating))
+                                                                <i class="bi bi-star-fill"></i>
+                                                            @elseif($i - 0.5 <= $jobRating->average_rating)
+                                                                <i class="bi bi-star-half"></i>
+                                                            @else
+                                                                <i class="bi bi-star empty-star"></i>
+                                                            @endif
+                                                        @endfor
+                                                    </div>
+                                                    <span
+                                                        class="text-muted">{{ number_format($jobRating->average_rating, 1) }}
+                                                        ({{ $jobRating->total_ratings }}
+                                                        {{ $jobRating->total_ratings == 1 ? 'review' : 'reviews' }})</span>
+                                                </div>
+                                            @endif
+
+                                            <div class="d-flex gap-2">
+                                                <!-- Rate Job Button -->
+                                                <button class="btn btn-outline-warning btn-sm rate-job-btn"
+                                                    data-job-id="{{ $jobDetail->id }}"
+                                                    data-title="{{ $jobDetail->title }}"
+                                                    data-company="{{ $retrievedAddressCompany->first()->company_name ?? 'Unknown Company' }}"
+                                                    data-bs-toggle="modal" data-bs-target="#rateJobModal">
+                                                    <i class="bi bi-star me-1"></i>
+                                                    {{ $userRating ? 'Update Rating' : 'Rate Job' }}
+                                                </button>
+
+                                                <!-- View Ratings Button -->
+                                                <button class="btn btn-outline-secondary btn-sm view-ratings-btn"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#viewRatingsModal-{{ $jobDetail->id }}">
+                                                    <i class="bi bi-chat-left-text me-1"></i>
+                                                    View Reviews
+                                                </button>
+                                            </div>
+                                        </div>
+
                                         <!-- View Details -->
                                         <button class="btn btn-primary btn-sm view-details-btn"
                                             data-title="{{ $jobDetail->title }}"
@@ -279,17 +325,17 @@
                                             data-salary="{{ $jobDetail->job_salary }}"
                                             data-experience="{{ $jobDetail->experience_level ?? 'N/A' }}"
                                             @if (Str::contains($jobDetail->tesda_certification, 'Other')) data-tesda="{{ $jobDetail->other_certifications ?? 'N/A' }}"
-                            data-none="N/A"
-                        @else
-                            data-tesda="{{ $jobDetail->tesda_certification ?? 'N/A' }}"
-                            data-none="{{ $jobDetail->none_certifications_qualification ?? 'N/A' }}" @endif
+                                data-none="N/A"
+                            @else
+                                data-tesda="{{ $jobDetail->tesda_certification ?? 'N/A' }}"
+                                data-none="{{ $jobDetail->none_certifications_qualification ?? 'N/A' }}" @endif
                                             data-bs-toggle="modal" data-bs-target="#viewDetailsModal">
                                             View Details
                                         </button>
 
                                         <!-- Save/Unsave Job -->
                                         <form action="{{ route('jobs.toggleSave', $jobDetail->id) }}" method="POST"
-                                            style="display:inline;">
+                                            style="display:inline; width: 100%;">
                                             @csrf
                                             @if (in_array($jobDetail->id, $savedJobIds))
                                                 <button type="submit" class="btn btn-danger btn-sm">
@@ -416,6 +462,8 @@ $hasActiveApplication =
         </section>
     </div>
     </div>
+
+
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -913,6 +961,274 @@ $hasActiveApplication =
             if (confirm("Are you sure you want to logout?")) {
                 document.getElementById('logoutForm').submit();
             }
+        }
+    </script>
+
+    <!-- Rate Job Modal -->
+    <div class="modal fade" id="rateJobModal" tabindex="-1" aria-labelledby="rateJobModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><!-- Added modal-dialog-scrollable -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rateJobModalLabel">
+                        <i class="bi bi-star-fill text-warning me-2"></i>Rate This Job
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="rateJobForm" action="{{ route('applicant.sendrating.store') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="job_post_id">
+                    <div class="modal-body">
+                        <div class="text-center mb-3">
+                            <h6 id="rateJobTitle" class="fw-bold"></h6>
+                            <small id="rateJobCompany" class="text-muted"></small>
+                        </div>
+
+                        <!-- Star Rating -->
+                        <div class="mb-4">
+                            <label class="form-label text-center d-block mb-3">How would you rate this job
+                                posting?</label>
+                            <div class="star-rating justify-content-center">
+                                <input type="radio" name="rating" value="5" id="star5" required>
+                                <label for="star5"><i class="bi bi-star-fill"></i></label>
+
+                                <input type="radio" name="rating" value="4" id="star4">
+                                <label for="star4"><i class="bi bi-star-fill"></i></label>
+
+                                <input type="radio" name="rating" value="3" id="star3">
+                                <label for="star3"><i class="bi bi-star-fill"></i></label>
+
+                                <input type="radio" name="rating" value="2" id="star2">
+                                <label for="star2"><i class="bi bi-star-fill"></i></label>
+
+                                <input type="radio" name="rating" value="1" id="star1">
+                                <label for="star1"><i class="bi bi-star-fill"></i></label>
+                            </div>
+                            <div class="text-center mt-2">
+                                <small class="text-muted" id="ratingText">Select a rating</small>
+                            </div>
+                        </div>
+
+                        <!-- Feedback -->
+                        <div class="mb-3">
+                            <label for="feedback" class="form-label">Your Feedback (Optional)</label>
+                            <textarea class="form-control" id="feedback" name="feedback" rows="4"
+                                placeholder="Share your thoughts about this job posting..."></textarea>
+                            <small class="text-muted">Maximum 1000 characters</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-send me-1"></i>Submit Rating
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    @foreach ($JobPostRetrieved as $jobDetail)
+        <!-- View Ratings Modal -->
+        <div class="modal fade" id="viewRatingsModal-{{ $jobDetail->id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="bi bi-star-fill text-warning me-2"></i>Job Ratings & Reviews
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Job Title & Company -->
+                        <div class="text-center mb-4">
+                            <h6 class="fw-bold">{{ $jobDetail->title }}</h6>
+                            <small
+                                class="text-muted">{{ $jobDetail->employer->addressCompany->company_name ?? 'Unknown Company' }}</small>
+                        </div>
+
+                        @php
+                            $ratings = $jobDetail->ratings; // make sure relation exists
+                            $averageRating = $ratings->avg('rating');
+                            $total = $ratings->count();
+                        @endphp
+
+                        <!-- Rating Summary -->
+                        <div class="rating-summary justify-content-center mb-4 text-center">
+                            <div class="rating-number">{{ number_format($averageRating ?? 0, 1) }}</div>
+                            <div>
+                                <div class="rating-stars-display">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($i <= round($averageRating ?? 0))
+                                            <i class="bi bi-star-fill text-warning"></i>
+                                        @else
+                                            <i class="bi bi-star text-muted"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                                <small class="text-muted">{{ $total }}
+                                    {{ Str::plural('rating', $total) }}</small>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- Reviews List -->
+                        @if ($ratings->isEmpty())
+                            <div class="text-center text-muted py-4">
+                                <i class="bi bi-inbox fs-1"></i>
+                                <p>No reviews yet. Be the first to rate this job!</p>
+                            </div>
+                        @else
+                            @foreach ($ratings as $rating)
+                                <div class="review-card mb-3 p-3 border rounded">
+                                    <div class="review-header d-flex justify-content-between mb-1">
+                                        <span class="reviewer-name">
+                                            <i class="bi bi-person-circle me-1"></i>
+                                            {{ $rating->applicant->first_name }} {{ $rating->applicant->last_name }}
+                                        </span>
+                                        <span
+                                            class="review-date text-muted">{{ $rating->created_at->format('M d, Y') }}</span>
+                                    </div>
+                                    <div class="review-rating mb-1">
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            @if ($i <= $rating->rating)
+                                                <i class="bi bi-star-fill text-warning"></i>
+                                            @else
+                                                <i class="bi bi-star text-muted"></i>
+                                            @endif
+                                        @endfor
+                                    </div>
+                                    @if ($rating->review_comments)
+                                        <div class="review-feedback">{{ $rating->review_comments }}</div>
+                                    @endif
+                                </div>
+                            @endforeach
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
+
+
+    <script>
+        // Rate Job Modal
+        document.querySelectorAll('.rate-job-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const jobId = this.dataset.jobId;
+                const title = this.dataset.title;
+                const company = this.dataset.company;
+
+                // Fill modal text
+                document.getElementById('rateJobTitle').textContent = title;
+                document.getElementById('rateJobCompany').textContent = company;
+
+                // Fill hidden input
+                document.querySelector('input[name="job_post_id"]').value = jobId;
+
+                // Reset form
+                document.getElementById('rateJobForm').reset();
+                document.getElementById('ratingText').textContent = 'Select a rating';
+            });
+        });
+
+
+        // Star rating text update
+        document.querySelectorAll('.star-rating input').forEach(input => {
+            input.addEventListener('change', function() {
+                const ratingTexts = {
+                    '1': '⭐ Poor',
+                    '2': '⭐⭐ Fair',
+                    '3': '⭐⭐⭐ Good',
+                    '4': '⭐⭐⭐⭐ Very Good',
+                    '5': '⭐⭐⭐⭐⭐ Excellent'
+                };
+                document.getElementById('ratingText').textContent = ratingTexts[this.value];
+            });
+        });
+
+        // View Ratings Modal
+        document.querySelectorAll('.view-ratings-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const jobId = this.dataset.jobId;
+                const title = this.dataset.title;
+                const company = this.dataset.company;
+
+                document.getElementById('viewRatingsJobTitle').textContent = title;
+                document.getElementById('viewRatingsJobCompany').textContent = company;
+
+                // Fetch ratings
+                fetch(`/applicant/jobs/${jobId}/ratings`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Update summary
+                        document.getElementById('averageRating').textContent = data.average || '0.0';
+                        document.getElementById('totalRatings').textContent =
+                            `${data.total} ${data.total === 1 ? 'rating' : 'ratings'}`;
+
+                        // Display stars
+                        const starsHtml = generateStars(data.average || 0);
+                        document.getElementById('averageStars').innerHTML = starsHtml;
+
+                        // Display reviews
+                        const reviewsList = document.getElementById('reviewsList');
+                        if (data.ratings.length === 0) {
+                            reviewsList.innerHTML = `
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-1"></i>
+                            <p>No reviews yet. Be the first to rate this job!</p>
+                        </div>
+                    `;
+                        } else {
+                            reviewsList.innerHTML = data.ratings.map(review => `
+                        <div class="review-card mb-3 p-3 border rounded">
+                            <div class="review-header d-flex justify-content-between mb-1">
+                                <span class="reviewer-name">
+                                    <i class="bi bi-person-circle me-1"></i>
+                                    ${review.applicant.first_name} ${review.applicant.last_name}
+                                </span>
+                                <span class="review-date text-muted">${new Date(review.created_at).toLocaleDateString()}</span>
+                            </div>
+                            <div class="review-rating mb-1">
+                                ${generateStars(review.rating)}
+                            </div>
+                            ${review.feedback ? `<div class="review-feedback">${review.feedback}</div>` : ''}
+                        </div>
+                    `).join('');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching ratings:', error);
+                        document.getElementById('reviewsList').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Failed to load reviews. Please try again.
+                    </div>
+                `;
+                    });
+            });
+        });
+
+
+        // Generate stars HTML
+        function generateStars(rating) {
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 >= 0.5;
+            const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+            let html = '';
+            for (let i = 0; i < fullStars; i++) {
+                html += '<i class="bi bi-star-fill"></i>';
+            }
+            if (hasHalfStar) {
+                html += '<i class="bi bi-star-half"></i>';
+            }
+            for (let i = 0; i < emptyStars; i++) {
+                html += '<i class="bi bi-star empty-star"></i>';
+            }
+            return html;
         }
     </script>
 

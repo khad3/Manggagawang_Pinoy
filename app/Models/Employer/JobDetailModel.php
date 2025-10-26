@@ -2,6 +2,7 @@
 
 namespace App\Models\Employer;
 
+use App\Models\Applicant\SendRatingToJobPostModel;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Applicant\ApplyJobModel;
 
@@ -76,5 +77,11 @@ public function appalicationsApproved()
 {
     return $this->hasMany(ApplyJobModel::class, 'job_id', 'id')
                 ->where('status', 'approved');
+}
+
+
+public function ratings()
+{
+    return $this->hasMany(SendRatingToJobPostModel::class, 'job_post_id');
 }
 }

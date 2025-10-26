@@ -38,12 +38,7 @@
 
       <!-- Filter Chips -->
       <div class="filter-chips">
-          <div class="filter-chip" data-filter="hiring" onclick="toggleChip(this, 'hiring')">
-              <i class="bi bi-lightning"></i> Actively Hiring
-          </div>
-          <div class="filter-chip" data-filter="urgent" onclick="toggleChip(this, 'urgent')">
-              <i class="bi bi-lightning"></i> Urgent Hiring
-          </div>
+
 
           <!-- <div class="filter-chip" data-filter="remote" onclick="toggleChip(this, 'remote')">
                         <i class="bi bi-house"></i> Remote Work
