@@ -352,6 +352,10 @@
                                    <i class="bi bi-briefcase text-warning"></i>
                                @elseif($log['action'] === 'interview_job')
                                    <i class="fas fa-calendar text-info-balanced me-1" style="color: blue;"></i>
+                               @elseif($log['action'] === 'send_rating_to_job_post')
+                                   <i class="bi bi-star-fill" style="color: gold;"></i>
+                               @elseif($log['action'] === 'send_rating_to_applicant')
+                                   <i class="bi bi-star-fill" style="color: gold;"></i>
                                @endif
                            </div>
                            <div class="activity-content">

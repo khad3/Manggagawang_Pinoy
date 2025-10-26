@@ -363,7 +363,7 @@ $hasActiveApplication =
                                         @endphp
 
                                         @if ($hasActiveApplication)
-                                            {{-- ✅ Handle based on specific application status --}}
+                                            {{-- Handle based on specific application status --}}
                                             @if ($applicationRecord->status === 'pending')
                                                 <button type="button" class="btn btn-warning btn-sm"
                                                     data-bs-toggle="modal" data-bs-target="#cancelApplicationModal"
@@ -398,7 +398,7 @@ $hasActiveApplication =
                                                 </button>
                                             @endif
                                         @else
-                                            {{-- 🚫 Check if suspended --}}
+                                            {{-- Check if suspended --}}
                                             @if ($isSuspended)
                                                 <button class="btn btn-secondary btn-sm" disabled>
                                                     <i class="bi bi-slash-circle"></i>
@@ -412,7 +412,7 @@ $hasActiveApplication =
                                                     </small>
                                                 </div>
                                             @else
-                                                {{-- 🟢 Apply or Reapply --}}
+                                                {{-- Apply or Reapply --}}
                                                 <button class="btn btn-success btn-sm apply-btn"
                                                     data-job-id="{{ $jobDetail->id }}"
                                                     data-title="{{ $jobDetail->title }}"

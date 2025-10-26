@@ -694,38 +694,112 @@ class AdminController extends Controller
             });
 
             //Interview
-         $employerInterview = \App\Models\Applicant\ApplyJobModel::with([
-    'applicant.personal_info',
-    'job.employer.addressCompany'
-])
-->where('status', 'interview')
-->latest()
-->get()
-->map(function ($a) {
-    $info = $a->applicant->personal_info ?? null;
-    $job = $a->job ?? null;
+         $employerInterview = \App\Models\Applicant\ApplyJobModel::with(['applicant.personal_info','job.employer.addressCompany'])
+        ->where('status', 'interview')
+        ->latest()
+        ->get()
+        ->map(function ($a) {
+            $info = $a->applicant->personal_info ?? null;
+            $job = $a->job ?? null;
 
-    $firstName = $info ? $this->safeDecrypt($info->first_name) : 'Unknown';
-    $lastName = $info ? $this->safeDecrypt($info->last_name) : 'Applicant';
-    $email = $info ? $this->safeDecrypt($info->email) : 'No email';
-    $companyName = $job->employer->addressCompany->company_name ?? 'Unknown Company';
-    $jobTitle = $job->title ?? 'N/A';
+            $firstName = $info ? $this->safeDecrypt($info->first_name) : 'Unknown';
+            $lastName = $info ? $this->safeDecrypt($info->last_name) : 'Applicant';
+            $email = $info ? $this->safeDecrypt($info->email) : 'No email';
+            $companyName = $job->employer->addressCompany->company_name ?? 'Unknown Company';
+            $jobTitle = $job->title ?? 'N/A';
 
-    return [
-        'action' => 'interview_job',
-        'email' => $email,
-        'author' => $firstName . ' ' . $lastName,
-        'description' => 'EMPLOYER: <strong>' . $companyName . '</strong>' .
+            return [
+                'action' => 'interview_job',
+                'email' => $email,
+                'author' => $firstName . ' ' . $lastName,
+                'description' => 'EMPLOYER: <strong>' . $companyName . '</strong>' .
                          ' — The job "<strong>' . $jobTitle . '</strong>" applied by <strong>' . 
                          $firstName . ' ' . $lastName . '</strong> has been scheduled for an <strong>INTERVIEW</strong>.',
-        'created_at' => $a->updated_at ?? $a->created_at,
-    ];
-});
-            
+                'created_at' => $a->updated_at ?? $a->created_at,
+            ];
+        });
+        
+       // Send rating to employer
+$applicantSendRating = \App\Models\Applicant\SendRatingToJobPostModel::with([
+        'jobPost.employer.addressCompany',
+        'applicant.personal_info'
+    ])
+    ->latest()
+    ->get()
+    ->map(function ($a) {
+        $info = $a->applicant->personal_info ?? null;
+        $job = $a->jobPost ?? null;
 
+        $firstName = $info ? $this->safeDecrypt($info->first_name) : 'Unknown';
+        $lastName = $info ? $this->safeDecrypt($info->last_name) : 'Applicant';
+        $email = $info ? $this->safeDecrypt($info->email) : 'No email';
+        $companyName = $job->employer->addressCompany->company_name ?? 'Unknown Company';
+        $jobTitle = $job->title ?? 'N/A';
+        $rating = $a->rating ?? 'N/A';
+        $feedback = $a->review_comments ?? 'No feedback provided';
+
+        return [
+            'action' => 'send_rating_to_job_post',
+            'email' => $email,
+            'author' => $firstName . ' ' . $lastName,
+            'description' => 'EMPLOYER: <strong>' . e($companyName) . '</strong> — ' .
+                'The job "<strong>' . e($jobTitle) . '</strong>" has been <strong>RATED</strong> by ' .
+                '<strong>' . e($firstName . ' ' . $lastName) . '</strong> ' .
+                'with a <strong>' . e($rating) . '/5</strong> rating.<br>' .
+                '<em>Feedback:</em> "' . e($feedback) . '"',
+            'created_at' => $a->updated_at ?? $a->created_at,
+        ];
+    });
+
+
+    // Employer sends rating to applicant (no jobPost relation)
+    $employerSendRating = \App\Models\Employer\SendRatingModel::with(['employer.addressCompany', 'employer.personal_info', 'applicant.personal_info'])
+    ->latest()
+    ->get()
+    ->map(function ($a) {
+        // Applicant info (decrypted)
+        $applicantInfo = $a->applicant->personal_info ?? null;
+        $applicantFirst = $applicantInfo ? $this->safeDecrypt($applicantInfo->first_name) : 'Unknown';
+        $applicantLast = $applicantInfo ? $this->safeDecrypt($applicantInfo->last_name) : 'Applicant';
+        $applicantEmail = $applicantInfo ? $this->safeDecrypt($applicantInfo->email) : 'No email';
+
+        // Employer info (not decrypted)
+        $employerInfo = $a->employer->personal_info ?? null;
+        $employerFirst = $employerInfo->first_name ?? 'Unknown';
+        $employerLast = $employerInfo->last_name ?? 'Employer';
+
+        // Company info
+        $company = $a->employer->addressCompany ?? null;
+        $companyName = $company->company_name ?? 'Unknown Company';
+
+        // Rating details
+        $rating = $a->rating ?? 'N/A';
+        $feedback = $a->review_comments ?? null;
+
+        // Description message
+        $description = 'APPLICANT: <strong>' . e($applicantFirst . ' ' . $applicantLast) . '</strong> — ' .
+            'Your <strong>work portfolio and TESDA certifications</strong> have been reviewed and rated by ' .
+            '<strong>' . e($employerFirst . ' ' . $employerLast) . '</strong> from <strong>' . e($companyName) . '</strong>. ' .
+            'You received a <strong>' . e($rating) . '/5</strong> rating.';
+
+        if (!empty($feedback)) {
+            $description .= '<br><em>Employer feedback:</em> "' . e($feedback) . '"';
+        }
+
+        // Final return data
+        return [
+            'action' => 'send_rating_to_applicant',
+            'email' => $applicantEmail,
+            'author' => $employerFirst . ' ' . $employerLast,
+            'description' => $description,
+            'created_at' => $a->updated_at ?? $a->created_at,
+        ];
+    });
 
 
         $activityLogs = collect()
+            ->merge($employerSendRating)
+            ->merge($applicantSendRating)
             ->merge($employerInterview)
             ->merge($employerDraftJobPost)
             ->merge($employerJobPost)
