@@ -865,8 +865,7 @@ $messages = EmployerSendMessage::with(['employer.addressCompany', 'employer.pers
     ->where('is_read', false)
     ->count();
 
-    // Merge both collections
-$allNotifications = $notifications->merge($notificationsSchedule)->sortByDesc('created_at');
+
 
 
 //retrieve the rating by applicant to show every job post
@@ -875,9 +874,13 @@ $allNotifications = $notifications->merge($notificationsSchedule)->sortByDesc('c
     $avarageRating = $retrieveRating->avg('rating');
     $total = $retrieveRating->count();
 
-    
+    // Show notification
+    $notificationRetrieve = \App\Models\Notification\NotificationModel::where('type_id', $applicantId)->where('type', operator: 'applicant')->get();
+
+     $allNotifications = $notifications->concat($notificationRetrieve)->sortByDesc('created_at');
    
     return view('applicant.homepage.homepage', compact(
+        'notificationRetrieve',
         'retrieveRating',
         'avarageRating',
         'total',

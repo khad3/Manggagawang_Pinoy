@@ -33,10 +33,10 @@ class SendMessageController extends Controller
         $attachmentPath = $request->file('photo')->store('attachments', 'public');
     }
 
-    // 🔒 Encrypt message before saving
+    // Encrypt message before saving
     $encryptedMessage = $request->message ? Crypt::encryptString($request->message) : null;
 
-    // 💾 Save the message
+    // Save the message
     SendMessageModel::create([
         'is_read' => false,
         'message' => $encryptedMessage,
@@ -58,14 +58,6 @@ return redirect()->back()->with(
 
 }
 
-
-/**
- * ✅ Safe Decrypt Field
- * - Tries decrypting (for encrypted)
- * - If serialized → unserialize
- * - Otherwise returns as-is
- * - Keeps real semicolons (like 'Rofgelio;')
- */
 private function cleanDecrypt($value)
 {
     if (empty($value)) {
@@ -73,27 +65,27 @@ private function cleanDecrypt($value)
     }
 
     try {
-        // 1️⃣ Try decrypting
+        // Try decrypting
         try {
             return Crypt::decryptString($value);
         } catch (\Exception $e) {
             // Not encrypted → continue
         }
 
-        // 2️⃣ If it contains multiple serialized strings, extract them
+        // If it contains multiple serialized strings, extract them
         preg_match_all('/s:\d+:"(.*?)";/', $value, $matches);
         if (!empty($matches[1])) {
             // Join all extracted parts with space
             return implode(' ', $matches[1]);
         }
 
-        // 3️⃣ Extract readable letters (fallback)
+        // Extract readable letters (fallback)
         preg_match_all('/[a-zA-ZÀ-ÿ\-\']+/', $value, $matches);
         if (!empty($matches[0])) {
             return implode(' ', $matches[0]);
         }
 
-        // 4️⃣ Otherwise return as-is
+        // Otherwise return as-is
         return $value;
 
     } catch (\Exception $e) {

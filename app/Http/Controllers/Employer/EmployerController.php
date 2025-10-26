@@ -1373,6 +1373,15 @@ public function sendReview(Request $request) {
     $review->review_comments = $request->input('review_comment');
     $review->save();
 
+    // Send notification
+    $notification = new \App\Models\Notification\NotificationModel();
+    $notification->type = 'applicant';
+    $notification->type_id = $request->input('applicant_id');
+    $notification->title = 'New Employer Review';
+    $notification->message = 'Your employer has submitted a review for you. Rating: ' . $request->input('rating') . '/5 — "' . $request->input('review_comment') . '"';
+    $notification->save();
+
+
     return back()->with('success', 'Review sent successfully.');
 }
 
@@ -1421,6 +1430,14 @@ public function approveApplicant($id) {
     $application->status = 'approved';
     $application->save();
 
+    //Send notification
+    $notification = new \App\Models\Notification\NotificationModel();
+    $notification->type = 'applicant';
+    $notification->type_id = $application->applicant_id;
+    $notification->title = 'Application Approved';
+    $notification->message = 'Your application has been approved.';
+    $notification->save();
+
     return back()->with('success', 'Application approved successfully.');
 
 }
@@ -1436,6 +1453,14 @@ public function scheduleInterview($id) {
     $application->status = 'interview';
     $application->save();
 
+      //Send notification
+    $notification = new \App\Models\Notification\NotificationModel();
+    $notification->type = 'applicant';
+    $notification->type_id = $application->applicant_id;
+    $notification->title = 'Schedule Interview';
+    $notification->message = 'Your application has been schedule interview.';
+    $notification->save();
+
 
     return back()->with('success', 'Application scheduled for interview.');
 }
@@ -1450,6 +1475,14 @@ public function rejectApplicant($id) {
 
     $application->status = 'rejected';
     $application->save();
+
+      //Send notification
+    $notification = new \App\Models\Notification\NotificationModel();
+    $notification->type = 'applicant';
+    $notification->type_id = $application->applicant_id;
+    $notification->title = 'Application Rejected';
+    $notification->message = 'Your application has been rejected.';
+    $notification->save();
 
     return back()->with('success', 'Application rejected successfully.');   
 

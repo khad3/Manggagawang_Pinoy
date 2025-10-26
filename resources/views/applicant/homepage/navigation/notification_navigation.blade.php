@@ -26,8 +26,8 @@
 
             <div class="dropdown-content p-2">
                 {{-- Regular Notifications --}}
-                @if (isset($notifications) && count($notifications) > 0)
-                    @foreach ($notifications as $note)
+                @if (isset($allNotifications) && count($allNotifications) > 0)
+                    @foreach ($allNotifications as $note)
                         <div class="notification-item d-flex align-items-start gap-2 p-2 mb-2 rounded hover-shadow {{ !$note->is_read ? 'unread' : '' }}"
                             style="cursor: pointer;" data-id="{{ $note->id }}" data-note-id="{{ $note->id }}"
                             onclick="markAsRead({{ $note->id }})" data-bs-toggle="modal"
@@ -35,9 +35,12 @@
 
                             {{-- Icon --}}
                             <div class="notification-icon flex-shrink-0">
-                                @if ($note->priority === 'urgent' && $note->target_audience === 'applicants')
+                                @if (isset($note->priority) &&
+                                        $note->priority === 'urgent' &&
+                                        isset($note->target_audience) &&
+                                        $note->target_audience === 'applicants')
                                     <i class="bi bi-shield-fill-check text-success fs-5"></i>
-                                @elseif ($note->priority)
+                                @elseif (isset($note->priority))
                                     <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center"
                                         style="width: 32px; height: 32px;">
                                         <img src="{{ asset('img/logo.png') }}" alt="Admin Logo"
@@ -51,13 +54,13 @@
                             {{-- Content --}}
                             <div class="notification-content flex-grow-1">
                                 <div class="notification-title fw-semibold text-dark mb-1">
-                                    {{ $note->title }}
+                                    {{ $note->title ?? 'Untitled Notification' }}
                                 </div>
                                 <div class="notification-message text-muted small mb-1" style="line-height: 1.2;">
-                                    {{ \Illuminate\Support\Str::limit($note->content, 60, '...') }}
+                                    {{ \Illuminate\Support\Str::limit($note->message ?? ($note->content ?? 'No message available'), 60, '...') }}
                                 </div>
                                 <div class="notification-time text-muted small">
-                                    {{ $note->created_at->diffForHumans() }}
+                                    {{ isset($note->created_at) ? $note->created_at->diffForHumans() : '' }}
                                 </div>
                             </div>
                         </div>
@@ -67,6 +70,7 @@
                         No new notifications
                     </div>
                 @endif
+
 
                 {{-- Suspended Notifications --}}
                 @if ($isSuspended)
