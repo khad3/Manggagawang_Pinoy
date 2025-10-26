@@ -1038,3 +1038,139 @@ nav {
     filter: invert(45%) sepia(84%) saturate(10058%) hue-rotate(247deg)
         brightness(47%) contrast(121%);
 }
+
+/* Responsive role selection modal */
+#roleModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 130000;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  overflow: auto;
+}
+
+#roleModal .modal-content {
+  width: min(920px, 96%);
+  max-width: 920px;
+  max-height: 90vh;
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow: hidden;
+}
+
+/* Header */
+#roleModal .modal-content h2 {
+  margin: 0;
+  font-size: 1.125rem;
+  text-align: center;
+}
+
+/* Grid -> responsive stack */
+.role-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  align-items: stretch;
+}
+
+/* Role card */
+.role-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px;
+  background: #f7f8fb;
+  border-radius: 10px;
+  min-height: 120px;
+  width: 100%;
+  box-shadow: 0 6px 18px rgba(12,18,30,0.06);
+  cursor: pointer;
+}
+
+/* Image and text */
+.role-card img,
+.role-card #workeroremployer {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+/* Title */
+.role-card h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0a2d82;
+  text-align: center;
+}
+
+/* Buttons */
+.select-btn {
+  background: #0a2d82;
+  color: #fff;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  max-width: 220px;
+  align-self: center;
+}
+.close-btn {
+  background: transparent;
+  border: none;
+  color: #444;
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 10px;
+  align-self: center;
+}
+
+/* Mobile adjustments */
+@media (max-width: 720px) {
+  #roleModal .modal-content {
+    padding: 0.75rem;
+    max-height: 94vh;
+  }
+  .role-container {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .role-card {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    min-height: 72px;
+    gap: 12px;
+  }
+  .role-card img,
+  .role-card #workeroremployer { width: 56px; height: 56px; flex: 0 0 56px; }
+  .role-card h3 { text-align: left; margin-left: 8px; font-size: 1rem; flex: 1; }
+  .select-btn { width: 120px; padding: 8px 10px; max-width: none; flex: 0 0 auto; }
+  .close-btn { width: 100%; margin-top: 8px; text-align: center; padding: 12px; border-radius: 8px; background: transparent; }
+}
+
+/* Ensure modal content scrolls internally when too tall */
+#roleModal .modal-content > .role-container,
+#roleModal .modal-content > .modal-body {
+  overflow: auto;
+}
+
+/* Small visual tweak for very small screens */
+@media (max-width: 360px) {
+  .role-card h3 { font-size: 0.95rem; }
+  .select-btn { padding: 8px; font-size: 0.95rem; }
+}

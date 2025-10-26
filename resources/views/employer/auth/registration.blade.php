@@ -14,24 +14,28 @@
 
 <body>
     <nav>
-        <div class="navbar-container">
+     <div class="navbar-container">
             <div class="nav-logo d-flex align-items-center">
-                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2"
-                    style="text-decoration:none;">
-                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
-                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" />
+                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2" style="text-decoration:none;">
+                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home"/>
+                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2"/>
                 </a>
             </div>
-            <ul class="nav-links" id="navLinks">
+                       <ul class="nav-links" id="navLinks">
                 <li><a href="#">Services</a></li>
                 <li><a href="{{ route('display.topworker') }}">Top Workers</a></li>
                 <li><a href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
                 <li><a href="{{ route('display.aboutus') }}">About Us</a></li>
-                <li><button class="sign-in-b">Sign in</button></li>
-
+                <li class="dropdown">
+               <button class="sign-in-b">Sign in</button>
+               <ul class="dropdown-menu">
+                        <li><a href="{{ route('applicant.login.display') }}">As Applicant</a></li>
+                        <li><a href="{{ route('employer.register.display') }}">As Employer</a></li>
+                    </ul>
+                </li>
                 <!-- Sign Up Dropdown -->
                 <li class="dropdown">
-                    <button class="sign-up-b">Sign up ▾</button>
+                    <button class="sign-up-b">Sign up</button>
                     <ul class="dropdown-menu">
                         <li><a href="{{ route('applicant.register.display') }}">As Applicant</a></li>
                         <li><a href="{{ route('employer.register.display') }}">As Employer</a></li>
@@ -47,6 +51,8 @@
             </div>
         </div>
     </nav>
+
+
 
     <!-- Step Content -->
     <div class="row justify-content-center">
@@ -511,12 +517,39 @@
             window.location.href = '{{ route('employer.login.display') }}';
         }
 
-        // Allow enter key to add custom skills
-        document.getElementById('customSkill').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                addCustomSkill();
-            }
+        // guard adding key listener for optional custom skill input
+        const customSkillInput = document.getElementById('customSkill');
+        if (customSkillInput) {
+            customSkillInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addCustomSkill();
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const hamburger = document.getElementById('hamburger');
+            const navLinks = document.getElementById('navLinks');
+
+            if (!hamburger || !navLinks) return;
+
+            hamburger.addEventListener('click', function () {
+                navLinks.classList.toggle('active');
+                hamburger.classList.toggle('active');
+                document.body.classList.toggle('noscroll');
+            });
+
+            // Close menu when any nav link/button is clicked (mobile)
+            navLinks.querySelectorAll('a, button').forEach(link => {
+                link.addEventListener('click', function () {
+                    if (navLinks.classList.contains('active')) {
+                        navLinks.classList.remove('active');
+                        hamburger.classList.remove('active');
+                        document.body.classList.remove('noscroll');
+                    }
+                });
+            });
         });
     </script>
 </body>

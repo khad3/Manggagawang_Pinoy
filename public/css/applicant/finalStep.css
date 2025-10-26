@@ -12,6 +12,7 @@
 body {
     background: linear-gradient(135deg, #fff7ed 0%, #ffffff 50%, #fef2f2 100%);
     min-height: 100vh;
+    padding: 2rem 1rem;
 }
 
 /* Main Container */
@@ -77,27 +78,35 @@ body {
 .profile-header {
     text-align: center;
     margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
 }
 
 .profile-image-container {
     position: relative;
     display: inline-block;
     margin-bottom: 20px;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
 }
 
 .profile-image {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    border-radius: 999px;
     border: 4px solid var(--primary-orange);
     box-shadow: 0 8px 24px var(--light-orange);
 }
 
 .profile-badge {
     position: absolute;
-    bottom: 5px;
-    right: 5px;
+    bottom: 8px;
+    right: 8px;
     width: 30px;
     height: 30px;
     background: linear-gradient(135deg, #10b981, #059669);
@@ -428,7 +437,125 @@ body {
     }
 }
 
+/* Large tablets / small laptops */
+@media (max-width: 992px) {
+  body {
+    padding: 2rem 1rem;
+  }
 
+  .form-card {
+    max-width: 900px;
+    margin: 0.5rem auto;
+  }
+
+  .card-header .text-center {
+    padding: 0 0.5rem;
+  }
+
+  /* Stepper: reduce gaps and font sizes */
+  .d-flex.align-items-center.justify-content-between {
+    gap: 10px;
+    padding: 0.4rem 0;
+    max-width: 760px;
+  }
+  .step-indicator { width:44px; height:44px; font-size:0.95rem; }
+  .d-flex .text-center small { font-size:0.82rem; }
+}
+
+/* Tablets / large phones */
+@media (max-width: 768px) {
+  .form-card { margin: 0.75rem; border-radius: 12px; }
+  .card-body { padding: 1rem; }
+
+  /* Make stepper stack vertically but keep it visually pleasing */
+  .d-flex.align-items-center.justify-content-between {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding-bottom: 0.6rem;
+  }
+  .d-flex .text-center { display:flex; gap:12px; align-items:center; text-align:left; padding:6px 0; }
+  .step-line { display: none; }
+
+  /* Profile header: center and scale */
+  .profile-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+  }
+
+  .profile-image-container {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+  }
+  .profile-image { width: 100%; height: 100%; object-fit: cover; border-radius: 999px; }
+
+  .profile-badge { right: 8px; bottom: 8px; transform: translate(0,0); }
+}
+
+/* Mobile phones */
+@media (max-width: 480px) {
+  body { padding: 1rem 0.5rem; }
+
+  .form-card { margin: 0.5rem; box-shadow: none; border-radius: 10px; }
+
+  .card-header .text-center h1.display-4 {
+    font-size: 1.4rem;
+    line-height: 1.15;
+  }
+  .card-header .lead { font-size: 0.95rem; }
+
+  /* Stepper becomes simple vertical list with small bullets */
+  .d-flex.align-items-center.justify-content-between {
+    gap: 8px;
+  }
+  .step-indicator {
+    width: 38px;
+    height: 38px;
+    font-size: 0.9rem;
+  }
+  .d-flex .text-center small { display:block; font-size:0.78rem; color:var(--muted); }
+
+  /* Form inputs full width and comfortable touch targets */
+  .input-group-text { padding: 0.5rem; }
+  .form-control { padding: 0.6rem 0.75rem; font-size: 0.95rem; }
+  .btn-primary-custom { padding: 10px 12px; font-size: 0.95rem; width: 100%; }
+
+  /* Profile image smaller and aligned left inside header when space is tight */
+  .profile-header { flex-direction: column; align-items: center; text-align: center; }
+  .profile-image-container { width: 96px; height: 96px; }
+  .profile-badge { right: 6px; bottom: 6px; }
+
+  /* Ensure long helper text wraps */
+  .password-feedback { white-space: normal; }
+}
+
+/* Very small devices: keep layout usable */
+@media (max-width: 360px) {
+  .card-body { padding: 0.75rem; }
+  .form-label { font-size: 0.92rem; }
+  .form-links { font-size: 0.92rem; }
+  .step-indicator { width: 34px; height: 34px; font-size: 0.85rem; }
+}
+
+/* Utility: ensure images and badges never overflow container */
+.profile-image-container,
+.profile-image {
+  max-width: 100%;
+  height: auto;
+  box-sizing: border-box;
+}
+
+/* Keep buttons and interactive elements reachable on touch devices */
+@media (any-pointer: coarse) {
+  .btn-primary-custom, .btn-close, .sign-in-b, .sign-up-b {
+    padding: 12px 14px;
+    min-height: 44px;
+  }
+}
 
 /* Loader Styles */
 #loader-wrapper {
@@ -478,4 +605,65 @@ body {
 #loader-text {
     font-size: 16px;
     font-weight: 500;
+}
+
+/* Adjusted Stepper Styles */
+.d-flex.align-items-center.justify-content-between {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* align steps to the left */
+  gap: 18px;
+  max-width: 920px;
+  margin: 0; /* keep container flush/left inside its parent */
+  padding: 0.5rem 0;
+}
+
+/* Make each step label left-aligned and readable */
+.d-flex.align-items-center.justify-content-between .text-center {
+  min-width: 140px;
+  flex: 0 0 auto;
+  text-align: left;
+}
+
+/* Keep the connector looking good when left aligned */
+.step-line {
+  flex: 1;
+  height: 6px;
+  background: linear-gradient(90deg,#eef2ff 0%, #f3f4f6 100%);
+  border-radius: 999px;
+  margin: 0 12px;
+  align-self: center;
+}
+
+/* Slightly reduce indicator size so left column doesn't feel heavy */
+.step-indicator {
+  width: 48px;
+  height: 48px;
+}
+
+/* Responsive: when stacked on smaller screens keep content left-aligned */
+@media (max-width: 720px) {
+  .d-flex.align-items-center.justify-content-between {
+    flex-direction: column;
+    align-items: flex-start; /* keep stacked steps aligned left */
+    gap: 12px;
+    padding-bottom: 0.6rem;
+  }
+
+  .d-flex.align-items-center.justify-content-between .text-center {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    text-align: left;
+    width: 100%;
+  }
+
+  .step-line {
+    display: none; /* hide long connectors on small screens */
+  }
+
+  .step-indicator {
+    width: 44px;
+    height: 44px;
+  }
 }
