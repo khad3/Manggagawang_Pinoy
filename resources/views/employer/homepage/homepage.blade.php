@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Employer Dashboard - MangagawangPinoy</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
@@ -56,11 +58,28 @@
                 </a>
             </div>
             <div class="nav-item">
-                <a href="#" class="nav-link" data-target="messages-section">
+                <a href="#" class="nav-link" data-target="messages-section" style="position: relative;">
                     <i class="fas fa-comments"></i>
                     Messages
+                    @php
+                        // Count unread messages from applicants (not yet read by employer)
+                        $unreadMessagesCount = \App\Models\Employer\SendMessageModel::where(
+                            'employer_id',
+                            session('employer_id'),
+                        )
+                            ->where('sender_type', 'applicant')
+                            ->where('is_read', false)
+                            ->count();
+                    @endphp
+
+                    @if ($unreadMessagesCount > 0)
+                        <span class="badge bg-danger message-badge" id="messageUnreadCount">
+                            {{ $unreadMessagesCount }}
+                        </span>
+                    @endif
                 </a>
             </div>
+
 
             <div class="nav-item">
                 <a href="#" class="nav-link" data-target="analytics-section">
@@ -75,9 +94,33 @@
                 </a>
             </div>
             <div class="nav-item">
-                <a href="#" class="nav-link" data-target="notifications-section">
+                <a href="#" class="nav-link" data-target="notifications-section" style="position: relative;">
                     <i class="fas fa-bell"></i>
                     Notifications
+                    @php
+                        // Combine unread from both AnnouncementModel + NotificationModel
+                        $employerId = session('employer_id');
+                        $unreadAnnouncements = \App\Models\Admin\AnnouncementModel::whereIn('target_audience', [
+                            'employers',
+                            'all',
+                        ])
+                            ->whereIn('status', ['published', 'scheduled'])
+                            ->where('is_read', false)
+                            ->count();
+
+                        $unreadEmployerNotifs = \App\Models\Notification\NotificationModel::where('type', 'employer')
+                            ->where('type_id', $employerId)
+                            ->where('is_read', false)
+                            ->count();
+
+                        $unreadNotificationsCount = $unreadAnnouncements + $unreadEmployerNotifs;
+                    @endphp
+
+                    @if ($unreadNotificationsCount > 0)
+                        <span class="badge bg-danger nav-badge" id="notificationUnreadCount">
+                            {{ $unreadNotificationsCount }}
+                        </span>
+                    @endif
                 </a>
             </div>
             <div class="nav-item">

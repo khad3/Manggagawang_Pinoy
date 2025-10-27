@@ -1,14 +1,13 @@
 <div class="page-section" id="notifications-section">
     <div class="content-section">
-
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h3 class="fw-bold mb-0">
                 <i class="bi bi-bell me-2 text-primary"></i>Notifications
                 @if ($unreadCount > 0)
-                    <span class="badge bg-danger rounded-pill">{{ $unreadCount }}</span>
+                    <span class="badge bg-danger rounded-pill" id="unreadCountBadge">{{ $unreadCount }}</span>
                 @endif
             </h3>
-            <button class="btn btn-sm btn-outline-primary" onclick="markAllAsRead()">
+            <button class="btn btn-sm btn-outline-primary" onclick="markAllAsReadEmployer()">
                 <i class="bi bi-check-all me-1"></i>Mark All as Read
             </button>
         </div>
@@ -16,17 +15,24 @@
         <!-- Notifications List -->
         <div class="notifications-container">
             @forelse ($allNotifications as $note)
+                @php
+                    $isAnnouncement = get_class($note) === 'App\\Models\\Announcement\\AnnouncementModel';
+                    $notificationType = $isAnnouncement ? 'announcement' : 'employer';
+                @endphp
+
                 <div class="notification-item {{ $note->is_read ? '' : 'unread' }}"
-                    onclick="openNotificationModal(
-                        {{ $note->id }}, 
-                        '{{ addslashes($note->title ?? 'No Title') }}', 
-                        '{{ addslashes($note->message ?? ($note->content ?? '')) }}', 
-                        '{{ $note->priority ?? 'normal' }}', 
-                        '{{ $note->target_audience ?? ($note->type ?? 'general') }}', 
-                        '{{ isset($note->publication_date) ? $note->publication_date : $note->created_at->format('Y-m-d') }}', 
-                        '{{ $note->created_at->diffForHumans() }}', 
+                    data-notification-id="{{ $note->id }}" data-notification-type="{{ $notificationType }}"
+                    onclick="openEmployerNotificationModal(
+                        {{ $note->id }},
+                        '{{ addslashes($note->title ?? 'No Title') }}',
+                        '{{ addslashes($note->message ?? ($note->content ?? '')) }}',
+                        '{{ $note->priority ?? 'normal' }}',
+                        '{{ $note->target_audience ?? ($note->type ?? 'general') }}',
+                        '{{ isset($note->publication_date) ? $note->publication_date : $note->created_at->format('Y-m-d') }}',
+                        '{{ $note->created_at->diffForHumans() }}',
                         '{{ !empty($note->image) ? asset('storage/' . $note->image) : '' }}',
-                        '{{ get_class($note) }}'
+                        '{{ $notificationType }}',
+                        {{ $note->is_read ? 'true' : 'false' }}
                     )">
 
                     <div class="notification-icon bg-{{ getPriorityColor($note->priority ?? 'normal') }}">
@@ -61,7 +67,9 @@
                         <div class="notification-footer">
                             <small class="text-muted">
                                 <i class="bi bi-calendar3 me-1"></i>
-                                {{ isset($note->publication_date) ? \Carbon\Carbon::parse($note->publication_date)->format('M d, Y') : $note->created_at->format('M d, Y') }}
+                                {{ isset($note->publication_date)
+                                    ? \Carbon\Carbon::parse($note->publication_date)->format('M d, Y')
+                                    : $note->created_at->format('M d, Y') }}
                             </small>
                             <small class="text-muted">
                                 <i class="bi bi-clock me-1"></i>{{ $note->created_at->diffForHumans() }}
@@ -83,47 +91,49 @@
                 </div>
             @endforelse
         </div>
-
     </div>
 </div>
 
-<!-- Notification Modal -->
-<div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel"
+<!-- 📬 Notification Modal -->
+<div class="modal fade" id="employerNotificationModal" tabindex="-1" aria-labelledby="notificationModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
         <div class="modal-content">
             <div class="modal-header border-0 pb-0">
                 <div class="w-100">
                     <div class="d-flex align-items-start gap-3 mb-3">
-                        <div id="modalIcon" class="notification-icon-large"></div>
+                        <div id="employerModalIcon" class="notification-icon-large"></div>
                         <div class="flex-grow-1">
                             <h5 class="modal-title fw-bold mb-2 text-dark" id="notificationModalLabel"></h5>
                             <div class="d-flex flex-wrap gap-2 align-items-center">
-                                <span id="modalPriorityBadge" class="badge badge-priority"></span>
+                                <span id="employerModalPriorityBadge" class="badge badge-priority"></span>
                                 <span class="badge bg-light text-dark">
-                                    <i class="bi bi-people me-1"></i><span id="modalAudience"></span>
+                                    <i class="bi bi-person-badge me-1"></i><span id="employerModalAudience"></span>
                                 </span>
                             </div>
                         </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="d-flex gap-3 text-muted small flex-wrap">
-                        <span><i class="bi bi-calendar3 me-1"></i><span id="modalPublicationDate"></span></span>
-                        <span><i class="bi bi-clock me-1"></i><span id="modalTime"></span></span>
+                        <span><i class="bi bi-calendar3 me-1"></i><span id="employerModalPublicationDate"></span></span>
+                        <span><i class="bi bi-clock me-1"></i><span id="employerModalTime"></span></span>
                     </div>
                 </div>
             </div>
+
             <div class="modal-body pt-3">
-                <div id="modalContent" class="notification-full-content mb-3"></div>
-                <div id="modalImageContainer" class="notification-modal-image" style="display: none;">
-                    <img id="modalImage" src="" alt="Notification Image" class="img-fluid rounded-3 shadow-sm">
+                <div id="employerModalContent" class="notification-full-content mb-3"></div>
+                <div id="employerModalImageContainer" class="notification-modal-image" style="display: none;">
+                    <img id="employerModalImage" src="" alt="Notification Image"
+                        class="img-fluid rounded-3 shadow-sm">
                 </div>
             </div>
             <div class="modal-footer border-0 bg-light">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="bi bi-x-circle me-1"></i>Close
                 </button>
-                <button type="button" class="btn btn-primary" onclick="markAsRead()">
+                <button type="button" class="btn btn-primary" id="markAsReadEmployerBtn"
+                    onclick="markAsReadEmployerFromModal()">
                     <i class="bi bi-check-circle me-1"></i>Mark as Read
                 </button>
             </div>
@@ -131,159 +141,151 @@
     </div>
 </div>
 
-<script>
-    let currentNotificationId = null;
-    let currentNotificationType = null;
 
-    function openNotificationModal(id, title, content, priority, audience, publicationDate, timeAgo, imageUrl = '',
-        modelType = '') {
-        currentNotificationId = id;
-        currentNotificationType = modelType;
+<script>
+    let employerNotifId = null;
+    let employerNotifType = null;
+    let employerNotifRead = false;
+
+    function openEmployerNotificationModal(id, title, content, priority, audience, date, timeAgo, imageUrl = '', type =
+        'notification', isRead = false) {
+        employerNotifId = id;
+        employerNotifType = type;
+        employerNotifRead = isRead;
 
         document.getElementById('notificationModalLabel').textContent = title;
-        document.getElementById('modalContent').innerHTML = '<p>' + content + '</p>';
+        document.getElementById('employerModalContent').innerHTML = '<p>' + content + '</p>';
 
-        const modalImageContainer = document.getElementById('modalImageContainer');
-        const modalImage = document.getElementById('modalImage');
+        const imgContainer = document.getElementById('employerModalImageContainer');
+        const img = document.getElementById('employerModalImage');
 
-        if (imageUrl && imageUrl.trim() !== '') {
-            modalImage.src = imageUrl;
-            modalImageContainer.style.display = 'block';
+        if (imageUrl) {
+            img.src = imageUrl;
+            imgContainer.style.display = 'block';
         } else {
-            modalImageContainer.style.display = 'none';
-            modalImage.src = '';
+            imgContainer.style.display = 'none';
         }
 
-        const priorityBadge = document.getElementById('modalPriorityBadge');
-        priorityBadge.textContent = priority.toUpperCase();
-        priorityBadge.className = 'badge badge-priority priority-' + priority.toLowerCase();
+        document.getElementById('employerModalPriorityBadge').textContent = priority.toUpperCase();
+        document.getElementById('employerModalPriorityBadge').className = 'badge badge-priority priority-' + priority
+            .toLowerCase();
 
-        document.getElementById('modalAudience').textContent = audience.charAt(0).toUpperCase() + audience.slice(1);
-        document.getElementById('modalPublicationDate').textContent = new Date(publicationDate).toLocaleDateString(
-            'en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
-        document.getElementById('modalTime').textContent = timeAgo;
+        document.getElementById('employerModalAudience').textContent = audience;
+        document.getElementById('employerModalPublicationDate').textContent = new Date(date).toLocaleDateString(
+            'en-US');
+        document.getElementById('employerModalTime').textContent = timeAgo;
 
-        const modalIcon = document.getElementById('modalIcon');
-        let iconClass = '';
-        let bgClass = '';
-
+        // set icon
+        const modalIcon = document.getElementById('employerModalIcon');
+        let iconClass = '',
+            bgClass = '';
         switch (priority.toLowerCase()) {
             case 'urgent':
                 iconClass = 'bi-exclamation-triangle-fill';
-                bgClass = 'bg-urgent';
+                bgClass = 'bg-danger';
                 break;
             case 'high':
                 iconClass = 'bi-exclamation-circle-fill';
-                bgClass = 'bg-high';
+                bgClass = 'bg-warning';
                 break;
             case 'medium':
                 iconClass = 'bi-info-circle-fill';
-                bgClass = 'bg-medium';
+                bgClass = 'bg-info';
                 break;
             case 'low':
                 iconClass = 'bi-check-circle-fill';
-                bgClass = 'bg-low';
+                bgClass = 'bg-success';
                 break;
             default:
-                iconClass = 'bi-megaphone-fill';
+                iconClass = 'bi-bell-fill';
                 bgClass = 'bg-primary';
         }
-
         modalIcon.className = 'notification-icon-large ' + bgClass;
-        modalIcon.innerHTML = '<i class="bi ' + iconClass + ' text-white"></i>';
+        modalIcon.innerHTML = `<i class="bi ${iconClass} text-white"></i>`;
 
-        const modal = new bootstrap.Modal(document.getElementById('notificationModal'));
-        modal.show();
+        document.getElementById('markAsReadEmployerBtn').style.display = isRead ? 'none' : 'inline-block';
+        new bootstrap.Modal(document.getElementById('employerNotificationModal')).show();
     }
 
-    function markAsRead() {
-        if (currentNotificationId) {
-            // Determine endpoint based on notification type
-            let endpoint = currentNotificationType.includes('Announcement') ?
-                `/announcements/${currentNotificationId}/mark-as-read` :
-                `/notifications/${currentNotificationId}/mark-as-read`;
+    async function markAsReadEmployerFromModal() {
+        if (!employerNotifId || employerNotifRead) return;
 
-            fetch(endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        bootstrap.Modal.getInstance(document.getElementById('notificationModal')).hide();
+        try {
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const endpoint = employerNotifType === 'announcement' ?
+                `/employer/announcements/${employerNotifId}/read` :
+                `/employer/notifications/${employerNotifId}/read`;
 
-                        const notificationItem = document.querySelector(
-                            `[onclick*="openNotificationModal(${currentNotificationId}"]`);
-                        if (notificationItem) {
-                            notificationItem.classList.remove('unread');
-                            const newBadge = notificationItem.querySelector('.badge.bg-primary');
-                            if (newBadge) {
-                                newBadge.remove();
-                            }
-                        }
+            console.log("Endpoint:", endpoint);
 
-                        // Update unread count
-                        updateUnreadCount();
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            });
+
+            const data = await res.json();
+            console.log("Response:", data);
+
+            if (data.success) {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('employerNotificationModal'));
+                if (modal) modal.hide();
+
+                const el = document.querySelector(`.notification-item[data-notification-id="${employerNotifId}"]`);
+                if (el) {
+                    el.classList.remove('unread');
+                    const badge = el.querySelector('.badge.bg-primary');
+                    if (badge) badge.remove();
+                }
+
+                const unreadBadge = document.getElementById('unreadCountBadge');
+                if (unreadBadge) {
+                    let count = parseInt(unreadBadge.textContent) - 1;
+                    if (count <= 0) unreadBadge.remove();
+                    else unreadBadge.textContent = count;
+                }
+            } else {
+                console.error("Server responded with error:", data.message);
+                alert('Failed to mark announcement as read.');
+            }
+        } catch (err) {
+            console.error("❌ JS Fetch error:", err);
+            alert('Failed to mark notification as read.');
         }
     }
 
-    function markAllAsRead() {
-        fetch('/notifications/mark-all-as-read', {
+
+    async function markAllAsReadEmployer() {
+        if (!confirm('Mark all notifications as read?')) return;
+
+        try {
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const res = await fetch('/employer/notifications/mark-all-read', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.querySelectorAll('.notification-item.unread').forEach(item => {
-                        item.classList.remove('unread');
-                    });
-                    document.querySelectorAll('.badge.bg-primary').forEach(badge => {
-                        badge.remove();
-                    });
-
-                    // Update unread count to 0
-                    const unreadBadge = document.querySelector('.badge.bg-danger');
-                    if (unreadBadge) {
-                        unreadBadge.remove();
-                    }
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
             });
-    }
 
-    function updateUnreadCount() {
-        const unreadItems = document.querySelectorAll('.notification-item.unread').length;
-        const unreadBadge = document.querySelector('.badge.bg-danger');
-
-        if (unreadItems > 0) {
-            if (unreadBadge) {
-                unreadBadge.textContent = unreadItems;
+            const data = await res.json();
+            if (data.success) {
+                document.querySelectorAll('.notification-item.unread').forEach(el => el.classList.remove('unread'));
+                document.querySelectorAll('.badge.bg-primary').forEach(b => b.remove());
+                const unreadBadge = document.getElementById('unreadCountBadge');
+                if (unreadBadge) unreadBadge.remove();
             }
-        } else {
-            if (unreadBadge) {
-                unreadBadge.remove();
-            }
+        } catch (err) {
+            console.error('Error in markAllAsReadEmployer:', err);
         }
     }
 </script>
+
+
 
 <?php
 function getPriorityColor($priority)

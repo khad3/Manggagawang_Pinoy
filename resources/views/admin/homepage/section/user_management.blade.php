@@ -502,7 +502,7 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary rounded-pill"
                                 data-bs-dismiss="modal">Cancel</button>
-                            <form id="deleteUserForm" method="POST" action="">
+                            <form id="deleteUserForm" method="POST">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger rounded-pill">
@@ -522,14 +522,12 @@
                     const userId = button.getAttribute('data-user-id');
                     const userType = button.getAttribute('data-user-type');
 
-                    // Update form action dynamically
                     const form = document.getElementById('deleteUserForm');
-                    form.action = `/admin/users/${userId}/delete?type=${userType.toLowerCase()}`;
+                    // ✅ Pass the ID in the URL
+                    form.action = `/admin/delete-account/${userId}/${userType}`;
 
-                    // Decide label: if employer -> company, else use userType
+
                     let displayType = userType.toLowerCase() === 'employer' ? 'company' : userType.toLowerCase();
-
-                    // Update modal message
                     const message = document.getElementById('deleteUserMessage');
                     message.innerHTML =
                         `Are you sure you want to <strong class="text-danger">permanently delete</strong> this ${displayType}?`;

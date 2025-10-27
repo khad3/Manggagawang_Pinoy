@@ -197,9 +197,9 @@
 
 
                  <!-- Reply Area -->
+                 <!-- Reply Area -->
                  <div class="reply-area" id="replyArea" style="display: none;">
-                     <form action="{{ route('applicant.sendmessageemployer.store') }}" method="POST"
-                         enctype="multipart/form-data" class="reply-container">
+                     <form id="replyForm" class="reply-container">
                          @csrf
                          <input type="hidden" name="employer_id" id="replyEmployerId">
 
@@ -226,7 +226,6 @@
                          <span>Employer is typing...</span>
                      </div>
                  </div>
-
              </div>
          </div>
      </div>
@@ -425,11 +424,58 @@
          return date.toLocaleDateString();
      }
 
+     // Handle form submission with AJAX - PREVENT REDIRECT
      document.addEventListener('DOMContentLoaded', function() {
-         // Escape key closes modal
-         document.addEventListener('keydown', function(e) {
-             if (e.key === 'Escape') {
-                 closeChatModal();
+         const replyForm = document.getElementById('replyForm');
+
+         replyForm.addEventListener('submit', async function(e) {
+             e.preventDefault(); // ✅ PREVENT REDIRECT
+
+             const formData = new FormData(replyForm);
+             const messageText = document.getElementById('replyInput').value.trim();
+             const attachmentFile = document.getElementById('attachment').files[0];
+
+             if (!messageText && !attachmentFile) {
+                 return;
+             }
+
+             // Add message to chat immediately
+             if (messageText || attachmentFile) {
+                 const container = document.getElementById('messagesContainer');
+                 const messageDiv = document.createElement('div');
+                 messageDiv.className = 'message-bubble from-applicant';
+                 messageDiv.innerHTML = `
+                    <div class="message-content">
+                        ${messageText || ''}
+                        ${attachmentFile ? `<div class="message-attachment mt-2"><img src="${URL.createObjectURL(attachmentFile)}" class="img-fluid rounded-2 shadow-sm" style="max-height: 200px; width: auto;"></div>` : ''}
+                        <div class="message-timestamp from-applicant">Just now</div>
+                    </div>
+                `;
+                 container.appendChild(messageDiv);
+                 container.scrollTop = container.scrollHeight;
+             }
+
+             // Clear form
+             document.getElementById('replyInput').value = '';
+             document.getElementById('attachment').value = '';
+
+             try {
+                 // Send via AJAX
+                 const response = await fetch(
+                     '{{ route('applicant.sendmessageemployer.store') }}', {
+                         method: 'POST',
+                         body: formData
+                     });
+
+                 const result = await response.json();
+
+                 if (result.success) {
+                     console.log('Message sent successfully');
+                 } else {
+                     console.error('Failed to send message');
+                 }
+             } catch (error) {
+                 console.error('Error:', error);
              }
          });
      });

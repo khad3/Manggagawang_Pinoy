@@ -294,15 +294,35 @@
                                             @endif
 
                                             <div class="d-flex gap-2">
-                                                <!-- Rate Job Button -->
-                                                <button class="btn btn-outline-warning btn-sm rate-job-btn"
-                                                    data-job-id="{{ $jobDetail->id }}"
-                                                    data-title="{{ $jobDetail->title }}"
-                                                    data-company="{{ $retrievedAddressCompany->first()->company_name ?? 'Unknown Company' }}"
-                                                    data-bs-toggle="modal" data-bs-target="#rateJobModal">
-                                                    <i class="bi bi-star me-1"></i>
-                                                    {{ $userRating ? 'Update Rating' : 'Rate Job' }}
-                                                </button>
+                                                @php
+                                                    $applicantId = session('applicant_id');
+                                                    // Check if the logged-in applicant already rated this specific job
+                                                    $applicantRating = \App\Models\Applicant\SendRatingToJobPostModel::where(
+                                                        'applicant_id',
+                                                        $applicantId,
+                                                    )
+                                                        ->where('job_post_id', $jobDetail->id)
+                                                        ->first();
+                                                @endphp
+
+                                                @if ($applicantRating)
+                                                    <button
+                                                        class="btn btn-secondary btn-sm d-flex align-items-center gap-2"
+                                                        disabled style="cursor: not-allowed; opacity: 0.8;">
+                                                        <i class="bi bi-star-fill text-warning"></i>
+                                                        <span>You already rated this job</span>
+                                                    </button>
+                                                @else
+                                                    <button class="btn btn-outline-warning btn-sm rate-job-btn"
+                                                        data-job-id="{{ $jobDetail->id }}"
+                                                        data-title="{{ $jobDetail->title }}"
+                                                        data-company="{{ $retrievedAddressCompany->first()->company_name ?? 'Unknown Company' }}"
+                                                        data-bs-toggle="modal" data-bs-target="#rateJobModal">
+                                                        <i class="bi bi-star me-1"></i>
+                                                        Rate Job
+                                                    </button>
+                                                @endif
+
 
                                                 <!-- View Ratings Button -->
                                                 <button class="btn btn-outline-secondary btn-sm view-ratings-btn"
