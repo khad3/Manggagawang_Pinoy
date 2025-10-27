@@ -25,8 +25,8 @@
                 <li class="dropdown">
                 <button class="sign-in-b">Sign in</button>
                 <ul class="dropdown-menu">
-                        <li><a href="{{ route('applicant.register.display') }}">As Applicant</a></li>
-                        <li><a href="{{ route('employer.register.display') }}">As Employer</a></li>
+                        <li><a href="{{ route('applicant.login.display') }}">As Applicant</a></li>
+                        <li><a href="{{ route('employer.login.display') }}">As Employer</a></li>
                     </ul>
                 </li>
                 <!-- Sign Up Dropdown -->
@@ -334,6 +334,26 @@ document.addEventListener('DOMContentLoaded', function () {
           });
         }
       });
+document.querySelectorAll('.dropdown button').forEach(btn => {
+  btn.addEventListener('click', e => {
+    const dropdown = btn.closest('.dropdown');
+    const isActive = dropdown.classList.contains('active');
+    
+    // close any open popups first
+    document.querySelectorAll('.dropdown.active').forEach(d => d.classList.remove('active'));
+
+    // toggle the current one
+    if (!isActive) dropdown.classList.add('active');
+  });
+});
+
+// close popup when clicking outside or close button
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('dropdown-menu')) {
+    e.target.closest('.dropdown').classList.remove('active');
+  }
+});
+
 
       // ESC closes panel and submenus
       document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMobileMenu(); });

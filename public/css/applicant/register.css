@@ -1,4 +1,56 @@
+/* Dropdown base */
+.dropdown {
+  position: relative;
+}
 
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  padding: 10px 0;
+  min-width: 160px;
+  z-index: 9999; /* Important! */
+}
+
+/* Show when active */
+.dropdown.active .dropdown-menu {
+  display: block;
+}
+
+/* Adjust dropdown inside mobile nav overlay */
+@media (max-width: 992px) {
+  .nav-links.active .dropdown-menu {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 260px;
+    background: white;
+    border-radius: 10px;
+    padding: 15px 0;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    display: none;
+    z-index: 99999;
+  }
+  
+
+  .dropdown-menu a {
+    display: hide;
+    text-align: center;
+    padding: 10px;
+    font-weight: 600;
+    color: #333;
+    text-decoration: none;
+  }
+
+  .dropdown-menu a:hover {
+    background: #f1f1f1;
+  }
+}
 
 /* Loader Styles */
 #loader-wrapper {
@@ -7,7 +59,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--primary-orange);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -195,8 +247,8 @@
 }
 
 .custom-checkbox.checked {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    border-color: #667eea;
+    background: var(--primary-orange);
+    border-color: var(--primary-orange);
 }
 
 .custom-checkbox.checked::after {
@@ -229,7 +281,7 @@
 .submit-btn {
     width: 100%;
     padding: 16px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background:var(--primary-orange);
     color: white;
     border: none;
     border-radius: 12px;
@@ -367,10 +419,11 @@ body {
 }
 
 .step-line {
-    height: 2px;
+    flex: 0 0 36px;
+    height: 3px;
+    margin: 0 8px;
+    align-self: center;
     background: #d1d5db;
-    flex: 1;
-    margin: 0 20px;
     transition: all 0.3s ease;
 }
 
@@ -459,3 +512,64 @@ body {
     border-color: var(--primary-orange);
     background: var(--light-red);
 }
+
+@media (max-width: 992px) {
+  .form-content { padding: 30px; }
+  .verification-icon { width: 72px; height: 72px; }
+  .form-title { font-size: 22px; }
+}
+
+/* Stepper: stack vertically on narrow screens */
+@media (max-width: 768px) {
+  .d-flex.align-items-center.justify-content-between {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+  .step-line { display: none; }
+  .step-indicator { margin-left: 0; margin-right: 0; }
+  .form-card { box-shadow: 0 12px 30px rgba(2,2,50,0.08); }
+}
+
+/* Code input: scale and wrap on small widths */
+.code-input-container {
+  gap: 10px;
+  flex-wrap: nowrap;
+  justify-content: center;
+}
+@media (max-width: 480px) {
+  .code-input-container {
+    gap: 8px;
+  }
+  .code-digit {
+    width: 42px;
+    height: 52px;
+    font-size: 20px;
+  }
+  .submit-btn { padding: 12px; font-size: 15px; }
+}
+
+/* Loader full coverage with safe z-index */
+#loader-wrapper {
+  z-index: 99999;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Make resend button layout friendlier */
+.resend-container { display:flex; gap:12px; align-items:center; justify-content:center; flex-wrap:wrap; }
+.resend-container span { flex: 0 0 auto; }
+
+/* Accessibility: focus visible for inputs */
+.code-digit:focus { outline: 3px solid rgba(99,102,241,0.12); outline-offset: 2px; }
+
+/* Small screens: reduce top spacing */
+@media (max-width: 576px) {
+  body { padding-top: 72px; }
+  .form-card { margin-top: 8px; border-radius: 14px; }
+  .form-content { padding: 22px; }
+  .verification-icon { width: 64px; height: 64px; }
+}
+
+

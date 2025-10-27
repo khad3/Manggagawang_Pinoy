@@ -4,14 +4,75 @@
     --light-orange: #dcdcec;
     --light-red: #fef2f2;
 }
+/* Dropdown base */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  padding: 10px 0;
+  min-width: 160px;
+  z-index: 9999; /* Important! */
+}
+
+/* Show when active */
+.dropdown.active .dropdown-menu {
+  display: block;
+}
+
+/* Adjust dropdown inside mobile nav overlay */
+@media (max-width: 992px) {
+  .nav-links.active .dropdown-menu {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 260px;
+    background: white;
+    border-radius: 10px;
+    padding: 15px 0;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    display: block;
+    z-index: 99999;
+  }
+
+  .dropdown-menu a {
+    display: block;
+    text-align: center;
+    padding: 10px;
+    font-weight: 600;
+    color: #333;
+    text-decoration: none;
+  }
+
+  .dropdown-menu a:hover {
+    background: #f1f1f1;
+  }
+}
+
 
 body {
     background: linear-gradient(135deg, #fff7ed 0%, #ffffff 50%, #fef2f2 100%);
     min-height: 100vh;
+    padding-top: 88px;
 }
 
 .registration-container {
     padding: 60px 0;
+    background: transparent;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 20px;
+    min-height: calc(100vh - 88px);
+    box-sizing: border-box;
 }
 
 /* iPhone 12/13/14/15/Pro, Galaxy S21/S22/S23, etc. */
@@ -301,6 +362,12 @@ body {
     border: none;
     max-width: 800px;
     margin: 0 auto;
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    border-radius: 18px;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .btn-primary-custom {
@@ -374,6 +441,132 @@ body {
 .certification-requirement.selected {
     border-color: var(--primary-orange);
     background: var(--light-red);
+}
+
+/* ---------- Responsive rules copied/adapted from verification.css ---------- */
+
+/* Ensure page content sits below fixed nav */
+body { padding-top: 88px; }
+
+/* Make registration container centered and responsive */
+.registration-container {
+  background: transparent;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 20px;
+  min-height: calc(100vh - 88px);
+  box-sizing: border-box;
+}
+
+/* Card responsiveness */
+.form-card {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  border-radius: 18px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Main form content padding */
+.form-content {
+  padding: 40px;
+  text-align: center;
+}
+
+/* Icon/hero inside registration if present */
+.registration-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+/* Stepper indicators adjustments (if used) */
+.step-indicator {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:600;
+  font-size:1.1rem;
+}
+
+/* Reduce paddings on medium/smaller screens */
+@media (max-width: 992px) {
+  .form-content { padding: 30px; }
+  .registration-icon { width: 72px; height: 72px; }
+  .form-title { font-size: 22px; }
+}
+
+/* Stepper: stack vertically on narrow screens */
+@media (max-width: 768px) {
+  .steps-row, .d-flex.align-items-center.justify-content-between {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+  .step-line { display: none; }
+  .step-indicator { margin-left: 0; margin-right: 0; }
+  .form-card { box-shadow: 0 12px 30px rgba(2,2,50,0.08); }
+}
+
+/* Compact controls / code-input-like blocks */
+.code-input-container {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+@media (max-width: 480px) {
+  .code-input-container { gap: 8px; }
+  .code-digit {
+    width: 42px;
+    height: 52px;
+    font-size: 20px;
+  }
+  .submit-btn { padding: 12px; font-size: 15px; }
+}
+
+/* Resend / helper layout */
+.resend-container {
+  display:flex;
+  gap:12px;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+.resend-container span { flex: 0 0 auto; }
+
+/* Accessibility: focus visible for inputs */
+input:focus, .code-digit:focus { outline: 3px solid rgba(99,102,241,0.12); outline-offset: 2px; }
+
+/* Small screens: reduce top spacing and shrink cards/icons */
+@media (max-width: 576px) {
+  body { padding-top: 72px; }
+  .form-card { margin-top: 8px; border-radius: 14px; }
+  .form-content { padding: 22px; }
+  .registration-icon { width: 64px; height: 64px; }
+}
+
+/* Very small screens */
+@media (max-width: 360px) {
+  .form-card { margin: 0.5rem; }
+  .card-header .container,
+  .card-body { padding-left: 0.75rem; padding-right: 0.75rem; }
+}
+
+/* Keep nav/hamburger compatibility */
+@media (max-width: 900px) {
+  .nav-links a, .nav-links button { font-size: 1.05rem; }
+  .hamburger { z-index: 1301; }
 }
 
 /* ===== Responsive improvements for registration page ===== */
@@ -611,7 +804,7 @@ body {
 /* narrow vertical connector */
 .step-line {
   width: 2px;
-  height: 18px;
+  height: 5px;
   background: linear-gradient(180deg,#eef2ff,#f3f4f6);
   margin: 0 auto;
   border-radius: 4px;
@@ -667,3 +860,93 @@ body {
 
 /* small utility to ensure form-card remains full width */
 .form-card { width: 100%; box-sizing: border-box; }
+
+
+
+
+/* Very small screens: tighten spacing and hide descriptive text */
+@media (max-width: 480px) {
+  .card-header .d-flex.align-items-center.justify-content-between { gap: 6px; padding: 6px 4px; }
+  .card-header .d-flex.align-items-center.justify-content-between > .text-center { min-width: 48px; padding: 4px; max-width: 120px; }
+  .card-header .d-flex.align-items-center.justify-content-between .text-center > small,
+  .card-header .d-flex.align-items-center.justify-content-between .text-center > .step-label {
+    display: none; /* hide descriptions to save horizontal space */
+  }
+  .step-indicator { width: 36px; height: 36px; min-width: 36px; min-height: 36px; font-size: 0.9rem; }
+  .card-header .step-line { display: none; }
+}
+
+/* If content still overflows, allow horizontal scroll (keyboard/touchable) */
+.card-header .d-flex.align-items-center.justify-content-between[style*="overflow"] { overflow-x: auto; }
+.card-header .d-flex.align-items-center.justify-content-between::-webkit-scrollbar { height: 8px; }
+.card-header .d-flex.align-items-center.justify-content-between::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.08); border-radius: 6px; }
+
+/* Prev/Next buttons — compact and mobile-friendly */
+.form-nav {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 18px;
+}
+
+/* Button base */
+.prev-btn, .next-btn {
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  min-width: 110px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* Visual styles */
+.prev-btn {
+  background: transparent;
+  color: #0f172a;
+  border-color: rgba(15,23,42,0.06);
+}
+.next-btn {
+  background: #0a2d82;
+  color: #fff;
+  border-color: #0a2d82;
+}
+
+/* Disabled state */
+.prev-btn[disabled], .next-btn[disabled] {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* Mobile: fixed bottom control bar with large touch targets */
+@media (max-width: 576px) {
+  .form-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 10px;
+    gap: 8px;
+    justify-content: space-between;
+    background: rgba(255,255,255,0.98);
+    box-shadow: 0 -8px 24px rgba(2,6,23,0.08);
+    z-index: 1400;
+  }
+  .prev-btn, .next-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 12px 10px;
+    border-radius: 10px;
+    font-size: 15px;
+  }
+  .form-card { padding-bottom: 84px; /* room for fixed controls */ }
+}
+
+/* Small screens: make buttons fill available width in inline layout */
+@media (max-width: 768px) {
+  .form-nav { justify-content: space-between; }
+  .prev-btn { flex: 0 0 auto; }
+  .next-btn { flex: 0 0 auto; }
+}

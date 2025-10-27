@@ -15,7 +15,6 @@
 
     <!-- Page CSS (use same responsive registration CSS used by employer) -->
     <link rel="stylesheet" href="{{ asset('css/applicant/register.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/applicant/employer/registration.css') }}">
     <link rel="stylesheet" href="{{ asset('css/applicant/landingpage/landingpage.css') }}">
 </head>
 
@@ -35,12 +34,13 @@
                 <li><a href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
                 <li><a href="{{ route('display.aboutus') }}">About Us</a></li>
                 <li class="dropdown">
-               <button class="sign-in-b">Sign in</button>
-               <ul class="dropdown-menu">
-                        <li><a href="{{ route('applicant.login.display') }}">As Applicant</a></li>
-                        <li><a href="{{ route('employer.login.display') }}">As Employer</a></li>
-                    </ul>
-                </li>
+  <button class="sign-in-b">Sign in</button>
+  <ul class="dropdown-menu">
+    <li><a href="{{ route('applicant.login.display') }}">As Applicant</a></li>
+    <li><a href="{{ route('employer.login.display') }}">As Employer</a></li>
+  </ul>
+</li>
+
                 <!-- Sign Up Dropdown -->
                 <li class="dropdown">
                     <button class="sign-up-b">Sign up</button>
@@ -230,6 +230,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        
         // Hide loader after page load
         window.addEventListener("load", function() {
             setTimeout(function() {
@@ -380,6 +381,29 @@
                 });
             }
         });
+document.querySelectorAll('.dropdown > button').forEach(button => {
+  button.addEventListener('click', e => {
+    e.stopPropagation(); // Prevent hamburger close
+    const dropdown = button.parentElement;
+
+    // Close other dropdowns
+    document.querySelectorAll('.dropdown.active').forEach(d => {
+      if (d !== dropdown) d.classList.remove('active');
+    });
+
+    // Toggle this one
+    dropdown.classList.toggle('active');
+  });
+});
+
+// Close dropdown if clicking outside
+document.addEventListener('click', e => {
+  if (!e.target.closest('.dropdown')) {
+    document.querySelectorAll('.dropdown.active').forEach(d => d.classList.remove('active'));
+  }
+});
+
+
     </script>
 </body>
 

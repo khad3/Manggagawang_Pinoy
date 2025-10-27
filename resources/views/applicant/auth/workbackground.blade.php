@@ -31,11 +31,16 @@
                 <li><a href="{{ route('display.topworker') }}">Top Workers</a></li>
                 <li><a href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
                 <li><a href="{{ route('display.aboutus') }}">About Us</a></li>
-                <li><button class="sign-in-b">Sign in</button></li>
+                <li class="dropdown"><button class="sign-in-b">Sign in</button>
+  <ul class="dropdown-menu">
+    <li><a href="{{ route('applicant.login.display') }}">As Applicant</a></li>
+    <li><a href="{{ route('employer.login.display') }}">As Employer</a></li>
+  </ul>
+</li>
 
                 <!-- Sign Up Dropdown -->
                 <li class="dropdown">
-                    <button class="sign-up-b">Sign up ▾</button>
+                    <button class="sign-up-b">Sign up</button>
                     <ul class="dropdown-menu">
                         <li><a href="{{ route('applicant.register.display') }}">As Applicant</a></li>
                         <li><a href="{{ route('employer.register.display') }}">As Employer</a></li>
@@ -404,6 +409,51 @@
                         return;
                     }
                 });
+
+                
+        // ======= HAMBURGER MENU FUNCTIONALITY ======= //
+document.addEventListener("DOMContentLoaded", function () {
+    const hamburger = document.getElementById("hamburger");
+    const navLinks = document.getElementById("navLinks");
+
+    // When hamburger is clicked
+    hamburger.addEventListener("click", function () {
+        hamburger.classList.toggle("active");
+        navLinks.classList.toggle("active");
+        document.body.classList.toggle("noscroll");
+    });
+
+    // Close menu when clicking a link (optional for mobile)
+    document.querySelectorAll(".nav-links a").forEach(link => {
+        link.addEventListener("click", () => {
+            if (window.innerWidth <= 992) {
+                navLinks.classList.remove("active");
+                hamburger.classList.remove("active");
+                document.body.classList.remove("noscroll");
+            }
+        });
+    });
+});
+document.querySelectorAll('.dropdown button').forEach(btn => {
+  btn.addEventListener('click', e => {
+    const dropdown = btn.closest('.dropdown');
+    const isActive = dropdown.classList.contains('active');
+    
+    // close any open popups first
+    document.querySelectorAll('.dropdown.active').forEach(d => d.classList.remove('active'));
+
+    // toggle the current one
+    if (!isActive) dropdown.classList.add('active');
+  });
+});
+
+// close popup when clicking outside or close button
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('dropdown-menu')) {
+    e.target.closest('.dropdown').classList.remove('active');
+  }
+});
+
             </script>
 </body>
 

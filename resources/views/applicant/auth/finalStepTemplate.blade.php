@@ -445,6 +445,29 @@ document.addEventListener('DOMContentLoaded', function () {
     console.error('Nav init error:', err);
   }
 });
+
+
+
+document.querySelectorAll('.dropdown button').forEach(btn => {
+  btn.addEventListener('click', e => {
+    const dropdown = btn.closest('.dropdown');
+    const isActive = dropdown.classList.contains('active');
+    
+    // close any open popups first
+    document.querySelectorAll('.dropdown.active').forEach(d => d.classList.remove('active'));
+
+    // toggle the current one
+    if (!isActive) dropdown.classList.add('active');
+  });
+});
+
+// close popup when clicking outside or close button
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('dropdown-menu')) {
+    e.target.closest('.dropdown').classList.remove('active');
+  }
+});
+
     </script>
 </body>
 

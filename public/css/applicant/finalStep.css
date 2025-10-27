@@ -12,8 +12,9 @@
 body {
     background: linear-gradient(135deg, #fff7ed 0%, #ffffff 50%, #fef2f2 100%);
     min-height: 100vh;
-    padding: 2rem 1rem;
 }
+
+
 
 /* Main Container */
 .profile-container {
@@ -58,10 +59,11 @@ body {
 }
 
 .step-line {
-    height: 2px;
+    flex: 0 0 36px;
+    height: 3px;
+    margin: 0 8px;
+    align-self: center;
     background: #d1d5db;
-    flex: 1;
-    margin: 0 20px;
     transition: all 0.3s ease;
 }
 
@@ -78,35 +80,27 @@ body {
 .profile-header {
     text-align: center;
     margin-bottom: 40px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.5rem 0;
 }
 
 .profile-image-container {
     position: relative;
     display: inline-block;
     margin-bottom: 20px;
-    width: 120px;
-    height: 120px;
-    margin: 0 auto;
 }
 
 .profile-image {
-    width: 100%;
-    height: 100%;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
     object-fit: cover;
-    border-radius: 999px;
     border: 4px solid var(--primary-orange);
     box-shadow: 0 8px 24px var(--light-orange);
 }
 
 .profile-badge {
     position: absolute;
-    bottom: 8px;
-    right: 8px;
+    bottom: 5px;
+    right: 5px;
     width: 30px;
     height: 30px;
     background: linear-gradient(135deg, #10b981, #059669);
@@ -437,125 +431,7 @@ body {
     }
 }
 
-/* Large tablets / small laptops */
-@media (max-width: 992px) {
-  body {
-    padding: 2rem 1rem;
-  }
 
-  .form-card {
-    max-width: 900px;
-    margin: 0.5rem auto;
-  }
-
-  .card-header .text-center {
-    padding: 0 0.5rem;
-  }
-
-  /* Stepper: reduce gaps and font sizes */
-  .d-flex.align-items-center.justify-content-between {
-    gap: 10px;
-    padding: 0.4rem 0;
-    max-width: 760px;
-  }
-  .step-indicator { width:44px; height:44px; font-size:0.95rem; }
-  .d-flex .text-center small { font-size:0.82rem; }
-}
-
-/* Tablets / large phones */
-@media (max-width: 768px) {
-  .form-card { margin: 0.75rem; border-radius: 12px; }
-  .card-body { padding: 1rem; }
-
-  /* Make stepper stack vertically but keep it visually pleasing */
-  .d-flex.align-items-center.justify-content-between {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-    padding-bottom: 0.6rem;
-  }
-  .d-flex .text-center { display:flex; gap:12px; align-items:center; text-align:left; padding:6px 0; }
-  .step-line { display: none; }
-
-  /* Profile header: center and scale */
-  .profile-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.5rem 0;
-  }
-
-  .profile-image-container {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto;
-  }
-  .profile-image { width: 100%; height: 100%; object-fit: cover; border-radius: 999px; }
-
-  .profile-badge { right: 8px; bottom: 8px; transform: translate(0,0); }
-}
-
-/* Mobile phones */
-@media (max-width: 480px) {
-  body { padding: 1rem 0.5rem; }
-
-  .form-card { margin: 0.5rem; box-shadow: none; border-radius: 10px; }
-
-  .card-header .text-center h1.display-4 {
-    font-size: 1.4rem;
-    line-height: 1.15;
-  }
-  .card-header .lead { font-size: 0.95rem; }
-
-  /* Stepper becomes simple vertical list with small bullets */
-  .d-flex.align-items-center.justify-content-between {
-    gap: 8px;
-  }
-  .step-indicator {
-    width: 38px;
-    height: 38px;
-    font-size: 0.9rem;
-  }
-  .d-flex .text-center small { display:block; font-size:0.78rem; color:var(--muted); }
-
-  /* Form inputs full width and comfortable touch targets */
-  .input-group-text { padding: 0.5rem; }
-  .form-control { padding: 0.6rem 0.75rem; font-size: 0.95rem; }
-  .btn-primary-custom { padding: 10px 12px; font-size: 0.95rem; width: 100%; }
-
-  /* Profile image smaller and aligned left inside header when space is tight */
-  .profile-header { flex-direction: column; align-items: center; text-align: center; }
-  .profile-image-container { width: 96px; height: 96px; }
-  .profile-badge { right: 6px; bottom: 6px; }
-
-  /* Ensure long helper text wraps */
-  .password-feedback { white-space: normal; }
-}
-
-/* Very small devices: keep layout usable */
-@media (max-width: 360px) {
-  .card-body { padding: 0.75rem; }
-  .form-label { font-size: 0.92rem; }
-  .form-links { font-size: 0.92rem; }
-  .step-indicator { width: 34px; height: 34px; font-size: 0.85rem; }
-}
-
-/* Utility: ensure images and badges never overflow container */
-.profile-image-container,
-.profile-image {
-  max-width: 100%;
-  height: auto;
-  box-sizing: border-box;
-}
-
-/* Keep buttons and interactive elements reachable on touch devices */
-@media (any-pointer: coarse) {
-  .btn-primary-custom, .btn-close, .sign-in-b, .sign-up-b {
-    padding: 12px 14px;
-    min-height: 44px;
-  }
-}
 
 /* Loader Styles */
 #loader-wrapper {
@@ -564,7 +440,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--primary-orange);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -607,63 +483,100 @@ body {
     font-weight: 500;
 }
 
-/* Adjusted Stepper Styles */
-.d-flex.align-items-center.justify-content-between {
+@media (max-width: 480px) {
+  .step-indicator { width: 40px; height: 40px; font-size: 0.9rem; }
+  .steps-inner { gap: 10px; padding: 8px 6px; }
+}
+
+/* small utility to ensure form-card remains full width */
+.form-card { width: 100%; box-sizing: border-box; }
+
+
+
+
+/* Very small screens: tighten spacing and hide descriptive text */
+@media (max-width: 480px) {
+  .card-header .d-flex.align-items-center.justify-content-between { gap: 6px; padding: 6px 4px; }
+  .card-header .d-flex.align-items-center.justify-content-between > .text-center { min-width: 48px; padding: 4px; max-width: 120px; }
+  .card-header .d-flex.align-items-center.justify-content-between .text-center > small,
+  .card-header .d-flex.align-items-center.justify-content-between .text-center > .step-label {
+    display: none; /* hide descriptions to save horizontal space */
+  }
+  .step-indicator { width: 36px; height: 36px; min-width: 36px; min-height: 36px; font-size: 0.9rem; }
+  .card-header .step-line { display: none; }
+}
+
+/* If content still overflows, allow horizontal scroll (keyboard/touchable) */
+.card-header .d-flex.align-items-center.justify-content-between[style*="overflow"] { overflow-x: auto; }
+.card-header .d-flex.align-items-center.justify-content-between::-webkit-scrollbar { height: 8px; }
+.card-header .d-flex.align-items-center.justify-content-between::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.08); border-radius: 6px; }
+
+/* Prev/Next buttons — compact and mobile-friendly */
+.form-nav {
   display: flex;
+  gap: 12px;
+  justify-content: flex-end;
   align-items: center;
-  justify-content: flex-start; /* align steps to the left */
-  gap: 18px;
-  max-width: 920px;
-  margin: 0; /* keep container flush/left inside its parent */
-  padding: 0.5rem 0;
+  margin-top: 18px;
 }
 
-/* Make each step label left-aligned and readable */
-.d-flex.align-items-center.justify-content-between .text-center {
-  min-width: 140px;
-  flex: 0 0 auto;
-  text-align: left;
+/* Button base */
+.prev-btn, .next-btn {
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  min-width: 110px;
+  text-align: center;
+  box-sizing: border-box;
 }
 
-/* Keep the connector looking good when left aligned */
-.step-line {
-  flex: 1;
-  height: 6px;
-  background: linear-gradient(90deg,#eef2ff 0%, #f3f4f6 100%);
-  border-radius: 999px;
-  margin: 0 12px;
-  align-self: center;
+/* Visual styles */
+.prev-btn {
+  background: transparent;
+  color: #0f172a;
+  border-color: rgba(15,23,42,0.06);
+}
+.next-btn {
+  background: #0a2d82;
+  color: #fff;
+  border-color: #0a2d82;
 }
 
-/* Slightly reduce indicator size so left column doesn't feel heavy */
-.step-indicator {
-  width: 48px;
-  height: 48px;
+/* Disabled state */
+.prev-btn[disabled], .next-btn[disabled] {
+  opacity: 0.55;
+  pointer-events: none;
 }
 
-/* Responsive: when stacked on smaller screens keep content left-aligned */
-@media (max-width: 720px) {
-  .d-flex.align-items-center.justify-content-between {
-    flex-direction: column;
-    align-items: flex-start; /* keep stacked steps aligned left */
-    gap: 12px;
-    padding-bottom: 0.6rem;
+/* Mobile: fixed bottom control bar with large touch targets */
+@media (max-width: 576px) {
+  .form-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 10px;
+    gap: 8px;
+    justify-content: space-between;
+    background: rgba(255,255,255,0.98);
+    box-shadow: 0 -8px 24px rgba(2,6,23,0.08);
+    z-index: 1400;
   }
+  .prev-btn, .next-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 12px 10px;
+    border-radius: 10px;
+    font-size: 15px;
+  }
+  .form-card { padding-bottom: 84px; /* room for fixed controls */ }
+}
 
-  .d-flex.align-items-center.justify-content-between .text-center {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    text-align: left;
-    width: 100%;
-  }
-
-  .step-line {
-    display: none; /* hide long connectors on small screens */
-  }
-
-  .step-indicator {
-    width: 44px;
-    height: 44px;
-  }
+/* Small screens: make buttons fill available width in inline layout */
+@media (max-width: 768px) {
+  .form-nav { justify-content: space-between; }
+  .prev-btn { flex: 0 0 auto; }
+  .next-btn { flex: 0 0 auto; }
 }
