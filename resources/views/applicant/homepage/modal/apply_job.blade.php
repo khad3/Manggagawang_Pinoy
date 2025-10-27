@@ -34,7 +34,7 @@
                                <div class="mb-3">
                                    <label class="form-label fw-semibold">Phone Number *</label>
                                    <input type="tel" class="form-control" name="phone_number"
-                                       placeholder="+63 912 345 6789" required>
+                                       placeholder="09********0" required>
                                </div>
                            </div>
                        </div>

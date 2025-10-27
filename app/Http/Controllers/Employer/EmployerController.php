@@ -920,40 +920,20 @@ $retrievedApproveApplicants = \App\Models\Applicant\ApplyJobModel::where('status
     ->distinct('applicant_id')
     ->count();
 
-    // Get only announcements targeted to employers/all and published/scheduled
-$notifications = AnnouncementModel::whereIn('target_audience', ['employers', 'all'])
-    ->whereIn('status', ['published', 'scheduled'])  // Fixed: use whereIn instead of where
-    ->orderBy('created_at', 'desc')
-    ->take(5) // limit to 5 latest
-    ->get();
+     $announcements = AnnouncementModel::whereIn('target_audience', ['employers', 'all'])
+        ->whereIn('status', ['published', 'scheduled'])
+        ->orderBy('created_at', 'desc')
+        ->get();
 
-// Get unread count for employers
-$unreadCount = AnnouncementModel::whereIn('target_audience', ['employers', 'all'])  // Fixed: should check both employers and all
-    ->whereIn('status', ['published', 'scheduled'])  // Fixed: add status check
-    ->where('is_read', false)
-    ->count();
+    $notifications = \App\Models\Notification\NotificationModel::where('type', 'employer')
+        ->where('type_id', $employerId)
+        ->orderBy('created_at', 'desc')
+        ->get();
 
-// Get employer-specific notifications
-$notificationRetrieved = \App\Models\Notification\NotificationModel::where('type', 'employer')
-    ->where('type_id', $employerId)
-    ->get();
+    $allNotifications = $announcements->merge($notifications)->sortByDesc('created_at');
 
-// Merge and sort all notifications
-$allNotifications = $notifications->merge($notificationRetrieved)
-    ->sortByDesc('created_at');
+    $unreadCount = $allNotifications->where('is_read', false)->count();
 
-    // Calculate unread count from both sources
-$unreadAnnouncementsCount = AnnouncementModel::whereIn('target_audience', ['employers', 'all'])
-    ->whereIn('status', ['published', 'scheduled'])
-    ->where('is_read', false)
-    ->count();
-
-$unreadEmployerNotificationsCount = \App\Models\Notification\NotificationModel::where('type', 'employer')
-    ->where('type_id', $employerId)
-    ->where('is_read', false)
-    ->count();
-
-$unreadCount = $unreadAnnouncementsCount + $unreadEmployerNotificationsCount;
 
 
     return view('employer.homepage.homepage' , compact(
@@ -1556,6 +1536,115 @@ public function deleteAccount($id)
     }
 }
 
+
+ public function markAsRead($id)
+    {
+        try {
+            $notification = \App\Models\Notification\NotificationModel::where('type', 'employer')
+                ->where('id', $id)
+                ->firstOrFail();
+
+            $notification->update(['is_read' => 1]);
+
+            return response()->json(['success' => true, 'message' => 'Notification marked as read.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to mark notification as read.'], 500);
+        }
+    }
+
+    // ✅ Mark individual announcement as read
+   public function markAnnouncementAsRead($id)
+{
+    try {
+        $employerId = session('employer_id');
+        if (!$employerId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No employer session found.'
+            ], 401);
+        }
+
+        // ✅ Use correct model
+        $announcement = \App\Models\Admin\AnnouncementModel::find($id);
+        if (!$announcement) {
+            return response()->json([
+                'success' => false,
+                'message' => "Announcement ID {$id} not found."
+            ], 404);
+        }
+
+        // ✅ Ensure announcement is for employers or all
+        if (!in_array($announcement->target_audience, ['employers', 'all'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Not authorized to mark this announcement.'
+            ], 403);
+        }
+
+        // ✅ Check if table has is_read column
+        if (!\Schema::hasColumn($announcement->getTable(), 'is_read')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The "is_read" column does not exist in the announcements table.'
+            ], 500);
+        }
+
+        // ✅ Mark announcement as read
+        $announcement->update(['is_read' => true]);
+
+        \Log::info("✅ Employer {$employerId} marked announcement #{$id} as read.");
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Announcement marked as read.'
+        ]);
+
+    } catch (\Throwable $e) {
+        \Log::error('❌ Error marking announcement as read: ' . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to mark announcement as read: ' . $e->getMessage()
+        ], 500);
+    }
+}
+
+
+
+    // ✅ Mark all notifications (announcement + employer) as read
+    public function markAllNotificationsAsRead(Request $request)
+    {
+        try {
+            $employerId = session('employer_id');
+
+            // Update both models
+            \App\Models\Notification\NotificationModel::where('type', 'employer')
+                ->where('type_id', $employerId)
+                ->update(['is_read' => 1]);
+
+            AnnouncementModel::whereIn('target_audience', ['employers', 'all'])
+                ->whereIn('status', ['published', 'scheduled'])
+                ->update(['is_read' => true]);
+
+            return response()->json(['success' => true, 'message' => 'All notifications marked as read.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to mark all as read.'], 500);
+        }
+    }
+
+
+    //View messages
+public function viewMessageAsRead($applicantId) 
+{
+
+    $messages = SendMessage::where('applicant_id', $applicantId)->where('employer_id', session('employer_id'))->get();
+
+    foreach ($messages as $message) {
+        $message->update(['is_read' => 1]);
+    }
+
+    return response()->json(['success' => true, 'message' => 'All messages marked as read.']);
+
+}
 
 
 

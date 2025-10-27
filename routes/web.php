@@ -220,6 +220,16 @@ Route::middleware(['employer.authenticate'])->prefix('employer')->group(function
     //Schedule interview
     Route::post('schedule-interview/{id}', [EmployerController::class, 'setScheduleInterviewByEmployer'])->name('employer.scheduleinterview.store');
 
+    // Employer Notifications Routes
+    Route::post('notifications/{id}/read', [EmployerController::class, 'markAsRead']);
+    Route::post('announcements/{id}/read', [EmployerController::class, 'markAnnouncementAsRead']);
+    Route::post('notifications/mark-all-read', [EmployerController::class, 'markAllAsRead']);
+
+    // Employer Announcements Routes
+  
+
+    Route::post('messages/mark-as-read/{applicantId}', [EmployerController::class, 'viewMessageAsRead'])->name('employer.messages.markAsRead');
+
 
     //delete account
     Route::delete('delete-account/{id}', [EmployerController::class, 'deleteAccount'])->name('employer.deleteaccount.destroy');
@@ -261,6 +271,7 @@ Route::prefix('admin')->group(function () {
 });
 
 Route::middleware(['admin.authenticate'])->prefix('admin')->group(function () {
+    Route::delete('delete-account/{id}/{type}', [AdminController::class, 'deleteApplicantOrEmployer'])->name('admin.deleteaccount.destroy');
 
     Route::get('homepage', [AdminController::class, 'homepageDisplay'])->name('admin.homepage.display');
     Route::post('logout', [AdminController::class, 'logout'])->name('admin.logout.store');

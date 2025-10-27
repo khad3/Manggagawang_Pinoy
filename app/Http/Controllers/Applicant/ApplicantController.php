@@ -679,7 +679,7 @@ public function login(Request $request)
     // 4Check if the account is banned
     if (strtolower($applicant->status) === 'banned') {
         return back()->withErrors([
-            'email' => 'Your account has been banned. Please contact support for assistance.',
+            'email' => 'Your account has been banned. Please contact support for assistance at <u>mangagawangpinoycompany@gmail.com</u>.',
         ])->withInput($request->only('email'));
     }
 
@@ -878,8 +878,12 @@ $messages = EmployerSendMessage::with(['employer.addressCompany', 'employer.pers
     $notificationRetrieve = \App\Models\Notification\NotificationModel::where('type_id', $applicantId)->where('type', operator: 'applicant')->latest()->get();
 
      $allNotifications = $notifications->concat($notificationRetrieve)->sortByDesc('created_at');
+
+     //if applicant did rating to job post
+     $applicantRating = \App\Models\Applicant\SendRatingToJobPostModel::where('applicant_id', $applicantId)->get();
    
     return view('applicant.homepage.homepage', compact(
+        'applicantRating',
         'notificationRetrieve',
         'retrieveRating',
         'avarageRating',

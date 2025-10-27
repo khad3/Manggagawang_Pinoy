@@ -4459,3 +4459,59 @@ tr.selected {
         justify-content: flex-start;
     }
 }
+
+.notification-item {
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.notification-item:hover {
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Unread highlight */
+.notification-item.unread {
+    background-color: #e9f5ff;
+    border-left: 3px solid #007bff;
+}
+
+/* Notification icon styling */
+.notification-icon-large {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-icon-large i {
+    font-size: 1.5rem;
+}
+
+/* Priority badge colors */
+.badge-priority.priority-urgent {
+    background-color: #dc3545;
+    color: white;
+}
+
+.badge-priority.priority-high {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.badge-priority.priority-medium {
+    background-color: #0dcaf0;
+    color: #000;
+}
+
+.badge-priority.priority-low {
+    background-color: #198754;
+    color: white;
+}
+
+.badge-priority.priority-normal {
+    background-color: #6c757d;
+    color: white;
+}

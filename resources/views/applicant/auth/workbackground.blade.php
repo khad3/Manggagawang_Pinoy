@@ -166,7 +166,7 @@
                                 <option value="Automotive Servicing">Automotive Servicing</option>
                                 <option value="Bartender">Bartender</option>
                                 <option value="Barista">Barista</option>
-                                <option value="Beauty Care Specialist">Beauty Care Specialist</option>
+                                <option value="Beauty Specialist">Beauty Care Specialist</option>
                                 <option value="Carpenter">Carpenter</option>
                                 <option value="Cook">Cook</option>
                                 <option value="Customer Service Representative">Customer Service Representative
@@ -175,7 +175,7 @@
                                 <option value="Electrician">Electrician</option>
                                 <option value="Food and Beverage Server">Food and Beverage Server</option>
                                 <option value="Hairdresser">Hairdresser</option>
-                                <option value="Heavy Equipment Operator">Heavy Equipment Operator</option>
+                                <option value="Heavy Operator">Heavy Equipment Operator</option>
                                 <option value="Housekeeping">Housekeeping</option>
                                 <option value="Mason">Mason</option>
                                 <option value="Massage Therapist">Massage Therapist</option>

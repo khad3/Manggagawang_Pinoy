@@ -1,8 +1,10 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Applicant\TesdaUploadCertificationModel;
+use App\Models\Employer\PersonalInformationModel;
 use Illuminate\Http\Request;
 
 use App\Models\Admin\AccountAdminModel as Admin;
@@ -14,6 +16,10 @@ use Illuminate\Support\Str;
 use App\Models\Applicant\PostModel as Post;
 use App\Models\Admin\UserManagmentModel;
 use App\Models\Admin\AnnouncementModel;
+use App\Models\Applicant\ApplicantFriendModel;
+use App\Models\Applicant\ApplicantPortfolioModel;
+use App\Models\Applicant\ApplicantPostLikeModel;
+use App\Models\Applicant\ApplicantUrlModel;
 use App\Models\Applicant\ApplyJobModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -24,9 +30,22 @@ use Carbon\Carbon;
 use App\Models\Employer\AccountInformationModel as Employer;
 // Applicants Model
 use App\Models\Applicant\RegisterModel;
+use App\Models\Applicant\SendRatingToJobPostModel;
+use App\Models\Employer\AccountInformationModel;
+use App\Models\Employer\AdditionalInformationModel;
+use App\Models\Employer\EmergencyContactModel;
+use App\Models\Employer\HiringTimelineModel;
+use App\Models\Employer\InterviewScreeningModel;
 use App\Models\Employer\JobDetailModel;
+use App\Models\Employer\SendNotificationToApplicantModel;
+use App\Models\Employer\SendRatingModel;
+use App\Models\Employer\SetInterviewModel;
 use App\Models\User;
+use Faker\Provider\ar_EG\Company;
+use Illuminate\Contracts\Queue\Job;
+use Illuminate\Queue\Worker;
 use Illuminate\Support\Facades\App;
+use League\Uri\UriTemplate\Template;
 
 class AdminController extends Controller
 {
@@ -1172,4 +1191,88 @@ $applicantSendRating = \App\Models\Applicant\SendRatingToJobPostModel::with([
 
         return redirect()->back()->with('error', 'TESDA Officer not found.');
     }
+
+
+
+ 
+public function deleteApplicantOrEmployer($id, $type)
+{
+    DB::beginTransaction();
+
+    try {
+        if ($type === 'applicant') {
+            $user = RegisterModel::find($id);
+
+            if (!$user) {
+                return redirect()->back()->with('error', 'Applicant not found.');
+            }
+
+            // Delete related models
+            ApplicantFriendModel::where('sender_id', $id)->orWhere('receiver_id', $id)->delete();
+            \App\Models\Applicant\ApplicantPostModel::where('applicant_id', $id)->delete();
+            ApplicantPortfolioModel::where('applicant_id', $id)->delete();
+            \App\Models\Applicant\ApplicantPostCommentModel::where('applicant_id', $id)->delete();
+            ApplicantPostLikeModel::where('applicant_id', $id)->delete();
+            ApplicantUrlModel::where('applicant_id', $id)->delete();
+            ApplyJobModel::where('applicant_id', $id)->delete();
+            \App\Models\Applicant\CommentModel::where('applicant_id', $id)->delete();
+            \App\Models\Applicant\ExperienceModel::where('applicant_id', $id)->delete();
+            \App\Models\Applicant\GroupCommentModel::where('applicant_id', $id)->delete();
+            \App\Models\Applicant\GroupLikeModel::where('applicant_id', $id)->delete();
+            \App\Models\Applicant\GroupModel::where('applicant_id', $id)->delete();
+            \App\Models\Applicant\LikeModel::where('applicant_id', $id)->delete();
+            \App\Models\Applicant\ParticipantModel::where('applicant_id', $id)->delete();
+            \App\Models\Applicant\PersonalModel::where('applicant_id', $id)->delete();
+            \App\Models\Applicant\PostModel::where('applicant_id', $id)->delete();
+            \App\Models\Applicant\PostSpecificGroupModel::where('applicant_id', $id)->delete();
+            \App\Models\Applicant\ReplyModel::where('applicant_id', $id)->delete();
+            \App\Models\Applicant\SavedJobModel::where('applicant_id', $id)->delete();
+            SendRatingToJobPostModel::where('applicant_id', $id)->delete();
+            \App\Models\Applicant\TemplateModel::where('applicant_id', $id)->delete();
+            TesdaUploadCertificationModel::where('applicant_id', $id)->delete();
+
+            $user->delete();
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Applicant deleted successfully.');
+        }
+
+        elseif ($type === 'employer') {
+            $user = AccountInformationModel::find($id);
+
+            if (!$user) {
+                return redirect()->back()->with('error', 'Employer not found.');
+            }
+
+            // Delete related models
+            AdditionalInformationModel::where('employer_id', $id)->delete();
+            \App\Models\Employer\CommunicationPreferenceModel::where('employer_id', $id)->delete();
+            \App\Models\Employer\CompanyAdressModel::where('employer_id', $id)->delete();
+            EmergencyContactModel::where('employer_id', $id)->delete();
+            HiringTimelineModel::where('employer_id', $id)->delete();
+            InterviewScreeningModel::where('employer_id', $id)->delete();
+            \App\Models\Employer\JobDetailModel::where('employer_id', $id)->delete();
+            PersonalInformationModel::where('employer_id', $id)->delete();
+            SendNotificationToApplicantModel::where('employer_id', $id)->delete();
+            SendRatingModel::where('employer_id', $id)->delete();
+            \App\Models\Employer\SpecialRequirementModel::where('employer_id', $id)->delete();
+            \App\Models\Employer\WorkerRequirementModel::where('employer_id', $id)->delete();
+            \App\Models\Employer\TesdaPriorityModel::where('employer_id', $id)->delete();
+            SetInterviewModel::where('employer_id', $id)->delete();
+
+            $user->delete();
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Employer deleted successfully.');
+        }
+
+        return redirect()->back()->with('error', 'Invalid type specified.');
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        \Log::error('Error deleting user: '.$e->getMessage());
+        return redirect()->back()->with('error', 'Failed to delete user. Please try again.');
+    }
+}
+
 }
