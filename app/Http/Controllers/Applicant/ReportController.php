@@ -86,6 +86,20 @@ class ReportController extends Controller
         'additional_info' => $request->additional_info,
     ]);
 
+
+    // Send notification to the applicant
+    $notification = new \App\Models\Notification\NotificationModel();
+    $notification->type = 'applicant';
+    $notification->type_id = $request->input('reported_id');
+    $notification->title = 'Report Notification';
+    $notification->message = 'Your account has been reported by an employer for ' . 
+        ($request->reason === 'other' ? strtolower($request->other_reason) : str_replace('_', ' ', $request->reason)) . 
+        '. Our team will review this report and take appropriate action if necessary.';
+    $notification->is_read = false;
+    $notification->save();
+
+
+
     return redirect()->back()->with('success', 'Report submitted successfully.');
 }
 

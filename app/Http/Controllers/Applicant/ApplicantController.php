@@ -789,8 +789,8 @@ public function ShowHomepage()
      // Get only announcements targeted to applicants and published
     $notifications = AnnouncementModel::whereIn('target_audience', ['applicants' , 'all'])
         ->where('status',['published','scheduled'])
-        ->orderBy('created_at', 'desc')
-        ->take(5) // limit to 5 latest
+        ->latest()
+  
         ->get();
 
 
@@ -875,7 +875,7 @@ $messages = EmployerSendMessage::with(['employer.addressCompany', 'employer.pers
     $total = $retrieveRating->count();
 
     // Show notification
-    $notificationRetrieve = \App\Models\Notification\NotificationModel::where('type_id', $applicantId)->where('type', operator: 'applicant')->get();
+    $notificationRetrieve = \App\Models\Notification\NotificationModel::where('type_id', $applicantId)->where('type', operator: 'applicant')->latest()->get();
 
      $allNotifications = $notifications->concat($notificationRetrieve)->sortByDesc('created_at');
    
@@ -923,6 +923,28 @@ public function ReadlAllnotifications()
     AnnouncementModel::where('is_read', 0)->update(['is_read' => 1]);
 
     return response()->json(['success' => true]);
+}
+
+
+//for my notification sa lahat
+public function ReadNotifications($id)
+{
+    $applicant_id = session('applicant_id');
+
+    // Find the specific notification that belongs to this applicant
+    $notification = \App\Models\Notification\NotificationModel::where('id', $id)
+        ->where('type_id', $applicant_id)
+        ->where('type', 'applicant') // optional, if needed
+        ->first();
+
+    if ($notification) {
+        $notification->is_read = 1;
+        $notification->save();
+
+        return response()->json(['success' => true]);
+    }
+
+    return response()->json(['success' => false, 'message' => 'Notification not found']);
 }
 
 
@@ -1356,7 +1378,7 @@ public function toggleSaveJob($jobId)
 
 
 
-//Applying job
+// Applying job
 public function applyJob(Request $request)
 {
     $applicantId = session('applicant_id');
@@ -1374,8 +1396,8 @@ public function applyJob(Request $request)
         'tesda_certificate' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
     ]);
 
-    // ✅ Use updateOrCreate to handle re-apply
-    ApplyJob::updateOrCreate(
+    // Use updateOrCreate to handle re-apply
+    $application = ApplyJob::updateOrCreate(
         [
             'job_id' => $request->job_id,
             'applicant_id' => $applicantId,
@@ -1394,9 +1416,31 @@ public function applyJob(Request $request)
         ]
     );
 
+    // Fetch applicant personal info for notification
+    $applicant = RegisterModel::with('personal_info')->find($applicantId);
+    $firstName = $applicant->personal_info->first_name
+        ? $this->safeDecrypt($applicant->personal_info->first_name)
+        : '';
+    $lastName = $applicant->personal_info->last_name
+        ? $this->safeDecrypt($applicant->personal_info->last_name)
+        : '';
+
+    // Fetch job details and employer ID
+    $job = \App\Models\Employer\JobDetailModel::find($request->job_id);
+    $employerId = $job->employer_id ?? null;
+
+    // Send notification to employer
+    if ($employerId) {
+        $notification = new \App\Models\Notification\NotificationModel();
+        $notification->type = 'employer';
+        $notification->type_id = $employerId; // notify the employer
+        $notification->title = 'New Job Application';
+        $notification->message = "{$firstName} {$lastName} has applied for your job post: \"{$job->title}\". Please review the application.";
+        $notification->save();
+    }
+
     return back()->with('success', 'Your application has been submitted successfully.');
 }
-
 
 
 //cancel job
@@ -1414,6 +1458,8 @@ public function cancelApplication(Request $request)
 
 
 //Send rating to job post
+
+
 public function sendRating(Request $request)
 {
     $request->validate([
@@ -1424,18 +1470,46 @@ public function sendRating(Request $request)
 
     $jobId = $request->input('job_post_id');
 
-    // Optional: check if job exists
-    $job = \App\Models\Employer\JobDetailModel::find($jobId);
+    // Check if job exists
+    $job = \App\Models\Employer\JobDetailModel::with('employer')->find($jobId);
     if (!$job) {
         return back()->withErrors(['error' => 'Job not found.']);
     }
 
+    $applicantId = session('applicant_id');
+
+    // Save rating
     $rating = new \App\Models\Applicant\SendRatingToJobPostModel();
-    $rating->applicant_id = session('applicant_id');
+    $rating->applicant_id = $applicantId;
     $rating->job_post_id = $jobId;
     $rating->rating = $request->input('rating');
     $rating->review_comments = $request->input('feedback');
     $rating->save();
+
+    // Fetch applicant info for notification
+    $applicant = RegisterModel::with('personal_info')->find($applicantId);
+    $firstName = $applicant->personal_info->first_name ?? '';
+    $lastName = $applicant->personal_info->last_name ?? '';
+
+    // Decrypt safely
+    try {
+        $firstName = $firstName ? $this->safeDecrypt($firstName) : '';
+        $lastName = $lastName ? $this->safeDecrypt($lastName) : '';
+    } catch (\Exception $e) {
+        $firstName = $firstName ?? '';
+        $lastName = $lastName ?? '';
+    }
+
+    // Send notification to employer
+    if ($job->employer_id) {
+        $notification = new \App\Models\Notification\NotificationModel();
+        $notification->type = 'employer';
+        $notification->type_id = $job->employer_id; // the employer who posted the job
+        $notification->title = 'New Rating Received';
+        $notification->message = "{$firstName} {$lastName} has submitted a rating of {$rating->rating}/5 for your job post \"{$job->title}\"."
+            . ($rating->review_comments ? " Feedback: \"{$rating->review_comments}\"" : '');
+        $notification->save();
+    }
 
     return back()->with('success', 'Rating sent successfully.');
 }

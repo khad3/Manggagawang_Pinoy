@@ -90,6 +90,9 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
    // routes/web.php
     Route::post('notifications/{id}/read', [ApplicantController::class, 'ReadNotification']);
     Route::post('/notifications/mark-all-read', [ApplicantController::class, 'ReadlAllnotifications']);
+
+    Route::post('notifications/retrieve/{id}/read', [ApplicantController::class, 'ReadNotifications']);
+Route::post('notifications/retrieve/mark-all-read', [ApplicantController::class, 'markAllAsRead']);
     //Community Forum
     Route::get('communityforum', [CommunityForumController::class, 'ShowForum'])->name('applicant.forum.display');
     Route::post('communityforum/create', [CommunityForumController::class, 'CreatePost'])->name('applicant.forum.store');

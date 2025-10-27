@@ -871,17 +871,7 @@ $reportedApplicantIds = \App\Models\Report\ReportModel::where('reporter_id', $em
         }
     }
 
-      // Get only announcements targeted to applicants and published
-    $notifications = AnnouncementModel::whereIn('target_audience', ['employers' ,'all'])
-        ->where('status',['published','scheduled'])
-        ->orderBy('created_at', 'desc')
-        ->take(5) // limit to 5 latest
-        ->get();
-
-
-     $unreadCount = AnnouncementModel::where('target_audience', 'employers')
-    ->where('is_read', false)
-    ->count();
+     
 
 
     $retrievedPersonalInformation = AccountInformation::where('id', $employerId)->with('addressCompany')->first();
@@ -930,9 +920,45 @@ $retrievedApproveApplicants = \App\Models\Applicant\ApplyJobModel::where('status
     ->distinct('applicant_id')
     ->count();
 
+    // Get only announcements targeted to employers/all and published/scheduled
+$notifications = AnnouncementModel::whereIn('target_audience', ['employers', 'all'])
+    ->whereIn('status', ['published', 'scheduled'])  // Fixed: use whereIn instead of where
+    ->orderBy('created_at', 'desc')
+    ->take(5) // limit to 5 latest
+    ->get();
+
+// Get unread count for employers
+$unreadCount = AnnouncementModel::whereIn('target_audience', ['employers', 'all'])  // Fixed: should check both employers and all
+    ->whereIn('status', ['published', 'scheduled'])  // Fixed: add status check
+    ->where('is_read', false)
+    ->count();
+
+// Get employer-specific notifications
+$notificationRetrieved = \App\Models\Notification\NotificationModel::where('type', 'employer')
+    ->where('type_id', $employerId)
+    ->get();
+
+// Merge and sort all notifications
+$allNotifications = $notifications->merge($notificationRetrieved)
+    ->sortByDesc('created_at');
+
+    // Calculate unread count from both sources
+$unreadAnnouncementsCount = AnnouncementModel::whereIn('target_audience', ['employers', 'all'])
+    ->whereIn('status', ['published', 'scheduled'])
+    ->where('is_read', false)
+    ->count();
+
+$unreadEmployerNotificationsCount = \App\Models\Notification\NotificationModel::where('type', 'employer')
+    ->where('type_id', $employerId)
+    ->where('is_read', false)
+    ->count();
+
+$unreadCount = $unreadAnnouncementsCount + $unreadEmployerNotificationsCount;
 
 
     return view('employer.homepage.homepage' , compact(
+        'unreadCount' ,
+        'allNotifications',
         'totalApprovedApplicant' ,
         'retrievedApproveApplicants' ,
         'jobPosts' ,
@@ -1178,17 +1204,18 @@ public function setScheduleInterviewByEmployer(Request $request)
     $interview->additional_notes = $request->input('additional_notes');
     $interview->save();
 
-    // ✅ Send notification to applicant
-    $notification = new \App\Models\Employer\SendNotificationToApplicantModel();
-    $notification->sender_id = $employer_id;
-    $notification->receiver_id = $request->input('applicant_id');
-    $notification->title = 'Interview Scheduled';
-    $notification->message = 'Your interview has been scheduled on ' . 
-                             date('F d, Y g:i A', strtotime($request->input('interview_datetime'))) .
-                             ' at ' . $request->input('interview_location') . '.';
-    $notification->type = 'schedule_interview';
+   //  Send notification to the applicant
+    $notification = new \App\Models\Notification\NotificationModel();
+    $notification->type = 'applicant';
+    $notification->type_id = $request->input('applicant_id');
+    $notification->title = 'Interview Invitation';
+    $notification->message = 'Good news! An employer has scheduled an interview for you on ' .
+    date('F d, Y g:i A', strtotime($request->input('interview_datetime'))) .
+    ' at ' . $request->input('interview_location') . 
+    '. Please make sure to arrive on time and prepare accordingly.';
     $notification->is_read = false;
     $notification->save();
+
 
     return back()->with('success', 'Interview scheduled successfully and notification sent to applicant.');
 }
@@ -1204,7 +1231,7 @@ public function logout() {
 }
 
 
-// add job post
+// add job post //try 
 
 public function addJobPost(Request $request)
 {
@@ -1343,6 +1370,7 @@ if ($isOther) {
     $specialRequirements->special_requirements = json_encode($request->special_requirements); 
     $specialRequirements->additional_requirements_or_notes = $request->additional_requirements;
     $specialRequirements->save();
+    
 
 
 

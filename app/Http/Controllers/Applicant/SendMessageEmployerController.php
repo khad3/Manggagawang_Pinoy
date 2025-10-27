@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Applicant;
 use App\Http\Controllers\Controller;
 use App\Models\Employer\AccountInformationModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use App\Models\Employer\SendMessageModel as SendMessageToEmployer;
 
 class SendMessageEmployerController extends Controller
@@ -41,6 +42,8 @@ public function sendMessage(Request $request)
 
     return redirect()->back()->with('success', 'Message sent successfully.');
 }
+
+
 
 
 

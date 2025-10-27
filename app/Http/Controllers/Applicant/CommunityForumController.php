@@ -19,7 +19,11 @@ use App\Models\Applicant\GroupCommentModel as GroupComment;
 use App\Models\Applicant\GroupLikeModel as GroupLike;
 use App\Models\Applicant\SendMessageModel as SendMessage;
 use App\Models\Applicant\ParticipantModel as GroupJoinRequest;
-use Illuminate\Support\Facades\Crypt; 
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Str;
+
+
+use function App\Http\Controllers\Admin\safeDecrypt;
 
 class CommunityForumController extends Controller
 {
@@ -66,7 +70,7 @@ class CommunityForumController extends Controller
         ];
     }),
 
-] : [];
+    ] : [];
 
 
 
@@ -92,7 +96,7 @@ class CommunityForumController extends Controller
         $categories = Post::distinct()->pluck('category')->toArray();
 
         //retrieve personal information and work background decrypted
-        // 🔽 Decrypt commenters and repliers
+        // Decrypt commenters and repliers
     foreach ($posts as $post) {
         foreach ($post->comments as $comment) {
             if ($comment->applicant && $comment->applicant->personal_info) {
@@ -115,8 +119,7 @@ class CommunityForumController extends Controller
 
 
     // Create a new post 
-    public function CreatePost(Request $request)
-{
+    public function CreatePost(Request $request){
         $applicantId = session('applicant_id');
 
         $request->validate([
@@ -174,7 +177,7 @@ class CommunityForumController extends Controller
 
 
 
-    //Add comments
+    // Add comments
     public function AddComments(Request $request){
         $applicantId = session('applicant_id');
 
@@ -183,28 +186,49 @@ class CommunityForumController extends Controller
             'post_id' => 'required|exists:forum_posts,id',
         ]);
 
-        // Find the applicant by id (assuming 'id' is the primary key)
-        $applicant = RegisterModel::find($applicantId);
+        // Find the applicant
+        $applicant = RegisterModel::with('personal_info')->find($applicantId);
+        if (!$applicant || !$applicant->personal_info) {
+            return redirect()->back()->withErrors('Applicant not found or personal info missing.');
+        }
 
-            if (!$applicant) {
-                return redirect()->back()->withErrors('Applicant not found or not logged in.');
-            }
+        // Find the post
+        $post = Post::with('applicant.personal_info')->find($request->post_id);
+        if (!$post) {
+            return redirect()->back()->withErrors('Post not found.');
+        }
 
-            // Find the post by id (assuming 'id' is the primary key in forum_posts table)
-        $post = Post::where('id', $request->post_id)->first();
-
-            if (!$post) {
-                return redirect()->back()->withErrors('Post not found.');
-            }
-
-            // Create and save the comment
-        $comment = new Comment([
+        // Create comment
+        $comment = Comment::create([
             'comment' => $request->comment,
             'forum_post_id' => $post->id,
             'applicant_id' => $applicant->id,
         ]);
 
-        $comment->save();
+        // Decrypt names safely
+        $firstName = $applicant->personal_info->first_name ? $this->safeDecrypt($applicant->personal_info->first_name) : '';
+        $lastName = $applicant->personal_info->last_name ? $this->safeDecrypt($applicant->personal_info->last_name) : '';
+
+        // Notify post creator if commenter is not the post creator
+        if ($post->applicant_id != $applicantId) {
+            $postTitle = $post->title ?? 'your post';
+            $postCategory = $post->category ?? '';
+
+            $notificationMessage = "{$firstName} {$lastName} commented on your forum post \"{$postTitle}\"";
+
+            if ($postCategory) {
+                $notificationMessage .= " in the {$postCategory} category.";
+            } else {
+                $notificationMessage .= ".";
+            }
+
+            $notification = new \App\Models\Notification\NotificationModel();
+            $notification->type = 'applicant';
+            $notification->type_id = $post->applicant_id; // post creator
+            $notification->title = 'New Comment on Your Post';
+            $notification->message = $notificationMessage;
+            $notification->save();
+        }
 
         return redirect()->route('applicant.forum.display')->with('success', 'Comment added successfully.');
     }
@@ -219,23 +243,61 @@ class CommunityForumController extends Controller
         return redirect()->route('applicant.forum.display')->with('success', 'Comment deleted successfully.');
     }
 
-    //reply to the comments
+    // Reply to a forum comment
+
+
     public function ReplyComments(Request $request){
+        $applicantId = session('applicant_id');
+
+        if (!$applicantId) {
+            return redirect()->back()->with('error', 'You must be logged in to reply.');
+        }
 
         $request->validate([
             'reply_comment' => 'required|string',
+            'comment_id' => 'required|exists:forum_comments,id',
         ]);
 
-        $reply = new ReplyComment([
-            'reply' => $request->reply_comment,
-            'forum_comment_id' => $request->comment_id,
-            'applicant_id' => session('applicant_id'),
-        ]);
+        // Check if the comment exists
+        $comment = ReplyComment::find($request->comment_id);
+        if (!$comment) {
+            return redirect()->back()->with('error', 'Original comment not found.');
+        }
 
+        // Create reply
+        $reply = new ReplyComment();
+        $reply->reply = $request->reply_comment;
+        $reply->forum_comment_id = $request->comment_id;
+        $reply->applicant_id = $applicantId;
         $reply->save();
 
-        return redirect()->route('applicant.forum.display')->with('success', 'reply successfully.');
+        // Send notification to the original comment author
+        if ($comment->applicant_id != $applicantId) {
+            $replyAuthor = RegisterModel::with('personal_info')->find($applicantId);
+            $firstName = $replyAuthor->personal_info->first_name ?? '';
+            $lastName = $replyAuthor->personal_info->last_name ?? '';
+
+            // Decrypt safely
+            try {
+                $firstName = $firstName ? $this->safeDecrypt($firstName) : '';
+                $lastName = $lastName ? $this->safeDecrypt($lastName) : '';
+            } catch (\Exception $e) {
+                $firstName = $firstName ?? '';
+                $lastName = $lastName ?? '';
+            }
+
+            $notification = new \App\Models\Notification\NotificationModel();
+            $notification->type = 'applicant';
+            $notification->type_id = $comment->applicant_id;
+            $notification->title = 'New Reply on Your Comment';
+            $notification->message = "{$firstName} {$lastName} replied to your comment: \"{$request->reply_comment}\"";
+            $notification->save();
+        }
+
+        return redirect()->route('applicant.forum.display')->with('success', 'Reply added successfully.');
     }
+
+
 
     //Delete reply comments child
     public function DeleteReplyComment($id) {
@@ -249,38 +311,58 @@ class CommunityForumController extends Controller
 
     //Adding likes
     public function LikePost($id){
-
         $applicantId = session('applicant_id');
 
-            if (!$applicantId) {
-                return redirect()->back()->with('error', 'You must be logged in to like a post.');
-            }
+        if (!$applicantId) {
+            return redirect()->back()->with('error', 'You must be logged in to like a post.');
+        }
 
         // Check if the applicant already liked this post
         $existingLike = ForumLike::where('forum_post_id', $id)
             ->where('applicant_id', $applicantId)
             ->first();
 
-            if ($existingLike) {
-            // Toggle: if liked (likes=1), then dislike (likes=0) or remove the record
-            // Option 1: Delete the like record (simpler)
+        if ($existingLike) {
+            // Unlike the post
             $existingLike->delete();
-
-            // Option 2: Or update likes to 0 instead of deleting
-            // $existingLike->likes = 0;
-            // $existingLike->save();
             return redirect()->back()->with('success', 'You unliked the post.');
-             } else {
-                // Create a new like record
-                ForumLike::create([
-                    'forum_post_id' => $id,
-                    'applicant_id' => $applicantId,
-                    'likes' => 1,
-                ]);
+        } else {
+            // Create a new like record
+            ForumLike::create([
+                'forum_post_id' => $id,
+                'applicant_id' => $applicantId,
+                'likes' => 1,
+            ]);
 
-            return redirect()->back()->with('success', 'Post liked successfully.');
+            // Fetch post creator and personal info of liker
+            $post = Post::with('applicant.personal_info')->find($id);
+            $liker = RegisterModel::with('personal_info')->find($applicantId);
+
+            if ($post && $liker && $post->applicant_id != $applicantId) {
+                $firstName = $liker->personal_info->first_name ? $this->safeDecrypt($liker->personal_info->first_name) : '';
+                $lastName = $liker->personal_info->last_name ? $this->safeDecrypt($liker->personal_info->last_name) : '';
+
+            // Send notification to post creator
+            $notification = new \App\Models\Notification\NotificationModel();
+            $notification->type = 'applicant';
+            $notification->type_id = $post->applicant_id; // post creator
+            $notification->title = 'New Like on Your Forum Post';
+
+       
+            $postTitle = $post->title ?? 'your post';
+            $postCategory = $post->category ? ' in the "' . $post->category . '" category' : '';
+            $postContentPreview = $post->content ? ' — "' . Str::limit($post->content, 50) . '"' : '';
+
+            $notification->message = $firstName . ' ' . $lastName . ' liked your forum post "' . $postTitle . '"' 
+                . $postCategory 
+                . $postContentPreview . '.';
+
+            $notification->save();
             }
+
+         return redirect()->back()->with('success', 'Post liked successfully.');
         }
+    }
 
 
     //View my post
@@ -288,7 +370,7 @@ class CommunityForumController extends Controller
         $applicantId = session('applicant_id');
         $posts = Post::where('applicant_id', $applicantId)->get()->sortByDesc('created_at');
         
-        // ✅ Decrypt data directly into $posts
+        // Decrypt data directly into $posts
      foreach ($posts as $post) {
 
         // --- Decrypt post owner ---
@@ -367,8 +449,7 @@ class CommunityForumController extends Controller
 
 
     //View list of group forum kumabaga ito yung display
-    public function DisplayGroupForum()
-{
+    public function DisplayGroupForum(){
     $applicant_id = session('applicant_id');
 
     $listOfGroups = Group::with(['members', 'personalInfo'])
@@ -383,7 +464,7 @@ class CommunityForumController extends Controller
             $group->personalInfo->last_name  = $this->safe_decrypt($group->personalInfo->last_name);
         }
 
-        // 🔐 Membership status for this specific group
+        //  Membership status for this specific group
         $membership = $group->members->firstWhere('id', $applicant_id);
 
         if ($membership) {
@@ -398,38 +479,46 @@ class CommunityForumController extends Controller
 
 
     //For request and join group forum
-    public function RequestAndJoinGroup(Request $request){
-        $request->validate([
-            'group_id' => 'required|exists:group_community,id',
-        ]);
+   public function RequestAndJoinGroup(Request $request){
+    $request->validate([
+        'group_id' => 'required|exists:group_community,id',
+    ]);
 
-        $applicantId = session('applicant_id');
+    $applicantId = session('applicant_id');
 
-            if (!$applicantId) {
-                return redirect()->back()->with('error', 'You must be logged in to join a group.');
-            }
+    if (!$applicantId) {
+        return redirect()->back()->with('error', 'You must be logged in to join a group.');
+    }
 
-        $groupId = $request->group_id;
-        $group = Group::findOrFail($groupId);
+    $group = Group::findOrFail($request->group_id);
 
-        $applicantPersonalInfo = PersonalInfo::where('applicant_id', $applicantId)->first();
-            if (!$applicantPersonalInfo) {
-                return redirect()->back()->with('error', 'Personal information not found.');
-            }
+    $applicantPersonalInfo = PersonalInfo::where('applicant_id', $applicantId)->first();
+    if (!$applicantPersonalInfo) {
+        return redirect()->back()->with('error', 'Personal information not found.');
+    }
 
-        // Check if already requested or approved
-        $existingMember = $group->members()
-            ->wherePivot('applicant_id', $applicantId)
-            ->first();
+    // Decrypt personal info properly
+    try {
+        $firstName = $applicantPersonalInfo->first_name ? $this->safeDecrypt($applicantPersonalInfo->first_name) : '';
+        $lastName = $applicantPersonalInfo->last_name ? $this->safeDecrypt($applicantPersonalInfo->last_name) : '';
+    } catch (\Exception $e) {
+        $firstName = 'Unknown';
+        $lastName = 'User';
+    }
 
-            if ($existingMember) {
-                $status = $existingMember->pivot->status;
-            if ($status === 'approved') {
-                return redirect()->back()->with('info', 'You are already a member of the "' . $group->group_name . '" group.');
-            } elseif ($status === 'pending') {
-                return redirect()->back()->with('info', 'Your join request to "' . $group->group_name . '" is still pending approval.');
-            }
+    // Check if already requested or approved
+    $existingMember = $group->members()
+        ->wherePivot('applicant_id', $applicantId)
+        ->first();
+
+    if ($existingMember) {
+        $status = $existingMember->pivot->status;
+        if ($status === 'approved') {
+            return redirect()->back()->with('info', 'You are already a member of the "' . $group->group_name . '" group.');
+        } elseif ($status === 'pending') {
+            return redirect()->back()->with('info', 'Your join request to "' . $group->group_name . '" is still pending approval.');
         }
+    }
 
     // Set status based on group type
     $status = $group->privacy === 'public' ? 'approved' : 'pending';
@@ -442,13 +531,33 @@ class CommunityForumController extends Controller
         'updated_at' => now(),
     ]);
 
-    // Response messages
-        if ($group->privacy === 'public') {
-            return redirect()->back()->with('success', 'You successfully joined the public group: "' . $group->group_name . '".');
-        } else {
-            return redirect()->back()->with('success', 'Join request sent to "' . $group->group_name . '". Please wait for the creator\'s approval.');
+    // Send notification to group creator for BOTH pending and approved joins
+    $groupOwnerId = $group->applicant_id; // creator of the group
+    if ($groupOwnerId) {
+        $notification = new \App\Models\Notification\NotificationModel();
+        $notification->type = 'applicant';
+        $notification->type_id = $groupOwnerId; // send to group creator
+
+        if ($status === 'approved') {
+            $notification->title = 'New Member Joined';
+            $notification->message = $firstName . ' ' . $lastName
+                . ' has suddenly joined your group "' . $group->group_name . '".';
+        } else { // pending
+            $notification->title = 'New Join Request';
+            $notification->message = $firstName . ' ' . $lastName
+                . ' wants to join your group "' . $group->group_name . '".';
         }
+
+        $notification->save();
     }
+
+    // Response messages
+    if ($status === 'approved') {
+        return redirect()->back()->with('success', 'You successfully joined the public group: "' . $group->group_name . '".');
+    } else {
+        return redirect()->back()->with('success', 'Join request sent to "' . $group->group_name . '". Please wait for the creator\'s approval.');
+    }
+}
 
 
     //Add post for the group forum
@@ -500,18 +609,19 @@ class CommunityForumController extends Controller
         return redirect()->back()->with('success', 'Post added successfully.');
     }
 
-private function safeDecrypt($value) {
-    try {
-        return $value ? Crypt::decrypt($value) : null;
-    } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
-        return $value; // fallback if it cannot be decrypted
-    } catch (\Exception $e) {
-        return $value; // catches unserialize errors and others
+    //Decrypt
+    private function safeDecrypt($value) {
+        try {
+            return $value ? Crypt::decrypt($value) : null;
+        } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+            return $value; // fallback if it cannot be decrypted
+        } catch (\Exception $e) {
+            return $value; // catches unserialize errors and others
+        }
     }
-}
+
     //View the specific group //SI applicant toj
-   public function ViewSpecificGroup($id)
-{
+   public function ViewSpecificGroup($id){
     $applicantId = session('applicant_id');
 
     $group = Group::with([
@@ -523,13 +633,13 @@ private function safeDecrypt($value) {
         return redirect()->back()->with('error', 'Group not found.');
     }
 
-    // 🔐 Decrypt group creator name
+    // Decrypt group creator name
     if ($group->personalInfo) {
         $group->personalInfo->first_name = $this->safeDecrypt($group->personalInfo->first_name);
         $group->personalInfo->last_name  = $this->safeDecrypt($group->personalInfo->last_name);
     }
 
-    // 📩 Retrieve posts with related data
+    // Retrieve posts with related data
     $retrievePosts = GroupPost::with([
         'work_background',
         'likes',
@@ -542,7 +652,7 @@ private function safeDecrypt($value) {
         ->latest()
         ->get();
 
-    // 🔐 Decrypt post author and commenters
+    // Decrypt post author and commenters
     foreach ($retrievePosts as $post) {
         if ($post->personalInfo) {
             $post->decryptedAuthor = [
@@ -565,7 +675,7 @@ private function safeDecrypt($value) {
         }
     }
 
-    // 👥 Filter and 🔐 decrypt members
+    // Filter and decrypt members
     $members = $group->members
         ->filter(fn($member) => $member->pivot->status === 'approved' && $member->id !== $group->applicant_id)
         ->map(function ($member) {
@@ -580,7 +690,7 @@ private function safeDecrypt($value) {
        $retrievedJoinRequests = $group->members()
     ->wherePivot('status', 'pending')
     ->with('personal_info')
-    ->withPivot('created_at') // ✅ load pivot created_at
+    ->withPivot('created_at') // load pivot created_at
     ->get();
 
     foreach ($retrievedJoinRequests as $request) {
@@ -596,18 +706,64 @@ private function safeDecrypt($value) {
 }
 
 
-//Accept join request
-public function AcceptJoinRequest($groupId, $applicantId) {
-    $group = Group::findOrFail($groupId);
-    $group->members()->updateExistingPivot($applicantId, ['status' => 'approved']);
-    return redirect()->back()->with('success', 'Join request accepted.');
-}
+    //Accept join request
+    public function AcceptJoinRequest($groupId, $applicantId) {
+        $group = Group::findOrFail($groupId);
 
-//Reject join request
-public function RejectJoinRequest($groupId, $applicantId) {
+        // Update pivot to approved
+        $group->members()->updateExistingPivot($applicantId, ['status' => 'approved']);
+
+        // Send notification to the applicant
+        $applicantPersonalInfo = PersonalInfo::where('applicant_id', $applicantId)->first();
+
+        if ($applicantPersonalInfo) {
+            try {
+                $firstName = $applicantPersonalInfo->first_name ? Crypt::decryptString($applicantPersonalInfo->first_name) : '';
+                $lastName = $applicantPersonalInfo->last_name ? Crypt::decryptString($applicantPersonalInfo->last_name) : '';
+            } catch (\Exception $e) {
+                $firstName = 'Unknown';
+                $lastName = 'User';
+            }
+
+        $notification = new \App\Models\Notification\NotificationModel();
+        $notification->type = 'applicant'; // recipient type
+        $notification->type_id = $applicantId; // notify the applicant
+        $notification->title = 'Join Request Approved';
+        $notification->message = 'Your request to join the group "' . $group->group_name . '" has been approved. You can now access the group forum.';
+        $notification->save();
+        }
+
+        return redirect()->back()->with('success', 'Join request accepted and notification sent.');
+    }
+
+    //Reject join request
+    public function RejectJoinRequest($groupId, $applicantId) {
     $group = Group::findOrFail($groupId);
+
+    // Update pivot to rejected
     $group->members()->updateExistingPivot($applicantId, ['status' => 'rejected']);
-    return redirect()->back()->with('success', 'Join request rejected.');
+
+    // Send notification to the applicant
+    $applicantPersonalInfo = PersonalInfo::where('applicant_id', $applicantId)->first();
+
+    if ($applicantPersonalInfo) {
+        try {
+            $firstName = $applicantPersonalInfo->first_name ? Crypt::decryptString($applicantPersonalInfo->first_name) : '';
+            $lastName = $applicantPersonalInfo->last_name ? Crypt::decryptString($applicantPersonalInfo->last_name) : '';
+        } catch (\Exception $e) {
+            $firstName = 'Unknown';
+            $lastName = 'User';
+        }
+
+        $notification = new \App\Models\Notification\NotificationModel();
+        $notification->type = 'applicant'; // recipient type
+        $notification->type_id = $applicantId; // notify the applicant
+        $notification->title = 'Join Request Rejected';
+        $notification->message = 'Your request to join the group "' . $group->group_name . '" has been rejected.';
+        $notification->save();
+    }
+
+    return redirect()->back()->with('success', 'Join request rejected and notification sent.');
 }
 
 
@@ -767,7 +923,7 @@ public function RejectJoinRequest($groupId, $applicantId) {
 
     //Delete comment 
     public function DeleteCommentGroup($groupId, $commentId){
-        $group = Group::findOrFail($groupId); // ✅ Correct model
+        $group = Group::findOrFail($groupId); //  Correct model
 
         // Prevent deleting from private groups
         if ($group->privacy === 'private') {
@@ -912,8 +1068,7 @@ public function RejectJoinRequest($groupId, $applicantId) {
     }
 
     //View Friend sa community forum
-public function ViewFriendlistPage(Request $request)
-{
+    public function ViewFriendlistPage(Request $request){
     $applicantID = session('applicant_id');
 
     
