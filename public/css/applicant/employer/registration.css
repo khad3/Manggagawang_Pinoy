@@ -5,57 +5,6 @@
     --light-red: #fef2f2;
 }
 /* Dropdown base */
-.dropdown {
-  position: relative;
-}
-
-.dropdown-menu {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-  padding: 10px 0;
-  min-width: 160px;
-  z-index: 9999; /* Important! */
-}
-
-/* Show when active */
-.dropdown.active .dropdown-menu {
-  display: block;
-}
-
-/* Adjust dropdown inside mobile nav overlay */
-@media (max-width: 992px) {
-  .nav-links.active .dropdown-menu {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    min-width: 260px;
-    background: white;
-    border-radius: 10px;
-    padding: 15px 0;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-    display: block;
-    z-index: 99999;
-  }
-
-  .dropdown-menu a {
-    display: block;
-    text-align: center;
-    padding: 10px;
-    font-weight: 600;
-    color: #333;
-    text-decoration: none;
-  }
-
-  .dropdown-menu a:hover {
-    background: #f1f1f1;
-  }
-}
 
 
 body {
@@ -152,6 +101,67 @@ body {
         font-size: 0.95rem;
     }
     .footer-col {
+
+/* User-provided responsive block: ensure stepper and related layout rules */
+@media (max-width: 992px) {
+  .form-content { padding: 30px; }
+  .verification-icon { width: 72px; height: 72px; }
+  .form-title { font-size: 22px; }
+}
+
+/* Stepper: stack vertically on narrow screens */
+@media (max-width: 768px) {
+  .d-flex.align-items-center.justify-content-between {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+  .step-line { display: none; }
+  .step-indicator { margin-left: 0; margin-right: 0; }
+  .form-card { box-shadow: 0 12px 30px rgba(2,2,50,0.08); }
+}
+
+/* Code input: scale and wrap on small widths */
+.code-input-container {
+  gap: 10px;
+  flex-wrap: nowrap;
+  justify-content: center;
+}
+@media (max-width: 480px) {
+  .code-input-container {
+    gap: 8px;
+  }
+  .code-digit {
+    width: 42px;
+    height: 52px;
+    font-size: 20px;
+  }
+  .submit-btn { padding: 12px; font-size: 15px; }
+}
+
+/* Loader full coverage with safe z-index */
+#loader-wrapper {
+  z-index: 99999;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Make resend button layout friendlier */
+.resend-container { display:flex; gap:12px; align-items:center; justify-content:center; flex-wrap:wrap; }
+.resend-container span { flex: 0 0 auto; }
+
+/* Accessibility: focus visible for inputs */
+.code-digit:focus { outline: 3px solid rgba(99,102,241,0.12); outline-offset: 2px; }
+
+/* Small screens: reduce top spacing */
+@media (max-width: 576px) {
+  body { padding-top: 72px; }
+  .form-card { margin-top: 8px; border-radius: 14px; }
+  .form-content { padding: 22px; }
+  .verification-icon { width: 64px; height: 64px; }
+}
+
         padding: 0;
     }
     html,
@@ -601,7 +611,7 @@ input:focus, .code-digit:focus { outline: 3px solid rgba(99,102,241,0.12); outli
 
   /* Make progress stepper stack vertically */
   .form-card .d-flex.align-items-center.justify-content-between {
-    flex-direction: column;
+    flex-direction: row;
     align-items: stretch;
     gap: 12px;
     padding: 0.5rem 1rem;
@@ -609,12 +619,13 @@ input:focus, .code-digit:focus { outline: 3px solid rgba(99,102,241,0.12); outli
 
   /* Each step row: circle left, text right */
   .form-card .d-flex.align-items-center.justify-content-between .text-center {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-align: left;
-    width: 100%;
-    max-width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-align: left;
+        width: 100%;
+        max-width: 100%;
+        flex-direction: column;
   }
 
   /* Position indicator at start of each row and remove extra margin */
@@ -646,10 +657,7 @@ input:focus, .code-digit:focus { outline: 3px solid rgba(99,102,241,0.12); outli
     line-height: 1.1;
   }
 
-  .subtitle, .text-muted {
-    font-size: 0.95rem;
-  }
-
+ 
   .form-card {
     border-radius: 10px;
     overflow: hidden;
@@ -692,6 +700,70 @@ input:focus, .code-digit:focus { outline: 3px solid rgba(99,102,241,0.12); outli
     margin: 0 auto;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Stepper rules (copied from applicant register.css) to ensure layout   */
+/* matches the applicant registration stepper exactly.                 */
+/* These override any earlier step styles in this file.               */
+/* ------------------------------------------------------------------ */
+.step-indicator {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  border: 2px solid;
+  margin-left: 15px;  
+}
+
+.step-active {
+  background: var(--primary-orange);
+  border-color: var(--primary-orange);
+  color: white;
+}
+
+.step-inactive {
+  background: white;
+  border-color: #d1d5db;
+  color: #6b7280;
+}
+
+.step-completed {
+  background: var(--primary-orange);
+  border-color: var(--primary-orange);
+  color: white;
+}
+
+.step-line {
+  flex: 0 0 36px;
+  height: 3px;
+  margin: 0 8px;
+  align-self: center;
+  background: #d1d5db;
+  transition: all 0.3s ease;
+}
+
+.step-line-completed {
+  background: var(--primary-orange);
+}
+
+/* Stack stepper vertically on narrow screens (match applicant CSS) */
+@media (max-width: 768px) {
+  .d-flex.align-items-center.justify-content-between {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  align-items: start;
+  }
+  .step-line { display: none; }
+  .step-indicator { margin-left: 0; margin-right: 0; }
+  .form-card { box-shadow: 0 12px 30px rgba(2,2,50,0.08); }
+}
+
 
 /* Small phones */
 @media (max-width: 480px) {
@@ -867,7 +939,7 @@ input:focus, .code-digit:focus { outline: 3px solid rgba(99,102,241,0.12); outli
 /* Very small screens: tighten spacing and hide descriptive text */
 @media (max-width: 480px) {
   .card-header .d-flex.align-items-center.justify-content-between { gap: 6px; padding: 6px 4px; }
-  .card-header .d-flex.align-items-center.justify-content-between > .text-center { min-width: 48px; padding: 4px; max-width: 120px; }
+  .card-header .d-flex.align-items-center.justify-content-between > .text-center { min-width: 48px; padding: 4px; max-width: 120px; dis}
   .card-header .d-flex.align-items-center.justify-content-between .text-center > small,
   .card-header .d-flex.align-items-center.justify-content-between .text-center > .step-label {
     display: none; /* hide descriptions to save horizontal space */

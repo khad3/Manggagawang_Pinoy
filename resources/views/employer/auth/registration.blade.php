@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="{{ asset('css/applicant/employer/registration.css') }}" rel="stylesheet">
+
     <link href="{{ asset('css/applicant/landingpage/landingpage.css') }}" rel="stylesheet">
 
 </head>
@@ -70,51 +71,49 @@
 
                         <!-- Progress Stepper -->
                         <div class="row justify-content-center mb-5">
-                            <div class="col-lg-10">
+                                  <div class="col-lg-10">
                                 <div class="d-flex align-items-center justify-content-between">
-
-                                    <!-- Step 1 -->
                                     <div class="text-center">
                                         <div class="step-indicator step-active" id="step1">1</div>
                                         <div class="mt-2">
-                                            <small class="fw-semibold text-dark">Job Details</small>
-                                            <br><small class="text-muted d-none d-sm-block">Position
-                                                requirements</small>
+                                            <small class="fw-semibold text-dark">Job Details</small><br>
+                                            <small class="text-muted d-none d-sm-block">Position Requirements</small>
                                         </div>
                                     </div>
-                                    <div class="step-line" id="line2"></div>
+                                    <div class="step-line"></div>
 
-                                    <!-- Step 2 -->
                                     <div class="text-center">
                                         <div class="step-indicator step-inactive" id="step2">2</div>
                                         <div class="mt-2">
-                                            <small class="fw-semibold text-muted">Contact</small>
-                                            <br><small class="text-muted d-none d-sm-block">Your contact info</small>
+                                            <small class="fw-semibold text-muted">Contact</small><br>
+                                            <small class="text-muted d-none d-sm-block">Your Contact Info</small>
                                         </div>
                                     </div>
-                                    <div class="step-line" id="line3"></div>
+                                    <div class="step-line"></div>
 
-                                    <!-- Step 3 -->
                                     <div class="text-center">
                                         <div class="step-indicator step-inactive" id="step3">3</div>
                                         <div class="mt-2">
-                                            <small class="fw-semibold text-muted">Preferences</small>
-                                            <br><small class="text-muted d-none d-sm-block">Hiring preferences</small>
+                                            <small class="fw-semibold text-muted">Preferences</small><br>
+                                            <small class="text-muted d-none d-sm-block">Hiring Preferences</small>
                                         </div>
                                     </div>
-                                    <div class="step-line" id="line4"></div>
+                                    <div class="step-line"></div>
 
-                                    <!-- Step 4 -->
                                     <div class="text-center">
                                         <div class="step-indicator step-inactive" id="step4">4</div>
                                         <div class="mt-2">
-                                            <small class="fw-semibold text-muted">Review</small>
-                                            <br><small class="text-muted d-none d-sm-block">Review & submit</small>
+                                            <small class="fw-semibold text-muted">Review</small><br>
+                                            <small class="text-muted d-none d-sm-block">Review & Submit</small>
                                         </div>
                                     </div>
+                                    <div class="step-line"></div>
+
                                 </div>
                             </div>
-                        </div>
+                        </div> <!-- End Stepper -->
+
+                        
                         <h3 class="card-title mb-2">Job Details</h3>
                         <p class="text-muted mb-0">Describe the skilled position you're looking to fill and the
                             specific requirements.</p>
@@ -436,7 +435,7 @@
                         </form>
                     </div>
                 </div>
-            </div>
+            
         </div>
 
 
@@ -551,6 +550,49 @@
                 });
             });
         });
+// ======= RESPONSIVE DROPDOWN POPUP FUNCTIONALITY ======= //
+document.addEventListener("DOMContentLoaded", function () {
+  const dropdownButtons = document.querySelectorAll(".dropdown > button");
+  const overlay = document.createElement("div");
+  overlay.classList.add("dropdown-overlay");
+  document.body.appendChild(overlay);
+
+  dropdownButtons.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+
+      const dropdownMenu = btn.nextElementSibling;
+
+      // Close all open menus first
+      document.querySelectorAll(".dropdown-menu.active").forEach((menu) => {
+        if (menu !== dropdownMenu) menu.classList.remove("active");
+      });
+
+      // Toggle the clicked one
+      dropdownMenu.classList.toggle("active");
+      overlay.classList.toggle("active");
+    });
+  });
+
+  // Close popup when clicking overlay
+  overlay.addEventListener("click", () => {
+    document.querySelectorAll(".dropdown-menu.active").forEach((menu) => {
+      menu.classList.remove("active");
+    });
+    overlay.classList.remove("active");
+  });
+
+  // Auto-close when resizing to desktop
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 992) {
+      document.querySelectorAll(".dropdown-menu.active").forEach((menu) => {
+        menu.classList.remove("active");
+      });
+      overlay.classList.remove("active");
+    }
+  });
+});
+
     </script>
 </body>
 
