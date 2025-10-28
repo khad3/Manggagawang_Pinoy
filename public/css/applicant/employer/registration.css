@@ -24,85 +24,6 @@ body {
     box-sizing: border-box;
 }
 
-/* iPhone 12/13/14/15/Pro, Galaxy S21/S22/S23, etc. */
-@media (max-width: 430px) {
-    nav {
-        width: 100vw;
-    }
-    .navbar-container {
-        padding: 0 4vw;
-    }
-    .nav-links li {
-        padding: 12px 10vw;
-    }
-    .feature-item {
-        width: 94vw;
-        max-width: 320px;
-    }
-    .content img {
-        max-width: 80vw;
-        margin: 0 auto;
-    }
-    #wideb,
-    #wideb2 {
-        width: 90vw;
-        max-width: 220px;
-    }
-
-    .biglogo {
-        display: none;
-    }
-}
-
-/* iPad Mini, Galaxy Tab, iPad Air/Pro portrait */
-@media (max-width: 820px) {
-    .features-grid {
-        grid-template-columns: 1fr;
-    }
-    .feature-item {
-        justify-self: center;
-    }
-    .footer {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 1.5rem;
-    }
-    .footer-col {
-        min-width: 0;
-        width: 100%;
-    }
-    .biglogo {
-        display: none;
-    }
-}
-
-/* Responsive footer for tablets and phones */
-@media (max-width: 900px) {
-    .footer {
-        flex-direction: column;
-        align-items: stretch;
-        padding: 1.5rem 5vw;
-        gap: 1.5rem;
-    }
-    .footer-col {
-        min-width: 0;
-        width: 100%;
-        margin-bottom: 1rem;
-    }
-    .biglogo {
-        display: none;
-    }
-}
-
-/* Extra small devices (iPhone SE, Galaxy A01, etc.) */
-@media (max-width: 375px) {
-    .footer {
-        padding: 1rem 2vw;
-        font-size: 0.95rem;
-    }
-    .footer-col {
-
-/* User-provided responsive block: ensure stepper and related layout rules */
 @media (max-width: 992px) {
   .form-content { padding: 30px; }
   .verification-icon { width: 72px; height: 72px; }
@@ -162,8 +83,7 @@ body {
   .verification-icon { width: 64px; height: 64px; }
 }
 
-        padding: 0;
-    }
+    
     html,
     body {
         max-width: 100vw;
@@ -172,154 +92,7 @@ body {
     .biglogo {
         display: none;
     }
-}
 
-/* Responsive Navbar (CSS) */
-@media (max-width: 900px) {
-    .nav-menu-wrapper {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        height: 100vh;
-        width: 40vw;
-        overflow: hidden;
-    }
-
-    .nav-menu {
-        position: relative;
-        z-index: 1;
-        width: 100%;
-        height: 100%;
-        background: transparent;
-    }
-
-    /* Hamburger button */
-    .hamburger {
-        width: 30px;
-        height: 22px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        cursor: pointer;
-        z-index: 1201;
-    }
-
-    .hamburger span {
-        display: block;
-        height: 3px;
-        background: #e50914;
-        border-radius: 2px;
-        transition: all 0.3s ease;
-    }
-
-    /* Hamburger active state (X icon) */
-    .hamburger.active span:nth-child(1) {
-        transform: rotate(45deg) translate(5px, 5px);
-    }
-
-    .hamburger.active span:nth-child(2) {
-        opacity: 0;
-    }
-
-    .hamburger.active span:nth-child(3) {
-        transform: rotate(-45deg) translate(5px, -5px);
-    }
-
-    /* Nav links - hidden by default on mobile */
-    .nav-links {
-        position: fixed;
-        left: -180%;
-        width: 300vw;
-        max-width: 700px;
-        height: 200vh;
-        background: linear-gradient(
-            to right,
-            rgba(1, 1, 126),
-            rgba(1, 1, 126, 0.72),
-            rgba(1, 1, 126, 0)
-        );
-        display: flex;
-        flex-direction: column;
-        gap: 2rem;
-        transition: left 0.35s ease;
-        z-index: 1200;
-        overflow: hidden;
-        padding-bottom: 100px;
-    }
-
-    .noscroll {
-        overflow: hidden;
-    }
-    /* Show menu */
-    .nav-links.active {
-        left: 0;
-    }
-
-    /* Nav items */
-    .nav-links li {
-        list-style: none;
-        opacity: 0;
-        transform: translateX(20px);
-        transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-
-    /* Animate items when menu is active */
-    .nav-links.active li {
-        opacity: 1;
-        transform: translateX(0);
-    }
-
-    /* Links and buttons styling */
-    .nav-links a,
-    .nav-links button {
-        font-size: 1.5rem;
-        color: white;
-        text-decoration: none;
-        font-weight: 600;
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 0.5rem 1rem;
-        text-align: left;
-        width: 100%;
-        transition: color 0.3s ease;
-    }
-
-    .nav-links a:hover,
-    .nav-links button:hover {
-        color: #ffffff;
-    }
-
-    /* Desktop styles */
-    @media (min-width: 900px) {
-        .hamburger {
-            display: none;
-        }
-        .nav-links {
-            position: static;
-            flex-direction: row;
-            height: auto;
-            width: auto;
-            background: transparent;
-            padding: 0;
-            gap: 1.5rem;
-            transform: none !important;
-            opacity: 1 !important;
-            left: 0 !important;
-        }
-        .nav-links li {
-            opacity: 1 !important;
-            transform: none !important;
-            margin: 0;
-        }
-        .nav-links a,
-        .nav-links button {
-            font-size: 1rem;
-            color: rgb(255, 255, 255);
-            padding: 0;
-        }
-    }
-}
 
 .step-indicator {
     width: 50px;
@@ -573,12 +346,6 @@ input:focus, .code-digit:focus { outline: 3px solid rgba(99,102,241,0.12); outli
   .card-body { padding-left: 0.75rem; padding-right: 0.75rem; }
 }
 
-/* Keep nav/hamburger compatibility */
-@media (max-width: 900px) {
-  .nav-links a, .nav-links button { font-size: 1.05rem; }
-  .hamburger { z-index: 1301; }
-}
-
 /* ===== Responsive improvements for registration page ===== */
 
 /* Make form card use full width on smaller screens and improve paddings */
@@ -792,10 +559,6 @@ input:focus, .code-digit:focus { outline: 3px solid rgba(99,102,241,0.12); outli
     font-size: 0.78rem;
   }
 
-  .nav-links a,
-  .nav-links button {
-    font-size: 1.25rem;
-  }
 
   /* ensure buttons are full width if necessary */
   .d-flex.justify-content-between .btn {
@@ -939,7 +702,7 @@ input:focus, .code-digit:focus { outline: 3px solid rgba(99,102,241,0.12); outli
 /* Very small screens: tighten spacing and hide descriptive text */
 @media (max-width: 480px) {
   .card-header .d-flex.align-items-center.justify-content-between { gap: 6px; padding: 6px 4px; }
-  .card-header .d-flex.align-items-center.justify-content-between > .text-center { min-width: 48px; padding: 4px; max-width: 120px; dis}
+  .card-header .d-flex.align-items-center.justify-content-between > .text-center { min-width: 48px; padding: 4px; max-width: 120px;}
   .card-header .d-flex.align-items-center.justify-content-between .text-center > small,
   .card-header .d-flex.align-items-center.justify-content-between .text-center > .step-label {
     display: none; /* hide descriptions to save horizontal space */
@@ -953,14 +716,7 @@ input:focus, .code-digit:focus { outline: 3px solid rgba(99,102,241,0.12); outli
 .card-header .d-flex.align-items-center.justify-content-between::-webkit-scrollbar { height: 8px; }
 .card-header .d-flex.align-items-center.justify-content-between::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.08); border-radius: 6px; }
 
-/* Prev/Next buttons — compact and mobile-friendly */
-.form-nav {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  align-items: center;
-  margin-top: 18px;
-}
+
 
 /* Button base */
 .prev-btn, .next-btn {
@@ -994,18 +750,7 @@ input:focus, .code-digit:focus { outline: 3px solid rgba(99,102,241,0.12); outli
 
 /* Mobile: fixed bottom control bar with large touch targets */
 @media (max-width: 576px) {
-  .form-nav {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 10px;
-    gap: 8px;
-    justify-content: space-between;
-    background: rgba(255,255,255,0.98);
-    box-shadow: 0 -8px 24px rgba(2,6,23,0.08);
-    z-index: 1400;
-  }
+
   .prev-btn, .next-btn {
     flex: 1 1 0;
     min-width: 0;
@@ -1018,7 +763,7 @@ input:focus, .code-digit:focus { outline: 3px solid rgba(99,102,241,0.12); outli
 
 /* Small screens: make buttons fill available width in inline layout */
 @media (max-width: 768px) {
-  .form-nav { justify-content: space-between; }
   .prev-btn { flex: 0 0 auto; }
   .next-btn { flex: 0 0 auto; }
 }
+
