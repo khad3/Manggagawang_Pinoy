@@ -513,15 +513,37 @@
                     <!-- Saved Jobs Tab -->
                     <div class="tab-pane fade" id="saved" role="tabpanel">
                         <div class="p-4">
-                            <div class="d-flex align-items-center mb-4">
-                                <h4 class="mb-0 fw-bold">
-                                    @if ($retrievedSavedJobs->count() === 1)
-                                        Saved Job ({{ $retrievedSavedJobs->count() }})
-                                    @else
-                                        Saved Jobs ({{ $retrievedSavedJobs->count() }})
-                                    @endif
-                                </h4>
-                                <p class="text-muted mt-1 ms-3">Jobs you've bookmarked for later</p>
+                            <!-- Header -->
+                            <div
+                                class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+                                <div class="d-flex align-items-center gap-3">
+                                    <h4 class="mb-0 fw-bold">
+                                        @if ($retrievedSavedJobs->count() === 1)
+                                            Saved Job ({{ $retrievedSavedJobs->count() }})
+                                        @else
+                                            Saved Jobs ({{ $retrievedSavedJobs->count() }})
+                                        @endif
+                                    </h4>
+                                    <p class="text-muted mt-1 mb-0">Jobs you've bookmarked for later</p>
+                                </div>
+
+                                <!-- 🔹 Filter Section -->
+                                <div class="d-flex gap-2 flex-wrap mt-3 mt-md-0">
+                                    <!-- Search by Title -->
+                                    <input type="text" id="searchJobTitle" class="form-control form-control-sm"
+                                        placeholder="Search by job title" style="max-width: 250px;">
+
+                                    <!-- Filter by Job Type -->
+                                    <select id="filterJobType" class="form-select form-select-sm"
+                                        style="width: 220px;">
+                                        <option value="">All Job Types</option>
+                                        @foreach ($retrievedSavedJobs->pluck('job.job_type')->unique() as $type)
+                                            @if (!empty($type))
+                                                <option value="{{ strtolower($type) }}">{{ ucfirst($type) }}</option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
 
                             <!-- Dynamic Saved Jobs -->
@@ -533,7 +555,8 @@
                                                 class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3 mb-2">
                                                 <h5 class="job-title mb-0">{{ $savedJob->job->title ?? 'No title' }}
                                                 </h5>
-                                                <span class="badge">{{ $savedJob->job->job_type ?? 'N/A' }}</span>
+                                                <span
+                                                    class="badge bg-primary text-light">{{ $savedJob->job->job_type ?? 'N/A' }}</span>
                                             </div>
 
                                             <p class="company-name mb-3">
@@ -541,17 +564,14 @@
                                             </p>
 
                                             <div class="job-details d-flex flex-column flex-md-row gap-3">
-                                                <span>
-                                                    <i class="fas fa-map-marker-alt"></i>
+                                                <span><i class="fas fa-map-marker-alt"></i>
                                                     {{ $savedJob->job->employer->addressCompany->company_municipality ?? 'No location' }}
                                                     {{ $savedJob->job->employer->addressCompany->company_province ?? '' }}
                                                 </span>
-                                                <span>
-                                                    <i class="fas fa-coins"></i>
+                                                <span><i class="fas fa-coins"></i>
                                                     &#8369;{{ $savedJob->job->job_salary ?? 'No salary' }}
                                                 </span>
-                                                <span>
-                                                    <i class="fas fa-calendar"></i>
+                                                <span><i class="fas fa-calendar"></i>
                                                     Posted:
                                                     {{ optional($savedJob->job->created_at)->format('M j, Y') ?? 'N/A' }}
                                                 </span>
@@ -575,11 +595,9 @@
                                                     data-job-description="{{ $savedJob->job->job_description ?? 'No description' }}"
                                                     data-job-addtional-requirements="{{ $savedJob->job->additional_requirements ?? 'N/A' }}"
                                                     data-job-benefits="{{ $savedJob->job->benefits ?? 'N/A' }}">
-
                                                     <i class="fas fa-eye me-1"></i>View Details
                                                 </button>
 
-                                                {{-- CHECK APPLICATION STATUS FOR EACH INDIVIDUAL JOB --}}
                                                 @php
                                                     $alreadyApplied = \App\Models\Applicant\ApplyJobModel::where(
                                                         'job_id',
@@ -623,10 +641,40 @@
                         </div>
                     </div>
 
+
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const jobTypeFilter = document.getElementById('filterJobType');
+            const jobSearchInput = document.getElementById('searchJobTitle');
+            const jobCards = document.querySelectorAll('.job-card');
+
+            function filterJobs() {
+                const selectedType = jobTypeFilter.value.toLowerCase();
+                const searchQuery = jobSearchInput.value.toLowerCase();
+
+                jobCards.forEach(card => {
+                    const jobTypeBadge = card.querySelector('.badge');
+                    const jobType = jobTypeBadge ? jobTypeBadge.textContent.toLowerCase() : '';
+
+                    const jobTitle = card.querySelector('.job-title')?.textContent.toLowerCase() || '';
+
+                    const matchesType = !selectedType || jobType.includes(selectedType);
+                    const matchesTitle = !searchQuery || jobTitle.includes(searchQuery);
+
+                    card.style.display = (matchesType && matchesTitle) ? '' : 'none';
+                });
+            }
+
+            jobTypeFilter.addEventListener('change', filterJobs);
+            jobSearchInput.addEventListener('keyup', filterJobs);
+        });
+    </script>
+
 
     <!-- Cancel Application Modal -->
     <div class="modal fade" id="cancelApplicationModal" tabindex="-1" aria-labelledby="cancelApplicationModalLabel"
