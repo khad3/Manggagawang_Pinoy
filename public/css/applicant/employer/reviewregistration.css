@@ -157,3 +157,18 @@ body {
     margin: 2rem 0;
     padding-top: 2rem;
 }
+
+.btn-primary-custom {
+    background: green;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    color:#ffffff;
+}
+
+.btn-primary-custom:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+}
+

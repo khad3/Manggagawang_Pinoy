@@ -7,37 +7,46 @@
     <title>Review Registration - Employer Registration</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
-    <link href="{{ asset('css/applicant/employer/reviewregistration.css') }}" rel="stylesheet" />
     <link href="{{ asset('css/applicant/landingpage/landingpage.css') }}" rel="stylesheet" />
+    <link href="{{ asset('css/applicant/employer/reviewregistration.css') }}" rel="stylesheet" />
+    
 
 </head>
 
 <body>
-    <nav>
+        <nav>
         <div class="navbar-container">
             <div class="nav-logo d-flex align-items-center">
-                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2"
-                    style="text-decoration:none;">
-                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
-                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" />
+                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2" style="text-decoration:none;">
+                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home"/>
+                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2"/>
                 </a>
             </div>
-            <ul class="nav-links" id="navLinks">
+
+                        <ul class="nav-links" id="navLinks">
                 <li><a href="#">Services</a></li>
                 <li><a href="{{ route('display.topworker') }}">Top Workers</a></li>
                 <li><a href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
                 <li><a href="{{ route('display.aboutus') }}">About Us</a></li>
-                <li><button class="sign-in-b">Sign in</button></li>
+                <li class="dropdown">
+  <button class="sign-in-b">Sign in</button>
+  <ul class="dropdown-menu">
+    <li><a href="{{ route('applicant.login.display') }}">As Applicant</a></li>
+    <li><a href="{{ route('employer.login.display') }}">As Employer</a></li>
+  </ul>
+</li>
 
                 <!-- Sign Up Dropdown -->
                 <li class="dropdown">
-                    <button class="sign-up-b">Sign up ▾</button>
+                    <button class="sign-up-b">Sign up</button>
                     <ul class="dropdown-menu">
                         <li><a href="{{ route('applicant.register.display') }}">As Applicant</a></li>
                         <li><a href="{{ route('employer.register.display') }}">As Employer</a></li>
                     </ul>
                 </li>
             </ul>
+
+
 
             <div class="hamburger" id="hamburger">
                 <div></div>
@@ -46,8 +55,6 @@
             </div>
         </div>
     </nav>
-
-
     <!-- Review Content -->
     <div class="row justify-content-center">
         <div class="col-lg-8">
@@ -72,7 +79,7 @@
                                     <!-- Step 1 -->
                                     <div class="text-center">
                                         <div class="step-indicator step-completed" id="step1">
-                                            <i class="fas fa-check"></i>
+                                           1
                                         </div>
                                         <div class="mt-2">
                                             <small class="fw-semibold text-dark">Job Details</small>
@@ -85,7 +92,7 @@
                                     <!-- Step 2 -->
                                     <div class="text-center">
                                         <div class="step-indicator step-completed" id="step2">
-                                            <i class="fas fa-check"></i>
+                                            2
                                         </div>
                                         <div class="mt-2">
                                             <small class="fw-semibold text-dark">Contact</small>
@@ -97,7 +104,7 @@
                                     <!-- Step 3 -->
                                     <div class="text-center">
                                         <div class="step-indicator step-completed" id="step3">
-                                            <i class="fas fa-check"></i>
+                                           3
                                         </div>
                                         <div class="mt-2">
                                             <small class="fw-semibold text-dark">Preferences</small>
@@ -449,29 +456,30 @@
                             You'll receive an email confirmation and can start
                             receiving worker applications.
                         </div>
+                         <div class="row justify-content-center mt-4">
+                                    <div class="col-lg-8">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <button type="button" class="btn btn-outline-secondary"
+                                                onclick="previousStep()">
+                                                <i class="fas fa-arrow-left me-2"></i>Previous
+                                            </button>
+                                            <small class="text-muted">Step 4 of 4</small>
+                                              <form action="{{ route('employer.sendVerificationEmail') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="account_email" value="{{ $retriedAccountInfo->email }}">
+                                            <button type="submit" class="btn btn-primary-custom"> Submit <i
+                                                    class="fas fa-arrow-right ms-2"></i></button>
+                        
+                        </form>
                     </div>
+                    
                 </div>
             </div>
 
-            <!-- Navigation Buttons -->
-            <div class="row justify-content-center mt-4">
-                <div class="col-lg-8">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <button type="button" class="btn btn-outline-secondary" onclick="previousStep()">
-                            <i class="fas fa-arrow-left me-2"></i>Previous
-                        </button>
-                        <small class="text-muted">Step 4 of 4</small>
-                        <form action="{{ route('employer.sendVerificationEmail') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="account_email" value="{{ $retriedAccountInfo->email }}">
-                            <button type="submit" class="btn btn-success-custom"><i
-                                    class="fas fa-check-circle me-2"></i>Submit Registration </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+        
+    </form>
+</div>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -511,8 +519,34 @@
         }
 
         function previousStep() {
-            window.location.href = "{{ route('employer.reviewregistration.display') }}";
+            window.location.href = "{{ route('employer.hiringpreference.display') }}";
         }
+
+
+                document.addEventListener('DOMContentLoaded', function () {
+            const hamburger = document.getElementById('hamburger');
+            const navLinks = document.getElementById('navLinks');
+
+            if (!hamburger || !navLinks) return;
+
+            hamburger.addEventListener('click', function () {
+                navLinks.classList.toggle('active');
+                hamburger.classList.toggle('active');
+                document.body.classList.toggle('noscroll');
+            });
+
+            // Close menu when any nav link/button is clicked (mobile)
+            navLinks.querySelectorAll('a, button').forEach(link => {
+                link.addEventListener('click', function () {
+                    if (navLinks.classList.contains('active')) {
+                        navLinks.classList.remove('active');
+                        hamburger.classList.remove('active');
+                        document.body.classList.remove('noscroll');
+                    }
+                });
+            });
+        });
+
     </script>
 </body>
 

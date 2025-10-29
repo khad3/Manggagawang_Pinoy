@@ -1,12 +1,11 @@
 :root {
-    --primary-orange: #ea580c;
+    --primary-orange: #020180;
     --primary-red: #dc2626;
-    --light-orange: #fed7aa;
+    --light-orange: #dcdcec;
     --light-red: #fef2f2;
 }
 
 body {
-    background: linear-gradient(135deg, #fff7ed 0%, #ffffff 50%, #fef2f2 100%);
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -41,15 +40,12 @@ body {
 }
 
 .btn-primary-custom {
-    background: linear-gradient(
-        45deg,
-        var(--primary-orange),
-        var(--primary-red)
-    );
+    background: var(--primary-orange);
     border: none;
     padding: 12px 32px;
     border-radius: 8px;
     transition: all 0.3s ease;
+    color: white;
 }
 
 .btn-primary-custom:hover {
@@ -66,25 +62,57 @@ body {
     margin-top: 2rem;
 }
 
-.step-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
-    padding: 1rem;
-    background: var(--light-red);
-    border-radius: 8px;
+/* left column */
+.steps-column {
+  position: relative;
+}
+.steps-inner {
+  position: sticky;
+  top: 90px; /* keeps steps visible while scrolling */
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 12px;
+  background: transparent;
+  border-radius: 10px;
 }
 
-.step-number {
-    width: 30px;
-    height: 30px;
-    background: var(--primary-orange);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    margin-right: 1rem;
-    flex-shrink: 0;
+/* step row: horizontal alignment of circle + labels for clarity */
+.step-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
 }
+
+/* labels beside indicators */
+.step-label small { display: block; color: #6b7280; font-size: 0.92rem; }
+.step-label .fw-semibold { color: #0f172a; font-weight: 700; }
+
+/* narrow vertical connector */
+.step-line {
+  width: 2px;
+  height: 5px;
+  background: linear-gradient(180deg,#eef2ff,#f3f4f6);
+  margin: 0 auto;
+  border-radius: 4px;
+}
+
+/* indicator sizing */
+.step-indicator {
+  width: 46px;
+  height: 46px;
+  min-width:46px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  font-size:1rem;
+  color:#6b7280;
+  background:#fff;
+  border:2px solid rgba(209,213,219,0.9);
+  box-shadow: 0 6px 18px rgba(11,22,60,0.04);
+}
+.step-active { background: var(--primary-orange); border-color: var(--primary-orange); color:#fff; transform: translateY(-2px); }
+.step-completed { background: var(--primary-orange); border-color: var(--primary-orange); color:#fff; }
