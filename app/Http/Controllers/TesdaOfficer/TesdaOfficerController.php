@@ -111,28 +111,33 @@ public function approvedOfficer(Request $request)
 
     $request->validate([
         'status' => 'required|string|in:approved,rejected,request_revision',
-        'officer_comment' => 'nullable|string', // Made required since form has required
+        'officer_comment' => 'nullable|string',
         'application_id' => 'required|integer|exists:tesda_upload_certification,id', 
     ]);
 
     try {
         $certification = TesdaUploadCertificationModel::findOrFail($request->application_id);
 
-        // Use fill() method or update() to ensure fillable attributes are respected
         $certification->fill([
             'status' => $request->status,
             'officer_comment' => $request->officer_comment,
             'approved_by' => $tesda_officer_id,
         ]);
-        
         $certification->save();
 
-        // Alternative approach using update()
-        // $certification->update([
-        //     'status' => $request->status,
-        //     'officer_comment' => $request->officer_comment,
-        //     'approved_by' => $tesda_officer_id,
-        // ]);
+        // 🔔 Send notification to the applicant
+        $notification = new \App\Models\Notification\NotificationModel();
+        $notification->type = 'applicant';
+        $notification->type_id = $certification->applicant_id; // recipient
+        $notification->title = 'Certification Review';
+        $statusMessage = [
+            'approved' => 'Your certification has been approved.',
+            'rejected' => 'Your certification has been rejected.',
+            'request_revision' => 'Your certification requires revision.',
+        ];
+        $notification->message = $statusMessage[$request->status] ?? 'Your certification status has been updated.';
+        $notification->is_read = false;
+        $notification->save();
 
         return redirect()->back()->with('success', 'Review sent successfully.');
 
@@ -141,6 +146,7 @@ public function approvedOfficer(Request $request)
         return redirect()->back()->with('error', 'Failed to save review. Please try again.');
     }
 }
+
 
 
 public function deleteOfficerReview(Request $request)

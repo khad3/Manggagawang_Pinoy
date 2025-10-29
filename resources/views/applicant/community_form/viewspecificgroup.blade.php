@@ -108,7 +108,14 @@
                                 {{ $group->personalInfo->last_name ?? '' }}</strong></span>
                         <span>🔒 <span
                                 class="badge {{ $group->privacy === 'public' ? 'bg-light text-dark' : 'bg-dark' }}">{{ ucfirst($group->privacy) }}</span></span>
-                        <span>👥 <strong>{{ $group->members_count }} Members</strong></span>
+                        <span>👥 <strong>
+                                @php
+                                    $totalMembers = $group->members_count + 1; // include the creator
+                                @endphp
+                                {{ $totalMembers }}
+                                {{ $totalMembers === 1 ? 'Member' : 'Members' }}
+                            </strong></span>
+
                     </div>
                 </div>
                 <div>

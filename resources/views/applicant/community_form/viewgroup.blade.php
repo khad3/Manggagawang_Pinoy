@@ -339,8 +339,14 @@
                     {{-- Statistics --}}
                     <div class="group-stats">
                         <div class="stat-item">
+                            @php
+                                $totalMembers = $group->members_count + 1;
+                            @endphp
+
                             <span>👥</span>
-                            <span><span class="stat-value">{{ $group->members_count }}</span> members</span>
+                            <span><span class="stat-value">{{ $totalMembers }}</span>
+                                {{ $totalMembers === 1 ? 'Member' : 'Members' }}</span>
+
                         </div>
                         <div class="stat-item">
                             <span>{{ $group->privacy === 'public' ? '🌐' : '🔒' }}</span>
