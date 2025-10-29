@@ -113,7 +113,25 @@ class CommunityForumController extends Controller
         }
     }
 
-        return view('applicant.community_form.forums', compact('posts', 'categories' , 'retrievedDecryptedPersonalInfo' , 'retrievedDecryptedWorkBackground'));
+
+    //retrieve the pending and unread notifications and add friend requests
+   
+    $friendRequests = AddFriend::where('receiver_id', $currentApplicantId)->where('status', 'pending')->count();
+
+    $pendingJoinGroupRequests = GroupJoinRequest::where('status', 'pending')
+    ->whereHas('group', function ($query) use ($currentApplicantId) {
+        // Only include groups owned by the logged-in applicant
+        $query->where('applicant_id', $currentApplicantId);
+    })
+    ->where('applicant_id', '!=', $currentApplicantId) // exclude self (the owner)
+    ->count();
+
+    
+    $unreadMessagesCount = SendMessage::where('receiver_id', $currentApplicantId)
+    ->where('is_read', false) // or 0, depending on your database column type
+    ->count();
+
+        return view('applicant.community_form.forums', compact('posts', 'categories' , 'retrievedDecryptedPersonalInfo' , 'retrievedDecryptedWorkBackground' , 'friendRequests' , 'pendingJoinGroupRequests' , 'unreadMessagesCount'));
     }
 
 
@@ -449,11 +467,18 @@ class CommunityForumController extends Controller
 
 
     //View list of group forum kumabaga ito yung display
-    public function DisplayGroupForum(){
+  public function DisplayGroupForum()
+{
     $applicant_id = session('applicant_id');
 
     $listOfGroups = Group::with(['members', 'personalInfo'])
-        ->withCount('members')
+        ->withCount([
+            'members',
+            // ✅ count only pending members for each group
+            'members as pending_members_count' => function ($query) {
+                $query->where('group_participants.status', 'pending');
+            },
+        ])
         ->orderByDesc('created_at')
         ->get();
 
@@ -464,18 +489,18 @@ class CommunityForumController extends Controller
             $group->personalInfo->last_name  = $this->safe_decrypt($group->personalInfo->last_name);
         }
 
-        //  Membership status for this specific group
         $membership = $group->members->firstWhere('id', $applicant_id);
 
         if ($membership) {
-            $group->membershipStatus = $membership->pivot->status; // 'pending', 'approved', 'rejected'
+            $group->membershipStatus = $membership->pivot->status;
         } else {
-            $group->membershipStatus = null; // not a member yet
+            $group->membershipStatus = null;
         }
     }
 
     return view('applicant.community_form.viewgroup', compact('listOfGroups', 'applicant_id'));
 }
+
 
 
     //For request and join group forum

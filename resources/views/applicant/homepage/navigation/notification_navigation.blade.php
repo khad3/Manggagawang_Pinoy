@@ -1,6 +1,6 @@
 <!-- 🔔 Notifications Dropdown -->
 <div class="nav-dropdown">
-    <button class="nav-icon" onclick="toggleDropdown('notificationsDropdown')">
+    <button class="nav-icon" onclick="toggleDropdown('notificationsDropdown')" title="notification">
         <i class="bi bi-bell"></i>
 
         @php

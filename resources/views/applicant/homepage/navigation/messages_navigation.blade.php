@@ -1,8 +1,9 @@
  <!-- Messages Dropdown -->
  <div class="nav-dropdown">
-     <button class="nav-icon" onclick="toggleDropdown('messagesDropdown')">
+     <button class="nav-icon" onclick="toggleDropdown('messagesDropdown')" title="messages">
          <i class="bi bi-chat-dots"></i>
-         <span class="nav-badge" id="messagesBadge">{{ $messages->where('status', 'unread')->count() }}</span>
+         <span class="nav-badge"
+             id="messagesBadge">{{ $messages->where('sender_type', 'employer')->where('is_read', 0)->count() }}</span>
      </button>
 
      <div class="dropdown-menu" id="messagesDropdown">
@@ -17,7 +18,10 @@
                  @forelse($messages->groupBy('employer_id') as $employerId => $employerMessages)
                      @php
                          $employer = $employerMessages->first()->employer;
-                         $unreadCount = $employerMessages->where('status', 'unread')->count();
+                         $unreadCount = $employerMessages
+                             ->where('sender_type', 'employer')
+                             ->where('is_read', 0)
+                             ->count();
                          $lastMessage = $employerMessages->sortByDesc('created_at')->first();
                          $totalMessages = $employerMessages->count();
                      @endphp

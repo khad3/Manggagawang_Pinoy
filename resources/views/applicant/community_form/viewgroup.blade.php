@@ -38,48 +38,289 @@
             <a href="{{ route('applicant.forum.viewgroupcreator.display') }}" class="btn btn-success btn-custom">View My
                 Created Groups</a>
         </div>
-        <div id="groupsContainer">
+        <style>
+            .group-card {
+                background: #ffffff;
+                border-radius: 12px;
+                border: 1px solid #e5e7eb;
+                padding: 1.75rem;
+                margin-bottom: 1.5rem;
+                transition: box-shadow 0.2s ease, border-color 0.2s ease;
+            }
+
+            .group-card:hover {
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                border-color: #d1d5db;
+            }
+
+            .group-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: start;
+                margin-bottom: 1.25rem;
+                padding-bottom: 1rem;
+                border-bottom: 1px solid #f3f4f6;
+            }
+
+            .group-name {
+                font-size: 1.4rem;
+                font-weight: 600;
+                color: #111827;
+                margin-bottom: 0.5rem;
+            }
+
+            .creator-info {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                color: #6b7280;
+                font-size: 0.9rem;
+            }
+
+            .creator-badge {
+                background: #f3f4f6;
+                padding: 0.25rem 0.75rem;
+                border-radius: 6px;
+                font-weight: 500;
+                color: #374151;
+            }
+
+            .pending-alert {
+                background: #fef3c7;
+                border-left: 3px solid #f59e0b;
+                padding: 0.75rem 1rem;
+                border-radius: 6px;
+                margin-bottom: 1.25rem;
+                color: #92400e;
+                font-size: 0.9rem;
+                font-weight: 500;
+            }
+
+            .group-stats {
+                display: flex;
+                gap: 2rem;
+                margin-bottom: 1.25rem;
+                padding: 1rem;
+                background: #f9fafb;
+                border-radius: 8px;
+            }
+
+            .stat-item {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                color: #374151;
+                font-size: 0.95rem;
+            }
+
+            .stat-value {
+                font-weight: 600;
+                color: #111827;
+            }
+
+            .group-description {
+                margin-bottom: 1.25rem;
+            }
+
+            .description-label {
+                font-size: 0.85rem;
+                font-weight: 600;
+                color: #6b7280;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 0.5rem;
+            }
+
+            .description-text {
+                color: #4b5563;
+                line-height: 1.6;
+                font-size: 0.95rem;
+            }
+
+            .group-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-top: 1rem;
+                border-top: 1px solid #f3f4f6;
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .privacy-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.4rem;
+                padding: 0.4rem 0.9rem;
+                border-radius: 6px;
+                font-size: 0.85rem;
+                font-weight: 500;
+            }
+
+            .badge-public {
+                background: #d1fae5;
+                color: #065f46;
+            }
+
+            .badge-private {
+                background: #fef3c7;
+                color: #92400e;
+            }
+
+            .timestamp {
+                color: #9ca3af;
+                font-size: 0.85rem;
+            }
+
+            .btn-clean {
+                padding: 0.6rem 1.25rem;
+                border-radius: 8px;
+                font-size: 0.9rem;
+                font-weight: 500;
+                border: none;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                text-decoration: none;
+                display: inline-block;
+            }
+
+            .btn-primary {
+                background: #3b82f6;
+                color: white;
+            }
+
+            .btn-primary:hover {
+                background: #2563eb;
+                color: white;
+            }
+
+            .btn-warning {
+                background: #f59e0b;
+                color: white;
+            }
+
+            .btn-warning:hover {
+                background: #d97706;
+                color: white;
+            }
+
+            .btn-success {
+                background: #10b981;
+                color: white;
+            }
+
+            .btn-success:hover {
+                background: #059669;
+                color: white;
+            }
+
+            .btn-secondary {
+                background: #e5e7eb;
+                color: #6b7280;
+                cursor: not-allowed;
+            }
+
+            .btn-danger-disabled {
+                background: #fee2e2;
+                color: #dc2626;
+                cursor: not-allowed;
+            }
+
+            .dropdown-toggle-clean {
+                background: white;
+                border: 1px solid #d1d5db;
+                color: #374151;
+                padding: 0.5rem 1rem;
+                border-radius: 6px;
+                font-size: 0.9rem;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            .dropdown-toggle-clean:hover {
+                background: #f9fafb;
+                border-color: #9ca3af;
+            }
+
+            .dropdown-menu {
+                border-radius: 8px;
+                border: 1px solid #e5e7eb;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            }
+
+            .dropdown-item {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            #groupsContainer {
+                max-width: 1100px;
+                margin: 0 auto;
+            }
+
+            @media (max-width: 768px) {
+                .group-stats {
+                    flex-direction: column;
+                    gap: 0.75rem;
+                }
+
+                .group-footer {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+
+                .btn-clean {
+                    width: 100%;
+                    text-align: center;
+                }
+            }
+        </style>
+
+        <div id="groupsContainer" class="mt-3">
             @foreach ($listOfGroups as $group)
-                <div class="post-card mb-4">
-                    <div class="post-header d-flex justify-content-between align-items-start">
+                @php
+                    $membership = $group->members->firstWhere('id', $applicant_id);
+                    $membershipStatus = $membership?->pivot->status ?? null;
+                    $isMember = $membershipStatus === 'approved';
+                    $isPending = $membershipStatus === 'pending';
+                    $isRejected = $membershipStatus === 'rejected';
+                    $isCreator = $group->applicant_id == $applicant_id;
+                @endphp
+
+                <div class="group-card">
+                    {{-- Header Section --}}
+                    <div class="group-header">
                         <div>
                             <div class="group-name">{{ $group->group_name }}</div>
-                            <div class="post-meta">
-                                @if ($group->personalInfo)
-                                    @if ($group->applicant_id == session('applicant_id'))
-                                        <p>Created by: <strong>You</strong></p>
-                                    @else
-                                        <p>Created by: <strong>{{ $group->personalInfo->first_name }}
-                                                {{ $group->personalInfo->last_name }}</strong></p>
-                                    @endif
-                                    <p>Applicants Joined: <strong>{{ $group->members_count }}</strong></p>
-                                @else
-                                    <span class="text-muted">Creator not available</span>
+                            <div class="creator-info">
+                                @if ($isCreator)
+                                    <span>Created by</span>
+                                    <span class="creator-badge">You</span>
+                                @elseif ($group->personalInfo)
+                                    <span>Created by</span>
+                                    <strong>{{ $group->personalInfo->first_name }}
+                                        {{ $group->personalInfo->last_name }}</strong>
                                 @endif
-                                <span>{{ $group->created_at->diffForHumans() }}</span>
                             </div>
                         </div>
 
-                        {{-- 🔹 Only show dropdown if user is creator --}}
-                        @if ($group->applicant_id == session('applicant_id'))
+                        {{-- Actions Dropdown for Creator --}}
+                        @if ($isCreator)
                             <div class="dropdown">
-                                <button class="btn btn-sm btn-light dropdown-toggle" type="button"
+                                <button class="dropdown-toggle-clean" type="button"
                                     id="groupActionsDropdown{{ $group->id }}" data-bs-toggle="dropdown"
                                     aria-expanded="false">
                                     Actions
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="groupActionsDropdown{{ $group->id }}">
+                                    <li><a class="dropdown-item" href="#">Edit Group</a></li>
                                     <li>
-                                        <a class="dropdown-item" href="">
-                                            ✏️ Edit
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <form action="" method="POST"
+                                        <form action="#" method="POST"
                                             onsubmit="return confirm('Are you sure you want to delete this group?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button class="dropdown-item text-danger" type="submit">❌ Delete</button>
+                                            <button class="dropdown-item text-danger" type="submit">Delete
+                                                Group</button>
                                         </form>
                                     </li>
                                 </ul>
@@ -87,65 +328,82 @@
                         @endif
                     </div>
 
-                    <div class="post-body">
-                        <div class="post-title">Description</div>
-                        <div class="post-content mb-3">{{ $group->group_description }}</div>
+                    {{-- Pending Requests Alert --}}
+                    @if ($isCreator && $group->pending_members_count > 0)
+                        <div class="pending-alert">
+                            {{ $group->pending_members_count }} pending join
+                            request{{ $group->pending_members_count > 1 ? 's' : '' }}
+                        </div>
+                    @endif
 
-                        @php
-                            // 🔹 Membership logic per group
-                            $membership = $group->members->firstWhere('id', $applicant_id);
-                            $membershipStatus = $membership?->pivot->status ?? null;
+                    {{-- Statistics --}}
+                    <div class="group-stats">
+                        <div class="stat-item">
+                            <span>👥</span>
+                            <span><span class="stat-value">{{ $group->members_count }}</span> members</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>{{ $group->privacy === 'public' ? '🌐' : '🔒' }}</span>
+                            <span><span class="stat-value">{{ ucfirst($group->privacy) }}</span> group</span>
+                        </div>
+                    </div>
 
-                            $isMember = $membershipStatus === 'approved';
-                            $isPending = $membershipStatus === 'pending';
-                            $isRejected = $membershipStatus === 'rejected';
-                            $isCreator = $group->applicant_id == $applicant_id;
-                        @endphp
+                    {{-- Description --}}
+                    <div class="group-description">
+                        <div class="description-label">Description</div>
+                        <div class="description-text">
+                            {{ $group->group_description ?? 'No description provided.' }}
+                        </div>
+                    </div>
 
-                        <div class="d-flex justify-content-between align-items-center">
+                    {{-- Footer --}}
+                    <div class="group-footer">
+                        <div class="d-flex align-items-center gap-3">
                             <span
-                                class="badge {{ $group->privacy === 'public' ? 'bg-success' : 'bg-info text-dark' }}">
+                                class="privacy-badge {{ $group->privacy === 'public' ? 'badge-public' : 'badge-private' }}">
+                                {{ $group->privacy === 'public' ? '🌐' : '🔒' }}
                                 {{ ucfirst($group->privacy) }}
                             </span>
+                            <span class="timestamp">{{ $group->created_at->diffForHumans() }}</span>
+                        </div>
 
-                            <div class="d-flex gap-2">
-                                {{-- Not a member, no pending request, not rejected, not creator --}}
-                                @if (!$isMember && !$isPending && !$isRejected && !$isCreator)
-                                    <form method="POST" action="{{ route('applicant.forum.joingroup.store') }}">
-                                        @csrf
-                                        <input type="hidden" name="group_id" value="{{ $group->id }}">
-                                        <button type="submit"
-                                            class="btn btn-{{ $group->privacy === 'public' ? 'primary' : 'warning' }} btn-custom">
-                                            {{ $group->privacy === 'public' ? 'Join Group' : 'Request to Join' }}
-                                        </button>
-                                    </form>
-                                @endif
-
-                                {{-- Pending request --}}
-                                @if ($isPending)
-                                    <button class="btn btn-secondary btn-custom" disabled>
-                                        ⏳ Request Pending — Awaiting Creator's Approval
+                        <div class="d-flex gap-2">
+                            {{-- Join button logic --}}
+                            @if (!$isMember && !$isPending && !$isRejected && !$isCreator)
+                                <form method="POST" action="{{ route('applicant.forum.joingroup.store') }}">
+                                    @csrf
+                                    <input type="hidden" name="group_id" value="{{ $group->id }}">
+                                    <button type="submit"
+                                        class="btn-clean btn-{{ $group->privacy === 'public' ? 'primary' : 'warning' }}">
+                                        {{ $group->privacy === 'public' ? 'Join Group' : 'Request to Join' }}
                                     </button>
-                                @endif
+                                </form>
+                            @endif
 
-                                {{-- Rejected request --}}
-                                @if ($isRejected)
-                                    <button class="btn btn-danger btn-custom" disabled>
-                                        ❌ Your request to join this group was declined by the creator.
-                                    </button>
-                                @endif
+                            @if ($isPending)
+                                <button class="btn-clean btn-secondary" disabled>
+                                    Request Pending
+                                </button>
+                            @endif
 
-                                {{-- Approved member or creator --}}
-                                @if ($isMember || $isCreator)
-                                    <a href="{{ route('applicant.forum.joinedgroup.display', $group->id) }}"
-                                        class="btn btn-success btn-custom">View Group</a>
-                                @endif
-                            </div>
+                            @if ($isRejected)
+                                <button class="btn-clean btn-danger-disabled" disabled>
+                                    Request Declined
+                                </button>
+                            @endif
+
+                            @if ($isMember || $isCreator)
+                                <a href="{{ route('applicant.forum.joinedgroup.display', $group->id) }}"
+                                    class="btn-clean btn-success">
+                                    View Group
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>
             @endforeach
         </div>
+
 
 
     </div>

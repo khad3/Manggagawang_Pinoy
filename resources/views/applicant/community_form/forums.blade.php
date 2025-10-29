@@ -33,15 +33,40 @@
                         <a href="{{ route('applicant.forum.groupcommunity.display') }}" class="nav-btn">
                             <span class="nav-icon">👥</span>
                             View Groups
+
+                            {{--  Friend Request Badge --}}
+                            @if ($pendingJoinGroupRequests > 0)
+                                <span
+                                    class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill">
+                                    {{ $pendingJoinGroupRequests }}
+                                </span>
+                            @endif
+
                         </a>
                         <a href="{{ route('applicant.forum.group.display') }}" class="nav-btn">
                             <span class="nav-icon">➕</span>
                             Create Group
                         </a>
-                        <a href="{{ route('applicant.forum.viewfriendlist.display') }}" class="nav-btn">
+                        <a href="{{ route('applicant.forum.viewfriendlist.display') }}"
+                            class="nav-btn position-relative">
                             <span class="nav-icon">👫</span>
                             View Friends
+
+                            {{-- Combined Notification Badge --}}
+                            @php
+                                $totalNotifications = $friendRequests + $unreadMessagesCount;
+                            @endphp
+
+                            @if ($totalNotifications > 0)
+                                <span
+                                    class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill">{{ $totalNotifications }}</span>
+                            @endif
+
+
+
+
                         </a>
+
                     </div>
                 </nav>
             </div>

@@ -42,10 +42,22 @@
 
                 <!-- Navigation Actions -->
                 <div class="nav-actions">
-                    <a href="{{ route('applicant.forum.display') }}">
-                        <button class="nav-icon">
+                    <a href="{{ route('applicant.forum.display') }}" title="Community Forum">
+                        <button class="nav-icon position-relative">
                             <i class="bi bi-people"></i>
-                        </button></a>
+
+                            {{-- Combined Notification Badge --}}
+                            @php
+                                $totalNotifications =
+                                    $friendRequests + $pendingJoinGroupRequests + $unreadMessagesCount;
+                            @endphp
+
+                            @if ($totalNotifications > 0)
+                                <span class="nav-badge" id="notificationsBadge">{{ $totalNotifications }}</span>
+                            @endif
+                        </button>
+                    </a>
+
 
                     <!-- Messages Dropdown -->
 
@@ -58,7 +70,7 @@
 
                     <!-- Profile Dropdown -->
                     <div class="nav-dropdown">
-                        <button class="profile-pic" onclick="toggleDropdown('profileDropdown')">
+                        <button class="profile-pic" onclick="toggleDropdown('profileDropdown')" title="main menu">
                             {{ strtoupper(substr($retrieveDataDecrypted['first_name'], 0, 1)) }}
                             {{ strtoupper(substr($retrieveDataDecrypted['last_name'], 0, 1)) }}
                         </button>
@@ -303,6 +315,15 @@
                                                     )
                                                         ->where('job_post_id', $jobDetail->id)
                                                         ->first();
+
+                                                    //Show this rate button who accepts the job
+                                                    $isJobAccepted = \App\Models\Applicant\ApplyJobModel::where(
+                                                        'job_id',
+                                                        $jobDetail->id,
+                                                    )
+                                                        ->where('applicant_id', $applicantId)
+                                                        ->where('status', 'approved')
+                                                        ->first();
                                                 @endphp
 
                                                 @if ($applicantRating)
@@ -312,7 +333,7 @@
                                                         <i class="bi bi-star-fill text-warning"></i>
                                                         <span>You already rated this job</span>
                                                     </button>
-                                                @else
+                                                @elseif($isJobAccepted)
                                                     <button class="btn btn-outline-warning btn-sm rate-job-btn"
                                                         data-job-id="{{ $jobDetail->id }}"
                                                         data-title="{{ $jobDetail->title }}"

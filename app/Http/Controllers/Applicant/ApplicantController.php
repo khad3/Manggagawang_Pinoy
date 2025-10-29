@@ -882,7 +882,27 @@ $messages = EmployerSendMessage::with(['employer.addressCompany', 'employer.pers
      //if applicant did rating to job post
      $applicantRating = \App\Models\Applicant\SendRatingToJobPostModel::where('applicant_id', $applicantId)->get();
    
+
+      //retrieve the pending and unread notifications and add friend requests
+   
+    $friendRequests = AddFriend::where('receiver_id', $applicantId)->where('status', 'pending')->count();
+
+    $pendingJoinGroupRequests = \App\Models\Applicant\ParticipantModel::where('status', 'pending')
+    ->whereHas('group', function ($query) use ($applicantId) {
+        // Only include groups owned by the logged-in applicant
+        $query->where('applicant_id', $applicantId);
+    })
+    ->where('applicant_id', '!=', $applicantId) // exclude self (the owner)
+    ->count();
+
+    $unreadMessagesCount = SendMessage::where('receiver_id', $applicantId)
+    ->where('is_read', false) // or 0, depending on your database column type
+    ->count();
+
     return view('applicant.homepage.homepage', compact(
+        'unreadMessagesCount',
+        'pendingJoinGroupRequests',
+        'friendRequests',
         'applicantRating',
         'notificationRetrieve',
         'retrieveRating',
