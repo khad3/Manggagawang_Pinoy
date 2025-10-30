@@ -310,29 +310,25 @@
             box-shadow: 0 20px 50px rgba(2, 1, 128, 0.15);
         }
 
-        .member-avatar {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            margin: 0 auto 1.5rem;
-            background: linear-gradient(135deg, #020180, #678fff);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            color: white;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
+.member-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 15px; /* centers and spaces below */
+    position: relative;
+}
 
-        .member-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 50%;
-        }
+.member-avatar img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    object-position: center 20%; /* move image down; adjust % as needed */
+}
+
 
         .member-name {
             font-size: 1.5rem;
@@ -683,25 +679,34 @@
     <nav>
         <div class="navbar-container">
             <div class="nav-logo">
-                <a href="{{ route('display.index') }}"><img src="img/logo.png" alt="MP Logo" id="home2" /></a>
+                  <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2"
+                    style="text-decoration:none;">
+                <img src="img/logotext.png" alt="MP Logo" id="home" /></a>
+                <img src="img/logo.png" alt="MP Logo" id="home2" />
+            
             </div>
             <ul class="nav-links" id="navLinks">
                 <li><a href="#">Services</a></li>
                 <li><a href="{{ route('display.topworker') }}">Top Workers</a></li>
                 <li><a href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
                 <li><a href="{{ route('display.aboutus') }}">About Us</a></li>
-                <li><button class="sign-in-b">Sign in</button></li>
-
-                <!-- Sign Up Dropdown -->
+                <li class="dropdown">
+                <button class="sign-in-b">Sign in</button>
+                <ul class="dropdown-menu">
+                        <li><a href="{{ route('applicant.login.display') }}">As Applicant</a></li>
+                        <li><a href="{{ route('employer.login.display') }}">As Employer</a></li>
+                    </ul>
+                </li>
                 <!-- Sign Up Dropdown -->
                 <li class="dropdown">
-                    <button class="sign-up-b">Sign up ▾</button>
+                    <button class="sign-up-b">Sign up </button>
                     <ul class="dropdown-menu">
                         <li><a href="{{ route('applicant.register.display') }}">As Applicant</a></li>
                         <li><a href="{{ route('employer.register.display') }}">As Employer</a></li>
                     </ul>
                 </li>
             </ul>
+
 
             <div class="hamburger" id="hamburger">
                 <div></div>
@@ -735,15 +740,15 @@
         <!-- Stats Section -->
         <section class="stats-section">
             <div class="stat-card">
-                <span class="stat-number">6</span>
+                <span class="stat-number">5</span>
                 <div class="stat-label">Team Members</div>
             </div>
             <div class="stat-card">
-                <span class="stat-number">8</span>
+                <span class="stat-number">6</span>
                 <div class="stat-label">Months Development</div>
             </div>
             <div class="stat-card">
-                <span class="stat-number">15+</span>
+                <span class="stat-number">10+</span>
                 <div class="stat-label">Technologies Used</div>
             </div>
             <div class="stat-card">
@@ -758,81 +763,16 @@
             <div class="team-grid">
                 <div class="team-member">
                     <div class="member-avatar">
-                        <span>AL</span>
+                        <span><img src="{{ asset('img/xander formal.png') }}" alt="Alexander Bataller" style="margin-top: 90px;">
+</span>
                     </div>
-                    <h3 class="member-name">Alexander Lopez</h3>
-                    <p class="member-role">Project Lead & Full-Stack Developer</p>
-                    <p class="member-description">Leading the development team with expertise in system architecture and
-                        project management. Responsible for coordinating team efforts and ensuring project milestones
-                        are met while maintaining code quality standards.</p>
-                    <div class="member-skills">
-                        <span class="skill-tag">Laravel</span>
-                        <span class="skill-tag">JavaScript</span>
-                        <span class="skill-tag">Project Management</span>
-                        <span class="skill-tag">MySQL</span>
-                    </div>
-                </div>
-
-                <div class="team-member">
-                    <div class="member-avatar">
-                        <span>MR</span>
-                    </div>
-                    <h3 class="member-name">Maria Rodriguez</h3>
-                    <p class="member-role">UI/UX Designer & Frontend Developer</p>
-                    <p class="member-description">Crafting intuitive and engaging user experiences for our platform.
-                        Specializes in responsive design and user interface development, ensuring our application is
-                        both beautiful and functional across all devices.</p>
-                    <div class="member-skills">
-                        <span class="skill-tag">Figma</span>
-                        <span class="skill-tag">CSS/SCSS</span>
-                        <span class="skill-tag">Vue.js</span>
-                        <span class="skill-tag">User Research</span>
-                    </div>
-                </div>
-
-                <div class="team-member">
-                    <div class="member-avatar">
-                        <span>JS</span>
-                    </div>
-                    <h3 class="member-name">James Santos</h3>
-                    <p class="member-role">Backend Developer & Database Architect</p>
-                    <p class="member-description">Building robust server-side architecture and designing efficient
-                        database structures. Focuses on creating scalable APIs and ensuring data security for our
-                        job-matching platform.</p>
-                    <div class="member-skills">
-                        <span class="skill-tag">PHP</span>
-                        <span class="skill-tag">MySQL</span>
-                        <span class="skill-tag">API Development</span>
-                        <span class="skill-tag">Server Management</span>
-                    </div>
-                </div>
-
-                <div class="team-member">
-                    <div class="member-avatar">
-                        <span>AC</span>
-                    </div>
-                    <h3 class="member-name">Anna Chen</h3>
-                    <p class="member-role">AR Developer & Mobile Specialist</p>
-                    <p class="member-description">Implementing cutting-edge augmented reality features for worker
-                        portfolios. Specializes in mobile development and AR integration, bringing innovative
-                        visualization to our platform.</p>
-                    <div class="member-skills">
-                        <span class="skill-tag">Unity</span>
-                        <span class="skill-tag">AR Foundation</span>
-                        <span class="skill-tag">C#</span>
-                        <span class="skill-tag">Mobile Dev</span>
-                    </div>
-                </div>
-
-                <div class="team-member">
-                    <div class="member-avatar">
-                        <span>RG</span>
-                    </div>
-                    <h3 class="member-name">Roberto Garcia</h3>
+                    <h3 class="member-name">Alexander Bataller</h3>
                     <p class="member-role">Quality Assurance & Testing Lead</p>
-                    <p class="member-description">Ensuring our platform meets the highest quality standards through
-                        comprehensive testing strategies. Responsible for bug tracking, performance testing, and user
-                        acceptance testing protocols.</p>
+                    <p class="member-description">Quality Assurance Lead specializing in web app testing and automation. 
+                        I ensure seamless user experiences by delivering reliable, bug-free applications through 
+                        expert test strategies.
+
+</p>
                     <div class="member-skills">
                         <span class="skill-tag">Test Automation</span>
                         <span class="skill-tag">Selenium</span>
@@ -843,20 +783,69 @@
 
                 <div class="team-member">
                     <div class="member-avatar">
-                        <span>ST</span>
+                        <span> <span><img src="{{ asset('img/paw formal.png') }}" alt="Rogelio Cerenado Jr." style="margin-top: 40px;">
+</span>
                     </div>
-                    <h3 class="member-name">Sofia Torres</h3>
-                    <p class="member-role">Research Analyst & Documentation Specialist</p>
-                    <p class="member-description">Conducting comprehensive market research and maintaining detailed
-                        project documentation. Ensures our solution is research-backed and well-documented for future
-                        development and maintenance.</p>
+                    <h3 class="member-name">Rogelio Cerenado Jr.</h3>
+                    <p class="member-role">Full-Stack Developer & Database Architect</p>
+                    <p class="member-description">Skilled full-stack developer and database architect 
+                        delivering scalable web apps and optimized data solutions. Passionate about clean code, performance, and innovation.</p>
                     <div class="member-skills">
-                        <span class="skill-tag">Market Research</span>
-                        <span class="skill-tag">Technical Writing</span>
-                        <span class="skill-tag">Data Analysis</span>
-                        <span class="skill-tag">Documentation</span>
+                        <span class="skill-tag">Hostinger</span>
+                        <span class="skill-tag">MySQL</span>
+                        <span class="skill-tag">API Development</span>
+                        <span class="skill-tag">Laravel</span>
                     </div>
                 </div>
+
+                <div class="team-member">
+                    <div class="member-avatar">
+                        <span><img src="{{ asset('img/prins formal.png') }}" alt="Prince Robie Dimas" style="width:180%; position:absolute; left: -40%; top: -65%;"></span>
+                    </div>
+                    <h3 class="member-name">Prince Robie Dimas</h3>
+                    <p class="member-role">Researcher & Testing</p>
+                    <p class="member-description">Dedicated researcher and tester committed to ensuring quality and accuracy. Expert in analyzing data, identifying issues, 
+                        and validating solutions to support informed decisions and high-quality outcomes.</p>
+                    <div class="member-skills">
+                        <span class="skill-tag">ChatGPT</span>
+                        <span class="skill-tag">Microsoft Workspace</span>
+                        <span class="skill-tag">Test automation</span>
+                        <span class="skill-tag">Perfomance Testing</span>
+                    </div>
+                </div>
+
+                <div class="team-member">
+                    <div class="member-avatar">
+                        <span><img src="{{ asset('img/carlo formal.png') }}" alt="John Carlo Saulog" style="width:150%; position:absolute; left: -25%; top: -40%;"></span>
+                    </div>
+                    <h3 class="member-name">John Carlo Saulog</h3>
+                    <p class="member-role">Researcher & Writer</p>
+                    <p class="member-description">Detail-oriented research and writer specializing in clear, accurate project documentation. Skilled at gathering information, creating comprehensive reports, and ensuring 
+                        effective communication throughout the project lifecycle.</p>
+                    <div class="member-skills">
+                        <span class="skill-tag">ChatGPT</span>
+                        <span class="skill-tag">Microsoft Workspace</span>
+                        <span class="skill-tag">Google</span>
+                        <span class="skill-tag">Google Scholar</span>
+                    </div>
+                </div>
+
+                <div class="team-member">
+                    <div class="member-avatar">
+                        <span><img src="{{ asset('img/khad formal.png') }}" alt="Khadley Cyle Wong" style="width:130%; position:absolute; left: -15%; top: -60%;"></span>
+                    </div>
+                    <h3 class="member-name">Khadley Cyle Wong</h3>
+                    <p class="member-role">UI/UX Designer & Frontend Developer</p>
+                    <p class="member-description">Creative UI/UX designer and frontend developer crafting intuitive, visually engaging web experiences. Skilled in blending design and code 
+                        to build responsive, user-centered interfaces that delight and perform</p>
+                    <div class="member-skills">
+                        <span class="skill-tag">Figma</span>
+                        <span class="skill-tag">CSS/SCSS</span>
+                        <span class="skill-tag">Javascript</span>
+                        <span class="skill-tag">User Research</span>
+                    </div>
+                </div>
+
             </div>
         </section>
 
@@ -948,6 +937,45 @@
                 behavior: 'smooth'
             });
         });
+
+        document.querySelectorAll('.dropdown button').forEach(btn => {
+  btn.addEventListener('click', e => {
+    const dropdown = btn.closest('.dropdown');
+    const isActive = dropdown.classList.contains('active');
+    
+    // close any open popups first
+    document.querySelectorAll('.dropdown.active').forEach(d => d.classList.remove('active'));
+
+    // toggle the current one
+    if (!isActive) dropdown.classList.add('active');
+  });
+});
+
+// close popup when clicking outside or close button
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('dropdown-menu')) {
+    e.target.closest('.dropdown').classList.remove('active');
+  }
+});
+
+
+      // ESC closes panel and submenus
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMobileMenu(); });
+
+      // on resize, cleanup mobile-only inline styles
+      window.addEventListener('resize', function () {
+        if (!isMobile() && navLinks) {
+          navLinks.querySelectorAll('.dropdown .dropdown-menu').forEach(m => { m.style.maxHeight = null; });
+          navLinks.querySelectorAll('.dropdown').forEach(d => {
+            d.classList.remove('open');
+            const b = d.querySelector('button, .dropdown-toggle, [role="button"]');
+            if (b) b.setAttribute('aria-expanded', 'false');
+          });
+
+          if (hamburger) hamburger.classList.remove('active');
+          navLinks.classList.remove('active');
+        }
+      });
     </script>
 </body>
 
