@@ -3,7 +3,6 @@ html, body {
   margin: 0;
   padding: 0;
   font-family: 'Montserrat', sans-serif;
-  background: linear-gradient(120deg, #ece9f7 60%, #020180 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -17,7 +16,7 @@ html, body {
   background: #fff;
   border-radius: 32px;
   display: flex;
-  box-shadow: 0 10px 40px rgba(111,117,193,0.18);
+  box-shadow: 0 10px 40px rgba(111, 116, 193, 0.247);
   overflow: hidden;
   position: relative;
   transition: all 0.3s ease;
@@ -164,36 +163,113 @@ html, body {
   border-radius: 20px;
   box-shadow: 0 0 20px rgba(140,109,240,0.15);
 }
+/* ---------- BACK BUTTON ---------- */
+.back-btn-container {
+  display: none; /* Hidden on desktop */
+}
 
-/* ---------- RESPONSIVE DESIGN ---------- */
+@media (max-width: 576px) {
+  .back-btn-container {
+    display: inline-block;
+    text-align: center;
+    margin-top: 18px;
+  }
+
+  .back-btn {
+    display: inline-block;
+    color: var(--primary-orange);
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 1rem;
+    border: 1px solid var(--primary-orange);
+    padding: 10px 20px;
+    border-radius: 14px;
+    transition: all 0.25s ease;
+  }
+
+  .back-btn:hover {
+    background: var(--light-orange);
+    color: #000000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(107, 88, 228, 0.3);
+  }
+}
+
+/* ---------- HOME2 LOGO VISIBILITY ---------- */
+#home2 {
+  display: none; /* Hidden by default on desktop/tablet */
+}
+
+@media (max-width: 576px) {
+  #home2 {
+    display: block; /* Show on mobile */
+    margin: 0 auto 14px;
+    height: 80px;
+    width: auto;
+    filter: invert(45%) sepia(84%) saturate(10058%) hue-rotate(247deg)
+      brightness(47%) contrast(121%);
+  }
+  
+}
+
+/* ---------- TABLET RESPONSIVE ---------- */
 @media (max-width: 992px) {
   .login-wrapper {
     width: 90%;
     height: auto;
     flex-direction: column;
-    border-radius: 28px;
-  }
-
-  .login-left,
-  .login-right {
-    flex: none;
-    width: 100%;
-    padding: 32px 24px;
+    border-radius: 24px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
   }
 
   .login-right {
     order: -1;
-    border-top-left-radius: 28px;
-    border-top-right-radius: 28px;
+    background: linear-gradient(180deg, #020180 20%, #2e2a9a 90%);
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    padding: 40px 30px;
+    text-align: center;
   }
 
   .centered-portrait {
-    width: 65%;
-    margin: 0 auto 20px;
+    width: 70%;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 20px;
+  }
+
+  .centered-portrait img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .login-left {
+    width: 100%;
+    padding: 36px 28px 50px;
+    text-align: center;
+  }
+
+  h2 {
+    font-size: 2rem;
+    color: #020180;
+  }
+
+  .subtitle {
+    color: #7777a8;
+    margin-bottom: 28px;
+    font-size: 1rem;
+  }
+
+  form {
+    max-width: 400px;
+    margin: 0 auto;
   }
 }
 
-/* ---------- MOBILE APP STYLE (SCROLLABLE) ---------- */
+/* ---------- MODERN MOBILE RESPONSIVE ---------- */
 @media (max-width: 576px) {
   html, body {
     height: auto;
@@ -201,100 +277,111 @@ html, body {
     display: block;
     background: #f6f6ff;
     overflow-x: hidden;
+    scroll-behavior: smooth;
   }
+
+
 
   .login-wrapper {
     width: 100%;
     min-height: 100vh;
-    max-width: 480px;
     border-radius: 0;
     box-shadow: none;
     flex-direction: column;
     justify-content: flex-start;
-    overflow-y: auto; /* ✅ Enables scrolling */
-    overflow-x: hidden;
+    overflow-y: auto;
+    background: #fff;
+    padding-bottom: 60px;
   }
 
   .login-right {
-    display: flex;
-    flex-direction: column;
-    background: linear-gradient(180deg, #020180 10%, #3b33a3 90%);
-    padding: 50px 20px 30px;
-    border-bottom-left-radius: 30px;
-    border-bottom-right-radius: 30px;
+    display: none;
   }
 
-  .login-right img {
+  .centered-portrait {
     width: 120px;
-    height: auto;
-    border-radius: 20px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+  }
+
+  .centered-portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.2));
   }
 
   .login-left {
     align-items: center;
     text-align: center;
-    padding: 30px 24px 60px;
+    padding: 30px 24px;
+    animation: fadeIn 0.6s ease both;
   }
 
   h2 {
-    font-size: 1.8rem;
+    font-size: 1.7rem;
+    font-weight: 700;
     color: #020180;
-    margin-top: 10px;
   }
 
   .subtitle {
-    color: #6c6c8a;
+    color: #6f6f90;
     font-size: 0.95rem;
     margin-bottom: 24px;
   }
 
   form {
     width: 100%;
-    max-width: 360px;
+    max-width: 340px;
   }
 
   .form-control {
-    padding: 14px 16px !important;
     font-size: 1rem;
+    padding: 14px 16px !important;
+    border-radius: 12px !important;
   }
 
   .login-btn,
   .employer-btn {
-    border-radius: 16px;
+    border-radius: 14px;
     font-size: 1rem;
-    margin-top: 6px;
+    margin-top: 10px;
+    padding: 14px;
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+  }
+
+  .login-btn:hover {
+    transform: scale(1.02);
   }
 
   .forgot-password,
   .form-text {
     font-size: 0.9rem;
-    text-align: center;
-    margin-top: 8px;
+    margin-top: 10px;
+    color: #5b5b89;
   }
 
-  .divider {
-    margin: 24px auto;
-    width: 80%;
-    border-bottom: 1px solid #e3e3fa;
+  .form-text a {
+    font-weight: 700;
   }
 
-  /* ✅ Smooth scroll experience */
+  /* Smooth scroll */
   .login-wrapper::-webkit-scrollbar {
     width: 6px;
   }
   .login-wrapper::-webkit-scrollbar-thumb {
-    background: rgba(129,110,248,0.5);
+    background: rgba(129,110,248,0.4);
     border-radius: 10px;
   }
 
-  /* Subtle fade animation */
-  .login-left {
-    animation: fadeUp 0.6s ease both;
-  }
-
-  @keyframes fadeUp {
-    0% {opacity: 0; transform: translateY(20px);}
-    100% {opacity: 1; transform: translateY(0);}
+  /* Simple entrance animation */
+  @keyframes fadeIn {
+    from {opacity: 0; transform: translateY(15px);}
+    to {opacity: 1; transform: translateY(0);}
   }
 }

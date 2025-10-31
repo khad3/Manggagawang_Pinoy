@@ -28,12 +28,20 @@
 
 </head>
 
-<body class="section1">
+<body>
 
     <div class="login-wrapper">
         <a href="{{ route('display.index') }}" class="close-btnn" title="Go to Landing Page">&times;</a>
         <div class="login-left">
             <div class="form-container">
+                   <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" style=" height: 100px; /*  Adjust height as needed */
+    width: auto;
+    
+    cursor: pointer;
+    user-select: none;
+    transition: opacity 0.3s ease;
+    filter: invert(45%) sepia(84%) saturate(10058%) hue-rotate(247deg)
+        brightness(47%) contrast(121%);">
                 <h2 style="margin-top: 18px;">Manggagawang Pinoy</h2>
                 <p class="subtitle">Log in as a worker</p>
                 <form class="login-form" method="POST" action="{{ route('applicant.login.store') }}">
@@ -78,6 +86,9 @@
                             href="{{ route('applicant.register.display') }}">Register</a></div>
                 </form>
 
+<div class="text-start mt-3 back-btn-container">
+  <a href="{{ route('display.index') }}" class="back-btn">← Back to Home</a>
+</div>
 
             </div>
         </div>
