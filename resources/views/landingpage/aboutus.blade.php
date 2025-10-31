@@ -803,7 +803,7 @@
                         <span><img src="{{ asset('img/prins formal.png') }}" alt="Prince Robie Dimas" style="width:180%; position:absolute; left: -40%; top: -65%;"></span>
                     </div>
                     <h3 class="member-name">Prince Robie Dimas</h3>
-                    <p class="member-role">Researcher & Testing</p>
+                    <p class="member-role">Researcher & Tester</p>
                     <p class="member-description">Dedicated researcher and tester committed to ensuring quality and accuracy. Expert in analyzing data, identifying issues, 
                         and validating solutions to support informed decisions and high-quality outcomes.</p>
                     <div class="member-skills">
