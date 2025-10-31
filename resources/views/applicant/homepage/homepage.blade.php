@@ -14,8 +14,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <!-- fav icon -->
-    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
     <link rel="stylesheet" href="{{ asset('css/applicant/homepage.css') }}">
+
 </head>
 
 <body>
@@ -28,11 +28,12 @@
         <div class="container">
             <div class="d-flex align-items-center justify-content-between">
                 <!-- Brand -->
-                <a href="" class="navbar-brand">
-                    <div class="brand-logo"><img src="{{ asset('img/logo.png') }}" alt="Logo" width="40"
-                            height="40"></div>
-                    <span class="brand-name">MP</span>
+                <div class="nav-logo d-flex align-items-center">
+                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2" style="text-decoration:none;">
+                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home"/>
+                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2"/>
                 </a>
+            </div>
 
                 <!-- Search -->
                 <div class="nav-search d-none d-md-block">
