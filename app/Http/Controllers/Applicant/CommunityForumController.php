@@ -1037,34 +1037,50 @@ class CommunityForumController extends Controller
 
     //Add friend sa applicant 
 
-    public function AddFriend(Request $request, $id){
-        $applicantId = session('applicant_id');
-        $friendId = $id;
+   public function AddFriend(Request $request, $id)
+{
+    $applicantId = session('applicant_id');
+    $friendId = $id;
 
-        if (!RegisterModel::where('id', $friendId)->exists()) {
-            return redirect()->back()->with('error', 'The selected user does not exist.');
-        }
-
-        $alreadySent = AddFriend::where(function ($query) use ($applicantId, $friendId) {
-            $query->where('request_id', $applicantId)
-              ->where('receiver_id', $friendId);
-        })->orWhere(function ($query) use ($applicantId, $friendId) {
-            $query->where('request_id', $friendId)
-              ->where('receiver_id', $applicantId);
-        })->exists();
-
-        if ($alreadySent) {
-            return redirect()->back()->with('error', 'Friend request already sent or already friends.');
-        }
-
-        AddFriend::create([
-            'request_id' => $applicantId,
-            'receiver_id' => $friendId,
-            'status' => 'pending',
-    ]   );
-
-        return redirect()->back()->with('success', 'Friend request sent successfully.');
+    if (!RegisterModel::where('id', $friendId)->exists()) {
+        return redirect()->back()->with('error', 'The selected user does not exist.');
     }
+
+    $alreadySent = AddFriend::where(function ($query) use ($applicantId, $friendId) {
+        $query->where('request_id', $applicantId)
+              ->where('receiver_id', $friendId);
+    })->orWhere(function ($query) use ($applicantId, $friendId) {
+        $query->where('request_id', $friendId)
+              ->where('receiver_id', $applicantId);
+    })->exists();
+
+    if ($alreadySent) {
+        return redirect()->back()->with('error', 'Friend request already sent or already friends.');
+    }
+
+    // Create the friend request
+    AddFriend::create([
+        'request_id' => $applicantId,
+        'receiver_id' => $friendId,
+        'status' => 'pending',
+    ]);
+
+    // 🔔 Send notification to the receiver
+    $sender = RegisterModel::find($applicantId);
+    $firstName = $sender ?$this->safeDecrypt($sender->personal_info->first_name) : 'Someone';
+    $lastName = $sender ? $this->safeDecrypt($sender->personal_info->last_name) : '';
+    $senderName = trim($firstName . ' ' . $lastName);
+
+    $notification = new \App\Models\Notification\NotificationModel();
+    $notification->type = 'applicant'; // recipient type
+    $notification->type_id = $friendId; // recipient id
+    $notification->title = 'New Friend Request';
+    $notification->message = $senderName . ' has sent you a friend request.';
+    $notification->is_read = false;
+    $notification->save();
+
+    return redirect()->back()->with('success', 'Friend request sent successfully.');
+}
 
     //Cancel friend request
     public function CancelFriendRequest($id) {
