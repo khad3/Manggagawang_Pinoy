@@ -93,8 +93,6 @@
                         @endif
 
 
-
-
                         <div class="dropdown-menu profile-menu" id="profileDropdown">
                             <div class="profile-header">
                                 <div class="profile-avatar">
