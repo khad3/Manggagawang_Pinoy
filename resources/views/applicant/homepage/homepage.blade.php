@@ -29,11 +29,12 @@
             <div class="d-flex align-items-center justify-content-between">
                 <!-- Brand -->
                 <div class="nav-logo d-flex align-items-center">
-                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2" style="text-decoration:none;">
-                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home"/>
-                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2"/>
-                </a>
-            </div>
+                    <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2"
+                        style="text-decoration:none;">
+                        <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
+                        <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" />
+                    </a>
+                </div>
 
                 <!-- Search -->
                 <div class="nav-search d-none d-md-block">
@@ -71,24 +72,45 @@
 
                     <!-- Profile Dropdown -->
                     <div class="nav-dropdown">
-                        <button class="profile-pic" onclick="toggleDropdown('profileDropdown')" title="main menu">
-                            {{ strtoupper(substr($retrieveDataDecrypted['first_name'], 0, 1)) }}
-                            {{ strtoupper(substr($retrieveDataDecrypted['last_name'], 0, 1)) }}
-                        </button>
+
+                        @if (
+                            !empty($profile->profileimage_path) ||
+                                (!empty($retrieveDataDecrypted['first_name']) && !empty($retrieveDataDecrypted['last_name'])))
+                            <button class="profile-pic" onclick="toggleDropdown('profileDropdown')" title="main menu"
+                                style="border: none; background: transparent;">
+                                @if (!empty($profile->profileimage_path))
+                                    <img src="{{ asset('storage/' . $profile->profileimage_path) }}"
+                                        alt="Profile Picture" width="50" height="50"
+                                        style="border-radius: 50%; object-fit: cover;">
+                                @else
+                                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
+                                        style="width: 50px; height: 50px; font-weight: bold;">
+                                        {{ strtoupper(substr($retrieveDataDecrypted['first_name'] ?? 'U', 0, 1)) }}
+                                        {{ strtoupper(substr($retrieveDataDecrypted['last_name'] ?? 'N', 0, 1)) }}
+                                    </div>
+                                @endif
+                            </button>
+                        @endif
+
+
+
+
                         <div class="dropdown-menu profile-menu" id="profileDropdown">
                             <div class="profile-header">
                                 <div class="profile-avatar">
-                                    @if (!empty($retrieveDataDecrypted['profileimage_path']))
-                                        <img src="{{ asset('storage/' . $retrieveDataDecrypted['profileimage_path']) }}"
+                                    @if (!empty($profile->profileimage_path))
+                                        <img src="{{ asset('storage/' . $profile->profileimage_path) }}"
                                             alt="Profile Picture" width="50" height="50"
-                                            style="border-radius: 50%;">
+                                            style="border-radius: 50%; object-fit: cover;">
                                     @else
                                         <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
-                                            style="width: 50px; height: 50px;">
+                                            style="width: 50px; height: 50px; font-weight: bold;">
                                             {{ strtoupper(substr($retrieveDataDecrypted['first_name'] ?? 'U', 0, 1)) }}
+                                            {{ strtoupper(substr($retrieveDataDecrypted['last_name'] ?? 'N', 0, 1)) }}
                                         </div>
                                     @endif
                                 </div>
+
                                 <div class="profile-info">
                                     <div class="profile-name">
                                         {{ $retrieveDataDecrypted['first_name'] ?? 'Unknown' }}
@@ -156,7 +178,8 @@
 
     @if (session('success'))
         <div class="container mt-3">
-            <div class="alert alert-success alert-dismissible fade show text-center" role="alert" id="success-alert">
+            <div class="alert alert-success alert-dismissible fade show text-center" role="alert"
+                id="success-alert">
                 {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>

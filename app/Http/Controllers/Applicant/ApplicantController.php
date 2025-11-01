@@ -899,7 +899,12 @@ $messages = EmployerSendMessage::with(['employer.addressCompany', 'employer.pers
     ->where('is_read', false) // or 0, depending on your database column type
     ->count();
 
+
+    //Retrieve only profile picture
+    $profile = \App\Models\Applicant\ExperienceModel::where('applicant_id', $applicantId)->first();
+
     return view('applicant.homepage.homepage', compact(
+        'profile',
         'unreadMessagesCount',
         'pendingJoinGroupRequests',
         'friendRequests',
