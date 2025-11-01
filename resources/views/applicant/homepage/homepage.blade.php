@@ -29,11 +29,10 @@
             <div class="d-flex align-items-center justify-content-between">
                 <!-- Brand -->
                 <div class="nav-logo d-flex align-items-center">
-                    <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2"
-                        style="text-decoration:none;">
+            
                         <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
                         <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" />
-                    </a>
+                 
                 </div>
 
                 <!-- Search -->
@@ -131,7 +130,7 @@
                                 </a>
                                 <a href="{{ route('applicant.resume.display') }}" class="dropdown-item">
                                     <i class="bi bi-file-text"></i>
-                                    Resume Generator
+                                    Resume Builder
                                 </a>
                                 <a href="{{ route('applicant.application.status.display') }}" class="dropdown-item">
                                     <i class="bi bi-file-text"></i>
@@ -549,6 +548,50 @@ $hasActiveApplication =
             </div>
         </div>
     </div>
+
+<section class="offers-section">
+    <h2 class="offers-title">Offers</h2>
+
+    <div class="offers-container">
+      <!-- Card 1 -->
+      <div class="offer-card">
+        <h3 class="offer-title">TESDA Online Training Program</h3>
+        <ul class="offer-list">
+          <li>Gain practical skills in high-demand industries</li>
+          <li>Receive official TESDA certificates after completion</li>
+          <li>Join thousands of Filipinos leveling up their careers</li>
+     
+          
+        </ul>
+        <a href="https://e-tesda.gov.ph/course/" target="_blank" class="offer-btn primary">Go to Website</a>
+      </div>
+
+      <!-- Card 2 (Highlighted) -->
+      <div class="offer-card active">
+        <h3 class="offer-title">AR Portfolio</h3>
+        <ul class="offer-list">
+          <li>Build a 3D Augmented Reality portfolio</li>
+          <li>Showcase your completed projects interactively</li>
+          <li>Show your portfolio via calling card</li>
+       
+        </ul>
+        <a href="{{ route('applicant.callingcard.display') }}" class="offer-btn light">Create</a>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="offer-card">
+        <h3 class="offer-title">Resume Builder</h3>
+        <ul class="offer-list">
+          <li>Create a professional resume in minutes </li>
+          <li>Export your resume as PDF file</li>
+          <li>Add your experiences and skills easily</li>
+ 
+
+        </ul>
+        <a href="{{ route('applicant.resume.display') }}" class="offer-btn primary">Create</a>
+      </div>
+    </div>
+  </section>
 
     <script>
         const applyJobModal = document.getElementById('applyJobModal');

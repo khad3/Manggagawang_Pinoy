@@ -198,6 +198,87 @@ body {
     margin-top: 3rem;
 }
 
+/* Responsive Header Layout */
+@media (max-width: 768px) {
+.header {
+    position: relative;
+    z-index: 50;
+}
+
+    .header .container {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1rem;
+        position: relative;
+        z-index: 9999 !important; /* keeps all child elements above the banner */
+    }
+
+    .header .d-flex {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .nav-logo {
+        justify-content: center;
+    }
+
+    .nav-logo #home {
+        margin-bottom: -50px;
+    }
+
+    .nav-search {
+        width: 100%;
+        max-width: 100%;
+        margin: 1rem 0;
+    }
+
+    .nav-actions {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        position: relative;
+        z-index: 9999; /* ensures dropdowns open above other elements */
+    }
+.nav-search {
+    position: relative;
+    z-index: 10;
+}
+
+    .nav-icon,
+    .profile-pic {
+        width: 50px;
+        height: 50px;
+    }
+
+    #home2 {
+        display: none;
+    }
+    .hero-banner {
+    position: relative;
+    z-index: 1 !important; /* lower than header */
+}
+
+    .nav-badge {
+        top: -4px;
+        right: -4px;
+        width: 16px;
+        height: 16px;
+        font-size: 10px;
+    }
+
+    /* Also make sure dropdown menus are above everything */
+.dropdown-menu,
+.profile-menu {
+    position: absolute !important;
+    z-index: 9999 !important;
+    background: #fff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+}
+
+
 .stat-card {
     text-align: center;
     background: rgba(255, 255, 255, 0.1);
@@ -291,7 +372,8 @@ body {
     background: #f56565;
     color: white;
     border: none;
-    padding: 12px 20px;
+    margin-top: 25px;
+    padding: 2px 10px;
     border-radius: 15px;
     font-weight: 600;
     cursor: pointer;
@@ -2455,4 +2537,110 @@ body {
 .review-feedback {
     color: #555;
     line-height: 1.6;
+}
+
+
+/*OFFERS*/
+
+
+.offers-section {
+  text-align: center;
+  padding: 50px 20px;
+}
+
+.offers-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 40px;
+}
+
+/* --- Container --- */
+.offers-container {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+/* --- Cards --- */
+.offer-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 30px 20px;
+  width: 280px;
+  text-align: left;
+  transition: all 0.3s ease;
+}
+
+.offer-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+.offer-card.active {
+  background: #000080;
+  color: #fff;
+  border: none;
+}
+
+/* --- Text --- */
+.offer-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.offer-list {
+  list-style-type: disc;
+  margin: 0 0 25px 18px;
+  padding: 0;
+  color: inherit;
+}
+
+.offer-list li {
+  margin-bottom: 5px;
+  font-size: 0.95rem;
+}
+
+/* --- Buttons --- */
+.offer-btn {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 10px 0;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+
+.offer-btn.primary {
+  background: #000080;
+  color: #fff;
+}
+
+.offer-btn.primary:hover {
+  background: #0202c0;
+}
+
+.offer-btn.light {
+  background: #f0f0f0;
+  color: #000;
+}
+
+.offer-btn.light:hover {
+  background: #e0e0e0;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .offers-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .offer-card {
+    width: 90%;
+  }
 }
