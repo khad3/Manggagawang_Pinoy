@@ -55,8 +55,31 @@
                 <a href="#" class="nav-link" data-target="jobposts-section">
                     <i class="fas fa-briefcase"></i>
                     Job Posts
+
+                    @php
+                        $employerId = session('employer_id') ?? null;
+
+                        $applicantApply = 0;
+
+                        if ($employerId) {
+                            // Count pending applicant applications for this employer's jobs
+    $applicantApply = \App\Models\Applicant\ApplyJobModel::where('status', 'pending')
+        ->whereHas('job', function ($query) use ($employerId) {
+            $query->where('employer_id', $employerId);
+                                })
+                                ->count();
+                        }
+                    @endphp
+
+                    @if ($applicantApply > 0)
+                        <span class="badge bg-danger nav-badge" id="notificationUnreadCount">
+                            {{ $applicantApply }}
+                        </span>
+                    @endif
                 </a>
             </div>
+
+
             <div class="nav-item">
                 <a href="#" class="nav-link" data-target="messages-section" style="position: relative;">
                     <i class="fas fa-comments"></i>

@@ -934,6 +934,12 @@ $retrievedApproveApplicants = \App\Models\Applicant\ApplyJobModel::where('status
 
     $unreadCount = $allNotifications->where('is_read', false)->count();
 
+    //Retrieve the counts of applicant apply 
+    $applicantApply = \App\Models\Applicant\ApplyJobModel::where('status', 'pending')
+    ->whereHas('job', function ($query) use ($employerId) {
+        $query->where('employer_id', $employerId);
+    })->count();
+
 
 
     return view('employer.homepage.homepage' , compact(

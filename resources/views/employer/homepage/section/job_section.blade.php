@@ -234,7 +234,22 @@
                            <i class="fas fa-users me-2"></i> View Applications
                            {{ $jobDetail->applications->count() }}
 
+                           @php
+                               // Count pending applications for this job
+                               $pendingCount = $jobDetail->applications()->where('status', 'pending')->count();
+
+                               $interviewCount = $jobDetail->applications()->where('status', 'interview')->count();
+                           @endphp
+
+                           @if ($pendingCount > 0)
+                               <span class="badge bg-warning text-dark ms-1"> ({{ $pendingCount }}) pending</span>
+                           @endif
+
+                           @if ($interviewCount > 0)
+                               <span class="badge bg-info text-dark ms-1"> ({{ $interviewCount }}) interview</span>
+                           @endif
                        </button>
+
 
                        <small class="text-muted d-block mt-2">Posted
                            {{ $jobDetail->created_at->diffForHumans() }}</small>
