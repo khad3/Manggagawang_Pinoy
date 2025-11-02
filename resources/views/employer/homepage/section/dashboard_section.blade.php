@@ -25,17 +25,7 @@
             </div>
         </div>
 
-        <div class="stat-card">
-            <div class="stat-header">
-                <div>
-                    <div class="stat-value">0</div>
-                    <div class="stat-label">Unread Messages</div>
-                </div>
-                <div class="stat-icon warning">
-                    <i class="fas fa-envelope"></i>
-                </div>
-            </div>
-        </div>
+
     </div>
 
     <!-- Applicants Table -->
