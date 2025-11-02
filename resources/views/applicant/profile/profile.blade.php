@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('css/applicant/profile.css') }}" />
-
+    
 </head>
 
 <body>
@@ -19,17 +19,19 @@
         <div class="container">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="tesda-logo">
-                    <div class="logo-icon">
-                        <i class="bi bi-award-fill"></i>
+            <div class="logo-icon">
+                     
                     </div>
-                    <div>
-                        <div>TESDA</div>
-                        <small style="font-size: 0.8rem; opacity: 0.9">Technical Education & Skills Development</small>
-                    </div>
+                        <div class="nav-logo d-flex align-items-center">
+
+                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
+                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" />
+
+                </div>   
                 </div>
                 <a href="{{ route('applicant.info.homepage.display') }}" class="back-btn">
                     <i class="bi bi-house-door-fill me-2"></i>
-                    Back to Homepage
+                  <div class="bth">  Back to Homepage</div>
                 </a>
             </div>
         </div>

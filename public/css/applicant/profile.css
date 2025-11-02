@@ -88,27 +88,15 @@ body {
     opacity: 0.3;
 }
 
-.tesda-logo {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    color: white;
-    font-weight: 700;
-    font-size: 1.5rem;
-    position: relative;
-    z-index: 2;
-}
+
 
 .logo-icon {
-    width: 50px;
-    height: 50px;
-    background: var(--accent-gradient);
-    border-radius: 50%;
+
+ 
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
-    box-shadow: var(--shadow-md);
+
 }
 
 .back-btn {
@@ -852,4 +840,101 @@ body {
 }
 .fade {
     transition: opacity 0.15s linear;
+}
+
+.nav-logo img {
+    height: 50px; /*  Adjust height as needed */
+    width: auto;
+    display: block;
+    cursor: pointer;
+    user-select: none;
+    transition: opacity 0.3s ease;
+}
+.nav-logo #home {
+    height: 120px;
+}
+
+.nav-logo img:hover {
+    opacity: 0.8; /* subtle hover effect */
+}
+@media (max-width: 768px) {
+.header {
+    position: relative;
+    z-index: 50;
+}
+
+    .header .container {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1rem;
+        position: relative;
+        z-index: 9999 !important; /* keeps all child elements above the banner */
+    }
+
+    .header .d-flex {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .nav-logo {
+        justify-content: center;
+    }
+
+    .nav-logo #home {
+        margin-bottom: -50px;
+    }
+
+    .nav-search {
+        width: 100%;
+        max-width: 100%;
+        margin: 1rem 0;
+    }
+
+    .nav-actions {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        position: relative;
+        z-index: 9999; /* ensures dropdowns open above other elements */
+    }
+.nav-search {
+    position: relative;
+    z-index: 10;
+}
+
+    .nav-icon,
+    .profile-pic {
+        width: 50px;
+        height: 50px;
+    }
+
+    #home {
+        display: none;
+    }
+    .hero-banner {
+    position: relative;
+    z-index: 1 !important; /* lower than header */
+}
+
+    .nav-badge {
+        top: -4px;
+        right: -4px;
+        width: 16px;
+        height: 16px;
+        font-size: 10px;
+    }
+    .bth {
+        display: none;
+    }
+
+    /* Also make sure dropdown menus are above everything */
+.dropdown-menu,
+.profile-menu {
+    position: absolute !important;
+    z-index: 9999 !important;
+    background: #fff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
 }
