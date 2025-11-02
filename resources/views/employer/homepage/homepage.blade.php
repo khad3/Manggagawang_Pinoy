@@ -601,6 +601,7 @@
         }
     </script>
 
+    <!--- Toggle---->
     <script>
         const selectedBenefits = [];
 
@@ -621,6 +622,7 @@
         }
     </script>
 
+    <!---Expiration session--->
     <script>
         const timeout = 10 * 60 * 1000; // 10 minutes
         const warningTime = 9 * 60 * 1000; // 1 minute before logout

@@ -1517,7 +1517,7 @@ body {
 }
 
 .employer-list-item.active {
-    background:var(--primary-orange);
+    background:#7b7bc3;
     border-left-color: #4f46e5;
     color: white;
     box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
@@ -2644,3 +2644,70 @@ body {
     width: 90%;
   }
 }
+
+
+
+                    .attachment-preview {
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        flex-wrap: wrap;
+                        margin-top: 5px;
+                    }
+
+                    .preview-item {
+                        position: relative;
+                        display: inline-block;
+                        border: 1px solid #ddd;
+                        border-radius: 8px;
+                        overflow: hidden;
+                        background: #f8f9fa;
+                        padding: 5px;
+                    }
+
+                    .preview-item img {
+                        width: 80px;
+                        height: 80px;
+                        object-fit: cover;
+                        border-radius: 6px;
+                    }
+
+                    .preview-item .remove-btn {
+                        position: absolute;
+                        top: 2px;
+                        right: 4px;
+                        background: rgba(0, 0, 0, 0.6);
+                        color: white;
+                        border: none;
+                        border-radius: 50%;
+                        width: 18px;
+                        height: 18px;
+                        line-height: 14px;
+                        font-size: 12px;
+                        cursor: pointer;
+                    }
+
+                    .preview-item .file-name {
+                        font-size: 13px;
+                        margin-top: 5px;
+                        text-align: center;
+                    }
+         
+                  /*Notification*/
+    /* Hover shadow effect */
+    .hover-shadow:hover {
+        background-color: #f8f9fa;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        transition: all 0.2s ease-in-out;
+    }
+
+    /* Remove underline for links inside notifications */
+    .notification-content a {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    /* Unread highlight */
+    .notification-item.unread {
+        background-color: #e9f5ff;
+    }

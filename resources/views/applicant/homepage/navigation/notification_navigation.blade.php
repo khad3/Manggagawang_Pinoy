@@ -1,4 +1,4 @@
-<!-- 🔔 Notifications Dropdown -->
+<!-- Notifications Dropdown -->
 <div class="nav-dropdown">
     <button class="nav-icon" onclick="toggleDropdown('notificationsDropdown')" title="notification">
         <i class="bi bi-bell"></i>
@@ -17,7 +17,7 @@
         @endif
     </button>
 
-    <!-- 🔽 Dropdown Menu -->
+    <!-- Dropdown Menu -->
     <div class="dropdown-menu shadow-sm border-0" id="notificationsDropdown"
         style="min-width: 320px; max-height: 400px; overflow-y: auto;">
 
@@ -35,7 +35,7 @@
                     <div class="notification-item d-flex align-items-start gap-2 p-2 mb-2 rounded hover-shadow {{ !$note->is_read ? 'unread' : '' }}"
                         style="cursor:pointer;" data-bs-toggle="modal"
                         data-bs-target="#viewNotificationModal-{{ $note->id }}"
-                        onclick="markAsRead({{ $note->id }})">
+                        onclick="markAsReadNotification({{ $note->id }})">
 
                         <div class="notification-icon flex-shrink-0">
                             <i class="bi bi-bell-fill text-primary fs-5"></i>
@@ -103,7 +103,7 @@
                         </div>
                     </div>
 
-                    <!-- 🔹 Modal for Retrieved Notification (No Backdrop) -->
+                    <!-- Modal for Retrieved Notification (No Backdrop) -->
                     <div class="modal fade" id="viewRetrieveModal-{{ $note->id }}" tabindex="-1"
                         aria-hidden="true" data-bs-backdrop="false" data-bs-keyboard="true">
                         <div class="modal-dialog modal-dialog-centered">
@@ -128,7 +128,7 @@
                 @endforeach
             @endif
 
-            {{-- 🕊️ No Notifications --}}
+            {{-- No Notifications --}}
             @if (
                 (!isset($notifications) || $notifications->isEmpty()) &&
                     (!isset($notificationRetrieve) || $notificationRetrieve->isEmpty()))
@@ -145,7 +145,7 @@
             </a>
         </div>
 
-        <!-- 🧾 View All Notifications Modal -->
+        <!--  View All Notifications Modal -->
         <div class="modal fade" id="viewAllNotificationsModal" tabindex="-1" aria-hidden="true"
             data-bs-backdrop="false">
             <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
@@ -177,7 +177,7 @@
 
 <!-- JS Handlers -->
 <script>
-    function markAsRead(id) {
+    function markAsReadNotification(id) {
         fetch(`/notifications/mark-as-read/${id}`, {
             method: 'POST',
             headers: {
@@ -229,7 +229,7 @@
                     `[data-id="${id}"]`);
                 if (el) el.classList.remove('unread');
 
-                // 🔥 update badge count
+                // update badge count
                 const badge = document.querySelector('#notificationsBadge');
                 if (badge) {
                     let current = parseInt(badge.innerText) || 0;
@@ -246,7 +246,7 @@
         }
     }
 
-    async function markAsRead(id) {
+    async function markAsReadNotification(id) {
         try {
             const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -273,7 +273,7 @@
                     `[data-id="${id}"]`);
                 if (el) el.classList.remove('unread');
 
-                // 🔥 update badge count
+                //  update badge count
                 const badge = document.querySelector('#notificationsBadge');
                 if (badge) {
                     let current = parseInt(badge.innerText) || 0;
@@ -313,12 +313,12 @@
 
             const data = await res.json();
             if (data.success) {
-                // 🔹 Remove "unread" class from all items
+                // Remove "unread" class from all items
                 document.querySelectorAll('.notification-item.unread').forEach(el => {
                     el.classList.remove('unread');
                 });
 
-                // 🔹 Reset badge count
+                //  Reset badge count
                 const badge = document.querySelector('#notificationsBadge');
                 if (badge) {
                     badge.remove(); // hide badge since all are read

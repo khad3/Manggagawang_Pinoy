@@ -74,7 +74,9 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
     Route::put('setting-update-password', [SettingController::class, 'updatePassword'])->name('applicant.setting.update.password.store');
     //Delete account 
     Route::delete('delete-account', [SettingController::class, 'deleteAccount'])->name('applicant.deleteaccount.destroy');
-
+    //Read messages of the employer as read
+    Route::put('read-message/{id}', [ApplicantController::class, 'ReadMessage'])->name('applicant.readmessage.store');
+    
     Route::get('info', [ApplicantController::class, 'ShowPersonalInfoForm'])->name('info.personal');
     Route::post('info', [ApplicantController::class, 'PersonalInfo'])->name('applicant.info.personal.stores');
     Route::get('info/background', [ApplicantController::class, 'ShowWorkBackgroundForm'])->name('applicant.info.workbackground.display');
@@ -92,7 +94,7 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
     Route::post('/notifications/mark-all-read', [ApplicantController::class, 'ReadlAllnotifications']);
 
     Route::post('notifications/retrieve/{id}/read', [ApplicantController::class, 'ReadNotifications']);
-Route::post('notifications/retrieve/mark-all-read', [ApplicantController::class, 'markAllAsRead']);
+    Route::post('notifications/retrieve/mark-all-read', [ApplicantController::class, 'markAllAsRead']);
     //Community Forum
     Route::get('communityforum', [CommunityForumController::class, 'ShowForum'])->name('applicant.forum.display');
     Route::post('communityforum/create', [CommunityForumController::class, 'CreatePost'])->name('applicant.forum.store');

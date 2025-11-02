@@ -935,8 +935,22 @@ $messages = EmployerSendMessage::with(['employer.addressCompany', 'employer.pers
     ));
 }
 
+// Mark all messages from a specific employer as read
+public function ReadMessage($employerId)
+{
+    $applicantId = session('applicant_id');
+
+    EmployerSendMessage::where('employer_id', $employerId)
+        ->where('applicant_id', $applicantId)
+        ->where('is_read', 0)
+        ->update(['is_read' => 1]);
+
+    return response()->json(['success' => true]);
+}
+
+
+
  // Mark a single notification as read
-// app/Http/Controllers/NotificationController.php
 public function ReadNotification($id)
 {
     $notification = AnnouncementModel::findOrFail($id);
