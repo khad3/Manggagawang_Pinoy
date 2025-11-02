@@ -36,18 +36,4 @@
           <button class="clear-filters" onclick="clearAllFilters()">Clear All</button>
       </div>
 
-      <!-- Filter Chips -->
-      <div class="filter-chips">
-
-
-          <!-- <div class="filter-chip" data-filter="remote" onclick="toggleChip(this, 'remote')">
-                        <i class="bi bi-house"></i> Remote Work
-                    </div>
-                    <div class="filter-chip" data-filter="featured" onclick="toggleChip(this, 'featured')">
-                        <i class="bi bi-star"></i> Featured
-                    </div>
-                    <div class="filter-chip" data-filter="startup" onclick="toggleChip(this, 'startup')">
-                        <i class="bi bi-rocket"></i> Startup
-                    </div> -->
-      </div>
   </section>

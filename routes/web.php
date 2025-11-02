@@ -227,6 +227,7 @@ Route::middleware(['employer.authenticate'])->prefix('employer')->group(function
     Route::post('notifications/{id}/read', [EmployerController::class, 'markAsRead']);
     Route::post('announcements/{id}/read', [EmployerController::class, 'markAnnouncementAsRead']);
     Route::post('notifications/mark-all-read', [EmployerController::class, 'markAllAsRead']);
+Route::delete('/notifications/delete/{id}', [EmployerController::class, 'deleteNotification']);
 
     // Employer Announcements Routes
   

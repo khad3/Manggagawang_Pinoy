@@ -120,28 +120,11 @@
                 <a href="#" class="nav-link" data-target="notifications-section" style="position: relative;">
                     <i class="fas fa-bell"></i>
                     Notifications
-                    @php
-                        // Combine unread from both AnnouncementModel + NotificationModel
-                        $employerId = session('employer_id');
-                        $unreadAnnouncements = \App\Models\Admin\AnnouncementModel::whereIn('target_audience', [
-                            'employers',
-                            'all',
-                        ])
-                            ->whereIn('status', ['published', 'scheduled'])
-                            ->where('is_read', false)
-                            ->count();
 
-                        $unreadEmployerNotifs = \App\Models\Notification\NotificationModel::where('type', 'employer')
-                            ->where('type_id', $employerId)
-                            ->where('is_read', false)
-                            ->count();
 
-                        $unreadNotificationsCount = $unreadAnnouncements + $unreadEmployerNotifs;
-                    @endphp
-
-                    @if ($unreadNotificationsCount > 0)
+                    @if ($unreadCount > 0)
                         <span class="badge bg-danger nav-badge" id="notificationUnreadCount">
-                            {{ $unreadNotificationsCount }}
+                            {{ $unreadCount }}
                         </span>
                     @endif
                 </a>

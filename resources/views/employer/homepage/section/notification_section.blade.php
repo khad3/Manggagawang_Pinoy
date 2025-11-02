@@ -23,17 +23,17 @@
                 <div class="notification-item {{ $note->is_read ? '' : 'unread' }}"
                     data-notification-id="{{ $note->id }}" data-notification-type="{{ $notificationType }}"
                     onclick="openEmployerNotificationModal(
-                        {{ $note->id }},
-                        '{{ addslashes($note->title ?? 'No Title') }}',
-                        '{{ addslashes($note->message ?? ($note->content ?? '')) }}',
-                        '{{ $note->priority ?? 'normal' }}',
-                        '{{ $note->target_audience ?? ($note->type ?? 'general') }}',
-                        '{{ isset($note->publication_date) ? $note->publication_date : $note->created_at->format('Y-m-d') }}',
-                        '{{ $note->created_at->diffForHumans() }}',
-                        '{{ !empty($note->image) ? asset('storage/' . $note->image) : '' }}',
-                        '{{ $notificationType }}',
-                        {{ $note->is_read ? 'true' : 'false' }}
-                    )">
+                {{ $note->id }},
+                '{{ addslashes($note->title ?? 'No Title') }}',
+                '{{ addslashes($note->message ?? ($note->content ?? '')) }}',
+                '{{ $note->priority ?? 'normal' }}',
+                '{{ $note->target_audience ?? ($note->type ?? 'general') }}',
+                '{{ isset($note->publication_date) ? $note->publication_date : $note->created_at->format('Y-m-d') }}',
+                '{{ $note->created_at->diffForHumans() }}',
+                '{{ !empty($note->image) ? asset('storage/' . $note->image) : '' }}',
+                '{{ $notificationType }}',
+                {{ $note->is_read ? 'true' : 'false' }}
+            )">
 
                     <div class="notification-icon bg-{{ getPriorityColor($note->priority ?? 'normal') }}">
                         <i class="bi bi-{{ getPriorityIcon($note->priority ?? 'normal') }} text-white"></i>
@@ -64,17 +64,27 @@
                             </div>
                         @endif
 
-                        <div class="notification-footer">
-                            <small class="text-muted">
-                                <i class="bi bi-calendar3 me-1"></i>
-                                {{ isset($note->publication_date)
-                                    ? \Carbon\Carbon::parse($note->publication_date)->format('M d, Y')
-                                    : $note->created_at->format('M d, Y') }}
-                            </small>
-                            <small class="text-muted">
-                                <i class="bi bi-clock me-1"></i>{{ $note->created_at->diffForHumans() }}
-                            </small>
+                        <div class="notification-footer d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar3 me-1"></i>
+                                    {{ isset($note->publication_date)
+                                        ? \Carbon\Carbon::parse($note->publication_date)->format('M d, Y')
+                                        : $note->created_at->format('M d, Y') }}
+                                </small>
+                                <small class="text-muted ms-2">
+                                    <i class="bi bi-clock me-1"></i>{{ $note->created_at->diffForHumans() }}
+                                </small>
+                            </div>
+
+                            <!-- Delete Button -->
+                            <button type="button" class="btn btn-sm btn-danger"
+                                onclick="event.stopPropagation(); deleteNotification({{ $note->id }})"
+                                title="Delete Notification">
+                                <i class="bi bi-trash"></i>
+                            </button>
                         </div>
+
                     </div>
 
                     <div class="notification-arrow">
@@ -91,6 +101,7 @@
                 </div>
             @endforelse
         </div>
+
     </div>
 </div>
 
@@ -140,6 +151,31 @@
         </div>
     </div>
 </div>
+
+<script>
+    function deleteNotification(id) {
+        if (!confirm('Are you sure you want to delete this notification?')) return;
+
+        fetch(`/employer/notifications/delete/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const notif = document.querySelector(`[data-notification-id="${id}"]`);
+                    if (notif) notif.remove();
+                } else {
+                    alert(data.message || 'Failed to delete notification.');
+                }
+            })
+            .catch(err => console.error(err));
+    }
+</script>
+
 
 
 <script>

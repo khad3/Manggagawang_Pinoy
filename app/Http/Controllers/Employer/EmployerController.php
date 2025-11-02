@@ -965,7 +965,33 @@ $retrievedApproveApplicants = \App\Models\Applicant\ApplyJobModel::where('status
 
 }
 
-// ✅ Safe decrypt helper (using your decryptMessage + cleanDecryptedString)
+//Delete notification
+public function deleteNotification($id) {
+    $employerId = session('employer_id');
+
+    $notification = \App\Models\Notification\NotificationModel::where('id', $id)
+        ->where('type', 'employer')
+        ->where('type_id', $employerId)
+        ->first();
+
+    if (!$notification) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Notification not found.'
+        ]);
+    }
+
+    $notification->delete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Notification deleted successfully.'
+    ]);
+}
+
+
+
+// Safe decrypt helper (using your decryptMessage + cleanDecryptedString)
 private function safeDecryptField($value)
 {
     // If null/empty -> return as-is (or return empty string if you prefer)
