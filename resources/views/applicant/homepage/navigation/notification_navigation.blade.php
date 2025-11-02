@@ -51,6 +51,8 @@
                                 {{ $note->created_at->diffForHumans() }}
                             </div>
                         </div>
+
+
                     </div>
 
                     <!--  Modal for Notification (No Backdrop) -->
@@ -82,15 +84,19 @@
             {{-- RETRIEVED NOTIFICATIONS --}}
             @if (isset($notificationRetrieve) && count($notificationRetrieve) > 0)
                 @foreach ($notificationRetrieve as $note)
-                    <div class="notification-item d-flex align-items-start gap-2 p-2 mb-2 rounded hover-shadow {{ !$note->is_read ? 'unread' : '' }}"
-                        style="cursor:pointer;" data-bs-toggle="modal"
-                        data-bs-target="#viewRetrieveModal-{{ $note->id }}"
-                        onclick="markAsReadRetrieve({{ $note->id }})">
+                    <div id="notification-{{ $note->id }}"
+                        class="notification-item d-flex align-items-start gap-2 p-2 mb-2 rounded hover-shadow {{ !$note->is_read ? 'unread' : '' }}"
+                        style="cursor:default; position: relative;">
 
                         <div class="notification-icon flex-shrink-0">
                             <i class="bi bi-info-circle-fill text-success fs-5"></i>
                         </div>
-                        <div class="notification-content flex-grow-1">
+
+                        <!-- Move modal trigger and onclick to this inner wrapper -->
+                        <div class="notification-content flex-grow-1" style="cursor:pointer;" data-bs-toggle="modal"
+                            data-bs-target="#viewRetrieveModal-{{ $note->id }}"
+                            onclick="markAsReadRetrieve({{ $note->id }})">
+
                             <div class="notification-title fw-semibold text-dark mb-1">
                                 {{ $note->title ?? 'Retrieved Notification' }}
                             </div>
@@ -101,6 +107,13 @@
                                 {{ $note->created_at->diffForHumans() }}
                             </div>
                         </div>
+
+                        <!-- ❌ Delete Button (stopPropagation prevents modal) -->
+                        <button type="button" class="btn btn-sm text-danger position-absolute top-0 end-0 me-1 mt-1"
+                            style="font-size: 14px;" title="Delete notification"
+                            onclick="event.stopPropagation(); deleteNotification({{ $note->id }})">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
                     </div>
 
                     <!-- Modal for Retrieved Notification (No Backdrop) -->
@@ -157,17 +170,7 @@
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
 
-                    {{-- <div class="modal-body">
-                        <h6 class="text-secondary mb-2">System Notifications</h6>
-                        @includeWhen(isset($notifications), 'partials.notifications.list', [
-                            'notifications' => $notifications,
-                        ])
 
-                        <h6 class="text-secondary mt-4 mb-2">Retrieved Notifications</h6>
-                        @includeWhen(isset($notificationRetrieve), 'partials.notifications.retrieve', [
-                            'notifications' => $notificationRetrieve,
-                        ])
-                    </div> --}}
                 </div>
             </div>
         </div>
@@ -177,6 +180,62 @@
 
 <!-- JS Handlers -->
 <script>
+    function deleteNotification(id) {
+        if (!confirm('Are you sure you want to delete this notification?')) return;
+
+        fetch(`/applicant/notifications/delete/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const notif = document.getElementById(`notification-${id}`);
+                    if (notif) {
+                        // Smooth fade-out animation
+                        notif.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                        notif.style.opacity = '0';
+                        notif.style.transform = 'translateX(20px)';
+                        setTimeout(() => notif.remove(), 300);
+                    }
+
+                    // Update notification badge
+                    const badge = document.getElementById('notificationsBadge');
+                    if (badge) {
+                        let count = parseInt(badge.textContent) || 0;
+                        count = Math.max(count - 1, 0);
+                        if (count > 0) {
+                            badge.textContent = count;
+                        } else {
+                            badge.remove();
+                        }
+                    }
+
+                    // Check remaining notifications
+                    setTimeout(() => {
+                        const remaining = document.querySelectorAll('.notification-item').length;
+                        if (remaining === 0) {
+                            const dropdownContent = document.querySelector('.dropdown-content');
+                            if (dropdownContent) {
+                                dropdownContent.innerHTML = `
+                            <div class="notification-item text-center text-muted p-3">
+                                No new notifications
+                            </div>`;
+                            }
+                        }
+                    }, 350);
+
+                    console.log('Notification deleted');
+                } else {
+                    alert('Failed to delete notification.');
+                }
+            })
+            .catch(error => console.error('Error deleting notification:', error));
+    }
+
     function markAsReadNotification(id) {
         fetch(`/notifications/mark-as-read/${id}`, {
             method: 'POST',
@@ -329,24 +388,3 @@
         }
     }
 </script>
-
-
-<style>
-    /* Hover shadow effect */
-    .hover-shadow:hover {
-        background-color: #f8f9fa;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-        transition: all 0.2s ease-in-out;
-    }
-
-    /* Remove underline for links inside notifications */
-    .notification-content a {
-        text-decoration: none;
-        color: inherit;
-    }
-
-    /* Unread highlight */
-    .notification-item.unread {
-        background-color: #e9f5ff;
-    }
-</style>

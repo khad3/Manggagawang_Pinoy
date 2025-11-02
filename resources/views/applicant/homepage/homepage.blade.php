@@ -222,10 +222,18 @@
                 <div class="employer-grid" id="employerGrid">
                     @foreach ($JobPostRetrieved as $jobDetail)
                         @if ($jobDetail->status_post === 'published')
-                            <div class="employer-card" data-name="{{ $jobDetail->company_name ?? 'N/A' }}"
-                                data-industry="{{ $jobDetail->department }}"
-                                data-location="{{ $jobDetail->location }}" data-hiring="true" data-remote="false"
-                                data-featured="false" data-rating="4.5">
+                            @php
+                                // Get all ratings for this job
+                                $ratingsForJob = $JobPostRating->where('job_post_id', $jobDetail->id);
+                                // Calculate average rating
+                                $averageRating = $ratingsForJob->count() > 0 ? $ratingsForJob->avg('rating') : 0;
+                            @endphp
+
+                            <div class="employer-card" data-name="{{ $jobDetail->title ?? 'N/A' }}"
+                                data-industry="{{ $jobDetail->department ?? 'N/A' }}"
+                                data-location="{{ $jobDetail->location ?? 'N/A' }}" data-hiring="true"
+                                data-remote="false" data-featured="false"
+                                data-rating="{{ number_format($averageRating, 1) }}">
 
                                 <!-- Card Header -->
                                 <div class="card-header">
@@ -973,38 +981,38 @@ $hasActiveApplication =
         function sortEmployers() {
             const sortBy = document.getElementById('sortDropdown').value;
             const grid = document.getElementById('employerGrid');
-            const cards = Array.from(grid.querySelectorAll('.employer-card:not(.hidden)'));
+            const cards = Array.from(grid.querySelectorAll('.employer-card'));
 
             cards.sort((a, b) => {
                 let aValue, bValue;
 
                 switch (sortBy) {
                     case 'name':
-                        aValue = a.dataset.name;
-                        bValue = b.dataset.name;
-                        break;
+                        aValue = a.dataset.name.toLowerCase();
+                        bValue = b.dataset.name.toLowerCase();
+                        return aValue.localeCompare(bValue); // Alphabetical A → Z
                     case 'rating':
-                        aValue = parseFloat(a.dataset.rating);
-                        bValue = parseFloat(b.dataset.rating);
-                        return bValue - aValue; // Descending order for rating
+                        aValue = parseFloat(a.dataset.rating) || 0;
+                        bValue = parseFloat(b.dataset.rating) || 0;
+                        return bValue - aValue; // Descending numeric
                     case 'location':
-                        aValue = a.dataset.location;
-                        bValue = b.dataset.location;
-                        break;
+                        aValue = a.dataset.location.toLowerCase();
+                        bValue = b.dataset.location.toLowerCase();
+                        return aValue.localeCompare(bValue);
                     case 'industry':
-                        aValue = a.dataset.industry;
-                        bValue = b.dataset.industry;
-                        break;
+                        aValue = a.dataset.industry.toLowerCase();
+                        bValue = b.dataset.industry.toLowerCase();
+                        return aValue.localeCompare(bValue);
                     default:
                         return 0;
                 }
-
-                return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
             });
 
             // Re-append sorted cards
             cards.forEach(card => grid.appendChild(card));
         }
+
+
 
         // Update results count
         function updateResultsCount(count = null) {

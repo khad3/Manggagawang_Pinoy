@@ -903,7 +903,10 @@ $messages = EmployerSendMessage::with(['employer.addressCompany', 'employer.pers
     //Retrieve only profile picture
     $profile = \App\Models\Applicant\ExperienceModel::where('applicant_id', $applicantId)->first();
 
+    $JobPostRating = \App\Models\Applicant\SendRatingToJobPostModel::all();
+
     return view('applicant.homepage.homepage', compact(
+        'JobPostRating',
         'profile',
         'unreadMessagesCount',
         'pendingJoinGroupRequests',
@@ -947,6 +950,24 @@ public function ReadMessage($employerId)
 
     return response()->json(['success' => true]);
 }
+
+//Delete notification
+public function deleteNotification($id)
+{
+    $applicantId = session('applicant_id');
+    $notification = \App\Models\Notification\NotificationModel::where('id', $id)
+        ->where('type_id', $applicantId)
+        ->where('type', 'applicant')
+        ->first();
+
+    if ($notification) {
+        $notification->delete();
+        return response()->json(['success' => true]);
+    }
+
+    return response()->json(['success' => false]);
+}
+
 
 
 

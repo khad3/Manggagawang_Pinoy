@@ -92,6 +92,7 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
    // routes/web.php
     Route::post('notifications/{id}/read', [ApplicantController::class, 'ReadNotification']);
     Route::post('/notifications/mark-all-read', [ApplicantController::class, 'ReadlAllnotifications']);
+    Route::delete('/notifications/delete/{id}', [ApplicantController::class, 'deleteNotification']);
 
     Route::post('notifications/retrieve/{id}/read', [ApplicantController::class, 'ReadNotifications']);
     Route::post('notifications/retrieve/mark-all-read', [ApplicantController::class, 'markAllAsRead']);
