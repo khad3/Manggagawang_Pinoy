@@ -2730,4 +2730,28 @@ body {
     .notification-item.unread {
         background-color: #e9f5ff;
     }
+@media (max-width: 768px) {
+.dropdown-menu {
+    position: fixed !important;
+    
+    left: 50% !important;
+    transform: translate(-50%, -50%) scale(0.95) !important;
+    width: 90% !important;
+    max-width: 400px !important;
+    background: #fff !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4) !important;
+    padding: 25px 20px 20px 20px !important;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s ease;
+    z-index: 2001;
+  }
 
+  .dropdown-menu.show {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translate(-50%, -50%) scale(1) !important;
+  }
+
+}
