@@ -70,13 +70,12 @@
                               }
                           });
                       </script>
-
                       <!-- Additional Details -->
                       <div class="mb-3">
                           <label for="report_details" class="form-label fw-semibold">
                               Additional Details <span class="text-danger">*</span>
                           </label>
-                          <textarea class="form-control" id="report_details" name="details" rows="4"
+                          <textarea class="form-control" id="report_details" name="additional_info" rows="4"
                               placeholder="Please provide specific details about your concern..." required minlength="20"></textarea>
                           <small class="text-muted">Minimum 20 characters required</small>
                       </div>
