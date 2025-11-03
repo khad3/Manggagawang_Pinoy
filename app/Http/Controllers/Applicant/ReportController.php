@@ -10,43 +10,58 @@ class ReportController extends Controller
     
     //Report the employer job post
 
-    public function reportEmployerJobPost(Request $request)
-    {
-        // Validate the incoming request data
-        $request->validate([
-            'reported_id_job_id' => 'required|integer',
-            'employer_id' => 'required|integer',
-            'reason' => 'nullable|in:fraudulent,misleading,discriminatory,inappropriate,other',
-            'other_reason' => 'nullable|string|max:255',
-            'attachment' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'additional_info' => 'nullable|string',
-        ]);
+   public function reportEmployerJobPost(Request $request){
+    // Validate the incoming request data
+    $request->validate([
+        'reported_id_job_id' => 'required|integer',
+        'employer_id' => 'required|integer',
+        'reason' => 'nullable|in:fraudulent,misleading,discriminatory,inappropriate,other',
+        'other_reason' => 'nullable|string|max:255',
+        'attachment' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'additional_info' => 'nullable|string',
+    ]);
 
-        $applicantId = session('applicant_id'); 
-        if (!$applicantId) {
-            return redirect()->back()->with('error', 'Applicant not logged in.');
-        }
-
-        // Handle file upload if exists
-        $attachmentPath = $request->hasFile('attachment') 
-            ? $request->file('attachment')->store('report_attachments', 'public') 
-            : null;
-
-        // Create the report record
-        \App\Models\Report\ReportModel::create([
-            'reporter_id' => $applicantId,
-            'reporter_type' => 'applicant',
-            'reported_id' => $request->reported_id_job_id,
-            'employer_id' => $request->employer_id,
-            'reported_type' => 'employer',
-            'reason' => $request->reason,
-            'other_reason' => $request->other_reason,
-            'attachment' => $attachmentPath,
-            'additional_info' => $request->additional_info,
-        ]);
-
-        return redirect()->back()->with('success', 'Report submitted successfully.');
+    $applicantId = session('applicant_id'); 
+    if (!$applicantId) {
+        return redirect()->back()->with('error', 'Applicant not logged in.');
     }
+
+    // Handle file upload if exists
+    $attachmentPath = $request->hasFile('attachment') 
+        ? $request->file('attachment')->store('report_attachments', 'public') 
+        : null;
+
+    // Create the report record
+    \App\Models\Report\ReportModel::create([
+        'reporter_id' => $applicantId,
+        'reporter_type' => 'applicant',
+        'reported_id' => $request->reported_id_job_id,
+        'employer_id' => $request->employer_id,
+        'reported_type' => 'employer',
+        'reason' => $request->reason,
+        'other_reason' => $request->other_reason,
+        'attachment' => $attachmentPath,
+        'additional_info' => $request->additional_info,
+    ]);
+
+  // --- Create Notification for the Employer ---
+$notificationMessage = 'An applicant has submitted a report regarding your job post for the following reason: ' .
+    ($request->reason === 'other' ? ucfirst($request->other_reason) : ucfirst(str_replace('_', ' ', $request->reason))) .
+    ($request->additional_info ? '. Additional information: ' . $request->additional_info : '') .
+    '. Our moderation team will review this report and take appropriate action if necessary.';
+
+
+    $notification = new \App\Models\Notification\NotificationModel();
+    $notification->type = 'employer';
+    $notification->type_id = $request->employer_id;
+    $notification->title = 'Job Post Report Received';
+    $notification->message = $notificationMessage;
+    $notification->is_read = false;
+    $notification->save();
+
+    return redirect()->back()->with('success', 'Report submitted successfully.');
+}
+
 
 
     // End of Report the employer job post
