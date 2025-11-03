@@ -9,32 +9,33 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
     <link href="{{ asset('css/applicant/landingpage/landingpage.css') }}" rel="stylesheet" />
     <link href="{{ asset('css/applicant/employer/reviewregistration.css') }}" rel="stylesheet" />
-    
+
 
 </head>
 
 <body>
-        <nav>
+    <nav>
         <div class="navbar-container">
             <div class="nav-logo d-flex align-items-center">
-                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2" style="text-decoration:none;">
-                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home"/>
-                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2"/>
+                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2"
+                    style="text-decoration:none;">
+                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
+                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" />
                 </a>
             </div>
 
-                        <ul class="nav-links" id="navLinks">
+            <ul class="nav-links" id="navLinks">
                 <li><a href="#">Services</a></li>
                 <li><a href="{{ route('display.topworker') }}">Top Workers</a></li>
                 <li><a href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
                 <li><a href="{{ route('display.aboutus') }}">About Us</a></li>
                 <li class="dropdown">
-  <button class="sign-in-b">Sign in</button>
-  <ul class="dropdown-menu">
-    <li><a href="{{ route('applicant.login.display') }}">As Applicant</a></li>
-    <li><a href="{{ route('employer.login.display') }}">As Employer</a></li>
-  </ul>
-</li>
+                    <button class="sign-in-b">Sign in</button>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ route('applicant.login.display') }}">As Applicant</a></li>
+                        <li><a href="{{ route('employer.login.display') }}">As Employer</a></li>
+                    </ul>
+                </li>
 
                 <!-- Sign Up Dropdown -->
                 <li class="dropdown">
@@ -79,7 +80,7 @@
                                     <!-- Step 1 -->
                                     <div class="text-center">
                                         <div class="step-indicator step-completed" id="step1">
-                                           1
+                                            1
                                         </div>
                                         <div class="mt-2">
                                             <small class="fw-semibold text-dark">Job Details</small>
@@ -104,7 +105,7 @@
                                     <!-- Step 3 -->
                                     <div class="text-center">
                                         <div class="step-indicator step-completed" id="step3">
-                                           3
+                                            3
                                         </div>
                                         <div class="mt-2">
                                             <small class="fw-semibold text-dark">Preferences</small>
@@ -149,13 +150,7 @@
                                     {{ $retrievedJobDetail->job_description }}
                                 </p>
                             </div>
-                            <div class="tesda-highlight">
-                                <small class="fw-bold">
-                                    <i class="fas fa-certificate me-1"></i>TESDA Partnership
-                                    Status:
-                                </small>
-                                <br /><small>✓ {{ $retrievedCertPriority->tesda_priority }}</small>
-                            </div>
+
                         </div>
 
                     </div>
@@ -342,42 +337,9 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="summary-item">
-                                        <strong>Timeline</strong>
-                                        <div class="text-muted">
-                                            {{ $retrievedHiringTimeline->hiring_timeline ?? 'No hiring timeline' }}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="summary-item">
-                                        <strong>Workers Needed</strong>
-                                        <div class="text-muted">{{ $retrievedWorkerRequirement->number_of_workers }}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="summary-item">
-                                        <strong>Project Duration</strong>
-                                        <div class="text-muted">{{ $retrievedWorkerRequirement->project_duration }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <div class="row mt-3">
-                                <div class="col-md-6">
-                                    <strong>TESDA Priority:</strong>
-                                    <div class="mt-1">
 
-                                        <i
-                                            class="fas fa-check text-success me-2"></i>{{ $retrievedCertPriority->tesda_priority }}
 
-                                    </div>
-                                </div>
-                            </div>
 
                             <div class="mt-3">
                                 <strong>Screening Methods:</strong>
@@ -456,98 +418,98 @@
                             You'll receive an email confirmation and can start
                             receiving worker applications.
                         </div>
-                         <div class="row justify-content-center mt-4">
-                                    <div class="col-lg-8">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <button type="button" class="btn btn-outline-secondary"
-                                                onclick="previousStep()">
-                                                <i class="fas fa-arrow-left me-2"></i>Previous
-                                            </button>
-                                            <small class="text-muted">Step 4 of 4</small>
-                                              <form action="{{ route('employer.sendVerificationEmail') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="account_email" value="{{ $retriedAccountInfo->email }}">
-                                            <button type="submit" class="btn btn-primary-custom"> Submit <i
-                                                    class="fas fa-arrow-right ms-2"></i></button>
-                        
+                        <div class="row justify-content-center mt-4">
+                            <div class="col-lg-8">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <button type="button" class="btn btn-outline-secondary"
+                                        onclick="previousStep()">
+                                        <i class="fas fa-arrow-left me-2"></i>Previous
+                                    </button>
+                                    <small class="text-muted">Step 4 of 4</small>
+                                    <form action="{{ route('employer.sendVerificationEmail') }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="account_email"
+                                            value="{{ $retriedAccountInfo->email }}">
+                                        <button type="submit" class="btn btn-primary-custom"> Submit <i
+                                                class="fas fa-arrow-right ms-2"></i></button>
+
+                                    </form>
+                                </div>
+
+                            </div>
+                        </div>
+
+
                         </form>
                     </div>
-                    
-                </div>
-            </div>
-
-        
-    </form>
-</div>
 
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function submitRegistration() {
-            // Check all required checkboxes
-            const requiredCheckboxes = [
-                "reviewComplete",
-                "agreeTerms",
-                "communicationConsent",
-                "dataProcessing",
-            ];
+                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+                    <script>
+                        function submitRegistration() {
+                            // Check all required checkboxes
+                            const requiredCheckboxes = [
+                                "reviewComplete",
+                                "agreeTerms",
+                                "communicationConsent",
+                                "dataProcessing",
+                            ];
 
-            let allChecked = true;
-            requiredCheckboxes.forEach((id) => {
-                if (!document.getElementById(id).checked) {
-                    allChecked = false;
-                }
-            });
+                            let allChecked = true;
+                            requiredCheckboxes.forEach((id) => {
+                                if (!document.getElementById(id).checked) {
+                                    allChecked = false;
+                                }
+                            });
 
-            if (!allChecked) {
-                alert(
-                    "Please complete all required checkboxes before submitting.",
-                );
-                return;
-            }
+                            if (!allChecked) {
+                                alert(
+                                    "Please complete all required checkboxes before submitting.",
+                                );
+                                return;
+                            }
 
-            // Show loading state
-            const submitBtn = document.getElementById("submitBtn");
-            submitBtn.innerHTML =
-                '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
-            submitBtn.disabled = true;
+                            // Show loading state
+                            const submitBtn = document.getElementById("submitBtn");
+                            submitBtn.innerHTML =
+                                '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
+                            submitBtn.disabled = true;
 
-            // Simulate submission delay
-            setTimeout(() => {
-                window.location.href = "{{ route('employer.successregistration.display') }}";
-            }, 2000);
-        }
+                            // Simulate submission delay
+                            setTimeout(() => {
+                                window.location.href = "{{ route('employer.successregistration.display') }}";
+                            }, 2000);
+                        }
 
-        function previousStep() {
-            window.location.href = "{{ route('employer.hiringpreference.display') }}";
-        }
+                        function previousStep() {
+                            window.location.href = "{{ route('employer.hiringpreference.display') }}";
+                        }
 
 
-                document.addEventListener('DOMContentLoaded', function () {
-            const hamburger = document.getElementById('hamburger');
-            const navLinks = document.getElementById('navLinks');
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const hamburger = document.getElementById('hamburger');
+                            const navLinks = document.getElementById('navLinks');
 
-            if (!hamburger || !navLinks) return;
+                            if (!hamburger || !navLinks) return;
 
-            hamburger.addEventListener('click', function () {
-                navLinks.classList.toggle('active');
-                hamburger.classList.toggle('active');
-                document.body.classList.toggle('noscroll');
-            });
+                            hamburger.addEventListener('click', function() {
+                                navLinks.classList.toggle('active');
+                                hamburger.classList.toggle('active');
+                                document.body.classList.toggle('noscroll');
+                            });
 
-            // Close menu when any nav link/button is clicked (mobile)
-            navLinks.querySelectorAll('a, button').forEach(link => {
-                link.addEventListener('click', function () {
-                    if (navLinks.classList.contains('active')) {
-                        navLinks.classList.remove('active');
-                        hamburger.classList.remove('active');
-                        document.body.classList.remove('noscroll');
-                    }
-                });
-            });
-        });
-
-    </script>
+                            // Close menu when any nav link/button is clicked (mobile)
+                            navLinks.querySelectorAll('a, button').forEach(link => {
+                                link.addEventListener('click', function() {
+                                    if (navLinks.classList.contains('active')) {
+                                        navLinks.classList.remove('active');
+                                        hamburger.classList.remove('active');
+                                        document.body.classList.remove('noscroll');
+                                    }
+                                });
+                            });
+                        });
+                    </script>
 </body>
 
 </html>

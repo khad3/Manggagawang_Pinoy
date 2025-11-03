@@ -42,7 +42,7 @@
         <!-- Action Buttons -->
         <div class="mt-5">
             <a href="{{ route('employer.login.display') }}" class="btn btn-primary-custom btn-lg me-3">
-                <i class="fas fa-home me-2"></i>Return to Homepage
+                <i class="fas fa-home me-2"></i>Return to login
             </a>
             <a href="{{ route('display.aboutus') }}" class="btn btn-outline-secondary btn-lg">
                 <i class="fas fa-phone me-2"></i>Contact Support

@@ -421,42 +421,10 @@ public function resetPassword(Request $request)
     // Retrieve personal_info_id (scalar)
     $personal_info_id = PersonalInformation::where('employer_id', $employer_id)->value('id');
 
-    // Validate TESDA certification priority
-    $request->validate([
-        'tesda_certi_priority' => 'required|string',
-    ]);
+ 
+  
 
-    $tesdaPriority = new CertPriority();
-    $tesdaPriority->employer_id = $employer_id;
-    $tesdaPriority->personal_info_id = $personal_info_id;
-    $tesdaPriority->tesda_priority = $request->tesda_certi_priority;
-    $tesdaPriority->save();
-
-    // Validate Hiring Timeline
-    $request->validate([
-        'hiring_timeline' => 'required|string',
-    ]);
-
-    $hiringTimeline = new HiringTimeline();
-    $hiringTimeline->employer_id = $employer_id;
-    $hiringTimeline->personal_info_id = $personal_info_id;
-    $hiringTimeline->hiring_timeline = $request->hiring_timeline;
-    $hiringTimeline->save();
-
-    // Validate Worker Requirements
-    $request->validate([
-        'workers_needed' => 'required|string',
-        'project_duration' => 'required|string',
-        'worker_experience' => 'required|array',
-    ]);
-
-    $workerRequirement = new WorkerRequirement();
-    $workerRequirement->employer_id = $employer_id;
-    $workerRequirement->personal_info_id = $personal_info_id;
-    $workerRequirement->number_of_workers = $request->workers_needed;
-    $workerRequirement->project_duration = $request->project_duration;
-    $workerRequirement->skill_requirements = json_encode($request->worker_experience); // Save as JSON
-    $workerRequirement->save();
+  
 
     // Validate Interview Screening
     $request->validate([
@@ -840,8 +808,12 @@ $reportedApplicantIds = \App\Models\Report\ReportModel::where('reporter_id', $em
 
     $isSuspended = \App\Models\Admin\SuspensionModel::where('employer_id', $employerId)->exists();
 
-    $retrievedApplicantReported = \App\Models\Report\ReportModel::where('reported_type', 'applicant')
-    ->with('appplicantReported.personal_info' ,  'appplicantReported.work_background') // assuming you have a relationship
+   $retrievedApplicantReported = \App\Models\Report\ReportModel::where('reported_type', 'applicant')
+    ->where('reporter_id', $employerId) // filter reports made by this employer
+    ->with([
+        'appplicantReported.personal_info',
+        'appplicantReported.work_background'
+    ]) // eager-load applicant relationships
     ->get();
 
     //decrypted

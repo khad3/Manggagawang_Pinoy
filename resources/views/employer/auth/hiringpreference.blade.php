@@ -15,9 +15,10 @@
     <nav>
         <div class="navbar-container">
             <div class="nav-logo d-flex align-items-center">
-                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2" style="text-decoration:none;">
-                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home"/>
-                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2"/>
+                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2"
+                    style="text-decoration:none;">
+                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
+                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" />
                 </a>
             </div>
             <ul class="nav-links" id="navLinks">
@@ -46,72 +47,73 @@
     </nav>
 
 
-            <!-- Step Content (single card only now) -->
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <div class="card form-card">
-                            <div class="registration-container">
-        <div class="container">
-            <!-- Header -->
-            <div class="text-center mb-5">
-                <h1 class="display-4 fw-bold text-dark mb-3">
-                    Employer Registration
-                </h1>
-                <p class="lead text-muted">
-                    Find TESDA-certified skilled workers and blue collar professionals
-                    for your projects
-                </p>
-            </div>
+    <!-- Step Content (single card only now) -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card form-card">
+                <div class="registration-container">
+                    <div class="container">
+                        <!-- Header -->
+                        <div class="text-center mb-5">
+                            <h1 class="display-4 fw-bold text-dark mb-3">
+                                Employer Registration
+                            </h1>
+                            <p class="lead text-muted">
+                                Find TESDA-certified skilled workers and blue collar professionals
+                                for your projects
+                            </p>
+                        </div>
 
-            <!-- Progress Stepper -->
-            <div class="row justify-content-center mb-5">
-                <div class="col-lg-10">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <!-- Step 1 -->
-                        <div class="text-center">
-                            <div class="step-indicator step-completed" id="step1">
-                            1
-                            </div>
-                            <div class="mt-2">
-                                <small class="fw-semibold text-dark">Job Details</small>
-                                <br /><small class="text-muted d-none d-sm-block">Position requirements</small>
+                        <!-- Progress Stepper -->
+                        <div class="row justify-content-center mb-5">
+                            <div class="col-lg-10">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <!-- Step 1 -->
+                                    <div class="text-center">
+                                        <div class="step-indicator step-completed" id="step1">
+                                            1
+                                        </div>
+                                        <div class="mt-2">
+                                            <small class="fw-semibold text-dark">Job Details</small>
+                                            <br /><small class="text-muted d-none d-sm-block">Position
+                                                requirements</small>
+                                        </div>
+                                    </div>
+                                    <div class="step-line step-line-completed" id="line1"></div>
+
+                                    <!-- Step 2 -->
+                                    <div class="text-center">
+                                        <div class="step-indicator step-completed" id="step2">
+                                            2
+                                        </div>
+                                        <div class="mt-2">
+                                            <small class="fw-semibold text-dark">Contact</small>
+                                            <br /><small class="text-muted d-none d-sm-block">Your contact info</small>
+                                        </div>
+                                    </div>
+                                    <div class="step-line step-line-completed" id="line2"></div>
+
+                                    <!-- Step 3 -->
+                                    <div class="text-center">
+                                        <div class="step-indicator step-active" id="step3">3</div>
+                                        <div class="mt-2">
+                                            <small class="fw-semibold text-dark">Preferences</small>
+                                            <br /><small class="text-muted d-none d-sm-block">Hiring preferences</small>
+                                        </div>
+                                    </div>
+                                    <div class="step-line" id="line3"></div>
+
+                                    <!-- Step 4 -->
+                                    <div class="text-center">
+                                        <div class="step-indicator step-inactive" id="step4">4</div>
+                                        <div class="mt-2">
+                                            <small class="fw-semibold text-muted">Review</small>
+                                            <br /><small class="text-muted d-none d-sm-block">Review & submit</small>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="step-line step-line-completed" id="line1"></div>
-
-                        <!-- Step 2 -->
-                        <div class="text-center">
-                            <div class="step-indicator step-completed" id="step2">
-                               2
-                            </div>
-                            <div class="mt-2">
-                                <small class="fw-semibold text-dark">Contact</small>
-                                <br /><small class="text-muted d-none d-sm-block">Your contact info</small>
-                            </div>
-                        </div>
-                        <div class="step-line step-line-completed" id="line2"></div>
-
-                        <!-- Step 3 -->
-                        <div class="text-center">
-                            <div class="step-indicator step-active" id="step3">3</div>
-                            <div class="mt-2">
-                                <small class="fw-semibold text-dark">Preferences</small>
-                                <br /><small class="text-muted d-none d-sm-block">Hiring preferences</small>
-                            </div>
-                        </div>
-                        <div class="step-line" id="line3"></div>
-
-                        <!-- Step 4 -->
-                        <div class="text-center">
-                            <div class="step-indicator step-inactive" id="step4">4</div>
-                            <div class="mt-2">
-                                <small class="fw-semibold text-muted">Review</small>
-                                <br /><small class="text-muted d-none d-sm-block">Review & submit</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
                         <div class="card-header bg-white border-0 py-4">
                             <h3 class="card-title mb-2">Hiring Preferences</h3>
                             <p class="text-muted mb-0">
@@ -159,165 +161,13 @@
                             <form id="preferencesForm" action="{{ route('employer.hiringpreference.store') }}"
                                 method="POST">
                                 @csrf
-                                <div class="tesda-priority">
-                                    <h5 class="">
-                                        <i class="fas fa-certificate me-2"></i>TESDA Certification Priority
-                                    </h5>
 
-                                    <div class="form-check mb-3">
-                                        <input class="form-check-input" type="radio" name="tesda_certi_priority"
-                                            id="tesdaOnly" value="Only consider TESDA-certified workers" required>
-                                        <label class="form-check-label fw-bold" for="tesdaOnly"> Only consider
-                                            TESDA-certified workers </label>
-                                        <div class="text-muted small mt-1"> Strictly filter candidates to only those
-                                            with valid TESDA certifications </div>
-                                    </div>
-
-                                    <div class="form-check mb-3">
-                                        <input class="form-check-input" type="radio" name="tesda_certi_priority"
-                                            id="tesdaPreferred" value="Prefer TESDA-certified but consider others">
-                                        <label class="form-check-label fw-bold" for="tesdaPreferred"> Prefer
-                                            TESDA-certified but consider others </label>
-                                        <div class="text-muted small mt-1"> Prioritize TESDA-certified workers but
-                                            accept skilled workers with equivalent experience </div>
-                                    </div>
-
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="tesda_certi_priority"
-                                            id="skillsBased"
-                                            value="Skills-based evaluation (certification not required)">
-                                        <label class="form-check-label fw-bold" for="skillsBased"> Skills-based
-                                            evaluation (certification not required) </label>
-                                        <div class="text-muted small mt-1"> Evaluate candidates based on practical
-                                            skills and experience regardless of certification </div>
-                                    </div>
-                                </div>
-
-
-                                <!-- Hiring Timeline -->
-                                <div class="preference-card">
-                                    <h5 class="fw-bold mb-3">
-                                        <i class="fas fa-clock text-primary me-2"></i>Hiring Timeline
-                                    </h5>
-                                    <p class="text-muted mb-3">When do you need workers to start?</p>
-
-                                    <!-- Immediate Option -->
-                                    <div class="timeline-option" onclick="selectTimeline(this, 'immediate')">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="hiring_timeline"
-                                                id="timeline_immediate" value="Immediate (within 1 week)" />
-                                            <label class="form-check-label fw-bold" for="timeline_immediate">
-                                                Immediate (within 1 week) </label>
-                                            <div class="text-muted small"> Urgent requirement - workers needed ASAP
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Soon Option -->
-                                    <div class="timeline-option" onclick="selectTimeline(this, 'soon')">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="hiring_timeline"
-                                                id="timeline_soon" value="Within 2-4 weeks" />
-                                            <label class="form-check-label fw-bold" for="timeline_soon"> Within 2-4
-                                                weeks </label>
-                                            <div class="text-muted small"> Normal timeline for project planning </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- 1-2 Months Option -->
-                                    <div class="timeline-option" onclick="selectTimeline(this, 'month')">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="hiring_timeline"
-                                                id="timeline_month" value="Within 1-2 months" />
-                                            <label class="form-check-label fw-bold" for="timeline_month"> Within 1-2
-                                                months </label>
-                                            <div class="text-muted small"> Planning ahead for upcoming projects </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Flexible Option -->
-                                    <div class="timeline-option" onclick="selectTimeline(this, 'flexible')">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="hiring_timeline"
-                                                id="timeline_flexible" value="Flexible timeline" />
-                                            <label class="form-check-label fw-bold" for="timeline_flexible"> Flexible
-                                                timeline </label>
-                                            <div class="text-muted small"> Building a candidate pool for future needs
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <!-- Worker Requirements -->
-                                <div class="preference-card">
-                                    <h5 class="fw-bold mb-3">
-                                        <i class="fas fa-users text-success me-2"></i>Worker
-                                        Requirements
-                                    </h5>
-
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label for="workersNeeded" class="form-label">Number of Workers
-                                                Needed</label>
-                                            <select class="form-select" id="workersNeeded" name="workers_needed">
-                                                <option value="">Select number</option>
-                                                <option value="1 worker">1 worker</option>
-                                                <option value="2-5 workers">2-5 workers</option>
-                                                <option value="6-10 workers">6-10 workers</option>
-                                                <option value="11-20 workers">11-20 workers</option>
-                                                <option value="20+  workers">More than 20 workers</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="projectDuration" class="form-label">Project Duration</label>
-                                            <select class="form-select" id="projectDuration" name="project_duration">
-                                                <option value="">Select duration</option>
-                                                <option value="Daily/Per day">Daily/Per day</option>
-                                                <option value="Weekly">Weekly</option>
-                                                <option value="Monthly">Monthly</option>
-                                                <option value="3-months">3-6 months</option>
-                                                <option value="6-months">6-12 months</option>
-                                                <option value="Permanent position">Permanent position</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label">Worker Experience Preference</label>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox"
-                                                name="worker_experience[]"
-                                                value="Apprentice-level workers (0-1 years experience)"
-                                                id="apprenticeOk" />
-                                            <label class="form-check-label" for="apprenticeOk">
-                                                Accept apprentice-level workers (0-1 years)
-                                            </label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" name="worker_experience[]"
-                                                value="Skilled workers (2-5 years experience)" type="checkbox"
-                                                id="skilledWorkers" />
-                                            <label class="form-check-label" for="skilledWorkers">
-                                                Skilled workers (2-5 years experience)
-                                            </label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" name="worker_experience[]"
-                                                value="Experienced craftsmen (6+ years experience)" type="checkbox"
-                                                id="experiencedWorkers" />
-                                            <label class="form-check-label" for="experiencedWorkers">
-                                                Experienced craftsmen (6+ years)
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
 
                                 <!-- Interview & Screening Preferences -->
                                 <div class="preference-card">
                                     <h5 class="fw-bold mb-3">
                                         <i class="fas fa-clipboard-check text-warning me-2"></i>Interview & Screening
-                                        Preferences
+                                        Preferences<span style="color: red;">*</span>
                                     </h5>
 
                                     <div class="mb-3">
@@ -394,7 +244,7 @@
                                 <div class="preference-card">
                                     <h5 class="fw-bold mb-3">
                                         <i class="fas fa-exclamation-triangle text-danger me-2"></i>Special
-                                        Requirements
+                                        Requirements<span style="color: red;">*</span>
                                     </h5>
 
                                     <div class="switch-container">
@@ -463,42 +313,42 @@
                                 </div>
                             </form>
 
+                        </div>
                     </div>
                 </div>
+
+
             </div>
-
-
         </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function selectTimeline(element, value) {
-            // Remove selected class from all timeline options
-            document
-                .querySelectorAll(".timeline-option")
-                .forEach((option) => option.classList.remove("selected"));
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            function selectTimeline(element, value) {
+                // Remove selected class from all timeline options
+                document
+                    .querySelectorAll(".timeline-option")
+                    .forEach((option) => option.classList.remove("selected"));
 
-            // Add selected class to clicked option
-            element.classList.add("selected");
+                // Add selected class to clicked option
+                element.classList.add("selected");
 
-            // Check the radio button
-            document.getElementById(value).checked = true;
-        }
-
-        function nextStep() {
-            const form = document.getElementById("preferencesForm");
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
+                // Check the radio button
+                document.getElementById(value).checked = true;
             }
-            window.location.href = "{{ route('employer.reviewregistration.display') }}";
-        }
 
-        function previousStep() {
-            window.location.href = "{{ route('employer.contact.display') }}";
-        }
-    </script>
+            function nextStep() {
+                const form = document.getElementById("preferencesForm");
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+                window.location.href = "{{ route('employer.reviewregistration.display') }}";
+            }
+
+            function previousStep() {
+                window.location.href = "{{ route('employer.contact.display') }}";
+            }
+        </script>
 </body>
 
 </html>
