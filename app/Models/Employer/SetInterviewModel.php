@@ -18,4 +18,8 @@ class SetInterviewModel extends Model
         'preferred_screening_method',
         'additional_notes'
     ];
+
+    public function employer() {
+        return $this->belongsTo(AccountInformationModel::class, 'employer_id');
+    }
 }

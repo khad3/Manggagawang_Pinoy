@@ -275,7 +275,7 @@ Route::prefix('admin')->group(function () {
 });
 
 Route::middleware(['admin.authenticate'])->prefix('admin')->group(function () {
-    Route::delete('delete-account/{id}/{type}', [AdminController::class, 'deleteApplicantOrEmployer'])->name('admin.deleteaccount.destroy');
+Route::delete('/delete-account/{id}', [AdminController::class, 'deleteApplicantOrEmployer'])->name('admin.deleteaccount.destroy');
 
     Route::get('homepage', [AdminController::class, 'homepageDisplay'])->name('admin.homepage.display');
     Route::post('logout', [AdminController::class, 'logout'])->name('admin.logout.store');

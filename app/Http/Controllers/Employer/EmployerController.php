@@ -1206,6 +1206,7 @@ public function setScheduleInterviewByEmployer(Request $request)
         'applicant_id' => 'required|exists:applicants,id',
     ]);
 
+    // Create the interview record
     $interview = new \App\Models\Employer\SetInterviewModel();
     $interview->employer_id = $employer_id;
     $interview->applicant_id = $request->input('applicant_id');
@@ -1216,21 +1217,36 @@ public function setScheduleInterviewByEmployer(Request $request)
     $interview->additional_notes = $request->input('additional_notes');
     $interview->save();
 
-   //  Send notification to the applicant
+    // Load employer relationship (if exists)
+    $interview->load('employer.addressCompany');
+
+    // Prepare company details safely
+    $companyName = $interview->employer->addressCompany->company_name ?? 'the employer';
+    $companyAddress = $interview->employer->addressCompany->company_complete_address ?? 'the provided address';
+    $municipality = $interview->employer->addressCompany->company_municipality ?? '';
+    $province = $interview->employer->addressCompany->company_province ?? '';
+    $companyZipcode = $interview->employer->addressCompany->company_zipcode ?? '';
+
+    // Send notification to applicant
     $notification = new \App\Models\Notification\NotificationModel();
     $notification->type = 'applicant';
     $notification->type_id = $request->input('applicant_id');
-    $notification->title = 'Interview Invitation';
-    $notification->message = 'Good news! An employer has scheduled an interview for you on ' .
-    date('F d, Y g:i A', strtotime($request->input('interview_datetime'))) .
-    ' at ' . $request->input('interview_location') . 
-    '. Please make sure to arrive on time and prepare accordingly.';
+    $notification->title = 'Congratulations! You’ve Been Selected for an Interview';
+    $notification->message =
+        'We’re pleased to inform you that ' . $companyName . ' has selected you for an interview. ' .
+        'Your interview is scheduled on <strong>' . date('F d, Y g:i A', strtotime($request->input('interview_datetime'))) . '</strong> ' .
+        'at <strong>' . $request->input('interview_location') . '</strong>.' . '<br><br>' .
+        '📍 Company Address: ' . $companyAddress . ', ' . $municipality . ', ' . $province . ' ' . $companyZipcode . '.' . '<br><br>' .
+        'Please make sure to arrive on time and come prepared. ' .
+        'If you have any questions or need to reschedule, kindly reach out to the employer in advance.' . '<br><br>' .
+        '<strong>Additional Notes:</strong> ' . ($request->input('additional_notes') ?? 'None') . '<br><br>' .
+        'We wish you the best of luck with your interview!';
     $notification->is_read = false;
     $notification->save();
 
-
     return back()->with('success', 'Interview scheduled successfully and notification sent to applicant.');
 }
+
 
 
 

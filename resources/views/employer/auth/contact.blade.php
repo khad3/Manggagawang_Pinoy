@@ -13,27 +13,28 @@
 </head>
 
 <body>
-  <nav>
+    <nav>
         <div class="navbar-container">
             <div class="nav-logo d-flex align-items-center">
-                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2" style="text-decoration:none;">
-                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home"/>
-                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2"/>
+                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2"
+                    style="text-decoration:none;">
+                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
+                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" />
                 </a>
             </div>
 
-                        <ul class="nav-links" id="navLinks">
+            <ul class="nav-links" id="navLinks">
                 <li><a href="#">Services</a></li>
                 <li><a href="{{ route('display.topworker') }}">Top Workers</a></li>
                 <li><a href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
                 <li><a href="{{ route('display.aboutus') }}">About Us</a></li>
                 <li class="dropdown">
-  <button class="sign-in-b">Sign in</button>
-  <ul class="dropdown-menu">
-    <li><a href="{{ route('applicant.login.display') }}">As Applicant</a></li>
-    <li><a href="{{ route('employer.login.display') }}">As Employer</a></li>
-  </ul>
-</li>
+                    <button class="sign-in-b">Sign in</button>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ route('applicant.login.display') }}">As Applicant</a></li>
+                        <li><a href="{{ route('employer.login.display') }}">As Employer</a></li>
+                    </ul>
+                </li>
 
                 <!-- Sign Up Dropdown -->
                 <li class="dropdown">
@@ -79,7 +80,7 @@
                                     <!-- Step 1 -->
                                     <div class="text-center">
                                         <div class="step-indicator step-completed" id="step1">
-                                           1
+                                            1
                                         </div>
                                         <div class="mt-2">
                                             <small class="fw-semibold text-dark">Job Details</small>
@@ -172,7 +173,8 @@
 
                                     <div class="row mb-4">
                                         <div class="col-md-6">
-                                            <label for="accountEmail" class="form-label">Email Address *</label>
+                                            <label for="accountEmail" class="form-label">Email Address <span
+                                                    style="color: red;">*</span></label>
                                             <input type="email" class="form-control" id="accountEmail"
                                                 name="account_email" placeholder="e.g. employer@company.com"
                                                 required />
@@ -181,7 +183,8 @@
 
                                     <div class="row mb-4">
                                         <div class="col-md-6">
-                                            <label for="password" class="form-label">Password *</label>
+                                            <label for="password" class="form-label">Password <span
+                                                    style="color: red;">*</span></label>
                                             <div class="input-group">
                                                 <input type="password" class="form-control" id="password"
                                                     name="password" placeholder="Create a password" minlength="8"
@@ -201,7 +204,7 @@
 
                                         <div class="col-md-6">
                                             <label for="password_confirmation" class="form-label">Confirm Password
-                                                *</label>
+                                                <span style="color: red;">*</span></label>
                                             <div class="input-group">
                                                 <input type="password" class="form-control"
                                                     id="password_confirmation" name="password_confirmation"
@@ -227,12 +230,14 @@
 
                                 <div class="row mb-4">
                                     <div class="col-md-6">
-                                        <label for="firstName" class="form-label">First Name *</label>
+                                        <label for="firstName" class="form-label">First Name <span
+                                                style="color: red;">*</span></label>
                                         <input type="text" class="form-control" id="firstName" name="first_name"
                                             placeholder="Enter your first name" required />
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="lastName" class="form-label">Last Name *</label>
+                                        <label for="lastName" class="form-label">Last Name <span
+                                                style="color: red;">*</span></label>
                                         <input type="text" class="form-control" name="last_name" id="lastName"
                                             placeholder="Enter your last name" required />
                                     </div>
@@ -240,12 +245,14 @@
 
                                 <div class="row mb-4">
                                     <div class="col-md-6">
-                                        <label for="email" class="form-label">Email Address *</label>
+                                        <label for="email" class="form-label">Email Address <span
+                                                style="color: red;">*</span></label>
                                         <input type="email" class="form-control" name="email" id="email"
                                             placeholder="your.email@company.com" required />
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="phone" class="form-label">Phone Number *</label>
+                                        <label for="phone" class="form-label">Phone Number <span
+                                                style="color: red;">*</span></label>
                                         <input type="tel" class="form-control" name="phone_number"
                                             id="phone" placeholder="e.g. 09XX XXX XXXX" required />
                                     </div>
@@ -253,13 +260,15 @@
 
                                 <div class="row mb-4">
                                     <div class="col-md-6">
-                                        <label for="jobTitle" class="form-label">Your Job Title *</label>
+                                        <label for="jobTitle" class="form-label">Your Job Title <span
+                                                style="color: red;">*</span></label>
                                         <input type="text" class="form-control" name="employer_job_title"
                                             id="jobTitle" placeholder="e.g. HR Manager, Project Manager, Owner"
                                             required />
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="department" class="form-label">Department</label>
+                                        <label for="department" class="form-label">Department <span
+                                                style="color: red;">*</span></label>
                                         <select class="form-select" id="department" name="employer_department">
                                             <option value="">Select department</option>
                                             <option value="Management">Management</option>
@@ -281,14 +290,16 @@
                                         <i class="fas fa-building text-warning me-2"></i>Company Address
                                     </h5>
                                     <div class="mb-4">
-                                        <label for="address" class="form-label">Company Name *</label>
+                                        <label for="address" class="form-label">Company Name <span
+                                                style="color: red;">*</span></label>
                                         <input type="text" class="form-control" id="companyname"
                                             name="company_name" placeholder="e.g. ABC Construction Company"
                                             required />
                                     </div>
 
                                     <div class="mb-4">
-                                        <label for="address" class="form-label">Street Address *</label>
+                                        <label for="address" class="form-label">Street Address <span
+                                                style="color: red;">*</span></label>
                                         <input type="text" class="form-control" id="address"
                                             name="complete_address" placeholder="Complete street address" required />
                                     </div>
@@ -296,7 +307,7 @@
                                     <div class="row mb-4">
                                         <div class="col-md-6">
                                             <label for="city" class="form-label">City / Municipality in Cavite
-                                                *</label>
+                                                <span style="color: red;">*</span></label>
                                             <select class="form-select" id="city" name="municipality" required>
                                                 <option value="">Select city or municipality</option>
                                                 <option value="Alfonso">Alfonso</option>
@@ -328,13 +339,14 @@
                                         </div>
 
                                         <div class="col-md-3">
-                                            <label for="zipCode" class="form-label">ZIP/Postal Code</label>
+                                            <label for="zipCode" class="form-label">ZIP/Postal Code<span
+                                                    style="color: red;">*</span></label>
                                             <input type="text" class="form-control" id="zipCode"
                                                 name="zip_code" placeholder="e.g. 4114" />
                                         </div>
 
                                         <div class="col-md-3">
-                                            <label for="province" class="form-label">Province *</label>
+                                            <label for="province" class="form-label">Province </label>
                                             <input type="text" class="form-control" id="province"
                                                 name="province" value="Cavite" readonly />
                                         </div>
@@ -399,7 +411,8 @@
 
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <label class="form-label">Preferred Contact Method *</label>
+                                            <label class="form-label">Preferred Contact Method <span
+                                                    style="color: red;">*</span></label>
                                             <div class="form-check mb-2">
                                                 <input class="form-check-input" type="radio" name="contact_method"
                                                     id="contactEmail" value="email" required />
@@ -452,13 +465,15 @@
                                     </h5>
 
                                     <div class="mb-4">
-                                        <label for="workHours" class="form-label">Typical Work Hours</label>
+                                        <label for="workHours" class="form-label">Typical Work Hours<span
+                                                style="color: red;">*</span></label>
                                         <input type="text" class="form-control" name="typical_working_hours"
                                             id="workHours" placeholder="e.g. 7:00 AM - 5:00 PM, Monday to Saturday" />
                                     </div>
 
                                     <div class="mb-4">
-                                        <label for="notes" class="form-label">Special Instructions or Notes</label>
+                                        <label for="notes" class="form-label">Special Instructions or Notes<span
+                                                style="color: red;">*</span></label>
                                         <textarea class="form-control" name="special_instructions" id="notes" rows="3"
                                             placeholder="Any additional information about your project, location, or requirements..."></textarea>
                                     </div>
@@ -498,45 +513,46 @@
     </div>
     </div>
     <script>
-document.addEventListener("DOMContentLoaded", function () {
-  const hamburger = document.getElementById("hamburger");
-  const navLinks = document.getElementById("navLinks");
+        document.addEventListener("DOMContentLoaded", function() {
+            const hamburger = document.getElementById("hamburger");
+            const navLinks = document.getElementById("navLinks");
 
-  if (!hamburger || !navLinks) return;
+            if (!hamburger || !navLinks) return;
 
-  // Toggle menu visibility
-  hamburger.addEventListener("click", function (e) {
-    e.stopPropagation();
-    hamburger.classList.toggle("active");
-    navLinks.classList.toggle("active");
-  });
+            // Toggle menu visibility
+            hamburger.addEventListener("click", function(e) {
+                e.stopPropagation();
+                hamburger.classList.toggle("active");
+                navLinks.classList.toggle("active");
+            });
 
-  // Close menu when clicking outside
-  document.addEventListener("click", function (e) {
-    if (!navLinks.contains(e.target) && !hamburger.contains(e.target)) {
-      hamburger.classList.remove("active");
-      navLinks.classList.remove("active");
-    }
-  });
+            // Close menu when clicking outside
+            document.addEventListener("click", function(e) {
+                if (!navLinks.contains(e.target) && !hamburger.contains(e.target)) {
+                    hamburger.classList.remove("active");
+                    navLinks.classList.remove("active");
+                }
+            });
 
-  // Handle dropdown buttons (Sign in / Sign up)
-  document.querySelectorAll(".dropdown button").forEach(btn => {
-    btn.addEventListener("click", e => {
-      e.stopPropagation();
-      const dropdown = btn.closest(".dropdown");
-      dropdown.classList.toggle("active");
-    });
-  });
+            // Handle dropdown buttons (Sign in / Sign up)
+            document.querySelectorAll(".dropdown button").forEach(btn => {
+                btn.addEventListener("click", e => {
+                    e.stopPropagation();
+                    const dropdown = btn.closest(".dropdown");
+                    dropdown.classList.toggle("active");
+                });
+            });
 
-  // Close dropdown when a link is clicked
-  document.querySelectorAll(".dropdown-menu a").forEach(link => {
-    link.addEventListener("click", () => {
-      document.querySelectorAll(".dropdown.active").forEach(d => d.classList.remove("active"));
-      hamburger.classList.remove("active");
-      navLinks.classList.remove("active");
-    });
-  });
-});
+            // Close dropdown when a link is clicked
+            document.querySelectorAll(".dropdown-menu a").forEach(link => {
+                link.addEventListener("click", () => {
+                    document.querySelectorAll(".dropdown.active").forEach(d => d.classList.remove(
+                        "active"));
+                    hamburger.classList.remove("active");
+                    navLinks.classList.remove("active");
+                });
+            });
+        });
 
         function checkPasswordStrength(password) {
             const strengthBar = document.getElementById('passwordStrengthBar');

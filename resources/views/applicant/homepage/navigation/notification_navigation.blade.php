@@ -92,7 +92,7 @@
                             <i class="bi bi-info-circle-fill text-success fs-5"></i>
                         </div>
 
-                        <!-- Move modal trigger and onclick to this inner wrapper -->
+                        <!-- Clickable area (shows modal + mark as read) -->
                         <div class="notification-content flex-grow-1" style="cursor:pointer;" data-bs-toggle="modal"
                             data-bs-target="#viewRetrieveModal-{{ $note->id }}"
                             onclick="markAsReadRetrieve({{ $note->id }})">
@@ -100,15 +100,18 @@
                             <div class="notification-title fw-semibold text-dark mb-1">
                                 {{ $note->title ?? 'Retrieved Notification' }}
                             </div>
+
+                            <!-- Short preview (limit + remove HTML tags) -->
                             <div class="notification-message text-muted small mb-1">
-                                {{ Str::limit($note->message ?? 'No message available', 100, '...') }}
+                                {{ Str::limit(strip_tags($note->message ?? 'No message available'), 120, '...') }}
                             </div>
+
                             <div class="notification-time text-muted small">
                                 {{ $note->created_at->diffForHumans() }}
                             </div>
                         </div>
 
-                        <!-- ❌ Delete Button (stopPropagation prevents modal) -->
+                        <!--  Delete Button -->
                         <button type="button" class="btn btn-sm text-danger position-absolute top-0 end-0 me-1 mt-1"
                             style="font-size: 14px;" title="Delete notification"
                             onclick="event.stopPropagation(); deleteNotification({{ $note->id }})">
@@ -116,21 +119,24 @@
                         </button>
                     </div>
 
-                    <!-- Modal for Retrieved Notification (No Backdrop) -->
+                    <!-- Full Notification Modal (No Backdrop, Scrollable Body) -->
                     <div class="modal fade" id="viewRetrieveModal-{{ $note->id }}" tabindex="-1"
                         aria-hidden="true" data-bs-backdrop="false" data-bs-keyboard="true">
-                        <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-dialog modal-dialog-centered modal-lg">
                             <div class="modal-content rounded-4 shadow border-0">
                                 <div class="modal-header bg-light">
                                     <h5 class="modal-title fw-semibold">{{ $note->title }}</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                 </div>
-                                <div class="modal-body">
-                                    <p class="text-muted">{{ $note->message ?? 'No details available.' }}</p>
-                                    <small class="text-secondary">
+
+                                <!--  Scrollable Body for long text -->
+                                <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                                    <p class="text-muted">{!! $note->message ?? 'No details available.' !!}</p>
+                                    <small class="text-secondary d-block mt-3">
                                         Received {{ $note->created_at->diffForHumans() }}
                                     </small>
                                 </div>
+
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-sm btn-secondary"
                                         data-bs-dismiss="modal">Close</button>
@@ -140,6 +146,7 @@
                     </div>
                 @endforeach
             @endif
+
 
             {{-- No Notifications --}}
             @if (

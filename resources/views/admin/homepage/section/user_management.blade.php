@@ -169,113 +169,19 @@
                                         </button>
                                     @endif
 
-                                    <!-- Delete User Button -->
-                                    <!-- Delete User Button -->
-                                    <button class="action-btn btn-delete text-danger" data-bs-toggle="modal"
-                                        data-bs-target="#confirmDeleteUserModal" data-user-id="{{ $user['data']->id }}"
-                                        data-user-type="{{ $user['type'] }}" title="Delete User">
+                                    <!-- Delete Button -->
+                                    <button class="action-btn btn-delete text-danger"
+                                        data-user-id="{{ $user['data']->id }}" data-user-type="{{ $user['type'] }}"
+                                        data-bs-toggle="modal" data-bs-target="#confirmDeleteUserModal"
+                                        title="Delete User">
                                         <i class="fas fa-user-times"></i>
                                     </button>
-
-
-
-
-
-
-
-
                                 </div>
                             </td>
                         </tr>
                     @endforeach
-
-
                 </tbody>
             </table>
-
-            <!--- Modals ---->
-            <!-- VIEW USER MODAL -->
-            <div id="viewUserModal" class="modal-overlay">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3 class="modal-title">User Details</h3>
-                        <button class="modal-close" onclick="closeModal('viewUserModal')">&times;</button>
-                    </div>
-                    <div class="modal-body">
-
-                        <div class="user-details">
-                            <!-- BASIC INFORMATION -->
-                            <div class="detail-section">
-                                <div class="section-title">👤 Basic Information</div>
-                                <div class="detail-row">
-                                    <span class="detail-label">ID:</span>
-                                    <span class="detail-value">1</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Name:</span>
-                                    <span class="detail-value">Juan Dela Cruz</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Email:</span>
-                                    <span class="detail-value">juan.dela@email.com</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Type:</span>
-                                    <span class="detail-value">Applicant</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Status:</span>
-                                    <span class="detail-value"><span
-                                            class="status-badge status-active">Active</span></span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Region:</span>
-                                    <span class="detail-value">NCR</span>
-                                </div>
-                            </div>
-
-                            <!-- ACCOUNT INFORMATION -->
-                            <div class="detail-section">
-                                <div class="section-title">📅 Account Information</div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Registration Date:</span>
-                                    <span class="detail-value">December 1, 2024</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Last Login:</span>
-                                    <span class="detail-value">Jan 15, 2025, 09:30 AM</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Reports:</span>
-                                    <span class="detail-value">0</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- CONDITIONAL SECTIONS -->
-                        <div class="reports-warning" style="display: none;">
-                            ⚠️ This user has 5 report(s) against them.
-                        </div>
-
-                        <div class="ban-info" style="display: none;">
-                            <strong>Ban Information:</strong><br>
-                            Reason: harassment<br>
-                            Date: January 12, 2025
-                        </div>
-
-                        <div class="suspend-info" style="display: none;">
-                            <strong>Suspension Information:</strong><br>
-                            Reason: pending_investigation<br>
-                            Date: January 13, 2025
-                        </div>
-
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" onclick="closeModal('viewUserModal')">Close</button>
-                    </div>
-                </div>
-            </div>
-
 
             <!-- Suspend User Modal -->
             <div id="suspendUserModals" class="modal-overlay">
@@ -307,8 +213,8 @@
                                 </select>
 
                                 <!-- Hidden input for "Other" reason -->
-                                <input type="text" name="other_reason" id="otherReasonInput"
-                                    class="filter-select" placeholder="Enter custom reason..."
+                                <input type="text" name="other_reason" id="otherReasonInput" class="filter-select"
+                                    placeholder="Enter custom reason..."
                                     style="width: 100%; margin-bottom: 15px; display: none;" />
                             </div>
 
@@ -478,62 +384,109 @@
             </script>
 
             <!-- DELETE USER MODAL -->
-            <div class="modal fade" id="confirmDeleteUserModal" tabindex="-1"
-                aria-labelledby="confirmDeleteUserModalLabel" aria-hidden="true">
+            <div class="modal fade" id="confirmDeleteUserModal" tabindex="-1" aria-hidden="true"
+                data-bs-backdrop="false">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content rounded-3 shadow">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="confirmDeleteUserModalLabel">Confirm Delete User</h5>
+                            <h5 class="modal-title">Confirm Delete User</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </div>
-
                         <div class="modal-body">
                             <p id="deleteUserMessage">
-                                Are you sure you want to <strong class="text-danger">permanently
-                                    delete</strong> this user?
+                                Are you sure you want to <strong class="text-danger">permanently delete</strong> this
+                                user?
                             </p>
                             <p class="text-muted small mb-0">
-                                This action cannot be undone. The account and all related data will be
-                                permanently removed.
+                                This action cannot be undone. The account and all related data will be permanently
+                                removed.
                             </p>
                         </div>
-
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary rounded-pill"
                                 data-bs-dismiss="modal">Cancel</button>
-                            <form id="deleteUserForm" method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger rounded-pill">
-                                    <i class="fas fa-user-times me-1"></i> Yes, Delete
-                                </button>
-                            </form>
+                            <button id="confirmDeleteUserBtn" class="btn btn-danger rounded-pill">
+                                <i class="fas fa-user-times me-1"></i> Yes, Delete
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
             <script>
-                const deleteUserModal = document.getElementById('confirmDeleteUserModal');
+                document.addEventListener('DOMContentLoaded', () => {
+                    let selectedUserId = null;
+                    let selectedUserType = null;
 
-                deleteUserModal.addEventListener('show.bs.modal', function(event) {
-                    const button = event.relatedTarget;
-                    const userId = button.getAttribute('data-user-id');
-                    const userType = button.getAttribute('data-user-type');
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    const deleteModalEl = document.getElementById('confirmDeleteUserModal');
+                    const deleteModal = new bootstrap.Modal(deleteModalEl);
 
-                    const form = document.getElementById('deleteUserForm');
-                    // ✅ Pass the ID in the URL
-                    form.action = `/admin/delete-account/${userId}/${userType}`;
+                    // When modal opens, get user ID and type
+                    deleteModalEl.addEventListener('show.bs.modal', event => {
+                        const button = event.relatedTarget;
+                        selectedUserId = button.getAttribute('data-user-id');
+                        selectedUserType = button.getAttribute('data-user-type'); // applicant or employer
+                    });
 
+                    // Confirm delete button
+                    document.getElementById('confirmDeleteUserBtn').addEventListener('click', async () => {
+                        if (!selectedUserId || !selectedUserType) return;
 
-                    let displayType = userType.toLowerCase() === 'employer' ? 'company' : userType.toLowerCase();
-                    const message = document.getElementById('deleteUserMessage');
-                    message.innerHTML =
-                        `Are you sure you want to <strong class="text-danger">permanently delete</strong> this ${displayType}?`;
+                        try {
+                            const res = await fetch(`/admin/delete-account/${selectedUserId}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    type: selectedUserType
+                                })
+                            });
+
+                            const data = await res.json();
+
+                            if (res.ok && data.success) {
+                                // Remove user row from table
+                                const row = document.querySelector(
+                                    `tr[data-id="${selectedUserId}"][data-type="${selectedUserType}"]`);
+                                if (row) row.remove();
+
+                                deleteModal.hide();
+                                selectedUserId = null;
+                                selectedUserType = null;
+
+                                // Show success popup
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Deleted!',
+                                    text: data.message,
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+
+                            } else {
+                                // Show error popup
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops!',
+                                    text: data.message || 'Failed to delete user.'
+                                });
+                            }
+                        } catch (err) {
+                            console.error(err);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: 'An unexpected error occurred. Check console for details.'
+                            });
+                        }
+                    });
                 });
             </script>
-
 
 
             <div class="pagination">
@@ -541,17 +494,80 @@
                     Showing <span id="showingStart">1</span>-<span id="showingEnd">10</span> of <span
                         id="totalCount">{{ count($users) }}</span> users
                 </div>
-                <div class="pagination-controls">
-                    <button class="pagination-btn" id="prevBtn" onclick="changePage(-1)">
+                <div class="pagination-controls" id="paginationControls">
+                    <button class="pagination-btn" id="prevBtn" onclick="changePage(currentPage - 1)">
                         <i class="fas fa-chevron-left"></i> Previous
                     </button>
-                    <button class="pagination-btn active">1</button>
-                    <button class="pagination-btn">2</button>
-                    <button class="pagination-btn">3</button>
-                    <button class="pagination-btn" id="nextBtn" onclick="changePage(1)">
+                    <!-- Page buttons will be generated dynamically -->
+                    <span id="pageButtons"></span>
+                    <button class="pagination-btn" id="nextBtn" onclick="changePage(currentPage + 1)">
                         Next <i class="fas fa-chevron-right"></i>
                     </button>
                 </div>
             </div>
         </div>
     </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const rows = Array.from(document.querySelectorAll('table tbody tr'));
+            const perPage = 10;
+            let currentPage = 1;
+            const totalPages = Math.ceil(rows.length / perPage);
+
+            const showingStartEl = document.getElementById('showingStart');
+            const showingEndEl = document.getElementById('showingEnd');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            function renderPage(page) {
+                if (page < 1 || page > totalPages) return;
+                currentPage = page;
+
+                const start = (currentPage - 1) * perPage;
+                const end = start + perPage;
+
+                rows.forEach((row, index) => {
+                    row.style.display = index >= start && index < end ? '' : 'none';
+                });
+
+                // Update showing info
+                showingStartEl.innerText = rows.length === 0 ? 0 : start + 1;
+                showingEndEl.innerText = end > rows.length ? rows.length : end;
+
+                // Disable prev/next buttons when needed
+                prevBtn.disabled = currentPage === 1;
+                nextBtn.disabled = currentPage === totalPages;
+
+                renderPageButtons();
+            }
+
+            function renderPageButtons() {
+                const container = document.getElementById('pageButtons');
+                if (!container) return;
+
+                container.innerHTML = '';
+                for (let i = 1; i <= totalPages; i++) {
+                    const btn = document.createElement('button');
+                    btn.className = 'pagination-btn';
+                    if (i === currentPage) btn.classList.add('active');
+                    btn.innerText = i;
+                    btn.addEventListener('click', () => renderPage(i));
+                    container.appendChild(btn);
+                }
+            }
+
+            // Add dynamic page buttons container
+            const controls = document.querySelector('.pagination-controls');
+            const pageButtonsContainer = document.createElement('span');
+            pageButtonsContainer.id = 'pageButtons';
+            controls.insertBefore(pageButtonsContainer, nextBtn);
+
+            // Prev/Next button events
+            prevBtn.addEventListener('click', () => renderPage(currentPage - 1));
+            nextBtn.addEventListener('click', () => renderPage(currentPage + 1));
+
+            // Initial render
+            renderPage(1);
+        });
+    </script>

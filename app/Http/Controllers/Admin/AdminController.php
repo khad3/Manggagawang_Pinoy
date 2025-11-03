@@ -1195,20 +1195,31 @@ $applicantSendRating = \App\Models\Applicant\SendRatingToJobPostModel::with([
 
 
  
-public function deleteApplicantOrEmployer($id, $type)
+public function deleteApplicantOrEmployer(Request $request, $id)
 {
+    $type = $request->input('type'); // must be 'applicant' or 'employer'
+
+    if (!$type || !in_array($type, ['applicant', 'employer'])) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Invalid user type.'
+        ], 400);
+    }
+
     DB::beginTransaction();
 
     try {
         if ($type === 'applicant') {
             $user = RegisterModel::find($id);
-
             if (!$user) {
-                return redirect()->back()->with('error', 'Applicant not found.');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Applicant not found.'
+                ], 404);
             }
 
-            // Delete related models
-            ApplicantFriendModel::where('sender_id', $id)->orWhere('receiver_id', $id)->delete();
+            // Delete related applicant data
+            ApplicantFriendModel::where('request_id', $id)->orWhere('receiver_id', $id)->delete();
             \App\Models\Applicant\ApplicantPostModel::where('applicant_id', $id)->delete();
             ApplicantPortfolioModel::where('applicant_id', $id)->delete();
             \App\Models\Applicant\ApplicantPostCommentModel::where('applicant_id', $id)->delete();
@@ -1231,20 +1242,16 @@ public function deleteApplicantOrEmployer($id, $type)
             \App\Models\Applicant\TemplateModel::where('applicant_id', $id)->delete();
             TesdaUploadCertificationModel::where('applicant_id', $id)->delete();
 
-            $user->delete();
-
-            DB::commit();
-            return redirect()->back()->with('success', 'Applicant deleted successfully.');
-        }
-
-        elseif ($type === 'employer') {
+        } elseif ($type === 'employer') {
             $user = AccountInformationModel::find($id);
-
             if (!$user) {
-                return redirect()->back()->with('error', 'Employer not found.');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Employer not found.'
+                ], 404);
             }
 
-            // Delete related models
+            // Delete related employer data
             AdditionalInformationModel::where('employer_id', $id)->delete();
             \App\Models\Employer\CommunicationPreferenceModel::where('employer_id', $id)->delete();
             \App\Models\Employer\CompanyAdressModel::where('employer_id', $id)->delete();
@@ -1259,20 +1266,28 @@ public function deleteApplicantOrEmployer($id, $type)
             \App\Models\Employer\WorkerRequirementModel::where('employer_id', $id)->delete();
             \App\Models\Employer\TesdaPriorityModel::where('employer_id', $id)->delete();
             SetInterviewModel::where('employer_id', $id)->delete();
-
-            $user->delete();
-
-            DB::commit();
-            return redirect()->back()->with('success', 'Employer deleted successfully.');
         }
 
-        return redirect()->back()->with('error', 'Invalid type specified.');
+        // Delete main user record
+        $user->delete();
+
+        DB::commit();
+
+        return response()->json([
+            'success' => true,
+            'message' => ucfirst($type) . ' deleted successfully.'
+        ]);
 
     } catch (\Exception $e) {
         DB::rollBack();
         \Log::error('Error deleting user: '.$e->getMessage());
-        return redirect()->back()->with('error', 'Failed to delete user. Please try again.');
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to delete user. Error: ' . $e->getMessage()
+        ], 500);
     }
 }
+
 
 }
