@@ -195,61 +195,73 @@ class CommunityForumController extends Controller
 
 
 
-    // Add comments
-    public function AddComments(Request $request){
-        $applicantId = session('applicant_id');
+  // Add comments (AJAX compatible)
+public function AddComments(Request $request)
+{
+    $applicantId = session('applicant_id');
 
-        $request->validate([
-            'comment' => 'required|string',
-            'post_id' => 'required|exists:forum_posts,id',
-        ]);
+    $request->validate([
+        'comment' => 'required|string',
+        'post_id' => 'required|exists:forum_posts,id',
+    ]);
 
-        // Find the applicant
-        $applicant = RegisterModel::with('personal_info')->find($applicantId);
-        if (!$applicant || !$applicant->personal_info) {
-            return redirect()->back()->withErrors('Applicant not found or personal info missing.');
-        }
-
-        // Find the post
-        $post = Post::with('applicant.personal_info')->find($request->post_id);
-        if (!$post) {
-            return redirect()->back()->withErrors('Post not found.');
-        }
-
-        // Create comment
-        $comment = Comment::create([
-            'comment' => $request->comment,
-            'forum_post_id' => $post->id,
-            'applicant_id' => $applicant->id,
-        ]);
-
-        // Decrypt names safely
-        $firstName = $applicant->personal_info->first_name ? $this->safeDecrypt($applicant->personal_info->first_name) : '';
-        $lastName = $applicant->personal_info->last_name ? $this->safeDecrypt($applicant->personal_info->last_name) : '';
-
-        // Notify post creator if commenter is not the post creator
-        if ($post->applicant_id != $applicantId) {
-            $postTitle = $post->title ?? 'your post';
-            $postCategory = $post->category ?? '';
-
-            $notificationMessage = "{$firstName} {$lastName} commented on your forum post \"{$postTitle}\"";
-
-            if ($postCategory) {
-                $notificationMessage .= " in the {$postCategory} category.";
-            } else {
-                $notificationMessage .= ".";
-            }
-
-            $notification = new \App\Models\Notification\NotificationModel();
-            $notification->type = 'applicant';
-            $notification->type_id = $post->applicant_id; // post creator
-            $notification->title = 'New Comment on Your Post';
-            $notification->message = $notificationMessage;
-            $notification->save();
-        }
-
-        return redirect()->route('applicant.forum.display')->with('success', 'Comment added successfully.');
+    $applicant = RegisterModel::with('personal_info')->find($applicantId);
+    if (!$applicant || !$applicant->personal_info) {
+        return response()->json(['error' => 'Applicant not found or personal info missing.'], 404);
     }
+
+    $post = Post::with('applicant.personal_info')->find($request->post_id);
+    if (!$post) {
+        return response()->json(['error' => 'Post not found.'], 404);
+    }
+
+    // Create comment
+    $comment = Comment::create([
+        'comment' => $request->comment,
+        'forum_post_id' => $post->id,
+        'applicant_id' => $applicant->id,
+    ]);
+
+    // Decrypt names safely
+    $firstName = $applicant->personal_info->first_name ? $this->safeDecrypt($applicant->personal_info->first_name) : '';
+    $lastName = $applicant->personal_info->last_name ? $this->safeDecrypt($applicant->personal_info->last_name) : '';
+
+    // Notify post creator if commenter is not the post creator
+    if ($post->applicant_id != $applicantId) {
+        $postTitle = $post->title ?? 'your post';
+        $postCategory = $post->category ?? '';
+
+        $notificationMessage = "{$firstName} {$lastName} commented on your forum post \"{$postTitle}\"";
+        if ($postCategory) {
+            $notificationMessage .= " in the {$postCategory} category.";
+        } else {
+            $notificationMessage .= ".";
+        }
+
+        $notification = new \App\Models\Notification\NotificationModel();
+        $notification->type = 'applicant';
+        $notification->type_id = $post->applicant_id;
+        $notification->title = 'New Comment on Your Post';
+        $notification->message = $notificationMessage;
+        $notification->save();
+    }
+
+    // If AJAX request → return JSON
+    if ($request->ajax()) {
+        return response()->json([
+            'success' => true,
+            'comment' => $comment->comment,
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'created_at' => $comment->created_at->diffForHumans(),
+        ]);
+    }
+
+    // If normal form submission
+    return redirect()->route('applicant.forum.display')->with('success', 'Comment added successfully.');
+}
+
+
 
 
     //Delete comments parent 
@@ -264,56 +276,71 @@ class CommunityForumController extends Controller
     // Reply to a forum comment
 
 
-    public function ReplyComments(Request $request){
-        $applicantId = session('applicant_id');
+public function ReplyComments(Request $request)
+{
+    $applicantId = session('applicant_id');
 
-        if (!$applicantId) {
-            return redirect()->back()->with('error', 'You must be logged in to reply.');
-        }
-
-        $request->validate([
-            'reply_comment' => 'required|string',
-            'comment_id' => 'required|exists:forum_comments,id',
-        ]);
-
-        // Check if the comment exists
-        $comment = ReplyComment::find($request->comment_id);
-        if (!$comment) {
-            return redirect()->back()->with('error', 'Original comment not found.');
-        }
-
-        // Create reply
-        $reply = new ReplyComment();
-        $reply->reply = $request->reply_comment;
-        $reply->forum_comment_id = $request->comment_id;
-        $reply->applicant_id = $applicantId;
-        $reply->save();
-
-        // Send notification to the original comment author
-        if ($comment->applicant_id != $applicantId) {
-            $replyAuthor = RegisterModel::with('personal_info')->find($applicantId);
-            $firstName = $replyAuthor->personal_info->first_name ?? '';
-            $lastName = $replyAuthor->personal_info->last_name ?? '';
-
-            // Decrypt safely
-            try {
-                $firstName = $firstName ? $this->safeDecrypt($firstName) : '';
-                $lastName = $lastName ? $this->safeDecrypt($lastName) : '';
-            } catch (\Exception $e) {
-                $firstName = $firstName ?? '';
-                $lastName = $lastName ?? '';
-            }
-
-            $notification = new \App\Models\Notification\NotificationModel();
-            $notification->type = 'applicant';
-            $notification->type_id = $comment->applicant_id;
-            $notification->title = 'New Reply on Your Comment';
-            $notification->message = "{$firstName} {$lastName} replied to your comment: \"{$request->reply_comment}\"";
-            $notification->save();
-        }
-
-        return redirect()->route('applicant.forum.display')->with('success', 'Reply added successfully.');
+    if (!$applicantId) {
+        return response()->json(['success' => false, 'error' => 'You must be logged in to reply.'], 403);
     }
+
+    $request->validate([
+        'reply_comment' => 'required|string|max:250',
+        'comment_id' => 'required|exists:forum_comments,id',
+    ]);
+
+    // Fetch the original comment with its post
+    $comment = \App\Models\Applicant\CommentModel::with('post')->find($request->comment_id);
+    if (!$comment) {
+        return response()->json(['success' => false, 'error' => 'Original comment not found.'], 404);
+    }
+
+    // Create the reply
+    $reply = new \App\Models\Applicant\ReplyModel();
+    $reply->reply = $request->reply_comment;
+    $reply->forum_comment_id = $request->comment_id;
+    $reply->applicant_id = $applicantId;
+    $reply->save();
+
+    // Get reply author name
+    $replyAuthor = \App\Models\Applicant\RegisterModel::with('personal_info')->find($applicantId);
+    $firstName = $replyAuthor->personal_info->first_name ?? '';
+    $lastName = $replyAuthor->personal_info->last_name ?? '';
+
+    try {
+        $firstName = $this->safeDecrypt($firstName);
+        $lastName = $this->safeDecrypt($lastName);
+    } catch (\Exception $e) {
+        // ignore decrypt error
+    }
+
+    // Notification
+    if ($comment->applicant_id != $applicantId) { // don't notify self
+        $postTitle = $comment->post->title ?? 'your post';
+        $replyText = $reply->reply;
+
+        $notificationMessage = "{$firstName} {$lastName} replied to your comment: \"{$replyText}\" on the post \"{$postTitle}\".";
+        $notification = new \App\Models\Notification\NotificationModel();
+        $notification->type = 'applicant';
+        $notification->type_id = $comment->applicant_id; // recipient = original commenter
+        $notification->title = 'New Reply to Your Comment';
+        $notification->message = $notificationMessage;
+        $notification->save();
+    }
+
+    return response()->json([
+        'success' => true,
+        'first_name' => $firstName,
+        'last_name' => $lastName,
+        'reply' => $request->reply_comment,
+        'comment_id' => $request->comment_id,
+        'reply_id' => $reply->id,
+        'created_at' => $reply->created_at->diffForHumans(),
+    ]);
+}
+
+
+
 
 
 
@@ -327,38 +354,46 @@ class CommunityForumController extends Controller
     }
 
 
-    //Adding likes
-    public function LikePost($id){
-        $applicantId = session('applicant_id');
+    // Adding likes (AJAX-compatible)
+public function LikePost($id)
+{
+    $applicantId = session('applicant_id');
 
-        if (!$applicantId) {
-            return redirect()->back()->with('error', 'You must be logged in to like a post.');
-        }
+    if (!$applicantId) {
+        return response()->json(['error' => 'You must be logged in to like a post.'], 401);
+    }
 
-        // Check if the applicant already liked this post
-        $existingLike = ForumLike::where('forum_post_id', $id)
-            ->where('applicant_id', $applicantId)
-            ->first();
+    // Check if the applicant already liked this post
+    $existingLike = ForumLike::where('forum_post_id', $id)
+        ->where('applicant_id', $applicantId)
+        ->first();
 
-        if ($existingLike) {
-            // Unlike the post
-            $existingLike->delete();
-            return redirect()->back()->with('success', 'You unliked the post.');
-        } else {
-            // Create a new like record
-            ForumLike::create([
-                'forum_post_id' => $id,
-                'applicant_id' => $applicantId,
-                'likes' => 1,
-            ]);
+    if ($existingLike) {
+        // Unlike the post
+        $existingLike->delete();
 
-            // Fetch post creator and personal info of liker
-            $post = Post::with('applicant.personal_info')->find($id);
-            $liker = RegisterModel::with('personal_info')->find($applicantId);
+        $likeCount = ForumLike::where('forum_post_id', $id)->count();
 
-            if ($post && $liker && $post->applicant_id != $applicantId) {
-                $firstName = $liker->personal_info->first_name ? $this->safeDecrypt($liker->personal_info->first_name) : '';
-                $lastName = $liker->personal_info->last_name ? $this->safeDecrypt($liker->personal_info->last_name) : '';
+        return response()->json([
+            'message' => 'You unliked the post.',
+            'like_count' => $likeCount,
+            'liked' => false
+        ]);
+    } else {
+        // Create a new like record
+        ForumLike::create([
+            'forum_post_id' => $id,
+            'applicant_id' => $applicantId,
+            'likes' => 1,
+        ]);
+
+        // Fetch post creator and personal info of liker
+        $post = Post::with('applicant.personal_info')->find($id);
+        $liker = RegisterModel::with('personal_info')->find($applicantId);
+
+        if ($post && $liker && $post->applicant_id != $applicantId) {
+            $firstName = $liker->personal_info->first_name ? $this->safeDecrypt($liker->personal_info->first_name) : '';
+            $lastName = $liker->personal_info->last_name ? $this->safeDecrypt($liker->personal_info->last_name) : '';
 
             // Send notification to post creator
             $notification = new \App\Models\Notification\NotificationModel();
@@ -366,7 +401,6 @@ class CommunityForumController extends Controller
             $notification->type_id = $post->applicant_id; // post creator
             $notification->title = 'New Like on Your Forum Post';
 
-       
             $postTitle = $post->title ?? 'your post';
             $postCategory = $post->category ? ' in the "' . $post->category . '" category' : '';
             $postContentPreview = $post->content ? ' — "' . Str::limit($post->content, 50) . '"' : '';
@@ -376,11 +410,18 @@ class CommunityForumController extends Controller
                 . $postContentPreview . '.';
 
             $notification->save();
-            }
-
-         return redirect()->back()->with('success', 'Post liked successfully.');
         }
+
+        $likeCount = ForumLike::where('forum_post_id', $id)->count();
+
+        return response()->json([
+            'message' => 'Post liked successfully.',
+            'like_count' => $likeCount,
+            'liked' => true
+        ]);
     }
+}
+
 
 
     //View my post

@@ -327,11 +327,7 @@
                                                 class="comment-text">{{ $post->comments->count() === 1 ? 'Comment' : 'Comments' }}</span>
                                         </button>
                                     </div>
-
-                                    <!-- Comments Section -->
                                     <div class="comments-section" style="display: none;">
-
-                                        <!-- Add Comment -->
                                         @if (session('applicant_id'))
                                             <div class="add-comment">
                                                 <form method="POST"
@@ -341,116 +337,93 @@
                                                     <input type="hidden" name="post_id"
                                                         value="{{ $post->id }}">
                                                     <div class="comment-input-group">
-                                                        <input type="text" class="comment-input" name="comment"
+                                                        <input type="text" name="comment" class="comment-input"
                                                             placeholder="Share your thoughts..." maxlength="250"
                                                             required>
-                                                        <button type="submit" class="btn-comment-submit">
-                                                            <span>Add comment</span>
-                                                        </button>
+                                                        <button type="submit" class="btn-comment-submit">Add
+                                                            comment</button>
                                                     </div>
                                                 </form>
                                             </div>
-                                        @else
-                                            <div class="login-prompt">
-                                                <p>Please log in to join the conversation.</p>
-                                            </div>
                                         @endif
 
-                                        <!-- Comments List -->
-                                        @if ($post->comments->isNotEmpty())
-                                            <div class="comments-list">
-                                                @foreach ($post->comments as $comment)
-                                                    <div class="comment-item">
-                                                        <div class="comment-header">
-                                                            <strong class="commenter-name">
-                                                                {{ $comment->applicant->personal_info->first_name ?? 'Unknown' }}
-                                                                {{ $comment->applicant->personal_info->last_name ?? '' }}
-                                                            </strong>
-                                                            <time
-                                                                class="comment-time">{{ $comment->created_at->diffForHumans() }}</time>
-                                                        </div>
+                                        <div class="comments-list">
+                                            @foreach ($post->comments as $comment)
+                                                <div class="comment-item" data-comment-id="{{ $comment->id }}">
+                                                    <div class="comment-header">
+                                                        <strong
+                                                            class="commenter-name">{{ $comment->applicant->personal_info->first_name ?? 'Unknown' }}
+                                                            {{ $comment->applicant->personal_info->last_name ?? '' }}</strong>
+                                                        <time>{{ $comment->created_at->diffForHumans() }}</time>
+                                                    </div>
+                                                    <p class="comment-text">{{ $comment->comment }}</p>
 
-                                                        <p class="comment-text">{{ $comment->comment }}</p>
+                                                    <div class="comment-actions">
+                                                        @if (session('applicant_id'))
+                                                            <button type="button" class="btn-reply"
+                                                                data-comment-id="{{ $comment->id }}">Reply</button>
+                                                        @endif
 
-                                                        <div class="comment-actions">
-                                                            @if (session('applicant_id'))
-                                                                <button type="button" class="btn-reply"
-                                                                    data-comment-id="{{ $comment->id }}">
-                                                                    Reply
-                                                                </button>
-                                                            @endif
-
-                                                            @if (session('applicant_id') == $comment->applicant_id)
-                                                                <form method="POST"
-                                                                    action="{{ route('applicant.forum.comments.delete', $comment->id) }}"
-                                                                    class="delete-form"
-                                                                    onsubmit="return confirm('Delete this comment?')">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <button type="submit"
-                                                                        class="btn-delete">Delete</button>
-                                                                </form>
-                                                            @endif
-                                                        </div>
-
-                                                        <!-- Reply Form -->
-                                                        <form method="POST"
-                                                            action="{{ route('applicant.forum.replycomments.store') }}"
-                                                            class="reply-form" data-parent-id="{{ $comment->id }}"
-                                                            style="display: none;">
-                                                            @csrf
-                                                            <input type="hidden" name="post_id"
-                                                                value="{{ $post->id }}">
-                                                            <input type="hidden" name="comment_id"
-                                                                value="{{ $comment->id }}">
-                                                            <div class="reply-input-group">
-                                                                <input type="text" name="reply_comment"
-                                                                    class="reply-input" placeholder="Write a reply..."
-                                                                    maxlength="250" required>
-                                                                <button type="submit"
-                                                                    class="btn-reply-submit">Reply</button>
-                                                            </div>
-                                                        </form>
-
-                                                        <!-- Replies -->
-                                                        @if ($comment->replies && $comment->replies->isNotEmpty())
-                                                            <div class="replies-list">
-                                                                @foreach ($comment->replies as $reply)
-                                                                    <div class="reply-item">
-                                                                        <div class="reply-header">
-                                                                            <strong class="replier-name">
-                                                                                {{ $reply->applicant->personal_info->first_name ?? 'Unknown' }}
-                                                                                {{ $reply->applicant->personal_info->last_name ?? '' }}
-                                                                            </strong>
-                                                                            <time
-                                                                                class="reply-time">{{ $reply->created_at->diffForHumans() }}</time>
-                                                                        </div>
-                                                                        <p class="reply-text">{{ $reply->reply }}</p>
-
-                                                                        @if (session('applicant_id') == $reply->applicant_id)
-                                                                            <form method="POST"
-                                                                                action="{{ route('applicant.forum.replycomments.delete', $reply->id) }}"
-                                                                                class="delete-form"
-                                                                                onsubmit="return confirm('Delete this reply?')">
-                                                                                @csrf
-                                                                                @method('DELETE')
-                                                                                <button type="submit"
-                                                                                    class="btn-delete-reply">Delete</button>
-                                                                            </form>
-                                                                        @endif
-                                                                    </div>
-                                                                @endforeach
-                                                            </div>
+                                                        @if (session('applicant_id') == $comment->applicant_id)
+                                                            <form method="POST"
+                                                                action="{{ route('applicant.forum.comments.delete', $comment->id) }}"
+                                                                class="delete-form"
+                                                                onsubmit="return confirm('Delete this comment?')">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn-delete"
+                                                                    data-id="{{ $comment->id }}">Delete</button>
+                                                            </form>
                                                         @endif
                                                     </div>
-                                                @endforeach
-                                            </div>
-                                        @else
-                                            <div class="no-comments">
-                                                <p>No comments yet. Be the first to share your thoughts!</p>
-                                            </div>
-                                        @endif
+
+                                                    <!-- Reply Form -->
+                                                    <form method="POST"
+                                                        action="{{ route('applicant.forum.replycomments.store') }}"
+                                                        class="reply-form" style="display:none;">
+                                                        @csrf
+                                                        <input type="hidden" name="comment_id"
+                                                            value="{{ $comment->id }}">
+                                                        <div class="reply-input-group">
+                                                            <input type="text" name="reply_comment"
+                                                                class="reply-input" placeholder="Write a reply..."
+                                                                maxlength="250" required>
+                                                            <button type="submit"
+                                                                class="btn-reply-submit">Reply</button>
+                                                        </div>
+                                                    </form>
+
+                                                    <div class="replies-list">
+                                                        @foreach ($comment->replies as $reply)
+                                                            <div class="reply-item">
+                                                                <div class="reply-header">
+                                                                    <strong
+                                                                        class="replier-name">{{ $reply->applicant->personal_info->first_name ?? 'Unknown' }}
+                                                                        {{ $reply->applicant->personal_info->last_name ?? '' }}</strong>
+                                                                    <time>{{ $reply->created_at->diffForHumans() }}</time>
+                                                                </div>
+                                                                <p class="reply-text">{{ $reply->reply }}</p>
+
+                                                                @if (session('applicant_id') == $reply->applicant_id)
+                                                                    <form method="POST"
+                                                                        action="{{ route('applicant.forum.replycomments.delete', $reply->id) }}"
+                                                                        class="delete-form"
+                                                                        onsubmit="return confirm('Delete this reply?')">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="submit"
+                                                                            class="btn-delete-reply"
+                                                                            data-id="{{ $reply->id }}">Delete</button>
+                                                                    </form>
+                                                                @endif
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
                                     </div>
+
 
                                     <!-- Post Owner Actions -->
 
@@ -506,6 +479,166 @@
             </div>
         </main>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // LIKE BUTTON
+            document.addEventListener('submit', async e => {
+                if (!e.target.classList.contains('like-form')) return;
+                e.preventDefault();
+
+                const form = e.target;
+                const button = form.querySelector('.btn-like');
+                const countSpan = form.querySelector('.like-count');
+                const textSpan = form.querySelector('.like-text');
+
+                try {
+                    const res = await fetch(form.action, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': form.querySelector('input[name="_token"]').value,
+                            'Accept': 'application/json'
+                        }
+                    });
+                    const data = await res.json();
+                    button.classList.toggle('liked');
+                    countSpan.textContent = data.like_count ?? 0;
+                    textSpan.textContent = data.like_count === 1 ? 'Like' : 'Likes';
+                } catch (err) {
+                    console.error(err);
+                }
+            });
+
+            // ADD COMMENT
+            document.addEventListener('submit', async e => {
+                if (!e.target.classList.contains('comment-form')) return;
+                e.preventDefault();
+
+                const form = e.target;
+                const formData = new FormData(form);
+                const csrfToken = form.querySelector('input[name="_token"]').value;
+
+                try {
+                    const res = await fetch(form.action, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: formData
+                    });
+                    const data = await res.json();
+
+                    if (data.success) {
+                        const commentsSection = form.closest('.comments-section');
+                        let commentList = commentsSection.querySelector('.comments-list');
+                        if (!commentList) {
+                            commentList = document.createElement('div');
+                            commentList.classList.add('comments-list');
+                            commentsSection.appendChild(commentList);
+                        }
+
+                        const newComment = document.createElement('div');
+                        newComment.classList.add('comment-item');
+                        newComment.dataset.commentId = data.comment_id;
+                        newComment.innerHTML = `
+                    <div class="comment-header">
+                        <strong class="commenter-name">${data.first_name} ${data.last_name}</strong>
+                        <time class="comment-time">${data.created_at}</time>
+                    </div>
+                    <p class="comment-text">${data.comment}</p>
+                    <div class="comment-actions">
+                        <button type="button" class="btn-reply" data-comment-id="${data.comment_id}">Reply</button>
+                        <form method="POST" action="/applicant/forum/comments/delete/${data.comment_id}" class="delete-form">
+                            <input type="hidden" name="_token" value="${csrfToken}">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="btn-delete">Delete</button>
+                        </form>
+                    </div>
+                    <form method="POST" action="/applicant/forum/replycomments/store" class="reply-form" style="display:none;">
+                        <input type="hidden" name="_token" value="${csrfToken}">
+                        <input type="hidden" name="comment_id" value="${data.comment_id}">
+                        <div class="reply-input-group">
+                            <input type="text" name="reply_comment" class="reply-input" placeholder="Write a reply..." maxlength="250" required>
+                            <button type="submit" class="btn-reply-submit">Reply</button>
+                        </div>
+                    </form>
+                    <div class="replies-list"></div>
+                `;
+                        commentList.prepend(newComment);
+                        form.reset();
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+            });
+
+            // TOGGLE REPLY FORM
+            document.addEventListener('click', e => {
+                if (e.target.classList.contains('btn-reply')) {
+                    const commentItem = e.target.closest('.comment-item');
+                    const replyForm = commentItem.querySelector('.reply-form');
+                    if (replyForm) {
+                        replyForm.style.display = replyForm.style.display === 'block' ? 'none' : 'block';
+                        replyForm.querySelector('.reply-input').focus();
+                    }
+                }
+            });
+
+            // ADD REPLY
+            document.addEventListener('submit', async e => {
+                if (!e.target.classList.contains('reply-form')) return;
+                e.preventDefault();
+
+                const form = e.target;
+                const formData = new FormData(form);
+
+                try {
+                    const res = await fetch(form.action, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: formData
+                    });
+                    const data = await res.json();
+
+                    if (data.success) {
+                        let repliesList = form.closest('.comment-item').querySelector('.replies-list');
+                        if (!repliesList) {
+                            repliesList = document.createElement('div');
+                            repliesList.classList.add('replies-list');
+                            form.closest('.comment-item').appendChild(repliesList);
+                        }
+
+                        const newReply = document.createElement('div');
+                        newReply.classList.add('reply-item');
+                        newReply.innerHTML = `
+                    <div class="reply-header">
+                        <strong class="replier-name">${data.first_name} ${data.last_name}</strong>
+                        <time class="reply-time">${data.created_at}</time>
+                    </div>
+                    <p class="reply-text">${data.reply}</p>
+                    <form method="POST" action="/applicant/forum/replycomments/delete/${data.reply_id}" class="delete-form">
+                        <input type="hidden" name="_token" value="${form.querySelector('input[name="_token"]').value}">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn-delete-reply">Delete</button>
+                    </form>
+                `;
+                        repliesList.appendChild(newReply);
+                        form.reset();
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+            });
+
+        });
+    </script>
+
+
+
 
     <!-- toggle post actions ---->
     <script>
