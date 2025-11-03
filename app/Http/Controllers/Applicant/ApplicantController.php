@@ -20,6 +20,7 @@ use App\Models\Employer\SendMessageModel as EmployerSendMessage;
 use Illuminate\Support\Facades\Crypt;
 use App\Models\Applicant\ApplyJobModel as ApplyJob;
 use App\Models\Admin\AnnouncementModel;
+use App\Mail\Applicant\ResetPasswordMail;
 use App\Notifications\Applicant\FriendRequestNotification;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -77,7 +78,7 @@ class ApplicantController extends Controller
     ]);
 
     // Send verification code to email
-    Mail::to($user->email)->send(new VerifyEmail($newCode));
+    Mail::to($user->email)->send(new ResetPasswordMail($newCode));
 
     // Store email in session for later steps - FIXED: consistent key name
     session()->put('email', $user->email);

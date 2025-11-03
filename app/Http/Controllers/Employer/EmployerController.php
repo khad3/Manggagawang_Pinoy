@@ -43,6 +43,7 @@ use Faker\Provider\ar_EG\Company;
 use Faker\Provider\ar_EG\Person;
 use Illuminate\Contracts\Queue\Job;
 use Illuminate\Support\Facades\Hash;
+use App\Mail\Applicant\ResetPasswordMail;
 
 class EmployerController extends Controller
 {
@@ -78,7 +79,7 @@ class EmployerController extends Controller
     ]);
 
     // Send verification code to email
-    Mail::to($user->email)->send(new VerifyEmail($newCode));
+    Mail::to($user->email)->send(new ResetPasswordMail($newCode));
 
     // Store email in session for later steps - FIXED: consistent key name
     session()->put('email', $user->email);
