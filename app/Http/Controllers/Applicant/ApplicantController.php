@@ -395,7 +395,7 @@ public function resend(Request $request)
         'email_verification_code_expires_at' => $expiration,
     ]);
 
-    // 🟢 Debug log
+    // Debug log
     \Log::info("Resend Code for {$applicant->email}: $newCode");
 
     // Send email
