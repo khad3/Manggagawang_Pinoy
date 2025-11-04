@@ -222,19 +222,13 @@ Route::group(['prefix' => 'employer'], function () {
 Route::middleware(['employer.authenticate'])->prefix('employer')->group(function () {
     //Schedule interview
     Route::post('schedule-interview/{id}', [EmployerController::class, 'setScheduleInterviewByEmployer'])->name('employer.scheduleinterview.store');
-
     // Employer Notifications Routes
     Route::post('notifications/{id}/read', [EmployerController::class, 'markAsRead']);
     Route::post('announcements/{id}/read', [EmployerController::class, 'markAnnouncementAsRead']);
     Route::post('notifications/mark-all-read', [EmployerController::class, 'markAllAsRead']);
     Route::delete('/notifications/delete/{id}', [EmployerController::class, 'deleteNotification']);
-
     // Employer Announcements Routes
-  
-
     Route::post('messages/mark-as-read/{applicantId}', [EmployerController::class, 'viewMessageAsRead'])->name('employer.messages.markAsRead');
-
-
     //delete account
     Route::delete('delete-account/{id}', [EmployerController::class, 'deleteAccount'])->name('employer.deleteaccount.destroy');
        //Homepage display
