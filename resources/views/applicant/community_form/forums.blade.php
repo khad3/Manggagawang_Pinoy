@@ -11,16 +11,43 @@
 </head>
 
 <body>
+    
     <!-- Main Forum Container -->
     <div class="forum-wrapper">
 
         <!-- Header Navigation -->
-        <header class="forum-header">
+        <div class="forum-header">
             <div class="container">
                 <h1 class="forum-title">Community Forum</h1>
+  <div class="header-section">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="tesda-logo">
+            <div class="logo-icon">
+                     
+                    </div>
+                        <div class="nav-logo d-flex align-items-center">
 
+                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
+                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" />
+
+                </div>   
+                </div>
+                <a href="{{ route('applicant.info.homepage.display') }}" class="back-btn">
+                    <i class="bi bi-house-door-fill me-2" ></i>
+                  <div class="bth">  Back to Homepage</div>
+                </a>
+            </div>
+        </div>
+    </div>
                 <!-- Navigation Links -->
-                <nav class="nav-section">
+
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <main class="forum-main">
+                            <nav class="nav-section">
                     <div class="nav-buttons">
                         <a href="{{ route('applicant.info.homepage.display') }}" class="nav-btn">
                             <span class="nav-icon">🏠</span>
@@ -69,11 +96,6 @@
 
                     </div>
                 </nav>
-            </div>
-        </header>
-
-        <!-- Main Content Area -->
-        <main class="forum-main">
             <div class="container">
 
                 <!-- Content Grid -->

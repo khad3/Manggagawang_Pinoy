@@ -60,6 +60,13 @@
     padding: 0;
 }
 
+:root {
+    --primary-orange: #020180;
+    --primary-red: #dc2626;
+    --light-orange: #dcdcec;
+    --light-red: #fef2f2;
+}
+
 body {
     font-family: "Poppins", sans-serif;
     background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
@@ -70,7 +77,7 @@ body {
 
 /* Header Section */
 .header-section {
-    background: var(--primary-gradient);
+    background: var(--primary-orange);
     padding: 1rem 0;
     box-shadow: var(--shadow-lg);
     position: relative;
@@ -853,6 +860,7 @@ body {
 }
 .nav-logo #home {
     height: 120px;
+   
 }
 
 .nav-logo img:hover {
@@ -882,9 +890,6 @@ body {
         justify-content: center;
     }
 
-    .nav-logo #home {
-        margin-bottom: -50px;
-    }
 
     .nav-search {
         width: 100%;
@@ -912,8 +917,9 @@ body {
     }
 
 
-    #home {
+    #home2 {
         display: none;
+        top:20%
     }
     .hero-banner {
     position: relative;

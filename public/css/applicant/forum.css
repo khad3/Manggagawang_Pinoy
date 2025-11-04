@@ -11,13 +11,85 @@ html,
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
         Ubuntu, Cantarell, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--light-orange);
     min-height: 100vh;
     color: #2d3748;
     line-height: 1.6;
     overflow-x: hidden;
 }
+:root {
+    --primary-orange: #020180;
+    --primary-red: #dc2626;
+    --light-orange: #dcdcec;
+    --light-red: #fef2f2;
+}
 
+/* Header Section styles (copied from profile.css) */
+.header-section {
+    background: var(--primary-gradient);
+    padding: 1rem 0;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.header-section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.3;
+}
+
+/* Forum Main Header (new styles) */
+.forum-main-header {
+    background: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.forum-title {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.forum-nav-section {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.forum-nav-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    padding: 0 1rem;
+}
+.nav-logo img {
+    height: 50px; /*  Adjust height as needed */
+    width: auto;
+    display: block;
+    cursor: pointer;
+    user-select: none;
+    transition: opacity 0.3s ease;
+}
+.nav-logo #home {
+    height: 120px;
+   
+}
+
+.nav-logo img:hover {
+    opacity: 0.8; /* subtle hover effect */
+}
 /* Forum Wrapper */
 .forum-wrapper {
     min-height: 100vh;
@@ -25,34 +97,19 @@ body {
 }
 
 /* Header */
-.forum-header {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    padding: 1.5rem 0;
-}
+.forum-header  {
+    background: var(--primary-orange);
+    padding: 1rem 0;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+};
+
 
 .forum-header .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 2rem;
-}
-
-/* Forum Title */
-.forum-title {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-size: 2.5rem;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 2rem;
-    letter-spacing: -0.02em;
 }
 
 /* Navigation */
@@ -99,7 +156,27 @@ body {
 .forum-main {
     padding: 2rem 0;
 }
+.back-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius-lg);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    position: relative;
+    z-index: 2;
+    display: flex;
+}
 
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
 .forum-main .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -984,6 +1061,21 @@ body {
 
     .replies-list {
         margin-left: 1rem;
+    }
+
+    .forum-nav-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .forum-title {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .nav-btn {
+        width: 100%;
+        justify-content: center;
     }
 }
 
