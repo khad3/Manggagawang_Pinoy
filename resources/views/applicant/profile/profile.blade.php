@@ -30,7 +30,7 @@
                 </div>   
                 </div>
                 <a href="{{ route('applicant.info.homepage.display') }}" class="back-btn">
-                    <i class="bi bi-house-door-fill me-2"></i>
+                    <i class="bi bi-house-door-fill me-2" ></i>
                   <div class="bth">  Back to Homepage</div>
                 </a>
             </div>
