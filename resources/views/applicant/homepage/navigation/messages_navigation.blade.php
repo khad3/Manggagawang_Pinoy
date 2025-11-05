@@ -420,13 +420,27 @@
             employer.address_company?.company_name || 'Company';
 
         const avatarElement = document.getElementById('currentAvatar');
+        avatarElement.style.width = '50px';
+        avatarElement.style.height = '50px';
+        avatarElement.style.borderRadius = '50%';
+        avatarElement.style.overflow = 'hidden';
+        avatarElement.style.display = 'flex';
+        avatarElement.style.alignItems = 'center';
+        avatarElement.style.justifyContent = 'center';
+        avatarElement.style.backgroundColor = '#f1f3f5';
+        avatarElement.style.color = '#495057';
+        avatarElement.style.fontWeight = '600';
+        avatarElement.style.fontSize = '1.2rem';
+        avatarElement.style.textTransform = 'uppercase';
+
         if (employer.address_company?.company_logo) {
-            avatarElement.innerHTML = `<img src="${employer.address_company.company_logo}" 
-                alt="${employer.address_company.company_name}" 
-                style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+            avatarElement.innerHTML = `<img src="/storage/${employer.address_company.company_logo}" 
+        alt="${employer.address_company.company_name}" 
+        style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
         } else {
             avatarElement.textContent = (employer.address_company?.company_name || 'C').charAt(0).toUpperCase();
         }
+
 
         displayMessages(employerMessages);
         lastMessageCount = employerMessages.length;
