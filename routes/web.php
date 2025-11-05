@@ -67,8 +67,8 @@ Route::prefix('applicant')->group(function () {
 //  Protected routes 
 Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(function () {
     //Report display file
-    Route::get('/applicant/messages/fetch', [SendMessageEmployerController::class, 'fetchMessages'])
-    ->name('applicant.messages.fetch');
+    Route::get('messages/fetch/{employerId}', [SendMessageEmployerController::class, 'fetchMessages'])->name('applicant.messages.fetch');
+    Route::post('typing/{employerId}', [SendMessageEmployerController::class, 'setTypingStatus']);
     Route::get('report-list', [ReportEmployerController::class, 'index'])->name('applicant.report.display');
     Route::delete('report-list/{id}', [ReportEmployerController::class, 'removeReport'])->name('applicant.report.delete');
     //Setting
@@ -223,6 +223,8 @@ Route::group(['prefix' => 'employer'], function () {
 //Protected routes for employer
 Route::middleware(['employer.authenticate'])->prefix('employer')->group(function () {
 
+    Route::get('messages/fetch/{applicantId}', [SendMessageController::class, 'fetchMessages'])->name('applicant.messages.fetch');
+    Route::post('typing/{applicantId}', [SendMessageController::class, 'setTypingStatus']);
     //insert loho
     route::post('insert-company-logo', [EmployerController::class, 'insertCompanyLogo'])->name('employer.companylogo.store');
 

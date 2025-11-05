@@ -46,88 +46,66 @@ public function sendMessage(Request $request)
 
 
 
-public function fetchMessages(Request $request)
+public function fetchMessages($employerId)
 {
-    try {
-        // Get the currently authenticated applicant
-        $applicantId = session('applicant_id');
+    $applicantId = session('applicant_id');
 
-        if (!$applicantId) {
-            return response()->json([
-                'success' => false,
-                'error' => 'Applicant not authenticated',
-            ], 401);
-        }
-
-        // Fetch all messages for this applicant
-        $messages = DB::table('employer_messages_to_applicant')
-            ->where('applicant_id', $applicantId)
-            ->orderBy('created_at', 'asc')
-            ->get()
-            ->map(function ($message) {
-                // Fetch employer record
-                $employer = DB::table('employer_account')->where('id', $message->employer_id)->first();
-
-                if (!$employer) {
-                    return null; // Skip messages with missing employer
-                }
-
-                // Fetch related employer personal info
-                $personalInfo = DB::table('employer_personal_info')
-                    ->where('employer_id', $employer->id)
-                    ->first();
-
-                // Fetch related company info
-                $companyInfo = DB::table('employer_info_address')
-                    ->where('employer_id', $employer->id)
-                    ->first();
-
-                // Return message with employer details
-                return [
-                    'id' => $message->id,
-                    'employer_id' => $message->employer_id,
-                    'applicant_id' => $message->applicant_id,
-                    'message' => $message->message,
-                    'attachment' => $message->attachment,
-                    'sender_type' => $message->sender_type,
-                    'is_read' => (bool) $message->is_read,
-                    'is_typing' => (bool) $message->is_typing,
-                    'created_at' => $message->created_at,
-                    'employer' => [
-                        'id' => $employer->id,
-                        'personal_info' => [
-                            'first_name' => $personalInfo->first_name ?? 'N/A',
-                            'last_name' => $personalInfo->last_name ?? '',
-                        ],
-                        'company' => [
-                            'company_name' => $companyInfo->company_name ?? 'Company',
-                            'company_logo' => $companyInfo->company_logo ?? null,
-                        ]
-                    ]
-                ];
-            })
-            ->filter(); // removes any null values if employer not found
-
-        return response()->json([
-            'success' => true,
-            'messages' => $messages->values(), // reindex array after filtering
-            'count' => $messages->count(),
-        ]);
-
-    } catch (\Exception $e) {
-        \Log::error('Error fetching messages: ' . $e->getMessage());
-        \Log::error($e->getTraceAsString());
-
+    if (!$applicantId) {
         return response()->json([
             'success' => false,
-            'error' => 'Failed to fetch messages',
-            'message' => config('app.debug') ? $e->getMessage() : null,
-        ], 500);
+            'error' => 'Applicant not authenticated',
+        ], 401);
     }
+
+    // Fetch all messages between this employer and applicant
+    $messages = \DB::table('employer_messages_to_applicant')
+        ->where('employer_id', $employerId)
+        ->where('applicant_id', $applicantId)
+        ->orderBy('created_at', 'asc') // oldest first
+        ->get();
+
+    $messagesFormatted = $messages->map(function ($msg) {
+        try {
+            // Decrypt the message
+            $decryptedMessage = Crypt::decryptString($msg->message);
+        } catch (\Exception $e) {
+            $decryptedMessage = '[Cannot decrypt message]';
+        }
+
+        return [
+            'id' => $msg->id,
+            'employer_id' => $msg->employer_id,
+            'applicant_id' => $msg->applicant_id,
+            'message' => $decryptedMessage,
+            'attachment' => $msg->attachment,
+            'sender_type' => $msg->sender_type,
+            'is_read' => (bool) $msg->is_read,
+            'is_typing' => (bool) $msg->is_typing,
+            'created_at' => $msg->created_at,
+            'time' => \Carbon\Carbon::parse($msg->created_at)->format('g:i A'),
+        ];
+    });
+
+    return response()->json([
+        'success' => true,
+        'messages' => $messagesFormatted,
+        'count' => $messagesFormatted->count(),
+    ]);
 }
 
 
+public function setTypingStatus(Request $request, $employerId)
+{
+    $applicantId = session('applicant_id');
+    $isTyping = $request->input('is_typing', false);
 
+    DB::table('employer_messages_to_applicant')
+        ->where('employer_id', $employerId)
+        ->where('applicant_id', $applicantId)
+        ->update(['is_typing' => $isTyping]);
+
+    return response()->json(['success' => true]);
+}
 
 
 

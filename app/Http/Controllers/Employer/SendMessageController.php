@@ -94,6 +94,83 @@ private function cleanDecrypt($value)
 }
 
 
+public function fetchMessages($applicantId)
+{
+    $employerId = session('employer_id');
+
+    if (!$employerId) {
+        return response()->json([
+            'success' => false,
+            'error' => 'Employer not authenticated',
+        ], 401);
+    }
+
+    // Fetch messages where either employer OR applicant is sender/receiver
+    $messages = \DB::table('employer_messages_to_applicant')
+        ->where(function ($query) use ($employerId, $applicantId) {
+            $query->where('employer_id', $employerId)
+                  ->where('applicant_id', $applicantId);
+        })
+        ->orderBy('created_at', 'asc')
+        ->get();
+
+    $messagesFormatted = $messages->map(function ($msg) {
+        try {
+            $decryptedMessage = Crypt::decryptString($msg->message);
+        } catch (\Exception $e) {
+            $decryptedMessage = '[Cannot decrypt message]';
+        }
+
+        return [
+            'id' => $msg->id,
+            'employer_id' => $msg->employer_id,
+            'applicant_id' => $msg->applicant_id,
+            'message' => $decryptedMessage,
+            'attachment' => $msg->attachment,
+            'sender_type' => $msg->sender_type, // 'employer' or 'applicant'
+            'is_read' => (bool) $msg->is_read,
+            'is_typing' => (bool) $msg->is_typing,
+            'created_at' => $msg->created_at,
+            'time' => \Carbon\Carbon::parse($msg->created_at)->format('g:i A'),
+        ];
+    });
+
+    // Typing indicator: Check if the latest record from this applicant is typing
+    $applicantTyping = \DB::table('employer_messages_to_applicant')
+        ->where('employer_id', $employerId)
+        ->where('applicant_id', $applicantId)
+        ->where('sender_type', 'applicant')
+        ->orderByDesc('updated_at')
+        ->value('is_typing');
+
+    return response()->json([
+        'success' => true,
+        'messages' => $messagesFormatted,
+        'is_typing' => (bool) $applicantTyping,
+        'count' => $messagesFormatted->count(),
+    ]);
+}
+
+
+public function setTypingStatus(Request $request, $applicantId)
+{
+    $employerId = session('employer_id'); 
+    $isTyping = $request->input('is_typing', false);
+
+    if (!$employerId) {
+        return response()->json(['success' => false, 'error' => 'Not authenticated'], 401);
+    }
+
+    // Update typing status in messages table
+    DB::table('employer_messages_to_applicant')
+        ->where('employer_id', $employerId)
+        ->where('applicant_id', $applicantId)
+        ->update(['is_typing' => $isTyping]);
+
+    return response()->json(['success' => true]);
+}
+
+
 
 
 

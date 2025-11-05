@@ -156,465 +156,305 @@
 </div>
 
 <script>
-    let retrieveMessages = @json($retrieveMessages);
-    const employerId = "{{ session('employer_id') }}";
+    document.addEventListener('DOMContentLoaded', () => {
+        let retrieveMessages = @json($retrieveMessages);
+        const employerId = "{{ session('employer_id') }}";
 
-    const applicantsList = document.getElementById('applicantsList');
-    const chatHeader = document.getElementById('chatHeader');
-    const chatAvatar = document.getElementById('chatAvatar');
-    const chatUserName = document.getElementById('chatUserName');
-    const chatUserStatus = document.getElementById('chatUserStatus');
-    const chatMessages = document.getElementById('chatMessages');
-    const chatComposer = document.getElementById('chatComposer');
-    const receiverInput = document.getElementById('receiver_id');
-    const conversationsPanel = document.getElementById('conversationsPanel');
-    const chatPanel = document.getElementById('chatPanel');
-    const backBtn = document.getElementById('backBtn');
-    const messageInput = chatComposer.querySelector('input[name="message"]');
-    const fileInput = document.getElementById('fileInput');
-    const uploadPreview = document.getElementById('uploadPreview');
-    const cancelBtn = document.getElementById('cancelPhoto');
-
-    let currentApplicantId = null;
-    let messagePollingInterval = null;
-    let typingTimeout = null;
-
-    function isMobile() {
-        return window.innerWidth <= 768;
-    }
-
-    backBtn.addEventListener('click', () => {
-        if (isMobile()) {
-            conversationsPanel.classList.remove('hidden-mobile');
-            chatPanel.classList.add('hidden-mobile');
-        }
-    });
-
-    window.addEventListener('resize', () => {
-        if (!isMobile()) {
-            conversationsPanel.classList.remove('hidden-mobile');
-            chatPanel.classList.remove('hidden-mobile');
-        }
-    });
-
-    document.getElementById('search').addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase();
-        const items = applicantsList.querySelectorAll('.conversation-item');
-
-        items.forEach(item => {
-            const name = item.getAttribute('data-name').toLowerCase();
-            const email = item.getAttribute('data-email').toLowerCase();
-
-            if (name.includes(searchTerm) || email.includes(searchTerm)) {
-                item.style.display = 'flex';
-            } else {
-                item.style.display = 'none';
-            }
-        });
-    });
-
-    fileInput.addEventListener('change', function() {
-        const file = this.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                uploadPreview.innerHTML =
-                    `<img src="${e.target.result}" class="preview-image" alt="Preview">`;
-            };
-            reader.readAsDataURL(file);
-            cancelBtn.style.display = 'inline-block';
-        } else {
-            uploadPreview.innerHTML = '';
-            cancelBtn.style.display = 'none';
-        }
-    });
-
-    cancelBtn.addEventListener('click', function() {
-        fileInput.value = '';
-        uploadPreview.innerHTML = '';
-        this.style.display = 'none';
-    });
-
-    function updateGlobalNotificationCount() {
-        const allUnreadCounts = document.querySelectorAll('.unread-count');
-        let totalUnread = 0;
-
-        allUnreadCounts.forEach(badge => {
-            const count = parseInt(badge.getAttribute('data-count') || badge.textContent || '0');
-            if (!isNaN(count) && count > 0) {
-                totalUnread += count;
-            }
-        });
-
-        console.log('Total unread messages:', totalUnread);
-
+        const applicantsList = document.getElementById('applicantsList');
+        const chatHeader = document.getElementById('chatHeader');
+        const chatAvatar = document.getElementById('chatAvatar');
+        const chatUserName = document.getElementById('chatUserName');
+        const chatUserStatus = document.getElementById('chatUserStatus');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatComposer = document.getElementById('chatComposer');
+        const receiverInput = document.getElementById('receiver_id');
+        const conversationsPanel = document.getElementById('conversationsPanel');
+        const chatPanel = document.getElementById('chatPanel');
+        const backBtn = document.getElementById('backBtn');
+        const messageInput = chatComposer.querySelector('input[name="message"]');
+        const fileInput = document.getElementById('fileInput');
+        const uploadPreview = document.getElementById('uploadPreview');
+        const cancelBtn = document.getElementById('cancelPhoto');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const searchInput = document.getElementById('search');
         const globalNotif = document.getElementById('globalNotif');
-        if (globalNotif) {
-            if (totalUnread > 0) {
-                globalNotif.textContent = totalUnread;
-                globalNotif.style.display = 'inline-flex';
-            } else {
-                globalNotif.textContent = '0';
-                globalNotif.style.display = 'none';
-            }
-        }
-    }
 
+        let currentApplicantId = null;
+        let messagePollingInterval = null;
+        let typingTimeout = null;
+        let lastMessageId = null;
 
-    function updateUIAfterMarkingRead(applicantId) {
-        console.log('Updating UI for applicant:', applicantId);
-
-        // Find the conversation item
-        const conversationItem = document.querySelector(`[data-applicant-id="${applicantId}"]`);
-        if (conversationItem) {
-            // Remove unread count badge
-            const unreadBadge = conversationItem.querySelector('.unread-count');
-            if (unreadBadge) {
-                console.log('Removing unread badge');
-                unreadBadge.remove();
-            }
-
-            // Remove online dot indicator
-            const onlineDot = conversationItem.querySelector('.online-dot');
-            if (onlineDot) {
-                console.log('Removing online dot');
-                onlineDot.remove();
-            }
-
-            // Update data attribute
-            conversationItem.setAttribute('data-unread', '0');
+        // ---------- Utility ----------
+        function isMobile() {
+            return window.innerWidth <= 768;
         }
 
-        // Update local message store
-        retrieveMessages.forEach(msg => {
-            if (msg.applicant_id == applicantId && msg.sender_type === 'applicant') {
-                msg.is_read = true;
-            }
-        });
+        function showTypingIndicator() {
+            typingIndicator.style.display = 'flex';
+        }
 
-        // Update global notification count
-        updateGlobalNotificationCount();
-    }
+        function hideTypingIndicator() {
+            typingIndicator.style.display = 'none';
+        }
 
-    async function markMessagesAsRead(applicantId) {
-        try {
-            console.log('Marking messages as read for applicant:', applicantId);
-
-            const url = `/employer/messages/mark-as-read/${applicantId}`;
-            console.log('Request URL:', url);
-
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
+        // ---------- Global Notifications ----------
+        function updateGlobalNotificationCount() {
+            const badges = document.querySelectorAll('.unread-count');
+            let total = 0;
+            badges.forEach(b => total += parseInt(b.dataset.count || 0));
+            if (globalNotif) {
+                if (total > 0) {
+                    globalNotif.textContent = total;
+                    globalNotif.style.display = 'inline-flex';
+                } else {
+                    globalNotif.style.display = 'none';
                 }
-            });
-
-            console.log(' Response status:', response.status);
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Response error:', errorText);
-                throw new Error(`HTTP error! status: ${response.status}`);
             }
+        }
 
-            const result = await response.json();
-            console.log('Mark as read response:', result);
-
-            if (result.success) {
-                console.log('Successfully marked', result.updated, 'messages as read');
-
-                // Update UI immediately - THIS IS THE KEY FIX
-                updateUIAfterMarkingRead(applicantId);
-
-                return true;
-            } else {
-                console.warn('Mark as read failed:', result.message);
-                return false;
+        function updateUIAfterMarkingRead(applicantId) {
+            const item = document.querySelector(`[data-applicant-id="${applicantId}"]`);
+            if (item) {
+                const unreadBadge = item.querySelector('.unread-count');
+                if (unreadBadge) unreadBadge.remove();
+                const onlineDot = item.querySelector('.online-dot');
+                if (onlineDot) onlineDot.remove();
+                item.dataset.unread = '0';
             }
-        } catch (error) {
-            console.error('Error marking messages as read:', error);
-            return false;
-        }
-    }
-
-
-    function showTypingIndicator() {
-        document.getElementById('typingIndicator').style.display = 'flex';
-    }
-
-    function hideTypingIndicator() {
-        document.getElementById('typingIndicator').style.display = 'none';
-    }
-
-    async function sendTypingNotification() {
-        if (!currentApplicantId) return;
-
-        try {
-            await fetch('/employer/messages/typing', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify({
-                    applicant_id: currentApplicantId
-                })
+            retrieveMessages.forEach(m => {
+                if (m.applicant_id == applicantId && m.sender_type === 'applicant') m.is_read = true;
             });
-        } catch (error) {
-            console.error('Error sending typing notification:', error);
+            updateGlobalNotificationCount();
         }
-    }
 
-    function startMessagePolling() {
-        stopMessagePolling();
-
-        console.log('Starting message polling for applicant:', currentApplicantId);
-
-        messagePollingInterval = setInterval(async () => {
-            if (!currentApplicantId) return;
-
+        async function markMessagesAsRead(applicantId) {
             try {
-                const response = await fetch(`/employer/messages/${currentApplicantId}/fetch`, {
-                    method: 'GET',
+                const res = await fetch(`/employer/messages/mark-as-read/${applicantId}`, {
+                    method: 'POST',
                     headers: {
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
                     }
                 });
-
-                if (response.ok) {
-                    const data = await response.json();
-
-                    if (data.messages) {
-                        const currentMessages = retrieveMessages.filter(m => m.applicant_id ==
-                            currentApplicantId);
-                        const newMessages = data.messages.filter(newMsg =>
-                            !currentMessages.some(existingMsg => existingMsg.id === newMsg.id)
-                        );
-
-                        if (newMessages.length > 0) {
-                            console.log('New messages received:', newMessages.length);
-
-                            // Update message store
-                            retrieveMessages = retrieveMessages.filter(m => m.applicant_id !=
-                                currentApplicantId);
-                            retrieveMessages = [...retrieveMessages, ...data.messages];
-
-                            // Re-render messages
-                            const name = document.getElementById('chatUserName').textContent;
-                            renderMessages(data.messages, name);
-
-                            // Mark new messages as read immediately with UI update
-                            await markMessagesAsRead(currentApplicantId);
-                        }
-                    }
-
-                    // Handle typing indicator
-                    if (data.is_typing) {
-                        showTypingIndicator();
-                    } else {
-                        hideTypingIndicator();
-                    }
-                }
-            } catch (error) {
-                console.error('Error polling messages:', error);
+                const result = await res.json();
+                if (result.success) updateUIAfterMarkingRead(applicantId);
+            } catch (err) {
+                console.error('Error marking as read:', err);
             }
-        }, 3000); // Poll every 3 seconds
-    }
-
-    function stopMessagePolling() {
-        if (messagePollingInterval) {
-            clearInterval(messagePollingInterval);
-            messagePollingInterval = null;
-            console.log('⏹Stopped message polling');
         }
-    }
 
-
-    applicantsList.querySelectorAll('.conversation-item').forEach(item => {
-        item.addEventListener('click', async () => {
-            console.log(' Applicant clicked');
-
-            // Remove active state from all items
-            applicantsList.querySelectorAll('.conversation-item').forEach(i => i.classList.remove(
-                'active'));
-            item.classList.add('active');
-
-            const applicantId = item.getAttribute('data-applicant-id');
-            const name = item.getAttribute('data-name');
-            const email = item.getAttribute('data-email');
-
-            currentApplicantId = applicantId;
-
-
-            // Mobile view handling
-            if (isMobile()) {
-                conversationsPanel.classList.add('hidden-mobile');
-                chatPanel.classList.remove('hidden-mobile');
+        // ---------- Render Messages ----------
+        function renderMessages(messages, applicantName) {
+            chatMessages.innerHTML = '';
+            if (messages.length === 0) {
+                chatMessages.innerHTML = `
+                <div class="no-messages">
+                    <div class="no-messages-icon">💭</div>
+                    <p>No messages yet with ${applicantName}</p>
+                    <span>Start the conversation below</span>
+                </div>`;
+                return;
             }
 
-            // Update header
-            chatHeader.style.display = 'flex';
-            chatUserName.textContent = name;
-            chatUserStatus.textContent = `Active • ${email}`;
-            chatAvatar.textContent = name.split(' ').map(n => n[0]).join('').toUpperCase();
-
-            // Update receiver ID for form
-            receiverInput.value = applicantId;
-
-            // Show composer
-            chatComposer.style.display = 'flex';
-
-            // Filter messages for this applicant
-            const messagesForApplicant = retrieveMessages.filter(m => m.applicant_id ==
-                applicantId);
-            console.log(' Messages for applicant:', messagesForApplicant.length);
-
-            // Render messages
-            renderMessages(messagesForApplicant, name);
-
-            // Mark messages as read IMMEDIATELY with UI update
-            console.log(' Marking messages as read...');
-            const marked = await markMessagesAsRead(applicantId);
-            console.log('✓ Mark as read completed:', marked);
-
-            // Start polling for new messages
-            startMessagePolling();
-        });
-    });
-
-
-    function renderMessages(messages, applicantName) {
-        chatMessages.innerHTML = '';
-
-        if (messages.length > 0) {
             messages.forEach(msg => {
-                const isSentByEmployer = msg.sender_type === 'employer';
-                const messageTime = new Date(msg.created_at).toLocaleTimeString([], {
+                const isSent = msg.sender_type === 'employer';
+                const time = new Date(msg.created_at).toLocaleTimeString([], {
                     hour: '2-digit',
                     minute: '2-digit'
                 });
-
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message-bubble ${isSentByEmployer ? 'sent' : 'received'}`;
-
-                messageDiv.innerHTML = `
+                const div = document.createElement('div');
+                div.className = `message-bubble ${isSent ? 'sent' : 'received'}`;
+                div.innerHTML = `
                 <div class="message-content">
-                    ${msg.attachment ? `<img src="/storage/${msg.attachment}" alt="Attachment" class="message-image">` : ''}
+                    ${msg.attachment ? `<img src="/storage/${msg.attachment}" class="message-image" alt="Attachment">` : ''}
                     ${msg.message ? `<p class="message-text">${msg.message}</p>` : ''}
                 </div>
-                <div class="message-time">${messageTime}</div>
-                ${isSentByEmployer ? '<div class="message-status">✓✓</div>' : ''}
-            `;
-
-                chatMessages.appendChild(messageDiv);
+                <div class="message-time">${time}</div>
+                ${isSent ? '<div class="message-status">✓✓</div>' : ''}`;
+                chatMessages.appendChild(div);
             });
 
             chatMessages.scrollTop = chatMessages.scrollHeight;
-        } else {
-            chatMessages.innerHTML = `
-            <div class="no-messages">
-                <div class="no-messages-icon">💭</div>
-                <p>No messages yet with ${applicantName}</p>
-                <span>Start the conversation by sending a message below</span>
-            </div>
-        `;
-        }
-    }
-
-
-    chatComposer.addEventListener('submit', async function(e) {
-        e.preventDefault();
-
-        const message = messageInput.value.trim();
-        const file = fileInput.files[0];
-
-        if (!message && !file) {
-            return;
         }
 
-        console.log(' Sending message...');
+        // ---------- Message Polling ----------
+        function startMessagePolling() {
+            stopMessagePolling();
+            messagePollingInterval = setInterval(refreshMessages, 3000);
+        }
 
-        // Add sent message to chat immediately
-        if (message || file) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message-bubble sent';
-            messageDiv.innerHTML = `
+        function stopMessagePolling() {
+            if (messagePollingInterval) clearInterval(messagePollingInterval);
+            messagePollingInterval = null;
+        }
+
+        async function refreshMessages() {
+            if (!currentApplicantId) return;
+            try {
+                const res = await fetch(`/employer/messages/fetch/${currentApplicantId}`, {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                const data = await res.json();
+                if (!data.success || !data.messages) return;
+
+                // Avoid duplicate re-rendering
+                if (lastMessageId && data.messages.length > 0) {
+                    const newLastId = data.messages[data.messages.length - 1].id;
+                    if (newLastId === lastMessageId) return; // no new messages
+                }
+
+                const name = chatUserName.textContent;
+                renderMessages(data.messages, name);
+
+                if (data.messages.length > 0)
+                    lastMessageId = data.messages[data.messages.length - 1].id;
+
+                if (data.is_typing) showTypingIndicator();
+                else hideTypingIndicator();
+
+                await markMessagesAsRead(currentApplicantId);
+            } catch (err) {
+                console.error('Error fetching messages:', err);
+            }
+        }
+
+
+        // ---------- Typing Indicator ----------
+        function sendTypingNotification(isTyping = true) {
+            if (!currentApplicantId) return;
+            fetch(`/employer/messages/typing/${currentApplicantId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    is_typing: isTyping
+                })
+            }).catch(console.error);
+        }
+
+        messageInput.addEventListener('input', () => {
+            clearTimeout(typingTimeout);
+            sendTypingNotification(true);
+            typingTimeout = setTimeout(() => sendTypingNotification(false), 2500);
+        });
+
+        // ---------- Event: Applicant List Click ----------
+        applicantsList.querySelectorAll('.conversation-item').forEach(item => {
+            item.addEventListener('click', async () => {
+                applicantsList.querySelectorAll('.conversation-item').forEach(i => i
+                    .classList.remove('active'));
+                item.classList.add('active');
+
+                currentApplicantId = item.dataset.applicantId;
+                const name = item.dataset.name;
+                const email = item.dataset.email;
+
+                chatHeader.style.display = 'flex';
+                chatUserName.textContent = name;
+                chatUserStatus.textContent = `Active • ${email}`;
+                chatAvatar.textContent = name.split(' ').map(n => n[0]).join('')
+                    .toUpperCase();
+
+                receiverInput.value = currentApplicantId;
+                chatComposer.style.display = 'flex';
+
+                if (isMobile()) {
+                    conversationsPanel.classList.add('hidden-mobile');
+                    chatPanel.classList.remove('hidden-mobile');
+                }
+
+                const msgs = retrieveMessages.filter(m => m.applicant_id ==
+                    currentApplicantId);
+                renderMessages(msgs, name);
+                await markMessagesAsRead(currentApplicantId);
+                startMessagePolling();
+            });
+        });
+
+        // ---------- Send Message ----------
+        chatComposer.addEventListener('submit', async e => {
+            e.preventDefault();
+            const message = messageInput.value.trim();
+            const file = fileInput.files[0];
+            if (!message && !file) return;
+
+            const formData = new FormData(chatComposer);
+            messageInput.value = '';
+            fileInput.value = '';
+            uploadPreview.innerHTML = '';
+            cancelBtn.style.display = 'none';
+
+            const tempDiv = document.createElement('div');
+            tempDiv.className = 'message-bubble sent';
+            tempDiv.innerHTML = `
             <div class="message-content">
-                ${file ? `<img src="${URL.createObjectURL(file)}" alt="Attachment" class="message-image">` : ''}
+                ${file ? `<img src="${URL.createObjectURL(file)}" class="message-image">` : ''}
                 ${message ? `<p class="message-text">${message}</p>` : ''}
             </div>
             <div class="message-time">Now</div>
-            <div class="message-status">✓</div>
-        `;
-            chatMessages.appendChild(messageDiv);
+            <div class="message-status">✓</div>`;
+            chatMessages.appendChild(tempDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
 
-        // Prepare form data
-        const formData = new FormData(chatComposer);
-
-        // Clear inputs
-        messageInput.value = '';
-        messageInput.style.height = 'auto';
-        fileInput.value = '';
-        uploadPreview.innerHTML = '';
-        cancelBtn.style.display = 'none';
-
-        try {
-            const response = await fetch('{{ route('employer.sendmessage.store') }}', {
-                method: 'POST',
-                body: formData
-            });
-
-            const result = await response.json();
-
-            if (result.success) {
-                console.log(' Message sent successfully');
-
-                const lastMsg = chatMessages.querySelector(
-                    '.message-bubble.sent:last-child .message-status');
-                if (lastMsg) lastMsg.textContent = '✓✓';
-
-                // Refresh messages from server
-                const fetchResponse = await fetch(`/employer/messages/${currentApplicantId}/fetch`);
-                const data = await fetchResponse.json();
-                if (data.messages) {
-                    retrieveMessages = retrieveMessages.filter(m => m.applicant_id != currentApplicantId);
-                    retrieveMessages = [...retrieveMessages, ...data.messages];
-                }
-            } else {
-                console.error('Failed to send message');
+            try {
+                const res = await fetch('{{ route('employer.sendmessage.store') }}', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.success) refreshMessages();
+            } catch (err) {
+                console.error('Send message error:', err);
             }
-        } catch (error) {
-            console.error(' Error sending message:', error);
-        }
+        });
+
+        // ---------- Search ----------
+        searchInput.addEventListener('input', e => {
+            const term = e.target.value.toLowerCase();
+            applicantsList.querySelectorAll('.conversation-item').forEach(item => {
+                const name = item.dataset.name.toLowerCase();
+                const email = item.dataset.email.toLowerCase();
+                item.style.display = (name.includes(term) || email.includes(term)) ? 'flex' :
+                    'none';
+            });
+        });
+
+        // ---------- File Preview ----------
+        fileInput.addEventListener('change', e => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = ev => uploadPreview.innerHTML =
+                    `<img src="${ev.target.result}" class="preview-image">`;
+                reader.readAsDataURL(file);
+                cancelBtn.style.display = 'inline-block';
+            } else {
+                uploadPreview.innerHTML = '';
+                cancelBtn.style.display = 'none';
+            }
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            fileInput.value = '';
+            uploadPreview.innerHTML = '';
+            cancelBtn.style.display = 'none';
+        });
+
+        // ---------- Back Button ----------
+        backBtn.addEventListener('click', () => {
+            if (isMobile()) {
+                conversationsPanel.classList.remove('hidden-mobile');
+                chatPanel.classList.add('hidden-mobile');
+            }
+        });
+
+        // ---------- Init ----------
+        updateGlobalNotificationCount();
+        window.addEventListener('beforeunload', stopMessagePolling);
     });
-
-
-    messageInput.addEventListener('input', function() {
-        this.style.height = 'auto';
-        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-
-        // Send typing notification
-        clearTimeout(typingTimeout);
-        sendTypingNotification();
-        typingTimeout = setTimeout(() => {
-            // Stop typing after 3 seconds
-        }, 3000);
-    });
-
-
-    window.addEventListener('beforeunload', () => {
-        stopMessagePolling();
-    });
-
-    // Initial notification count on page load
-    updateGlobalNotificationCount();
 </script>

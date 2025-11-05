@@ -551,77 +551,57 @@
     // ========================================
     // REAL-TIME MESSAGE REFRESH
     // ========================================
+    let lastMessageId = null; // track the last message received
+
     function refreshMessages() {
         if (!currentEmployerId) return;
 
-        const refreshIndicator = document.getElementById('refreshIndicator');
-        refreshIndicator.style.display = 'block';
-
-        fetch('/applicant/messages/fetch', {
+        fetch(`/applicant/messages/fetch/${currentEmployerId}`, {
                 method: 'GET',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 },
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success && data.messages) {
-                    console.log(' Messages refreshed:', data.messages.length);
+                    const container = document.getElementById('messagesContainer');
 
-                    // Update global messages
-                    allMessages = data.messages;
+                    // Filter only new messages
+                    let newMessages = lastMessageId ?
+                        data.messages.filter(msg => msg.id > lastMessageId) :
+                        data.messages;
 
-                    // Reorganize by employer
-                    const newMessagesByEmployer = {};
-                    data.messages.forEach(msg => {
-                        if (!newMessagesByEmployer[msg.employer_id]) {
-                            newMessagesByEmployer[msg.employer_id] = [];
-                        }
-                        newMessagesByEmployer[msg.employer_id].push(msg);
+                    newMessages.forEach(msg => {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = 'message-bubble ' + (msg.sender_type === 'applicant' ?
+                            'from-applicant' : 'from-employer');
+                        messageDiv.innerHTML = `
+                    <div class="message-content">
+                        ${msg.message || ''}
+                        ${msg.attachment ? `<div class="message-attachment mt-2"><img src="/storage/${msg.attachment}" class="img-fluid rounded-2 shadow-sm"></div>` : ''}
+                        <div class="message-timestamp ${msg.sender_type}">${msg.time}</div>
+                    </div>
+                `;
+                        container.appendChild(messageDiv);
                     });
 
-                    // Update messagesByEmployer
-                    Object.keys(newMessagesByEmployer).forEach(employerId => {
-                        messagesByEmployer[employerId] = newMessagesByEmployer[employerId];
-                    });
+                    // Update lastMessageId
+                    if (newMessages.length > 0) {
+                        lastMessageId = newMessages[newMessages.length - 1].id;
 
-                    // Update UI
-                    updateEmployersList(newMessagesByEmployer);
-                    updateDropdownList(newMessagesByEmployer);
-                    updateBadgeCount(data.messages);
-
-                    // Update current conversation if it's the one open
-                    if (currentEmployerId && newMessagesByEmployer[currentEmployerId]) {
-                        const newMessageCount = newMessagesByEmployer[currentEmployerId].length;
-
-                        if (newMessageCount !== lastMessageCount) {
-                            console.log(' New messages detected!', newMessageCount, 'vs', lastMessageCount);
-
-                            displayMessages(newMessagesByEmployer[currentEmployerId]);
-
-                            if (isUserAtBottom) {
-                                scrollToBottom();
-                            } else {
-                                document.getElementById('newMessageAlert').style.display = 'block';
-                            }
-
-                            lastMessageCount = newMessageCount;
-
-                            // Mark as read if user is viewing
-                            if (isUserAtBottom) {
-                                setTimeout(() => markMessagesAsRead(currentEmployerId), 500);
-                            }
+                        if (isUserAtBottom) {
+                            container.scrollTop = container.scrollHeight;
+                            setTimeout(() => markMessagesAsRead(currentEmployerId), 500);
+                        } else {
+                            document.getElementById('newMessageAlert').style.display = 'block';
                         }
                     }
                 }
-
-                refreshIndicator.style.display = 'none';
             })
             .catch(error => {
-                console.error(' Error refreshing messages:', error);
-                refreshIndicator.style.display = 'none';
+                console.error('Error refreshing messages:', error);
             });
     }
 
