@@ -625,12 +625,6 @@ $isAlreadyScheduled =
                 </button>
             </div>
         @endif
-
-
-
-
-
-
     </div>
 
     <!-- Hire / Schedule Interview Modal -->
