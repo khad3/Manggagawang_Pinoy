@@ -262,58 +262,7 @@
     Updating...
 </div>
 
-<style>
-    @keyframes spin {
-        from {
-            transform: rotate(0deg);
-        }
 
-        to {
-            transform: rotate(360deg);
-        }
-    }
-
-    .spin-animation {
-        animation: spin 1s linear infinite;
-    }
-
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .message-bubble {
-        animation: slideIn 0.3s ease-out;
-    }
-
-    @keyframes pulse {
-
-        0%,
-        100% {
-            transform: scale(1);
-        }
-
-        50% {
-            transform: scale(1.1);
-        }
-    }
-
-    .nav-badge,
-    .unread-count {
-        animation: pulse 2s infinite;
-    }
-
-    .online-status {
-        animation: pulse 2s infinite;
-    }
-</style>
 
 <!---Photo review--->
 <script>
