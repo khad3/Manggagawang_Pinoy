@@ -242,14 +242,29 @@
                                 <div class="card-header">
                                     <div class="company-info">
                                         @php
-                                            $company = $retrievedAddressCompany->first();
+                                            $company = $retrievedAddressCompany->firstWhere(
+                                                'employer_id',
+                                                $jobDetail->employer_id,
+                                            );
+                                            $initials =
+                                                $company && !$company->company_logo
+                                                    ? strtoupper(Str::limit($company->company_name ?? 'BC', 2, ''))
+                                                    : '';
                                         @endphp
 
-                                        @if ($company)
-                                            <div class="company-avatar">
-                                                {{ Str::limit($company->company_name ?? 'BC', 2, '') }}
-                                            </div>
-                                        @endif
+                                        <div class="company-avatar-wrapper">
+                                            @if ($company && $company->company_logo)
+                                                <img src="{{ asset('storage/' . $company->company_logo) }}"
+                                                    alt="{{ $company->company_name ?? 'Company Logo' }}"
+                                                    class="company-avatar-img">
+                                            @elseif ($company)
+                                                <div class="company-avatar-initials">{{ $initials }}</div>
+                                            @else
+                                                <div class="company-avatar-initials">MP</div> <!-- default fallback -->
+                                            @endif
+                                        </div>
+
+
 
                                         <div class="company-details">
                                             <h3>{{ $jobDetail->title }}</h3>
@@ -275,7 +290,7 @@
                                                 data-employer-id="{{ $jobDetail->employer_id ?? 'Unknown Employer' }}"
                                                 data-job-id="{{ $jobDetail->id }}"
                                                 data-title="{{ $jobDetail->title }}"
-                                                data-company="{{ $retrievedAddressCompany->first()->company_name ?? 'Unknown Company' }}"
+                                                data-company="{{ $company->company_name ?? 'Unknown Company' }}"
                                                 data-bs-toggle="modal" data-bs-target="#reportJobModal"
                                                 title="Report this job">
                                                 <i class="bi bi-flag"></i>
@@ -368,7 +383,7 @@
                                                     <button class="btn btn-outline-warning btn-sm rate-job-btn"
                                                         data-job-id="{{ $jobDetail->id }}"
                                                         data-title="{{ $jobDetail->title }}"
-                                                        data-company="{{ $retrievedAddressCompany->first()->company_name ?? 'Unknown Company' }}"
+                                                        data-company="{{ $company->company_name ?? 'Unknown Company' }}"
                                                         data-bs-toggle="modal" data-bs-target="#rateJobModal">
                                                         <i class="bi bi-star me-1"></i>
                                                         Rate Job
@@ -389,7 +404,7 @@
                                         <!-- View Details -->
                                         <button class="btn btn-primary btn-sm view-details-btn"
                                             data-title="{{ $jobDetail->title }}"
-                                            data-company="{{ $retrievedAddressCompany->first()->company_name ?? 'Unknown Company' }}"
+                                            data-company="{{ $company->company_name ?? 'Unknown Company' }}"
                                             data-industry="{{ $jobDetail->department }}"
                                             data-location="{{ $jobDetail->location }}"
                                             data-description="{{ $jobDetail->job_description }}"
