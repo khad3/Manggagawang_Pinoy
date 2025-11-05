@@ -580,21 +580,25 @@
         </div>
 
         @php
-            // Assume $retrievedProfile contains the current applicant's profile
-$applicant = $retrievedProfile;
+            // Get current applicant profile
+            $applicant = $retrievedProfile;
+            $employer_id = session('employer_id');
 
-$employer_id = session('employer_id');
-
-// Retrieve applications for this applicant and employer
+            // Retrieve this applicant's job applications under the logged-in employer
 $applicantApplications = \App\Models\Applicant\ApplyJobModel::where('applicant_id', $applicant->id)
     ->whereHas('job', function ($query) use ($employer_id) {
         $query->where('employer_id', $employer_id);
     })
-    ->orderBy('created_at', 'desc') // get the latest status
-                ->get();
+    ->orderBy('created_at', 'desc')
+    ->get();
 
-            // Determine the status for the sticky bar
-            $latestStatus = $applicantApplications->first()->status ?? null;
+// Get latest application status
+$latestStatus = $applicantApplications->first()->status ?? null;
+
+// Check if already scheduled for interview
+$isAlreadyScheduled = \App\Models\Employer\SetInterviewModel::where('applicant_id', $applicant->id)
+    ->where('employer_id', $employer_id)
+                ->exists();
         @endphp
 
         @if ($latestStatus === 'approved')
@@ -604,7 +608,7 @@ $applicantApplications = \App\Models\Applicant\ApplyJobModel::where('applicant_i
                 <i class="fas fa-check-circle fs-4"></i>
                 <span>Hey! This applicant has been recently approved. 🎉</span>
             </div>
-        @elseif ($latestStatus === 'interview')
+        @elseif ($latestStatus === 'interview' || $isAlreadyScheduled)
             <!-- Message if applicant is scheduled for interview -->
             <div class="sticky-hiring-bar d-flex align-items-center justify-content-center gap-2 mt-4 p-3 rounded shadow-sm"
                 style="background: linear-gradient(90deg, #42a5f5, #64b5f6); color: white; font-weight: 600; font-size: 16px;">
@@ -612,7 +616,7 @@ $applicantApplications = \App\Models\Applicant\ApplyJobModel::where('applicant_i
                 <span>This applicant is scheduled for an interview. 🗓️</span>
             </div>
         @else
-            <!-- Schedule Interview button if applicant not approved or not scheduled -->
+            <!-- Show Schedule Interview button -->
             <div class="sticky-hiring-bar d-flex justify-content-end gap-2 mt-4">
                 <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#hireModal">
                     <i class="fas fa-user-check me-1"></i> Schedule Interview
