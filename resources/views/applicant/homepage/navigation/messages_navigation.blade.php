@@ -20,79 +20,84 @@
 
         <div class="dropdown-content">
             <div class="messages-list" id="dropdownMessagesList">
-                @forelse($messages->groupBy('employer_id') as $employerId => $employerMessages)
+                @php
+                    // Sort employers by latest message
+                    $groupedMessages = $messages
+                        ->groupBy('employer_id')
+                        ->map(function ($employerMessages) {
+                            return $employerMessages->sortByDesc('created_at');
+                        })
+                        ->sortByDesc(function ($employerMessages) {
+                            return $employerMessages->first()->created_at;
+                        });
+                @endphp
+
+                @forelse($groupedMessages as $employerId => $employerMessages)
                     @php
-                        $employer = $employerMessages->first()->employer;
+                        $lastMessage = $employerMessages->first();
+                        $employer = $lastMessage->employer;
+                        $company = $employer->addressCompany ?? null;
                         $unreadCount = $employerMessages
                             ->where('sender_type', 'employer')
                             ->where('is_read', 0)
                             ->count();
-                        $lastMessage = $employerMessages->sortByDesc('created_at')->first();
-                        $totalMessages = $employerMessages->count();
+                        $initials =
+                            $company && !$company->company_logo
+                                ? strtoupper(substr($company->company_name ?? 'C', 0, 2))
+                                : '';
                     @endphp
 
                     <div class="employer-item {{ $unreadCount > 0 ? 'unread' : '' }}"
-                        data-employer-id="{{ $employerId }}" data-unread-count="{{ $unreadCount }}"
-                        onclick="openChatWithEmployer({{ $employerId }}, '{{ addslashes($employer->personal_info->first_name ?? 'N/A') }}', '{{ addslashes($employer->personal_info->last_name ?? 'N/A') }}', '{{ addslashes($employer->addressCompany->company_name ?? 'Company') }}')">
+                        data-employer-id="{{ $employerId }}"
+                        onclick="openChatWithEmployer({{ $employerId }}, '{{ addslashes($employer->personal_info->first_name ?? 'N/A') }}', '{{ addslashes($employer->personal_info->last_name ?? 'N/A') }}', '{{ addslashes($company->company_name ?? 'Company') }}')">
 
+                        {{-- Unread indicator --}}
                         @if ($unreadCount > 0)
                             <div class="unread-indicator"></div>
                         @endif
 
-                        <div class="message-avatar">
-                            @if ($employer->addressCompany->company_logo)
-                                <img src="{{ $employer->addressCompany->company_logo }}"
-                                    alt="{{ $employer->addressCompany->company_name }}">
+                        {{-- Avatar --}}
+                        <div class="message-avatar-wrapper">
+                            @if ($company && $company->company_logo)
+                                <img src="{{ asset('storage/' . $company->company_logo) }}"
+                                    alt="{{ $company->company_name ?? 'Company Logo' }}" class="message-avatar-img">
                             @else
-                                <div class="avatar-placeholder">
-                                    {{ strtoupper(substr($employer->addressCompany->company_name ?? 'C', 0, 1)) }}
-                                </div>
+                                <div class="message-avatar-initials">{{ $initials ?: 'C' }}</div>
                             @endif
                         </div>
 
+                        {{-- Message content --}}
                         <div class="message-content">
                             <div class="message-header">
-                                <span class="sender-name">
-                                    {{ $employer->personal_info->first_name ?? 'N/A' }}
-                                    {{ $employer->personal_info->last_name ?? 'N/A' }}
-                                </span>
-                                <span class="company-name">
-                                    {{ $employer->addressCompany->company_name ?? 'Company' }}
-                                </span>
-                                <div class="message-meta">
-                                    <span class="message-time">{{ $lastMessage->created_at->diffForHumans() }}</span>
-                                    @if ($unreadCount > 0)
-                                        <span class="unread-count">{{ $unreadCount }}</span>
-                                    @endif
-                                </div>
+                                <span class="sender-name">{{ $employer->personal_info->first_name ?? 'N/A' }} - </span>
+                                <span class="company-name">{{ $company->company_name ?? 'Company' }}</span>
+                                <span class="message-time">{{ $lastMessage->created_at->diffForHumans() }}</span>
+                                @if ($unreadCount > 0)
+                                    <span class="unread-count">{{ $unreadCount }}</span>
+                                @endif
                             </div>
+
                             <div class="message-preview">
-                                {{ $totalMessages }} message{{ $totalMessages > 1 ? 's' : '' }} •
-                                {{ Str::limit($lastMessage->message, 60) }}
+                                {{ Str::limit($lastMessage->message, 50) }}
                             </div>
                         </div>
-
-                        <button class="message-actions"
-                            onclick="event.stopPropagation(); openChatWithEmployer({{ $employerId }}, '{{ addslashes($employer->personal_info->first_name ?? 'N/A') }}', '{{ addslashes($employer->personal_info->last_name ?? 'N/A') }}', '{{ addslashes($employer->addressCompany->company_name ?? 'Company') }}')"
-                            title="Open chat">
-                            <i class="bi bi-chat-square-text"></i>
-                        </button>
                     </div>
                 @empty
-                    <div class="no-messages">
-                        <i class="bi bi-chat-dots"></i>
-                        <p>No conversations yet</p>
+                    <div class="no-messages text-center">
+                        <i class="bi bi-chat-dots fs-2 mb-2"></i>
+                        <p class="mb-0">No conversations yet</p>
                     </div>
                 @endforelse
             </div>
 
-            <div class="dropdown-footer">
+            <div class="dropdown-footer text-center">
                 <a href="#" class="view-all-link" onclick="openAllChats()">
-                    <i class="bi bi-arrow-right"></i>
-                    Open Chat System
+                    <i class="bi bi-arrow-right"></i> Open Chat System
                 </a>
             </div>
         </div>
+
+
     </div>
 </div>
 
@@ -122,41 +127,62 @@
                 </div>
 
                 <div class="employers-list" id="employersList">
-                    @forelse($messages->groupBy('employer_id') as $employerId => $employerMessages)
+                    @php
+                        // Group messages by employer and sort each group by latest message
+                        $groupedMessages = $messages
+                            ->groupBy('employer_id')
+                            ->map(function ($employerMessages) {
+                                return $employerMessages->sortByDesc('created_at');
+                            })
+                            ->sortByDesc(function ($employerMessages) {
+                                return $employerMessages->first()->created_at;
+                            });
+                    @endphp
+
+                    @forelse($groupedMessages as $employerId => $employerMessages)
                         @php
-                            $employer = $employerMessages->first()->employer;
+                            $lastMessage = $employerMessages->first();
+                            $employer = $lastMessage->employer;
+                            $company = $employer->addressCompany ?? null;
                             $unreadCount = $employerMessages
                                 ->where('sender_type', 'employer')
                                 ->where('is_read', 0)
                                 ->count();
-                            $lastMessage = $employerMessages->sortByDesc('created_at')->first();
+                            $initials =
+                                $company && !$company->company_logo
+                                    ? strtoupper(substr($company->company_name ?? 'C', 0, 2))
+                                    : '';
                         @endphp
 
                         <div class="employer-list-item {{ $unreadCount > 0 ? 'has-unread' : '' }}"
                             data-employer-id="{{ $employerId }}" data-unread-count="{{ $unreadCount }}"
                             onclick="loadConversation({{ $employerId }})">
 
-                            <div class="employer-avatar">
-                                @if ($employer->addressCompany->company_logo)
-                                    <img src="{{ $employer->addressCompany->company_logo }}"
-                                        alt="{{ $employer->addressCompany->company_name }}">
+                            {{-- Avatar --}}
+                            <div class="employer-avatar-wrapper">
+                                @if ($company && $company->company_logo)
+                                    <img src="{{ asset('storage/' . $company->company_logo) }}"
+                                        alt="{{ $company->company_name ?? 'Company Logo' }}"
+                                        class="employer-avatar-img">
+                                @elseif ($company)
+                                    <div class="employer-avatar-initials">{{ $initials }}</div>
                                 @else
-                                    <div class="avatar-placeholder">
-                                        {{ strtoupper(substr($employer->addressCompany->company_name ?? 'C', 0, 1)) }}
-                                    </div>
+                                    <div class="employer-avatar-initials">C</div>
                                 @endif
+
                                 @if ($unreadCount > 0)
                                     <div class="online-status"></div>
                                 @endif
                             </div>
 
+                            {{-- Employer Info --}}
                             <div class="employer-info">
                                 <div class="employer-name">
                                     {{ $employer->personal_info->first_name ?? 'N/A' }}
                                     {{ $employer->personal_info->last_name ?? 'N/A' }}
                                 </div>
                                 <div class="company-name">
-                                    {{ $employer->addressCompany->company_name ?? 'Company' }}
+                                    {{ $company->company_name ?? 'Company' }}
                                 </div>
                                 <div class="last-message-preview">
                                     {{ Str::limit($lastMessage->message, 30) }}
@@ -171,12 +197,13 @@
                             @endif
                         </div>
                     @empty
-                        <div class="no-employers">
-                            <i class="bi bi-chat-dots"></i>
+                        <div class="no-employers text-center">
+                            <i class="bi bi-chat-dots fs-2 mb-2"></i>
                             <p>No conversations yet</p>
                         </div>
                     @endforelse
                 </div>
+
             </div>
 
             <!-- Enhanced Chat Area -->
