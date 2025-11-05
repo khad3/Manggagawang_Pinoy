@@ -155,6 +155,23 @@
     </div>
 </div>
 
+<!-- Image Viewer Modal -->
+<div id="imageViewerModal" class="image-viewer-modal" style="display: none;">
+    <div class="image-viewer-overlay"></div>
+    <div class="image-viewer-content">
+        <button class="image-viewer-close" id="closeImageViewer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+        <img id="viewerImage" src="" alt="Full size image">
+        <div class="image-viewer-caption" id="viewerCaption"></div>
+    </div>
+</div>
+
+
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         let retrieveMessages = @json($retrieveMessages);
@@ -179,10 +196,38 @@
         const searchInput = document.getElementById('search');
         const globalNotif = document.getElementById('globalNotif');
 
+        // Image Viewer Elements
+        const imageViewerModal = document.getElementById('imageViewerModal');
+        const viewerImage = document.getElementById('viewerImage');
+        const viewerCaption = document.getElementById('viewerCaption');
+        const closeImageViewer = document.getElementById('closeImageViewer');
+
         let currentApplicantId = null;
         let messagePollingInterval = null;
         let typingTimeout = null;
         let lastMessageId = null;
+
+        // ---------- Image Viewer Functions ----------
+        function openImageViewer(imageSrc, caption = '') {
+            viewerImage.src = imageSrc;
+            viewerCaption.textContent = caption;
+            imageViewerModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeImageViewerFunc() {
+            imageViewerModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            viewerImage.src = '';
+        }
+
+        closeImageViewer.addEventListener('click', closeImageViewerFunc);
+        imageViewerModal.querySelector('.image-viewer-overlay').addEventListener('click', closeImageViewerFunc);
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && imageViewerModal.style.display === 'flex') {
+                closeImageViewerFunc();
+            }
+        });
 
         // ---------- Utility ----------
         function isMobile() {
@@ -195,6 +240,12 @@
 
         function hideTypingIndicator() {
             typingIndicator.style.display = 'none';
+        }
+
+        function scrollToBottom() {
+            setTimeout(() => {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 100);
         }
 
         // ---------- Global Notifications ----------
@@ -265,9 +316,17 @@
                 });
                 const div = document.createElement('div');
                 div.className = `message-bubble ${isSent ? 'sent' : 'received'}`;
+
+                let imageHtml = '';
+                if (msg.attachment) {
+                    const imageSrc = `/storage/${msg.attachment}`;
+                    imageHtml =
+                        `<img src="${imageSrc}" class="message-image" alt="Attachment" onclick="openImageViewer('${imageSrc}', 'Sent at ${time}')">`;
+                }
+
                 div.innerHTML = `
                 <div class="message-content">
-                    ${msg.attachment ? `<img src="/storage/${msg.attachment}" class="message-image" alt="Attachment">` : ''}
+                    ${imageHtml}
                     ${msg.message ? `<p class="message-text">${msg.message}</p>` : ''}
                 </div>
                 <div class="message-time">${time}</div>
@@ -275,8 +334,19 @@
                 chatMessages.appendChild(div);
             });
 
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            chatMessages.querySelectorAll('.message-image').forEach(img => {
+                img.addEventListener('click', function() {
+                    const src = this.getAttribute('src');
+                    const time = this.closest('.message-bubble').querySelector('.message-time')
+                        .textContent;
+                    openImageViewer(src, `Sent at ${time}`);
+                });
+            });
+
+            scrollToBottom();
         }
+
+        window.openImageViewer = openImageViewer;
 
         // ---------- Message Polling ----------
         function startMessagePolling() {
@@ -300,10 +370,9 @@
                 const data = await res.json();
                 if (!data.success || !data.messages) return;
 
-                // Avoid duplicate re-rendering
                 if (lastMessageId && data.messages.length > 0) {
                     const newLastId = data.messages[data.messages.length - 1].id;
-                    if (newLastId === lastMessageId) return; // no new messages
+                    if (newLastId === lastMessageId) return;
                 }
 
                 const name = chatUserName.textContent;
@@ -320,7 +389,6 @@
                 console.error('Error fetching messages:', err);
             }
         }
-
 
         // ---------- Typing Indicator ----------
         function sendTypingNotification(isTyping = true) {
@@ -391,15 +459,22 @@
 
             const tempDiv = document.createElement('div');
             tempDiv.className = 'message-bubble sent';
+
+            let tempImageHtml = '';
+            if (file) {
+                const tempSrc = URL.createObjectURL(file);
+                tempImageHtml = `<img src="${tempSrc}" class="message-image" alt="Attachment">`;
+            }
+
             tempDiv.innerHTML = `
             <div class="message-content">
-                ${file ? `<img src="${URL.createObjectURL(file)}" class="message-image">` : ''}
+                ${tempImageHtml}
                 ${message ? `<p class="message-text">${message}</p>` : ''}
             </div>
             <div class="message-time">Now</div>
             <div class="message-status">✓</div>`;
             chatMessages.appendChild(tempDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            scrollToBottom();
 
             try {
                 const res = await fetch('{{ route('employer.sendmessage.store') }}', {
