@@ -11,6 +11,63 @@
 
                <div class="row g-4">
 
+                   <!-- 🏢 Company Logo Upload -->
+                   <div class="col-lg-6">
+                       <div class="card shadow-sm border-0 rounded-4">
+                           <div class="card-header bg-light fw-bold d-flex align-items-center">
+                               <i class="fas fa-image me-2 text-primary" aria-hidden="true"></i>
+                               <span>Company Logo</span>
+                           </div>
+                           <div class="card-body text-center">
+                               <form action="{{ route('employer.companylogo.store') }}" method="POST"
+                                   enctype="multipart/form-data" novalidate
+                                   onsubmit="this.querySelector('button[type=submit]').disabled=true;">
+                                   @csrf
+
+
+                                   <!-- Preview Section -->
+                                   <div class="mb-3">
+                                       <img id="logoPreview"
+                                           src="{{ $retrievedPersonalInformation->addressCompany->company_logo
+                                               ? asset('storage/' . $retrievedPersonalInformation->addressCompany->company_logo)
+                                               : asset('img/logo.png') }}"
+                                           alt="Company Logo Preview" class="img-fluid rounded-circle border shadow-sm"
+                                           style="width: 120px; height: 120px; object-fit: cover;">
+                                   </div>
+
+                                   <!-- File Input -->
+                                   <div class="mb-3">
+                                       <label for="companyLogo" class="form-label fw-semibold">Upload New Logo</label>
+                                       <input type="file" name="company_logo" id="companyLogo"
+                                           class="form-control form-control-lg rounded-3 @error('company_logo') is-invalid @enderror"
+                                           accept="image/*" onchange="previewCompanyLogo(event)" required>
+                                       @error('company_logo')
+                                           <div class="invalid-feedback">{{ $message }}</div>
+                                       @enderror
+                                       <div class="form-text text-muted">Accepted formats: JPG, PNG (max 2MB).</div>
+                                   </div>
+
+                                   <button type="submit" class="btn btn-primary w-100" aria-label="Upload Logo">
+                                       <i class="fas fa-upload me-1" aria-hidden="true"></i> Upload Logo
+                                   </button>
+                               </form>
+                           </div>
+                       </div>
+                   </div>
+
+                   <!-- 🪄 Preview Script -->
+                   <script>
+                       function previewCompanyLogo(event) {
+                           const input = event.target;
+                           const reader = new FileReader();
+                           reader.onload = function() {
+                               document.getElementById('logoPreview').src = reader.result;
+                           };
+                           reader.readAsDataURL(input.files[0]);
+                       }
+                   </script>
+
+
                    <!-- Edit Company Info -->
                    <div class="col-lg-6">
                        <div class="card shadow-sm border-0 rounded-4">
@@ -109,7 +166,8 @@
                            </div>
                            <div class="card-body text-center">
                                <div class="mb-3">
-                                   <i class="fas fa-exclamation-triangle text-danger fs-1 mb-3" aria-hidden="true"></i>
+                                   <i class="fas fa-exclamation-triangle text-danger fs-1 mb-3"
+                                       aria-hidden="true"></i>
                                    <p class="text-muted mb-1">
                                        Deleting your account will permanently remove all your company data, job
                                        posts, and applicants.

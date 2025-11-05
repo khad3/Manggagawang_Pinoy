@@ -48,6 +48,26 @@ use App\Mail\Applicant\ResetPasswordMail;
 class EmployerController extends Controller
 {
 
+    //Insert logo 
+    public function insertCompanyLogo(Request $request) {
+    $employerId = session('employer_id'); // or auth()->guard('employer')->id()
+
+    $request->validate([
+        'company_logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+    ]);
+
+    $logoPath = $request->file('company_logo')->store('company_logos', 'public');
+
+    // Update if exists, otherwise create
+    CompanyAdressModel::updateOrCreate(
+        ['employer_id' => $employerId],
+        ['company_logo' => $logoPath]
+    );
+
+    return back()->with('success', 'Company logo inserted successfully.');
+}
+
+
     //Forgot password
         public function forgotPassword(){
         return view('employer.forgotpassword.forgotpassword_employer');

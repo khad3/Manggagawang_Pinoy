@@ -29,12 +29,65 @@
         <!-- Brand Section -->
         <div class="brand-section">
             <div class="d-flex align-items-center gap-3">
-                <div class="brand-logo">MP</div>
-                <div>
+                @php
+                    $retrievelogo = \App\Models\Employer\CompanyAdressModel::where(
+                        'employer_id',
+                        session('employer_id'),
+                    )->first();
+                @endphp
+
+                <!-- Company Avatar -->
+                <div class="company-avatar">
+                    @if ($retrievelogo && $retrievelogo->company_logo)
+                        <img src="{{ asset('storage/' . $retrievelogo->company_logo) }}" alt="Company Logo">
+                    @elseif($retrievelogo && $retrievelogo->company_name)
+                        <span>{{ strtoupper(Str::limit($retrievelogo->company_name, 2, '')) }}</span>
+                    @else
+                        <span>MP</span>
+                    @endif
+                </div>
+
+                <!-- Optional Portal Info -->
+                <div class="portal-info">
                     <h5 class="mb-0 fw-bold">Employer Portal</h5>
-                    <p class="text-muted small mb-0">MangagawangPinoy</p>
+                    <p class="text-muted small mb-0">{{ $retrievelogo->company_name }}</p>
                 </div>
             </div>
+
+            <style>
+                .company-avatar {
+                    flex: 0 0 auto;
+                    /* Prevent flex from stretching it */
+                    width: 80px;
+                    height: 80px;
+                    border-radius: 50%;
+                    /* Perfect circle */
+                    overflow: hidden;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background-color: #f1f3f5;
+                    color: #495057;
+                    font-weight: 700;
+                    font-size: 1.5rem;
+                    text-transform: uppercase;
+                    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+                }
+
+                .company-avatar img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    /* Fill circle perfectly */
+                    border-radius: 50%;
+                }
+
+                .portal-info {
+                    flex: 1;
+                    /* Let text take remaining space without affecting avatar */
+                }
+            </style>
+
         </div>
 
         <!-- Navigation Links -->

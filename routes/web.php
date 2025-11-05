@@ -222,6 +222,10 @@ Route::group(['prefix' => 'employer'], function () {
 
 //Protected routes for employer
 Route::middleware(['employer.authenticate'])->prefix('employer')->group(function () {
+
+    //insert loho
+    route::post('insert-company-logo', [EmployerController::class, 'insertCompanyLogo'])->name('employer.companylogo.store');
+
     //Schedule interview
     Route::post('schedule-interview/{id}', [EmployerController::class, 'setScheduleInterviewByEmployer'])->name('employer.scheduleinterview.store');
     // Employer Notifications Routes

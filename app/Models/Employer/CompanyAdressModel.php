@@ -16,6 +16,7 @@ class CompanyAdressModel extends Model
         'company_municipality',
         'company_zip',
         'company_province',
+        'company_logo',
     ];
 
     public function personalInfo()
