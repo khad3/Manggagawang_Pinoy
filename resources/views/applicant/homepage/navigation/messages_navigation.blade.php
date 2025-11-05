@@ -568,7 +568,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success && data.messages) {
-                    console.log('✅ Messages refreshed:', data.messages.length);
+                    console.log(' Messages refreshed:', data.messages.length);
 
                     // Update global messages
                     allMessages = data.messages;
@@ -597,7 +597,7 @@
                         const newMessageCount = newMessagesByEmployer[currentEmployerId].length;
 
                         if (newMessageCount !== lastMessageCount) {
-                            console.log('🆕 New messages detected!', newMessageCount, 'vs', lastMessageCount);
+                            console.log(' New messages detected!', newMessageCount, 'vs', lastMessageCount);
 
                             displayMessages(newMessagesByEmployer[currentEmployerId]);
 
@@ -620,7 +620,7 @@
                 refreshIndicator.style.display = 'none';
             })
             .catch(error => {
-                console.error('❌ Error refreshing messages:', error);
+                console.error(' Error refreshing messages:', error);
                 refreshIndicator.style.display = 'none';
             });
     }
@@ -829,7 +829,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    console.log('✅ Messages marked as read');
+                    console.log('Messages marked as read');
 
                     if (dropdownItem) {
                         dropdownItem.classList.remove('unread');
@@ -874,7 +874,7 @@
                 }
             })
             .catch(error => {
-                console.error('❌ Error marking messages as read:', error);
+                console.error(' Error marking messages as read:', error);
             });
     }
 
@@ -926,16 +926,16 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    console.log('✅ Message sent successfully');
+                    console.log(' Message sent successfully');
                     // Immediate refresh after sending
                     setTimeout(() => {
                         refreshMessages();
                     }, 100);
                 } else {
-                    console.error('❌ Failed to send message');
+                    console.error(' Failed to send message');
                 }
             } catch (error) {
-                console.error('❌ Error:', error);
+                console.error(' Error:', error);
             }
         });
 
@@ -966,7 +966,7 @@
         // ========================================
         // START REAL-TIME POLLING
         // ========================================
-        console.log('🚀 Starting real-time message system...');
+        console.log('Starting real-time message system...');
 
         // Refresh messages every 2 seconds
         setInterval(() => {
@@ -978,6 +978,6 @@
         // Initial refresh after 1 second
         setTimeout(refreshMessages, 1000);
 
-        console.log('✅ Real-time messaging active (polling every 2 seconds)');
+        console.log(' Real-time messaging active (polling every 2 seconds)');
     });
 </script>
