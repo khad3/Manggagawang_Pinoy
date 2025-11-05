@@ -19,7 +19,7 @@
         </div>
 
         <div class="dropdown-content">
-            <div class="messages-list">
+            <div class="messages-list" id="dropdownMessagesList">
                 @forelse($messages->groupBy('employer_id') as $employerId => $employerMessages)
                     @php
                         $employer = $employerMessages->first()->employer;
@@ -248,484 +248,70 @@
     </div>
 </div>
 
+<!-- New message alert -->
+<div id="newMessageAlert" class="new-message-alert" onclick="scrollToBottom()"
+    style="display: none; position: fixed; bottom: 100px; right: 30px; background: #007bff; color: white; padding: 10px 20px; border-radius: 25px; cursor: pointer; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+    <i class="bi bi-arrow-down me-1"></i>
+    New message
+</div>
+
+<!-- Auto-refresh indicator -->
+<div id="refreshIndicator" class="refresh-indicator"
+    style="display: none; position: fixed; top: 20px; right: 20px; background: rgba(0,0,0,0.7); color: white; padding: 8px 15px; border-radius: 20px; z-index: 9999; font-size: 14px;">
+    <i class="bi bi-arrow-repeat spin-animation me-1"></i>
+    Updating...
+</div>
+
 <style>
-    /* Messages Container - Fixed scrolling and width */
-    .messages-container {
-        flex: 1;
-        overflow-y: auto;
-        overflow-x: hidden;
-        padding: 16px 12px;
-        background: #ffffff;
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-        max-width: 100%;
-        height: calc(100vh - 200px);
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
     }
 
-    /* Message Bubble Base Styles */
+    .spin-animation {
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
     .message-bubble {
-        display: flex;
-        margin-bottom: 2px;
-        max-width: 100%;
-        clear: both;
+        animation: slideIn 0.3s ease-out;
     }
 
-    /* Employer Messages (Left Side) */
-    .message-bubble.from-employer {
-        justify-content: flex-start;
-        padding-right: 100px;
-    }
+    @keyframes pulse {
 
-    .message-bubble.from-employer .message-content {
-        background: #e4e6eb;
-        color: #050505;
-        border-radius: 18px;
-        padding: 6px 12px;
-        max-width: 45%;
-        min-width: fit-content;
-        width: auto;
-        display: inline-block;
-        word-wrap: break-word;
-        word-break: break-word;
-        overflow-wrap: break-word;
-        position: relative;
-        font-size: 14px;
-        line-height: 1.3;
-    }
-
-    /* User/Applicant Messages (Right Side) */
-    .message-bubble.from-applicant {
-        justify-content: flex-end;
-        padding-left: 100px;
-    }
-
-    .message-bubble.from-applicant .message-content {
-        background: #0084ff;
-        color: #ffffff;
-        border-radius: 18px;
-        padding: 6px 12px;
-        max-width: 45%;
-        min-width: fit-content;
-        width: auto;
-        display: inline-block;
-        word-wrap: break-word;
-        word-break: break-word;
-        overflow-wrap: break-word;
-        position: relative;
-        font-size: 14px;
-        line-height: 1.3;
-    }
-
-    /* Remove the chat tails */
-    .message-bubble.from-employer .message-content::before,
-    .message-bubble.from-applicant .message-content::after {
-        display: none;
-    }
-
-    /* Message Text */
-    .message-content {
-        font-size: 14px;
-        line-height: 1.3;
-        white-space: pre-wrap;
-        font-weight: 400;
-    }
-
-    /* Message Timestamp */
-    .message-timestamp {
-        font-size: 11px;
-        margin-top: 2px;
-        display: block;
-        opacity: 0.6;
-        font-weight: 400;
-    }
-
-    .message-timestamp.from-employer {
-        color: #65676b;
-        text-align: left;
-    }
-
-    .message-timestamp.from-applicant {
-        color: rgba(255, 255, 255, 0.8);
-        text-align: right;
-    }
-
-    /* Message Attachment */
-    .message-attachment {
-        margin-top: 4px;
-        border-radius: 8px;
-        overflow: hidden;
-        max-width: 100%;
-    }
-
-    .message-attachment img {
-        max-width: 100%;
-        max-height: 250px;
-        height: auto;
-        display: block;
-        border-radius: 8px;
-        cursor: pointer;
-    }
-
-    /* Reply Area - Fixed positioning */
-    .reply-area {
-        border-top: 1px solid #e4e6eb;
-        background: #ffffff;
-        padding: 10px 12px;
-        position: relative;
-        z-index: 10;
-    }
-
-    .reply-container {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-    }
-
-    /* Attachment Preview */
-    .attachment-preview {
-        margin-bottom: 6px;
-        display: flex;
-        gap: 6px;
-        flex-wrap: wrap;
-    }
-
-    .preview-item {
-        position: relative;
-        display: inline-block;
-    }
-
-    .preview-item img {
-        max-width: 80px;
-        max-height: 80px;
-        border-radius: 8px;
-        object-fit: cover;
-        border: 2px solid #e4e6eb;
-    }
-
-    .preview-item .file-name {
-        padding: 6px 10px;
-        background: #f0f2f5;
-        border-radius: 8px;
-        font-size: 12px;
-        color: #050505;
-        border: 1px solid #e4e6eb;
-        max-width: 180px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .preview-item .remove-btn {
-        position: absolute;
-        top: -6px;
-        right: -6px;
-        width: 18px;
-        height: 18px;
-        background: #000000;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        cursor: pointer;
-        font-size: 11px;
-        line-height: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0.8;
-    }
-
-    .preview-item .remove-btn:hover {
-        opacity: 1;
-    }
-
-    .message-input-wrapper {
-        display: flex;
-        align-items: flex-end;
-        gap: 6px;
-        background: #f0f2f5;
-        border-radius: 20px;
-        padding: 5px 8px;
-        min-height: 36px;
-        max-width: 100%;
-    }
-
-    /* Attachment Button */
-    .attachment-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 28px;
-        height: 28px;
-        min-width: 28px;
-        min-height: 28px;
-        background: transparent;
-        border: none;
-        border-radius: 50%;
-        cursor: pointer;
-        color: #0084ff;
-        transition: all 0.2s;
-        margin: 0;
-        padding: 0;
-        flex-shrink: 0;
-        align-self: flex-end;
-    }
-
-    .attachment-btn:hover {
-        background: #e4e6eb;
-    }
-
-    .attachment-btn i {
-        font-size: 18px;
-    }
-
-    /* Message Input */
-    .reply-input {
-        flex: 1;
-        min-width: 0;
-        border: none;
-        outline: none;
-        background: transparent;
-        resize: none;
-        font-size: 14px;
-        line-height: 1.3;
-        padding: 6px 4px;
-        max-height: 90px;
-        min-height: 20px;
-        height: auto;
-        overflow-y: auto;
-        overflow-x: hidden;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        color: #050505;
-        word-wrap: break-word;
-        word-break: break-word;
-        white-space: pre-wrap;
-    }
-
-    .reply-input::placeholder {
-        color: #65676b;
-    }
-
-    /* Send Button */
-    .send-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 28px;
-        height: 28px;
-        min-width: 28px;
-        min-height: 28px;
-        background: transparent;
-        border: none;
-        border-radius: 50%;
-        cursor: pointer;
-        color: #0084ff;
-        transition: all 0.2s;
-        flex-shrink: 0;
-        align-self: flex-end;
-    }
-
-    .send-btn:hover {
-        background: #e4e6eb;
-    }
-
-    .send-btn i {
-        font-size: 18px;
-    }
-
-    /* Scrollbar Styling */
-    .messages-container::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .messages-container::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    .messages-container::-webkit-scrollbar-thumb {
-        background: #ccd0d5;
-        border-radius: 3px;
-    }
-
-    .messages-container::-webkit-scrollbar-thumb:hover {
-        background: #b8bcc2;
-    }
-
-    .reply-input::-webkit-scrollbar {
-        width: 4px;
-    }
-
-    .reply-input::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    .reply-input::-webkit-scrollbar-thumb {
-        background: #ccd0d5;
-        border-radius: 2px;
-    }
-
-    /* No Conversation Placeholder */
-    .no-conversation {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-        color: #65676b;
-        text-align: center;
-        padding: 30px;
-    }
-
-    .no-conversation-icon {
-        font-size: 56px;
-        margin-bottom: 12px;
-        opacity: 0.4;
-        color: #bcc0c4;
-    }
-
-    .no-conversation h3 {
-        font-size: 16px;
-        font-weight: 600;
-        color: #050505;
-        margin-bottom: 4px;
-    }
-
-    .no-conversation p {
-        font-size: 13px;
-        color: #65676b;
-        margin: 0;
-    }
-
-    /* Typing Indicator */
-    .typing-indicator {
-        padding: 6px 0;
-        color: #65676b;
-        font-size: 12px;
-        font-style: italic;
-    }
-
-    /* Back to List Button - Hidden on Desktop */
-    .back-to-list-btn {
-        display: none;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
-        background: transparent;
-        border: none;
-        border-radius: 50%;
-        cursor: pointer;
-        color: #050505;
-        margin-right: 12px;
-        transition: all 0.2s;
-    }
-
-    .back-to-list-btn:hover {
-        background: #f0f2f5;
-    }
-
-    .back-to-list-btn i {
-        font-size: 20px;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 1024px) {
-        .employers-sidebar {
-            width: 280px;
+        0%,
+        100% {
+            transform: scale(1);
         }
 
-        .message-bubble.from-employer .message-content,
-        .message-bubble.from-applicant .message-content {
-            max-width: 55%;
+        50% {
+            transform: scale(1.1);
         }
     }
 
-    @media (max-width: 768px) {
-        .employers-sidebar {
-            position: absolute;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 20;
-            transition: transform 0.3s ease;
-            background: #ffffff;
-        }
-
-        .employers-sidebar.hide-mobile {
-            transform: translateX(-100%);
-        }
-
-        .chat-area {
-            width: 100%;
-        }
-
-        .back-to-list-btn {
-            display: flex;
-        }
-
-        .messages-container {
-            height: calc(100vh - 180px);
-            padding: 12px 8px;
-        }
-
-        .message-bubble.from-employer {
-            padding-right: 50px;
-        }
-
-        .message-bubble.from-applicant {
-            padding-left: 50px;
-        }
-
-        .message-bubble.from-employer .message-content,
-        .message-bubble.from-applicant .message-content {
-            max-width: 70%;
-        }
-
-        .reply-area {
-            padding: 8px 10px;
-        }
-
-        .message-input-wrapper {
-            padding: 4px 6px;
-        }
+    .nav-badge,
+    .unread-count {
+        animation: pulse 2s infinite;
     }
 
-    @media (max-width: 480px) {
-        .messages-container {
-            padding: 10px 6px;
-        }
-
-        .message-bubble.from-employer {
-            padding-right: 30px;
-        }
-
-        .message-bubble.from-applicant {
-            padding-left: 30px;
-        }
-
-        .message-bubble.from-employer .message-content,
-        .message-bubble.from-applicant .message-content {
-            max-width: 80%;
-            font-size: 13px;
-        }
-
-        .reply-input {
-            font-size: 13px;
-            padding: 5px 3px;
-        }
-
-        .attachment-btn,
-        .send-btn {
-            width: 26px;
-            height: 26px;
-            min-width: 26px;
-            min-height: 26px;
-        }
-
-        .attachment-btn i,
-        .send-btn i {
-            font-size: 16px;
-        }
+    .online-status {
+        animation: pulse 2s infinite;
     }
 </style>
 
@@ -770,8 +356,15 @@
 </script>
 
 <script>
+    // ========================================
+    // VARIABLES & INITIALIZATION
+    // ========================================
     let currentEmployerId = null;
     let allMessages = @json($messages);
+    let lastMessageCount = 0;
+    let isUserAtBottom = true;
+    let isPageVisible = true;
+    let lastSeenUpdateTime = 0;
 
     const messagesByEmployer = {};
     allMessages.forEach(msg => {
@@ -781,6 +374,9 @@
         messagesByEmployer[msg.employer_id].push(msg);
     });
 
+    // ========================================
+    // MODAL & NAVIGATION FUNCTIONS
+    // ========================================
     function openChatWithEmployer(employerId, firstName, lastName, companyName) {
         document.getElementById('chatModal').style.display = 'flex';
         document.body.style.overflow = 'hidden';
@@ -832,7 +428,6 @@
             document.getElementById('chatHeader').style.display = 'flex';
             document.getElementById('replyArea').style.display = 'block';
 
-            // Hide employer list on mobile
             if (window.innerWidth <= 768) {
                 document.querySelector('.employers-sidebar').classList.add('hide-mobile');
             }
@@ -858,10 +453,10 @@
         }
 
         displayMessages(employerMessages);
+        lastMessageCount = employerMessages.length;
 
         document.getElementById('replyArea').style.display = 'block';
 
-        // Hide employer list on mobile
         if (window.innerWidth <= 768) {
             document.querySelector('.employers-sidebar').classList.add('hide-mobile');
         }
@@ -869,13 +464,15 @@
         markMessagesAsRead(employerId);
     }
 
-    // Function to show employers list on mobile
     function showEmployersList() {
         if (window.innerWidth <= 768) {
             document.querySelector('.employers-sidebar').classList.remove('hide-mobile');
         }
     }
 
+    // ========================================
+    // MESSAGE DISPLAY FUNCTIONS
+    // ========================================
     function displayMessages(messages) {
         const container = document.getElementById('messagesContainer');
 
@@ -913,7 +510,7 @@
             const fullDate = new Date(msg.created_at).toLocaleString();
 
             return `
-                <div class="message-bubble ${bubbleClass}">
+                <div class="message-bubble ${bubbleClass}" data-message-id="${msg.id}">
                     <div class="message-content">
                         ${msg.message || ''}
                         ${attachmentHtml}
@@ -925,9 +522,298 @@
             `;
         }).join('');
 
-        container.scrollTop = container.scrollHeight;
+        if (isUserAtBottom) {
+            setTimeout(() => scrollToBottom(), 100);
+        }
     }
 
+    function formatMessageTime(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffInMinutes = Math.floor((now - date) / 1000 / 60);
+
+        if (diffInMinutes < 1) return 'Just now';
+        if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+        if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
+        return date.toLocaleDateString();
+    }
+
+    // ========================================
+    // SCROLL FUNCTIONS
+    // ========================================
+    function scrollToBottom() {
+        const container = document.getElementById('messagesContainer');
+        if (container) {
+            container.scrollTop = container.scrollHeight;
+            document.getElementById('newMessageAlert').style.display = 'none';
+            isUserAtBottom = true;
+        }
+    }
+
+    function checkIfUserAtBottom() {
+        const container = document.getElementById('messagesContainer');
+        if (!container) return;
+
+        const threshold = 50;
+        isUserAtBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - threshold;
+    }
+
+    // ========================================
+    // REAL-TIME MESSAGE REFRESH
+    // ========================================
+    function refreshMessages() {
+        if (!currentEmployerId) return;
+
+        const refreshIndicator = document.getElementById('refreshIndicator');
+        refreshIndicator.style.display = 'block';
+
+        fetch('/applicant/messages/fetch', {
+                method: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.messages) {
+                    console.log('✅ Messages refreshed:', data.messages.length);
+
+                    // Update global messages
+                    allMessages = data.messages;
+
+                    // Reorganize by employer
+                    const newMessagesByEmployer = {};
+                    data.messages.forEach(msg => {
+                        if (!newMessagesByEmployer[msg.employer_id]) {
+                            newMessagesByEmployer[msg.employer_id] = [];
+                        }
+                        newMessagesByEmployer[msg.employer_id].push(msg);
+                    });
+
+                    // Update messagesByEmployer
+                    Object.keys(newMessagesByEmployer).forEach(employerId => {
+                        messagesByEmployer[employerId] = newMessagesByEmployer[employerId];
+                    });
+
+                    // Update UI
+                    updateEmployersList(newMessagesByEmployer);
+                    updateDropdownList(newMessagesByEmployer);
+                    updateBadgeCount(data.messages);
+
+                    // Update current conversation if it's the one open
+                    if (currentEmployerId && newMessagesByEmployer[currentEmployerId]) {
+                        const newMessageCount = newMessagesByEmployer[currentEmployerId].length;
+
+                        if (newMessageCount !== lastMessageCount) {
+                            console.log('🆕 New messages detected!', newMessageCount, 'vs', lastMessageCount);
+
+                            displayMessages(newMessagesByEmployer[currentEmployerId]);
+
+                            if (isUserAtBottom) {
+                                scrollToBottom();
+                            } else {
+                                document.getElementById('newMessageAlert').style.display = 'block';
+                            }
+
+                            lastMessageCount = newMessageCount;
+
+                            // Mark as read if user is viewing
+                            if (isUserAtBottom) {
+                                setTimeout(() => markMessagesAsRead(currentEmployerId), 500);
+                            }
+                        }
+                    }
+                }
+
+                refreshIndicator.style.display = 'none';
+            })
+            .catch(error => {
+                console.error('❌ Error refreshing messages:', error);
+                refreshIndicator.style.display = 'none';
+            });
+    }
+
+    // ========================================
+    // UPDATE UI FUNCTIONS
+    // ========================================
+    function updateEmployersList(newMessagesByEmployer) {
+        const employersList = document.getElementById('employersList');
+        if (!employersList) return;
+
+        const employerEntries = Object.entries(newMessagesByEmployer);
+
+        if (employerEntries.length === 0) {
+            employersList.innerHTML = `
+                <div class="no-employers">
+                    <i class="bi bi-chat-dots"></i>
+                    <p>No conversations yet</p>
+                </div>
+            `;
+            return;
+        }
+
+        employerEntries.sort((a, b) => {
+            const lastA = a[1].reduce((latest, msg) =>
+                new Date(msg.created_at) > new Date(latest.created_at) ? msg : latest
+            );
+            const lastB = b[1].reduce((latest, msg) =>
+                new Date(msg.created_at) > new Date(latest.created_at) ? msg : latest
+            );
+            return new Date(lastB.created_at) - new Date(lastA.created_at);
+        });
+
+        let html = '';
+
+        employerEntries.forEach(([employerId, employerMessages]) => {
+            const employer = employerMessages[0].employer;
+            const unreadCount = employerMessages.filter(msg =>
+                msg.sender_type === 'employer' && msg.is_read === 0
+            ).length;
+            const lastMessage = employerMessages.reduce((latest, msg) =>
+                new Date(msg.created_at) > new Date(latest.created_at) ? msg : latest
+            );
+
+            html += `
+                <div class="employer-list-item ${unreadCount > 0 ? 'has-unread' : ''} ${currentEmployerId == employerId ? 'active' : ''}"
+                    data-employer-id="${employerId}" 
+                    data-unread-count="${unreadCount}"
+                    onclick="loadConversation(${employerId})">
+
+                    <div class="employer-avatar">
+                        ${employer.address_company?.company_logo 
+                            ? `<img src="${employer.address_company.company_logo}" alt="${employer.address_company.company_name}">`
+                            : `<div class="avatar-placeholder">${(employer.address_company?.company_name || 'C').charAt(0).toUpperCase()}</div>`
+                        }
+                        ${unreadCount > 0 ? '<div class="online-status"></div>' : ''}
+                    </div>
+
+                    <div class="employer-info">
+                        <div class="employer-name">
+                            ${employer.personal_info?.first_name || 'N/A'} ${employer.personal_info?.last_name || ''}
+                        </div>
+                        <div class="company-name">
+                            ${employer.address_company?.company_name || 'Company'}
+                        </div>
+                        <div class="last-message-preview">
+                            ${lastMessage.message ? lastMessage.message.substring(0, 30) : 'Attachment'}
+                        </div>
+                        <div class="last-message-time">
+                            ${formatMessageTime(lastMessage.created_at)}
+                        </div>
+                    </div>
+
+                    ${unreadCount > 0 ? `<span class="unread-count">${unreadCount}</span>` : ''}
+                </div>
+            `;
+        });
+
+        employersList.innerHTML = html;
+    }
+
+    function updateDropdownList(newMessagesByEmployer) {
+        const messagesList = document.getElementById('dropdownMessagesList');
+        if (!messagesList) return;
+
+        const employerEntries = Object.entries(newMessagesByEmployer);
+
+        if (employerEntries.length === 0) {
+            messagesList.innerHTML = `
+                <div class="no-messages">
+                    <i class="bi bi-chat-dots"></i>
+                    <p>No conversations yet</p>
+                </div>
+            `;
+            return;
+        }
+
+        employerEntries.sort((a, b) => {
+            const lastA = a[1].reduce((latest, msg) =>
+                new Date(msg.created_at) > new Date(latest.created_at) ? msg : latest
+            );
+            const lastB = b[1].reduce((latest, msg) =>
+                new Date(msg.created_at) > new Date(latest.created_at) ? msg : latest
+            );
+            return new Date(lastB.created_at) - new Date(lastA.created_at);
+        });
+
+        let html = '';
+
+        employerEntries.forEach(([employerId, employerMessages]) => {
+            const employer = employerMessages[0].employer;
+            const unreadCount = employerMessages.filter(msg =>
+                msg.sender_type === 'employer' && msg.is_read === 0
+            ).length;
+            const lastMessage = employerMessages.reduce((latest, msg) =>
+                new Date(msg.created_at) > new Date(latest.created_at) ? msg : latest
+            );
+            const totalMessages = employerMessages.length;
+
+            html += `
+                <div class="employer-item ${unreadCount > 0 ? 'unread' : ''}"
+                    data-employer-id="${employerId}" data-unread-count="${unreadCount}"
+                    onclick="openChatWithEmployer(${employerId}, '${(employer.personal_info?.first_name || 'N/A').replace(/'/g, "\\'")}', '${(employer.personal_info?.last_name || '').replace(/'/g, "\\'")}', '${(employer.address_company?.company_name || 'Company').replace(/'/g, "\\'")}')">
+
+                    ${unreadCount > 0 ? '<div class="unread-indicator"></div>' : ''}
+
+                    <div class="message-avatar">
+                        ${employer.address_company?.company_logo 
+                            ? `<img src="${employer.address_company.company_logo}" alt="${employer.address_company.company_name}">`
+                            : `<div class="avatar-placeholder">${(employer.address_company?.company_name || 'C').charAt(0).toUpperCase()}</div>`
+                        }
+                    </div>
+
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="sender-name">
+                                ${employer.personal_info?.first_name || 'N/A'} ${employer.personal_info?.last_name || ''}
+                            </span>
+                            <span class="company-name">
+                                ${employer.address_company?.company_name || 'Company'}
+                            </span>
+                            <div class="message-meta">
+                                <span class="message-time">${formatMessageTime(lastMessage.created_at)}</span>
+                                ${unreadCount > 0 ? `<span class="unread-count">${unreadCount}</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="message-preview">
+                            ${totalMessages} message${totalMessages > 1 ? 's' : ''} •
+                            ${lastMessage.message ? lastMessage.message.substring(0, 60) : 'Attachment'}
+                        </div>
+                    </div>
+
+                    <button class="message-actions"
+                        onclick="event.stopPropagation(); openChatWithEmployer(${employerId}, '${(employer.personal_info?.first_name || 'N/A').replace(/'/g, "\\'")}', '${(employer.personal_info?.last_name || '').replace(/'/g, "\\'")}', '${(employer.address_company?.company_name || 'Company').replace(/'/g, "\\'")}')"
+                        title="Open chat">
+                        <i class="bi bi-chat-square-text"></i>
+                    </button>
+                </div>
+            `;
+        });
+
+        messagesList.innerHTML = html;
+    }
+
+    function updateBadgeCount(messages) {
+        const badge = document.getElementById('messagesBadge');
+        if (!badge) return;
+
+        const totalUnread = messages.filter(msg =>
+            msg.sender_type === 'employer' && msg.is_read === 0
+        ).length;
+
+        if (totalUnread > 0) {
+            badge.textContent = totalUnread;
+            badge.style.display = 'inline-block';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    // ========================================
+    // MARK AS READ FUNCTION
+    // ========================================
     function markMessagesAsRead(employerId) {
         const dropdownItem = document.querySelector(`.employer-item[data-employer-id="${employerId}"]`);
         const sidebarItem = document.querySelector(`.employer-list-item[data-employer-id="${employerId}"]`);
@@ -935,9 +821,13 @@
         const unreadCount = parseInt(dropdownItem?.dataset.unreadCount || sidebarItem?.dataset.unreadCount || 0);
 
         if (unreadCount === 0) {
-            console.log('No unread messages to mark');
             return;
         }
+
+        // Prevent too frequent requests
+        const now = Date.now();
+        if (now - lastSeenUpdateTime < 2000) return;
+        lastSeenUpdateTime = now;
 
         fetch(`/applicant/read-message/${employerId}`, {
                 method: 'PUT',
@@ -949,7 +839,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    console.log('Messages marked as read');
+                    console.log('✅ Messages marked as read');
 
                     if (dropdownItem) {
                         dropdownItem.classList.remove('unread');
@@ -994,21 +884,13 @@
                 }
             })
             .catch(error => {
-                console.error('Error marking messages as read:', error);
+                console.error('❌ Error marking messages as read:', error);
             });
     }
 
-    function formatMessageTime(dateString) {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diffInMinutes = Math.floor((now - date) / 1000 / 60);
-
-        if (diffInMinutes < 1) return 'Just now';
-        if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-        if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
-        return date.toLocaleDateString();
-    }
-
+    // ========================================
+    // FORM SUBMISSION
+    // ========================================
     document.addEventListener('DOMContentLoaded', function() {
         const replyForm = document.getElementById('replyForm');
 
@@ -1023,6 +905,7 @@
                 return;
             }
 
+            // Optimistically add message to UI
             if (messageText || attachmentFile) {
                 const container = document.getElementById('messagesContainer');
                 const messageDiv = document.createElement('div');
@@ -1038,6 +921,7 @@
                 container.scrollTop = container.scrollHeight;
             }
 
+            // Clear input
             document.getElementById('replyInput').value = '';
             document.getElementById('attachment').value = '';
             document.getElementById('attachmentPreview').innerHTML = '';
@@ -1052,13 +936,58 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    console.log('Message sent successfully');
+                    console.log('✅ Message sent successfully');
+                    // Immediate refresh after sending
+                    setTimeout(() => {
+                        refreshMessages();
+                    }, 100);
                 } else {
-                    console.error('Failed to send message');
+                    console.error('❌ Failed to send message');
                 }
             } catch (error) {
-                console.error('Error:', error);
+                console.error('❌ Error:', error);
             }
         });
+
+        // Add scroll listener
+        const container = document.getElementById('messagesContainer');
+        if (container) {
+            container.addEventListener('scroll', () => {
+                checkIfUserAtBottom();
+                if (isUserAtBottom && currentEmployerId) {
+                    setTimeout(() => markMessagesAsRead(currentEmployerId), 500);
+                }
+            });
+        }
+
+        // Page visibility handling
+        document.addEventListener('visibilitychange', function() {
+            isPageVisible = !document.hidden;
+            if (isPageVisible && isUserAtBottom && currentEmployerId) {
+                setTimeout(() => markMessagesAsRead(currentEmployerId), 1000);
+            }
+        });
+
+        // Initialize message count
+        if (currentEmployerId && messagesByEmployer[currentEmployerId]) {
+            lastMessageCount = messagesByEmployer[currentEmployerId].length;
+        }
+
+        // ========================================
+        // START REAL-TIME POLLING
+        // ========================================
+        console.log('🚀 Starting real-time message system...');
+
+        // Refresh messages every 2 seconds
+        setInterval(() => {
+            if (isPageVisible) {
+                refreshMessages();
+            }
+        }, 2000);
+
+        // Initial refresh after 1 second
+        setTimeout(refreshMessages, 1000);
+
+        console.log('✅ Real-time messaging active (polling every 2 seconds)');
     });
 </script>

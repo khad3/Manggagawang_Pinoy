@@ -67,6 +67,8 @@ Route::prefix('applicant')->group(function () {
 //  Protected routes 
 Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(function () {
     //Report display file
+    Route::get('/applicant/messages/fetch', [SendMessageEmployerController::class, 'fetchMessages'])
+    ->name('applicant.messages.fetch');
     Route::get('report-list', [ReportEmployerController::class, 'index'])->name('applicant.report.display');
     Route::delete('report-list/{id}', [ReportEmployerController::class, 'removeReport'])->name('applicant.report.delete');
     //Setting
