@@ -596,9 +596,11 @@ $applicantApplications = \App\Models\Applicant\ApplyJobModel::where('applicant_i
 $latestStatus = $applicantApplications->first()->status ?? null;
 
 // Check if already scheduled for interview
-$isAlreadyScheduled = \App\Models\Employer\SetInterviewModel::where('applicant_id', $applicant->id)
-    ->where('employer_id', $employer_id)
-                ->exists();
+$isAlreadyScheduled =
+    \App\Models\Employer\SetInterviewModel::where('applicant_id', $applicant->id)->where(
+        'employer_id',
+                    $employer_id,
+                ) > exists();
         @endphp
 
         @if ($latestStatus === 'approved')
