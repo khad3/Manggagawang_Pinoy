@@ -2,9 +2,11 @@
 <div class="nav-dropdown">
     <button class="nav-icon" onclick="toggleDropdown('messagesDropdown')" title="messages">
         <i class="bi bi-chat-dots"></i>
+
         @php
             $unreadCount = $messages->where('sender_type', 'employer')->where('is_read', 0)->count();
         @endphp
+
         @if ($unreadCount > 0)
             <span class="nav-badge" id="messagesBadge">{{ $unreadCount }}</span>
         @endif
@@ -769,9 +771,13 @@
         const badge = document.getElementById('messagesBadge');
         if (!badge) return;
 
-        const totalUnread = messages.filter(msg =>
-            msg.sender_type === 'employer' && msg.is_read === 0
-        ).length;
+        // Count only unread messages from employer
+        const totalUnread = messages.reduce((count, msg) => {
+            if (msg.sender_type === 'employer' && msg.is_read === 0) {
+                return count + 1;
+            }
+            return count;
+        }, 0);
 
         if (totalUnread > 0) {
             badge.textContent = totalUnread;
@@ -780,6 +786,7 @@
             badge.style.display = 'none';
         }
     }
+
 
     // ========================================
     // MARK AS READ FUNCTION
