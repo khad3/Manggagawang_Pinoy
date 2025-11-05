@@ -14,6 +14,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <!-- fav icon -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
     <link rel="stylesheet" href="{{ asset('css/applicant/homepage.css') }}">
 
 </head>
@@ -175,7 +177,8 @@
 
     @if (session('success'))
         <div class="container mt-3">
-            <div class="alert alert-success alert-dismissible fade show text-center" role="alert" id="success-alert">
+            <div class="alert alert-success alert-dismissible fade show text-center" role="alert"
+                id="success-alert">
                 {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
