@@ -570,34 +570,56 @@
                 if (data.success && data.messages) {
                     const container = document.getElementById('messagesContainer');
 
-                    // Filter only new messages
+                    // Filter only new messages (based on last message ID)
                     let newMessages = lastMessageId ?
                         data.messages.filter(msg => msg.id > lastMessageId) :
                         data.messages;
 
+                    // Append new messages
                     newMessages.forEach(msg => {
                         const messageDiv = document.createElement('div');
-                        messageDiv.className = 'message-bubble ' + (msg.sender_type === 'applicant' ?
-                            'from-applicant' : 'from-employer');
+                        messageDiv.className = 'message-bubble ' +
+                            (msg.sender_type === 'applicant' ? 'from-applicant' : 'from-employer');
                         messageDiv.innerHTML = `
                     <div class="message-content">
                         ${msg.message || ''}
-                        ${msg.attachment ? `<div class="message-attachment mt-2"><img src="/storage/${msg.attachment}" class="img-fluid rounded-2 shadow-sm"></div>` : ''}
-                        <div class="message-timestamp ${msg.sender_type}">${msg.time}</div>
+                        ${msg.attachment ? 
+                            `<div class="message-attachment mt-2">
+                                <img src="/storage/${msg.attachment}" class="img-fluid rounded-2 shadow-sm">
+                             </div>` 
+                            : ''}
+                        <div class="message-timestamp ${msg.sender_type}">
+                            ${msg.time}
+                        </div>
                     </div>
                 `;
                         container.appendChild(messageDiv);
                     });
 
-                    // Update lastMessageId
-                    if (newMessages.length > 0) {
-                        lastMessageId = newMessages[newMessages.length - 1].id;
+                    // Update last message ID
+                    if (data.messages.length > 0) {
+                        lastMessageId = data.messages[data.messages.length - 1].id;
+                    }
 
-                        if (isUserAtBottom) {
+                    // Handle scrolling and read logic
+                    if (newMessages.length > 0) {
+                        const isAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight <
+                            50;
+
+                        // Auto-scroll if you're already at the bottom or the new message is from you
+                        if (isAtBottom || newMessages.some(m => m.sender_type === 'applicant')) {
                             container.scrollTop = container.scrollHeight;
-                            setTimeout(() => markMessagesAsRead(currentEmployerId), 500);
+                        }
+
+                        // ✅ Only mark as read if:
+                        //    1) user is at bottom, and
+                        //    2) the tab is visible
+                        if (isAtBottom && document.visibilityState === 'visible') {
+                            setTimeout(() => markMessagesAsRead(currentEmployerId), 800);
                         } else {
-                            document.getElementById('newMessageAlert').style.display = 'block';
+                            // Show alert for new message if not at bottom
+                            const alertEl = document.getElementById('newMessageAlert');
+                            if (alertEl) alertEl.style.display = 'block';
                         }
                     }
                 }
