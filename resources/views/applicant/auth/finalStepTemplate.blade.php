@@ -70,154 +70,196 @@
         </div>
     </div>
 
-<!-- Step Content -->
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card form-card" style="margin-top:100px;">
-            <div class="card-header bg-white border-0 py-4">
-                <div class="container">
+    <!-- Step Content -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card form-card" style="margin-top:100px;">
+                <div class="card-header bg-white border-0 py-4">
+                    <div class="container">
 
-                    <!-- Header -->
-                    <div class="text-center mb-5">
-                        <h1 class="display-4 fw-bold text-dark mb-3">Worker Registration</h1>
-                        <p class="lead text-muted">Showcase your TESDA-certified skills and connect with employers who value your expertise.</p>
+                        <!-- Header -->
+                        <div class="text-center mb-5">
+                            <h1 class="display-4 fw-bold text-dark mb-3">Worker Registration</h1>
+                            <p class="lead text-muted">Showcase your TESDA-certified skills and connect with employers
+                                who value your expertise.</p>
+                        </div>
+
+                        <!-- Progress Stepper -->
+                        <div class="row justify-content-center mb-5">
+                            <div class="col-lg-10">
+                                <div class="d-flex align-items-center justify-content-between">
+
+                                    <!-- Step 1 -->
+                                    <div class="text-center">
+                                        <div class="step-indicator step-completed" id="step1">1</div>
+                                        <div class="mt-2">
+                                            <small class="fw-semibold text-dark">Account</small>
+                                            <br><small class="text-muted d-none d-sm-block">Account setup</small>
+                                        </div>
+                                    </div>
+                                    <div class="step-line step-line-completed" id="line2"></div>
+
+                                    <!-- Step 2 -->
+                                    <div class="text-center">
+                                        <div class="step-indicator step-completed" id="step2">2</div>
+                                        <div class="mt-2">
+                                            <small class="fw-semibold text-muted">Verify</small>
+                                            <br><small class="text-muted d-none d-sm-block">Verification</small>
+                                        </div>
+                                    </div>
+                                    <div class="step-line step-line-completed" id="line3"></div>
+
+                                    <!-- Step 3 -->
+                                    <div class="text-center">
+                                        <div class="step-indicator step-completed" id="step3">3</div>
+                                        <div class="mt-2">
+                                            <small class="fw-semibold text-muted">Personal</small>
+                                            <br><small class="text-muted d-none d-sm-block">Personal info</small>
+                                        </div>
+                                    </div>
+                                    <div class="step-line step-line-completed" id="line4"></div>
+
+                                    <!-- Step 4 -->
+                                    <div class="text-center">
+                                        <div class="step-indicator step-completed" id="step4">4</div>
+                                        <div class="mt-2">
+                                            <small class="fw-semibold text-muted">Work</small>
+                                            <br><small class="text-muted d-none d-sm-block">Work details</small>
+                                        </div>
+                                    </div>
+                                    <div class="step-line step-line-completed" id="line5"></div>
+
+                                    <!-- Step 5 -->
+                                    <div class="text-center">
+                                        <div class="step-indicator step-active" id="step5">5</div>
+                                        <div class="mt-2">
+                                            <small class="fw-semibold text-muted">Profile</small>
+                                            <br><small class="text-muted d-none d-sm-block">Build profile</small>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div> <!-- End Stepper -->
+
                     </div>
+                </div>
+                <!-- Form Content -->
+                <div class="form-content">
+                    <!-- Profile Header -->
+                    <div class="profile-header">
 
-                    <!-- Progress Stepper -->
-                    <div class="row justify-content-center mb-5">
-                        <div class="col-lg-10">
-                            <div class="d-flex align-items-center justify-content-between">
 
-                                <!-- Step 1 -->
-                                <div class="text-center">
-                                    <div class="step-indicator step-completed" id="step1">1</div>
-                                    <div class="mt-2">
-                                        <small class="fw-semibold text-dark">Account</small>
-                                        <br><small class="text-muted d-none d-sm-block">Account setup</small>
-                                    </div>
+
+                        @php
+                            use Illuminate\Support\Facades\Storage;
+
+                            // Safely get profile image
+                            $imagePath = $workBackground->profileimage_path ?? null;
+                        @endphp
+
+                        <div class="profile-image-container" style="position: relative; width: 100px; height: 100px;">
+                            @if ($imagePath)
+                                {{-- Show uploaded profile image --}}
+                                <img src="{{ Storage::url($imagePath) }}" alt="Profile Image" class="profile-image"
+                                    style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
+                            @else
+                                {{-- Show initials fallback (from first & last name) --}}
+                                @php
+                                    $firstName = $personalInfoDecrypted['first_name'] ?? 'First';
+                                    $lastName = $personalInfoDecrypted['last_name'] ?? 'Last';
+                                    $initials = strtoupper(mb_substr($firstName, 0, 1) . mb_substr($lastName, 0, 1));
+                                @endphp
+                                <div
+                                    style="
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 28px;
+        ">
+                                    {{ $initials }}
                                 </div>
-                                <div class="step-line step-line-completed" id="line2"></div>
+                            @endif
 
-                                <!-- Step 2 -->
-                                <div class="text-center">
-                                    <div class="step-indicator step-completed" id="step2">2</div>
-                                    <div class="mt-2">
-                                        <small class="fw-semibold text-muted">Verify</small>
-                                        <br><small class="text-muted d-none d-sm-block">Verification</small>
-                                    </div>
-                                </div>
-                                <div class="step-line step-line-completed" id="line3"></div>
-
-                                <!-- Step 3 -->
-                                <div class="text-center">
-                                    <div class="step-indicator step-completed" id="step3">3</div>
-                                    <div class="mt-2">
-                                        <small class="fw-semibold text-muted">Personal</small>
-                                        <br><small class="text-muted d-none d-sm-block">Personal info</small>
-                                    </div>
-                                </div>
-                                <div class="step-line step-line-completed" id="line4"></div>
-
-                                <!-- Step 4 -->
-                                <div class="text-center">
-                                    <div class="step-indicator step-completed" id="step4">4</div>
-                                    <div class="mt-2">
-                                        <small class="fw-semibold text-muted">Work</small>
-                                        <br><small class="text-muted d-none d-sm-block">Work details</small>
-                                    </div>
-                                </div>
-                                <div class="step-line step-line-completed" id="line5"></div>
-
-                                <!-- Step 5 -->
-                                <div class="text-center">
-                                    <div class="step-indicator step-active" id="step5">5</div>
-                                    <div class="mt-2">
-                                        <small class="fw-semibold text-muted">Profile</small>
-                                        <br><small class="text-muted d-none d-sm-block">Build profile</small>
-                                    </div>
-                                </div>
-
+                            {{-- Badge --}}
+                            <div class="profile-badge"
+                                style="position: absolute; bottom: 5px; right: 5px; background: #4CAF50; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-check" style="color: white; font-size: 12px;"></i>
                             </div>
                         </div>
-                    </div> <!-- End Stepper -->
 
-                </div>
-            </div>
-        <!-- Form Content -->
-        <div class="form-content">
-            <!-- Profile Header -->
-            <div class="profile-header">
-
-                <div class="profile-image-container">
-                    <img src="{{ Storage::url($workBackgroundDecrypted['profileimage_path'] ?? '') ?: 'https://via.placeholder.com/100x100/667eea/ffffff?text=Avatar' }}"
-
-                         alt="Profile Image" class="profile-image">
-                    <div class="profile-badge">
-                        <i class="bi bi-check" style="color: white; font-size: 12px;"></i>
-                    </div>
-                </div>
-
-                <h2 class="profile-name">
-                    {{ $personalInfoDecrypted['first_name'] ?? 'First Name' }}
-                    {{ $personalInfoDecrypted['last_name'] ?? 'Last Name' }}
-                </h2>
-
-                <div class="profile-position">
-                    {{ $workBackgroundDecrypted['position'] ?? 'Position' }}
-                </div>
-
-                <div class="profile-experience">
-                    {{ $workBackgroundDecrypted['work_duration'] ?? '0' }}
-                    {{ $workBackgroundDecrypted['work_duration_unit'] ?? 'years' }} of experience
-                </div>
-            </div>
-
-            <!-- Success/Error Messages -->
-            @if (session('success'))
-                <div class="alert alert-success">
-                    <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
-                </div>
-            @endif
-
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <i class="bi bi-exclamation-triangle me-2"></i>
-                    <strong>Please fix the following errors:</strong>
-                    <ul class="mt-2 mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
+                        {{-- Display decrypted names using foreach (for future multiple records) --}}
+                        @foreach ([$personalInfoDecrypted] as $info)
+                            <h2 class="profile-name" style="margin-top: 10px; font-weight: 600;">
+                                {{ $info['first_name'] ?? 'First Name' }} {{ $info['last_name'] ?? 'Last Name' }}
+                            </h2>
                         @endforeach
-                    </ul>
-                </div>
-            @endif
 
-            <!-- Profile Form -->
-            <form method="POST" enctype="multipart/form-data" action="{{ route('applicant.info.template.store') }}"
-                id="profileForm" onsubmit="return handleSubmit(event)">
-                @csrf
 
-                <!-- Description -->
-                <div class="form-group">
-                    <label class="form-label">
-                        <i class="bi bi-chat-quote me-2"></i>Describe Yourself
-                    </label>
-                    <textarea name="description" class="form-textarea" rows="4" required
-                        placeholder="Tell employers about your skills, experience, and what makes you unique..."
-                        oninput="updateCharCounter(this)" maxlength="500">{{ old('description') }}</textarea>
-                    <div class="char                    dir storage\app\public\<your-path>-counter">
-                        <span id="charCount">0</span>/500 characters
+                        <div class="profile-position">
+                            {{ $workBackgroundDecrypted['position'] ?? 'Position' }}
+                        </div>
+
+                        <div class="profile-experience">
+                            {{ $workBackgroundDecrypted['work_duration'] ?? '0' }}
+                            {{ $workBackgroundDecrypted['work_duration_unit'] ?? 'years' }} of experience
+                        </div>
                     </div>
-                </div>
 
-                <!-- Sample Work Upload -->
-                <!-- <div class="upload-section">
+                    <!-- Success/Error Messages -->
+                    @if (session('success'))
+                        <div class="alert alert-success">
+                            <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
+                        </div>
+                    @endif
+
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <strong>Please fix the following errors:</strong>
+                            <ul class="mt-2 mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <!-- Profile Form -->
+                    <form method="POST" enctype="multipart/form-data"
+                        action="{{ route('applicant.info.template.store') }}" id="profileForm"
+                        onsubmit="return handleSubmit(event)">
+                        @csrf
+
+                        <!-- Description -->
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="bi bi-chat-quote me-2"></i>Describe Yourself<span
+                                    style="color: red;">*</span>
+                            </label>
+                            <textarea name="description" class="form-textarea" rows="4" required
+                                placeholder="Tell employers about your skills, experience, and what makes you unique..."
+                                oninput="updateCharCounter(this)" maxlength="500">{{ old('description') }}</textarea>
+                            <div class="char                    dir storage\app\public\<your-path>-counter">
+                                <span id="charCount">0</span>/500 characters
+                            </div>
+                        </div>
+
+                        <!-- Sample Work Upload -->
+                        <!-- <div class="upload-section">
                     <label class="form-label">
                         <i class="bi bi-collection me-2"></i>Upload Sample Work
                         <span style="font-weight: 400; color: #6b7280; font-size: 14px;">(Optional)</span>
                     </label>
                      -->
-                <!-- Upload Tabs -->
-                <!-- <div class="upload-tabs">
+                        <!-- Upload Tabs -->
+                        <!-- <div class="upload-tabs">
                         <button type="button" class="upload-tab active" onclick="switchTab('file')">
                             <i class="bi bi-cloud-upload me-1"></i>Upload File
                         </button>
