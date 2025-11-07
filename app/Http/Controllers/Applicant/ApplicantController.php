@@ -700,6 +700,7 @@ public function login(Request $request)
 
     
     $applicant->last_login = now();
+    $applicant->is_online = true;
     $applicant->last_seen = now();
     
     $applicant->save();
@@ -1151,11 +1152,15 @@ public function ViewCallingCard() {
 //logout the applicant
 public function logout()
 {
-    $user = Auth::guard('applicant')->user();
+    $user = session('applicant_id') ;
 
     if ($user) {
-        // Update using DB query to be 100% sure
-        RegisterModel::where('id', $user->id)->update(['last_seen' => null]);
+        // Set user offline and record last_seen timestamp
+        RegisterModel::where('id', $user)
+            ->update([
+                'is_online' => false,
+                'last_seen' => now()
+            ]);
     }
 
     Auth::guard('applicant')->logout();
@@ -1164,6 +1169,7 @@ public function logout()
 
     return redirect()->route('applicant.login.display');
 }
+
 
 
 

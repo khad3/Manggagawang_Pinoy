@@ -27,6 +27,7 @@ class RegisterModel extends Authenticatable
         'is_verified',
         'last_seen',
         'typing_indicator',
+        'is_online',
         
     ];
 
