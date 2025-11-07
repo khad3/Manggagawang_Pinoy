@@ -95,15 +95,10 @@ body {
     opacity: 0.3;
 }
 
-
-
 .logo-icon {
-
- 
     display: flex;
     align-items: center;
     justify-content: center;
-
 }
 
 .back-btn {
@@ -860,17 +855,16 @@ body {
 }
 .nav-logo #home {
     height: 120px;
-   
 }
 
 .nav-logo img:hover {
     opacity: 0.8; /* subtle hover effect */
 }
 @media (max-width: 768px) {
-.header {
-    position: relative;
-    z-index: 50;
-}
+    .header {
+        position: relative;
+        z-index: 50;
+    }
 
     .header .container {
         flex-direction: column;
@@ -890,7 +884,6 @@ body {
         justify-content: center;
     }
 
-
     .nav-search {
         width: 100%;
         max-width: 100%;
@@ -905,10 +898,10 @@ body {
         position: relative;
         z-index: 9999; /* ensures dropdowns open above other elements */
     }
-.nav-search {
-    position: relative;
-    z-index: 10;
-}
+    .nav-search {
+        position: relative;
+        z-index: 10;
+    }
 
     .nav-icon,
     .profile-pic {
@@ -916,15 +909,14 @@ body {
         height: 50px;
     }
 
-
     #home2 {
         display: none;
-        top:20%
+        top: 20%;
     }
     .hero-banner {
-    position: relative;
-    z-index: 1 !important; /* lower than header */
-}
+        position: relative;
+        z-index: 1 !important; /* lower than header */
+    }
 
     .nav-badge {
         top: -4px;
@@ -938,15 +930,15 @@ body {
     }
 
     /* Also make sure dropdown menus are above everything */
-.dropdown-menu,
-.profile-menu {
-    position: absolute !important;
-    z-index: 9999 !important;
-    background: #fff;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-}
+    .dropdown-menu,
+    .profile-menu {
+        position: absolute !important;
+        z-index: 9999 !important;
+        background: #fff;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
 
-.bi{
-    display: inline;
-}
+    .bi {
+        display: inline;
+    }
 }
