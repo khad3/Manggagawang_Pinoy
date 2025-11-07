@@ -12,7 +12,7 @@
 </head>
 
 <body>
-    
+
     <!-- Main Forum Container -->
     <div class="forum-wrapper">
 
@@ -26,11 +26,13 @@
                                 <div class="logo-icon">
                                     <div class="nav-logo d-flex flex-column align-items-center">
                                         <div class="logos-wrapper">
-                                            <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" style="margin-bottom: -20%;" />
-                                            <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" style="margin-bottom: -20%;" />
+                                            <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home"
+                                                style="margin-bottom: -20%;" />
+                                            <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2"
+                                                style="margin-bottom: -20%;" />
                                         </div>
                                         <h5 class="forum-title mt-3">Community Forum</h5>
-                                    </div>   
+                                    </div>
                                 </div>
                             </div>
                             <a href="{{ route('applicant.info.homepage.display') }}" class="back-btn">
@@ -45,52 +47,51 @@
 
         <!-- Main Content Area -->
         <main class="forum-main">
-                            <nav class="nav-section">
-                    <div class="nav-buttons">
-          
-                        <a href="{{ route('applicant.forum.viewpost.display') }}" class="nav-btn">
-                         
-                            View My Posts
-                        </a>
-                        <a href="{{ route('applicant.forum.groupcommunity.display') }}" class="nav-btn">
-                          
-                            View Groups
+            <nav class="nav-section">
+                <div class="nav-buttons">
 
-                            {{--  Friend Request Badge --}}
-                            @if ($pendingJoinGroupRequests > 0)
-                                <span
-                                    class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill">
-                                    {{ $pendingJoinGroupRequests }}
-                                </span>
-                            @endif
+                    <a href="{{ route('applicant.forum.viewpost.display') }}" class="nav-btn">
 
-                        </a>
-                        <a href="{{ route('applicant.forum.group.display') }}" class="nav-btn">
-                          
-                            Create Group
-                        </a>
-                        <a href="{{ route('applicant.forum.viewfriendlist.display') }}"
-                            class="nav-btn position-relative">
-                        
-                            View Friends
+                        View My Posts
+                    </a>
+                    <a href="{{ route('applicant.forum.groupcommunity.display') }}" class="nav-btn">
 
-                            {{-- Combined Notification Badge --}}
-                            @php
-                                $totalNotifications = $friendRequests + $unreadMessagesCount;
-                            @endphp
+                        View Groups
 
-                            @if ($totalNotifications > 0)
-                                <span
-                                    class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill">{{ $totalNotifications }}</span>
-                            @endif
+                        {{--  Friend Request Badge --}}
+                        @if ($pendingJoinGroupRequests > 0)
+                            <span
+                                class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill">
+                                {{ $pendingJoinGroupRequests }}
+                            </span>
+                        @endif
 
+                    </a>
+                    <a href="{{ route('applicant.forum.group.display') }}" class="nav-btn">
+
+                        Create Group
+                    </a>
+                    <a href="{{ route('applicant.forum.viewfriendlist.display') }}" class="nav-btn position-relative">
+
+                        View Friends
+
+                        {{-- Combined Notification Badge --}}
+                        @php
+                            $totalNotifications = $friendRequests + $unreadMessagesCount;
+                        @endphp
+
+                        @if ($totalNotifications > 0)
+                            <span
+                                class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill">{{ $totalNotifications }}</span>
+                        @endif
 
 
 
-                        </a>
 
-                    </div>
-                </nav>
+                    </a>
+
+                </div>
+            </nav>
             <div class="container">
 
                 <!-- Content Grid -->
