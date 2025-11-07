@@ -27,6 +27,10 @@ class AccountInformationModel extends Model
         return $this->hasOne(CompanyAdressModel::class, 'employer_id');
     }
 
+    public function company() {
+        return $this->hasOne(CompanyAdressModel::class, 'employer_id');
+    }
+
     public function personal_info() {
         return $this->hasOne(PersonalInformationModel::class, 'employer_id');
     }
