@@ -506,25 +506,32 @@ public function WorkBackground(Request $request)
 
     $applicant = RegisterModel::findOrFail($applicantId);
 
-    // Store the image (path is not encrypted)
-    $imagePath = $request->file('profile_picture')->store('profile_picture', 'public');
+    // Check if profile picture exists before storing
+    $imagePath = null;
+    if ($request->hasFile('profile_picture')) {
+        $imagePath = $request->file('profile_picture')->store('profile_picture', 'public');
+    }
 
-    // Encrypt fields before saving
+    // ✅ Encrypt sensitive fields before saving
     $work_background = new WorkBackground([
         'position'           => Crypt::encrypt($request->position),
-        'other_position'     => $request->other_position ? Crypt::encrypt($request->other_position) : null,
-         'work_duration'      => $request->work_duration, // keep numeric, no encryption
+        'other_position'     => $request->other_position
+            ? Crypt::encrypt($request->other_position)
+            : null,
+        'work_duration'      => $request->work_duration, // keep numeric
         'work_duration_unit' => $request->work_duration_unit,
         'employed'           => $request->employed,
-        'profileimage_path'  => $imagePath, // keep path unencrypted
+        'profileimage_path'  => $imagePath, // may be null if no image uploaded
     ]);
 
-    // Save via relation
+    // ✅ Save via relation
     $applicant->work_background()->save($work_background);
 
-    return redirect()->route('applicant.info.template.display')
+    return redirect()
+        ->route('applicant.info.template.display')
         ->with('success', 'Work background saved successfully.');
 }
+
 /**
  * Helper to safely decrypt a value
  */
