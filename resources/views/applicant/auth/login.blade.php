@@ -34,7 +34,8 @@
         <a href="{{ route('display.index') }}" class="close-btnn" title="Go to Landing Page">&times;</a>
         <div class="login-left">
             <div class="form-container">
-                   <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" style=" height: 100px; /*  Adjust height as needed */
+                <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2"
+                    style=" height: 100px; /*  Adjust height as needed */
     width: auto;
     
     cursor: pointer;
@@ -86,9 +87,9 @@
                             href="{{ route('applicant.register.display') }}">Register</a></div>
                 </form>
 
-<div class="text-start mt-3 back-btn-container">
-  <a href="{{ route('display.index') }}" class="back-btn">← Back to Home</a>
-</div>
+                <div class="text-start mt-3 back-btn-container">
+                    <a href="{{ route('display.index') }}" class="back-btn">← Back to Home</a>
+                </div>
 
             </div>
         </div>

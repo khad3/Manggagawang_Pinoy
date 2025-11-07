@@ -19,7 +19,8 @@
     <div class="login-wrapper">
         <a href="{{ route('display.index') }}" class="close-btnn" title="Go to Landing Page">&times;</a>
         <div class="login-left">
-              <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" style=" height: 100px; /*  Adjust height as needed */
+            <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2"
+                style=" height: 100px; /*  Adjust height as needed */
     width: auto;
     
     cursor: pointer;
@@ -34,9 +35,10 @@
             {{-- Show global error (invalid login) --}}
             @if ($errors->has('email'))
                 <div class="alert alert-danger">
-                    {{ $errors->first('email') }}
+                    {!! $errors->first('email') !!}
                 </div>
             @endif
+
 
             {{-- Show success message --}}
             @if (session('success'))
@@ -57,15 +59,15 @@
                     <label for="password" class="form-label">Password</label>
                     <input type="password" id="password" name="password" class="form-control" required
                         placeholder="password">
-                        <div class="forgot-password text-end mt-1">
-                    <a href="{{ route('employer.forgotpassword.display') }}">Forgot Password?</a>
-                </div>
+                    <div class="forgot-password text-end mt-1">
+                        <a href="{{ route('employer.forgotpassword.display') }}">Forgot Password?</a>
+                    </div>
                 </div>
 
 
                 <button type="submit" class="sign-in-b login-btn w-100">Login</button>
 
-                
+
 
 
                 <div class="form-text">
@@ -73,10 +75,10 @@
                 </div>
             </form>
             <div class="text-start mt-3 back-btn-container">
-  <a href="{{ route('display.index') }}" class="back-btn">← Back to Home</a>
-</div>
+                <a href="{{ route('display.index') }}" class="back-btn">← Back to Home</a>
+            </div>
             <div class="divider"></div>
-           
+
         </div>
         <div class="login-right">
             <div class="centered-portrait">
