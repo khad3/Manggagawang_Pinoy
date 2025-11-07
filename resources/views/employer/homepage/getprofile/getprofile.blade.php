@@ -596,11 +596,9 @@ $applicantApplications = \App\Models\Applicant\ApplyJobModel::where('applicant_i
 $latestStatus = $applicantApplications->first()->status ?? null;
 
 // Check if already scheduled for interview
-$isAlreadyScheduled =
-    \App\Models\Employer\SetInterviewModel::where('applicant_id', $applicant->id)->where(
-        'employer_id',
-                    $employer_id,
-                ) > exists();
+$isAlreadyScheduled = \App\Models\Employer\SetInterviewModel::where('applicant_id', $applicant->id)
+    ->where('employer_id', $employer_id)
+                ->exists();
         @endphp
 
         @if ($latestStatus === 'approved')
@@ -627,7 +625,6 @@ $isAlreadyScheduled =
         @endif
     </div>
 
-    <!-- Hire / Schedule Interview Modal -->
     <!-- Hire / Schedule Interview Modal -->
     <div class="modal fade" id="hireModal" tabindex="-1" aria-labelledby="hireModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
