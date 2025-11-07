@@ -268,8 +268,8 @@
                         </button>
                     </div> -->
 
-                <!-- File Upload Content -->
-                <!-- <div class="upload-content active" id="fileContent">
+                        <!-- File Upload Content -->
+                        <!-- <div class="upload-content active" id="fileContent">
                         <div class="file-upload-area" onclick="document.getElementById('sample_work_file').click()"
                              ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
                             <div class="upload-icon">
@@ -292,7 +292,7 @@
                                style="display: none;" onchange="handleFileSelect(this)">
                     </div> -->
 
-                <!-- YouTube URL Content
+                        <!-- YouTube URL Content
                     <div class="upload-content" id="youtubeContent">
                         <input type="url" name="sample_work_url" class="url-input"
                                placeholder="Paste your YouTube video link here (e.g., https://youtube.com/watch?v=...)"
