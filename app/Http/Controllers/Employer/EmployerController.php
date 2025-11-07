@@ -593,7 +593,7 @@ public function login(Request $request)
     
     if (strtolower($employer->status ?? '') === 'banned') {
         return back()->withErrors([
-            'email' => 'Your account has been banned. Please contact support.',
+            'email' => 'Your account has been banned. Please contact support for assistance at <u>mangagawangpinoycompany@gmail.com</u>.',
         ])->withInput($request->only('email'));
     }
 
