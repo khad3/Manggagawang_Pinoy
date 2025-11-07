@@ -44,11 +44,65 @@
             <div class="candidate-overview-card mb-4">
                 <div class="row align-items-center">
                     <div class="col-auto">
-                        <div class="candidate-photo-container">
-                            <img src="{{ asset('storage/' . $retrievedProfile->work_background->profileimage_path) }}"
-                                alt="Profile Photo" class="candidate-photo" />
-                            <div class="status-indicator"></div>
+                        <div class="candidate-photo-container"
+                            style="position: relative; width: 100px; height: 100px; cursor: pointer;"
+                            data-bs-toggle="modal" data-bs-target="#profilePhotoModal">
+                            @php
+                                $firstName = $retrievedProfile->personal_info->first_name ?? 'F';
+                                $lastName = $retrievedProfile->personal_info->last_name ?? 'L';
+                                $initials = strtoupper(mb_substr($firstName, 0, 1) . mb_substr($lastName, 0, 1));
+                                $isOnline = (bool) ($retrievedProfile->is_online ?? false);
+                                $profileImage = $retrievedProfile->work_background->profileimage_path ?? null;
+                            @endphp
+
+                            @if ($profileImage)
+                                <img src="{{ asset('storage/' . $profileImage) }}" alt="Profile Photo"
+                                    class="candidate-photo"
+                                    style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                            @else
+                                <div class="candidate-initials"
+                                    style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 36px;">
+                                    {{ $initials }}
+                                </div>
+                            @endif
+
+                            {{-- Online/Offline indicator --}}
+                            <div class="status-indicator"
+                                style="
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            border: 2px solid white;
+            background-color: {{ $isOnline ? '#4CAF50' : '#B0B0B0' }};
+            z-index: 10;
+         "
+                                title="{{ $isOnline ? 'Online' : 'Offline' }}">
+                            </div>
                         </div>
+
+                        {{-- Modal for zoomed image --}}
+                        <div class="modal fade" id="profilePhotoModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content" style="background: transparent; border: none;">
+                                    <div class="modal-body text-center p-0">
+                                        @if ($profileImage)
+                                            <img src="{{ asset('storage/' . $profileImage) }}" alt="Profile Photo"
+                                                style="max-width: 90vw; max-height: 90vh; border-radius: 10px;">
+                                        @else
+                                            <div
+                                                style="width: 200px; height: 200px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 72px; margin: auto;">
+                                                {{ $initials }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
                     </div>
                     <div class="col">
                         <div class="candidate-basic-info">
@@ -56,7 +110,8 @@
                                 {{ $retrievedProfile->personal_info->last_name }}</h4>
                             <div class="candidate-role">{{ $retrievedProfile->work_background->position }}<span
                                     class="experience-badge">{{ $retrievedProfile->work_background->work_duration }}
-                                    {{ $retrievedProfile->work_background->work_duration_unit }} experience</span></div>
+                                    {{ $retrievedProfile->work_background->work_duration_unit }} experience</span>
+                            </div>
                             <div class="candidate-location"><i class="fas fa-map-marker-alt"></i>
                                 {{ $retrievedProfile->personal_info->house_street }}
                                 {{ $retrievedProfile->personal_info->city }}
@@ -151,7 +206,9 @@
                                 <h6><i class="fas fa-quote-left"></i> Professional Summary</h6>
                             </div>
                             <div class="card-body">
-                                <p class="professional-summary">"{{ $retrievedProfile->template->description }}"</p>
+                                <p class="professional-summary">
+                                    "{{ $retrievedProfile->template->description ?? 'Not available' }}"
+                                </p>
                                 <div class="key-strengths">
                                     <!-- <span class="strength-tag">Safety Focused</span>
                                                 <span class="strength-tag">Code Compliant</span>
