@@ -158,7 +158,8 @@
                         <!-- Position -->
                         <div class="form-group fade-in" style="animation-delay: 0.1s;">
                             <label for="position" class="form-label">
-                                <i class="bi bi-person-workspace me-2"></i>What position are you applying for?
+                                <i class="bi bi-person-workspace me-2"></i>What position are you applying for?<span
+                                    style="color: red;">*</span></label>
                             </label>
                             <select class="form-select" id="position" name="position" required
                                 onchange="toggleOtherPosition()">
@@ -199,7 +200,8 @@
                         <!-- Work Experience -->
                         <div class="form-group fade-in" style="animation-delay: 0.2s;">
                             <label class="form-label">
-                                <i class="bi bi-clock-history me-2"></i>How long have you been working?
+                                <i class="bi bi-clock-history me-2"></i>How long have you been working?<span
+                                    style="color: red;">*</span></label>
                             </label>
                             <div class="duration-group">
                                 <input type="number" class="form-input" id="work_duration" name="work_duration"
@@ -215,7 +217,8 @@
                         <!-- Currently Employed -->
                         <div class="form-group fade-in" style="animation-delay: 0.3s;">
                             <label class="form-label">
-                                <i class="bi bi-person-check me-2"></i>Are you currently employed?
+                                <i class="bi bi-person-check me-2"></i>Are you currently employed?<span
+                                    style="color: red;">*</span></label>
                             </label>
                             <div class="employment-toggle">
                                 <button type="button" class="toggle-option" data-value="yes"
@@ -234,7 +237,7 @@
                         <div class="form-group fade-in" style="animation-delay: 0.4s;">
                             <label class="form-label">
                                 <i class="bi bi-camera me-2"></i>Upload Profile Picture
-                                <span style="font-weight: 400; color: #6b7280; font-size: 14px;">(Required)</span>
+                                <span style="font-weight: 400; color: #6b7280; font-size: 14px;">(Optional)</span>
                             </label>
 
                             <div class="file-upload-area" onclick="document.getElementById('profile_picture').click()"
