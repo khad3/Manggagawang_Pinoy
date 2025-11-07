@@ -1,22 +1,8 @@
 /* Modern Community Forum CSS */
 
 /* Reset and Base Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
 
-html,
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-        Ubuntu, Cantarell, sans-serif;
-    background: var(--light-orange);
-    min-height: 100vh;
-    color: #2d3748;
-    line-height: 1.6;
-    overflow-x: hidden;
-}
+
 :root {
     --primary-orange: #020180;
     --primary-red: #dc2626;
@@ -24,26 +10,7 @@ body {
     --light-red: #fef2f2;
 }
 
-/* Header Section styles (copied from profile.css) */
-.header-section {
-    background: var(--primary-gradient);
-    padding: 1rem 0;
-    box-shadow: var(--shadow-lg);
-    position: relative;
-    overflow: hidden;
-    margin-bottom: 2rem;
-}
 
-.header-section::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
-    opacity: 0.3;
-}
 
 /* Forum Main Header (new styles) */
 .forum-main-header {
@@ -53,15 +20,6 @@ body {
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
-.forum-title {
-    text-align: center;
-    margin-bottom: 2rem;
-    font-size: 2.5rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
 
 .forum-nav-section {
     max-width: 1000px;
@@ -74,6 +32,21 @@ body {
     gap: 1rem;
     padding: 0 1rem;
 }
+
+.nav-logo {
+ display: flex;
+  flex-direction: row; /* was flex-column */
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem; /* spacing between logo and text */
+}
+
+.logos-wrapper {
+   display: flex;
+  align-items: center;
+  gap: -1.25rem;
+}
+
 .nav-logo img {
     height: 50px; /*  Adjust height as needed */
     width: auto;
@@ -81,10 +54,10 @@ body {
     cursor: pointer;
     user-select: none;
     transition: opacity 0.3s ease;
+    display: flex;
 }
 .nav-logo #home {
     height: 120px;
-   
 }
 
 .nav-logo img:hover {
@@ -143,7 +116,7 @@ body {
 .nav-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: var(--primary-orange);
     color: white;
     border-color: transparent;
 }
@@ -156,27 +129,7 @@ body {
 .forum-main {
     padding: 2rem 0;
 }
-.back-btn {
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: var(--border-radius-lg);
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-    position: relative;
-    z-index: 2;
-    display: flex;
-}
 
-.back-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
-    color: white;
-    box-shadow: var(--shadow-md);
-}
 .forum-main .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -234,7 +187,7 @@ body {
 /* Create Post Button */
 .btn-create-post {
     width: 100%;
-    background: linear-gradient(135deg, #48bb78, #38a169);
+    background: var(--primary-orange);
     border: none;
     color: white;
     font-weight: 600;
@@ -347,7 +300,7 @@ body {
 
 .form-input:focus,
 .form-textarea:focus {
-    border-color: #667eea;
+    border-color: var(--primary-orange);
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
     outline: none;
     background: white;
@@ -378,9 +331,9 @@ body {
 }
 
 .file-upload-label:hover {
-    border-color: #667eea;
+    border-color: var(--primary-orange);
     background: rgba(102, 126, 234, 0.05);
-    color: #667eea;
+    color: var(--primary-orange);
 }
 
 .file-input {
@@ -394,7 +347,7 @@ body {
 /* Submit Button */
 .btn-submit {
     width: 100%;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: var(--primary-orange);
     border: none;
     color: white;
     font-weight: 600;
@@ -445,7 +398,7 @@ body {
     left: 0;
     right: 0;
     height: 5px;
-    background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+    background: var(--primary-orange);
     background-size: 200% 200%;
     animation: gradientShift 3s ease infinite;
 }
@@ -502,7 +455,7 @@ body {
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: var(--primary-orange);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -529,7 +482,7 @@ body {
     font-size: 1rem;
     font-weight: 500;
     margin: 0 0 0.25rem 0;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: var(--primary-orange);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -566,7 +519,7 @@ body {
 }
 
 .topic-badge {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: var(--primary-orange);
     color: white;
     padding: 0.5rem 1rem;
     border-radius: 20px;
@@ -622,7 +575,7 @@ body {
 .btn-like:hover,
 .btn-comments:hover,
 .btn-like.liked {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: var(--primary-orange);
     border-color: transparent;
     color: white;
     transform: translateY(-2px);
@@ -669,7 +622,7 @@ body {
 }
 
 .btn-comment-submit {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: var(--primary-orange);
     border: none;
     color: white;
     padding: 0.875rem 1.5rem;
@@ -787,7 +740,7 @@ body {
 }
 
 .reply-input:focus {
-    border-color: #667eea;
+    border-color:var(--primary-orange);
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
     outline: none;
     background: white;
@@ -957,7 +910,7 @@ body {
 }
 
 .btn-create-first {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: var(--primary-orange);
     border: none;
     color: white;
     padding: 1rem 2rem;
@@ -1024,14 +977,11 @@ body {
     }
 
     .nav-buttons {
-        flex-direction: column;
+      
         align-items: center;
     }
 
-    .nav-btn {
-        width: 100%;
-        justify-content: center;
-    }
+
 
     .post-card {
         padding: 1.5rem;
@@ -1074,7 +1024,7 @@ body {
     }
     
     .nav-btn {
-        width: 100%;
+        width: 40%;
         justify-content: center;
     }
 }
@@ -1110,6 +1060,45 @@ body {
     }
 }
 
+/* Logo and title spacing adjustments */
+.nav-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0;
+}
+
+.logos-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5px;
+}
+
+.forum-title {
+    color: var(--light-orange);
+    font-size: 18px;
+    margin-top: 0;
+    font-weight: 600;
+    padding: 0;
+    line-height: 1.2;
+}
+
+/* Adjust mobile responsiveness */
+@media (max-width: 768px) {
+    .forum-title {
+        font-size: 20px;
+        margin-top: 0;
+        margin-bottom: 8px;
+    }
+    
+    .nav-logo #home {
+        height: 80px;
+        margin-bottom: 0;
+    }
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
@@ -1137,6 +1126,21 @@ body {
 
 /* Focus Accessibility */
 *:focus-visible {
-    outline: 2px solid #667eea;
+    outline: 2px solid var(--primary-orange);
     outline-offset: 2px;
+}
+.iframe-container {
+  width: 100%;
+  height: 85vh;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-top: 1rem;
+}
+
+.iframe-container iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
 }

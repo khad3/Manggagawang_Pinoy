@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/applicant/forum.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/applicant/profile.css') }}">
 </head>
 
 <body>
@@ -18,30 +19,27 @@
         <!-- Header Navigation -->
         <div class="forum-header">
             <div class="container">
-                <h1 class="forum-title">Community Forum</h1>
-  <div class="header-section">
-        <div class="container">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="tesda-logo">
-            <div class="logo-icon">
-                     
+                <div class="header-section">
+                    <div class="container">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="tesda-logo">
+                                <div class="logo-icon">
+                                    <div class="nav-logo d-flex flex-column align-items-center">
+                                        <div class="logos-wrapper">
+                                            <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" style="margin-bottom: -20%;" />
+                                            <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" style="margin-bottom: -20%;" />
+                                        </div>
+                                        <h5 class="forum-title mt-3">Community Forum</h5>
+                                    </div>   
+                                </div>
+                            </div>
+                            <a href="{{ route('applicant.info.homepage.display') }}" class="back-btn">
+                                <i class="bi bi-house-door-fill me-2"></i>
+                                <div class="bth">Back to Homepage</div>
+                            </a>
+                        </div>
                     </div>
-                        <div class="nav-logo d-flex align-items-center">
-
-                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
-                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" />
-
-                </div>   
                 </div>
-                <a href="{{ route('applicant.info.homepage.display') }}" class="back-btn">
-                    <i class="bi bi-house-door-fill me-2" ></i>
-                  <div class="bth">  Back to Homepage</div>
-                </a>
-            </div>
-        </div>
-    </div>
-                <!-- Navigation Links -->
-
             </div>
         </div>
 
@@ -49,16 +47,13 @@
         <main class="forum-main">
                             <nav class="nav-section">
                     <div class="nav-buttons">
-                        <a href="{{ route('applicant.info.homepage.display') }}" class="nav-btn">
-                            <span class="nav-icon">🏠</span>
-                            Back to Homepage
-                        </a>
+          
                         <a href="{{ route('applicant.forum.viewpost.display') }}" class="nav-btn">
-                            <span class="nav-icon">📝</span>
+                         
                             View My Posts
                         </a>
                         <a href="{{ route('applicant.forum.groupcommunity.display') }}" class="nav-btn">
-                            <span class="nav-icon">👥</span>
+                          
                             View Groups
 
                             {{--  Friend Request Badge --}}
@@ -71,12 +66,12 @@
 
                         </a>
                         <a href="{{ route('applicant.forum.group.display') }}" class="nav-btn">
-                            <span class="nav-icon">➕</span>
+                          
                             Create Group
                         </a>
                         <a href="{{ route('applicant.forum.viewfriendlist.display') }}"
                             class="nav-btn position-relative">
-                            <span class="nav-icon">👫</span>
+                        
                             View Friends
 
                             {{-- Combined Notification Badge --}}
@@ -119,7 +114,7 @@
                         <div class="action-section">
                             <button class="btn-create-post" data-bs-toggle="collapse" data-bs-target="#postFormCollapse"
                                 aria-expanded="false" aria-controls="postFormCollapse">
-                                <span class="btn-icon">✨</span>
+
                                 Create New Post
                             </button>
 

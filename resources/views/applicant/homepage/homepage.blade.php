@@ -1361,6 +1361,21 @@ $hasActiveApplication =
             }
             return html;
         }
+        // Logo click handlers
+    ['home', 'home2'].forEach(id => {
+        const logoElement = document.getElementById(id);
+        if (logoElement) {
+            logoElement.style.cursor = 'pointer'; // Make it look clickable
+            logoElement.addEventListener('click', function() {
+                // Scroll to top with smooth animation
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        }
+    });
+
     </script>
 
 </body>

@@ -260,6 +260,10 @@ body {
     z-index: 1 !important; /* lower than header */
 }
 
+.hero-subtitle{
+    padding: 10px;
+}
+
     .nav-badge {
         top: -4px;
         right: -4px;
@@ -602,6 +606,7 @@ body {
 @media (max-width: 768px) {
     .hero-title {
         font-size: 2.5rem;
+        padding: 10px;
     }
 
     .hero-stats {
@@ -2642,6 +2647,11 @@ body {
 
   .offer-card {
     width: 90%;
+  }
+
+  .stat-card{
+    width: 70%;
+    align-self: center;
   }
 }
 
