@@ -585,7 +585,7 @@ $workBackgroundDecrypted = $workBackground ? [
         return redirect()->route('some.previous.step')->withErrors('Incomplete applicant data!');
     }
 
-    return view('applicant.auth.finalStepTemplate', compact('personalInfoDecrypted', 'workBackgroundDecrypted'));
+    return view('applicant.auth.finalStepTemplate', compact('personalInfoDecrypted', 'workBackgroundDecrypted' ,'workBackground'));
 }
 
 public function TemplateForm(Request $request)
