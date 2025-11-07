@@ -115,19 +115,67 @@
 
 
 
-                <div class="profile-photo-container">
-                    <div class="profile-photo">
-                        @if ($retrievedProfile->personal_info)
-                            @if (!empty($retrievedProfile->work_background) && !empty($retrievedProfile->work_background->profileimage_path))
-                                <img src="{{ asset('storage/' . $retrievedProfile->work_background->profileimage_path) }}"
-                                    alt="Profile Picture" />
-                            @else
-                                <i class="bi bi-person-circle"></i>
-                            @endif
+                <div class="profile-photo-container" style="position: relative; width: 100px; height: 100px;">
+                    <div class="profile-photo" style="position: relative; width: 100%; height: 100%;">
+                        @php
+                            $profileImage =
+                                !empty($retrievedProfile->work_background) &&
+                                !empty($retrievedProfile->work_background->profileimage_path)
+                                    ? asset('storage/' . $retrievedProfile->work_background->profileimage_path)
+                                    : null;
+                        @endphp
+
+                        @if ($profileImage)
+                            <!-- Clickable Image -->
+                            <img src="{{ $profileImage }}" alt="Profile Picture"
+                                style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; cursor: pointer;"
+                                data-bs-toggle="modal" data-bs-target="#viewPhotoModal" />
+                        @else
+                            <i class="bi bi-person-circle" style="font-size: 100px;"></i>
                         @endif
-                        <div class="online-indicator"></div>
+
+                        {{-- Online/Offline indicator --}}
+                        @php
+                            $isOnline = (bool) ($retrievedProfile->is_online ?? false);
+                        @endphp
+                        <span
+                            style="
+                position: absolute;
+                bottom: 5px;
+                right: 5px;
+                display: block;
+                width: 15px;
+                height: 15px;
+                border-radius: 50%;
+                border: 2px solid white;
+                background-color: {{ $isOnline ? '#4CAF50' : '#B0B0B0' }};
+                z-index: 10;
+            "
+                            title="{{ $isOnline ? 'Online' : 'Offline' }}">
+                        </span>
                     </div>
                 </div>
+
+                <!-- Modal without backdrop -->
+                <div class="modal fade" id="viewPhotoModal" tabindex="-1" aria-labelledby="viewPhotoModalLabel"
+                    aria-hidden="true" data-bs-backdrop="false">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-body p-0">
+                                @if ($profileImage)
+                                    <img src="{{ $profileImage }}" alt="Profile Picture"
+                                        style="width: 100%; object-fit: contain;" />
+                                @endif
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary btn-sm"
+                                    data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
             </div>
 
             <!-- Profile Info -->

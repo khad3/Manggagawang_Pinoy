@@ -151,21 +151,52 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- Profile Photo -->
                 <div class="profile-photo-container">
                     <div class="profile-photo">
-                        @if ($retrievedProfile->personal_info)
-                            @if (!empty($retrievedProfile->work_background) && !empty($retrievedProfile->work_background->profileimage_path))
-                                <img src="{{ asset('storage/' . $retrievedProfile->work_background->profileimage_path) }}"
-                                    alt="Profile Picture" />
+                        @php
+                            $profileImage =
+                                !empty($retrievedProfile->work_background) &&
+                                !empty($retrievedProfile->work_background->profileimage_path)
+                                    ? asset('storage/' . $retrievedProfile->work_background->profileimage_path)
+                                    : null;
+
+                            $placeholderImage = asset('images/default-profile.png'); // replace with your placeholder image
+                        @endphp
+
+                        <!-- Clickable Photo/Icon -->
+                        <div data-bs-toggle="modal" data-bs-target="#viewProfileModal"
+                            style="cursor: pointer; display: inline-block;">
+                            @if ($profileImage)
+                                <img src="{{ $profileImage }}" alt="Profile Picture" />
                             @else
-                                <i class="bi bi-person-circle"></i>
+                                <i class="bi bi-person-circle" style="font-size: 100px;"></i>
                             @endif
-                        @endif
+                        </div>
+
+
                         <div class="online-indicator"></div>
                     </div>
                 </div>
+
+                <!-- Modal to View Profile -->
+                <div class="modal fade" id="viewProfileModal" tabindex="-1" aria-labelledby="viewProfileModalLabel"
+                    aria-hidden="true" data-bs-backdrop="false">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <img src="{{ $profileImage ?? $placeholderImage }}" alt="Profile Picture"
+                                    style="width: 100%; object-fit: contain;" />
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary btn-sm"
+                                    data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
             </div>
 
 
