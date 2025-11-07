@@ -18,23 +18,24 @@
 </head>
 
 <body>
-      <nav>
+    <nav>
         <div class="navbar-container">
             <div class="nav-logo d-flex align-items-center">
-                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2" style="text-decoration:none;">
-                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home"/>
-                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2"/>
+                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2"
+                    style="text-decoration:none;">
+                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
+                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" />
                 </a>
             </div>
 
-                        <ul class="nav-links" id="navLinks">
+            <ul class="nav-links" id="navLinks">
                 <li><a href="#">Services</a></li>
                 <li><a href="{{ route('display.topworker') }}">Top Workers</a></li>
                 <li><a href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
                 <li><a href="{{ route('display.aboutus') }}">About Us</a></li>
                 <li class="dropdown">
-               <button class="sign-in-b">Sign in</button>
-               <ul class="dropdown-menu">
+                    <button class="sign-in-b">Sign in</button>
+                    <ul class="dropdown-menu">
                         <li><a href="{{ route('applicant.login.display') }}">As Applicant</a></li>
                         <li><a href="{{ route('employer.login.display') }}">As Employer</a></li>
                     </ul>
