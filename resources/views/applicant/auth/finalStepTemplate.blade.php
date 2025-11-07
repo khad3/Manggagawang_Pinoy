@@ -303,215 +303,215 @@
                             <span id="urlText"></span>
                         </div>
                     </div> -->
-    
-
-        <!-- Submit Button -->
-        <button type="submit" class="submit-btn" id="submitBtn">
-            <span id="submitText">
-                <i class="bi bi-rocket me-2"></i>Complete Registration
-            </span>
-        </button>
-        </form>
-    </div>
-    </div>
-    </div>
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-        // Hide loader after page load
-        window.addEventListener("load", function() {
-            setTimeout(function() {
-                document.getElementById("loader-wrapper").style.display = "none";
-            }, 1500);
-        });
 
 
-        function updateCharCounter(textarea) {
-            const charCount = textarea.value.length;
-            document.getElementById('charCount').textContent = charCount;
-            const counter = document.querySelector('.char-counter');
-            if (charCount > 450) {
-                counter.style.color = '#dc2626';
-            } else if (charCount > 400) {
-                counter.style.color = '#f59e0b';
-            } else {
-                counter.style.color = '#6b7280';
+                        <!-- Submit Button -->
+                        <button type="submit" class="submit-btn" id="submitBtn">
+                            <span id="submitText">
+                                <i class="bi bi-rocket me-2"></i>Complete Registration
+                            </span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <script>
+            // Hide loader after page load
+            window.addEventListener("load", function() {
+                setTimeout(function() {
+                    document.getElementById("loader-wrapper").style.display = "none";
+                }, 1500);
+            });
+
+
+            function updateCharCounter(textarea) {
+                const charCount = textarea.value.length;
+                document.getElementById('charCount').textContent = charCount;
+                const counter = document.querySelector('.char-counter');
+                if (charCount > 450) {
+                    counter.style.color = '#dc2626';
+                } else if (charCount > 400) {
+                    counter.style.color = '#f59e0b';
+                } else {
+                    counter.style.color = '#6b7280';
+                }
             }
-        }
 
-        function switchTab(tabType) {
-            document.querySelectorAll('.upload-tab').forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
-            document.querySelectorAll('.upload-content').forEach(content => content.classList.remove('active'));
-            document.getElementById(tabType === 'file' ? 'fileContent' : 'youtubeContent').classList.add('active');
-            if (tabType === 'file') {
-                document.querySelector('input[name="sample_work_url"]').value = '';
-                document.getElementById('urlPreview').style.display = 'none';
-            } else {
+            function switchTab(tabType) {
+                document.querySelectorAll('.upload-tab').forEach(tab => tab.classList.remove('active'));
+                event.target.classList.add('active');
+                document.querySelectorAll('.upload-content').forEach(content => content.classList.remove('active'));
+                document.getElementById(tabType === 'file' ? 'fileContent' : 'youtubeContent').classList.add('active');
+                if (tabType === 'file') {
+                    document.querySelector('input[name="sample_work_url"]').value = '';
+                    document.getElementById('urlPreview').style.display = 'none';
+                } else {
+                    document.getElementById('sample_work_file').value = '';
+                    document.getElementById('fileSelected').style.display = 'none';
+                }
+            }
+
+            function handleFileSelect(input) {
+                const file = input.files[0];
+                if (file) {
+                    if (file.size > 10 * 1024 * 1024) {
+                        alert('File size must be less than 10MB');
+                        input.value = '';
+                        return;
+                    }
+                    document.getElementById('fileName').textContent = file.name;
+                    document.getElementById('fileSelected').style.display = 'block';
+                }
+            }
+
+            function handleDrop(event) {
+                event.preventDefault();
+                const uploadArea = event.currentTarget;
+                uploadArea.classList.remove('dragover');
+                const files = event.dataTransfer.files;
+                if (files.length > 0) {
+                    const fileInput = document.getElementById('sample_work_file');
+                    fileInput.files = files;
+                    handleFileSelect(fileInput);
+                }
+            }
+
+            function handleDragOver(event) {
+                event.preventDefault();
+                event.currentTarget.classList.add('dragover');
+            }
+
+            function handleDragLeave(event) {
+                event.currentTarget.classList.remove('dragover');
+            }
+
+            function removeFile() {
                 document.getElementById('sample_work_file').value = '';
                 document.getElementById('fileSelected').style.display = 'none';
             }
-        }
 
-        function handleFileSelect(input) {
-            const file = input.files[0];
-            if (file) {
-                if (file.size > 10 * 1024 * 1024) {
-                    alert('File size must be less than 10MB');
-                    input.value = '';
-                    return;
+            function previewUrl(input) {
+                const url = input.value;
+                const preview = document.getElementById('urlPreview');
+                const urlText = document.getElementById('urlText');
+                if (url && (url.includes('youtube.com') || url.includes('youtu.be'))) {
+                    urlText.textContent = url;
+                    preview.style.display = 'block';
+                } else {
+                    preview.style.display = 'none';
                 }
-                document.getElementById('fileName').textContent = file.name;
-                document.getElementById('fileSelected').style.display = 'block';
-            }
-        }
-
-        function handleDrop(event) {
-            event.preventDefault();
-            const uploadArea = event.currentTarget;
-            uploadArea.classList.remove('dragover');
-            const files = event.dataTransfer.files;
-            if (files.length > 0) {
-                const fileInput = document.getElementById('sample_work_file');
-                fileInput.files = files;
-                handleFileSelect(fileInput);
-            }
-        }
-
-        function handleDragOver(event) {
-            event.preventDefault();
-            event.currentTarget.classList.add('dragover');
-        }
-
-        function handleDragLeave(event) {
-            event.currentTarget.classList.remove('dragover');
-        }
-
-        function removeFile() {
-            document.getElementById('sample_work_file').value = '';
-            document.getElementById('fileSelected').style.display = 'none';
-        }
-
-        function previewUrl(input) {
-            const url = input.value;
-            const preview = document.getElementById('urlPreview');
-            const urlText = document.getElementById('urlText');
-            if (url && (url.includes('youtube.com') || url.includes('youtu.be'))) {
-                urlText.textContent = url;
-                preview.style.display = 'block';
-            } else {
-                preview.style.display = 'none';
-            }
-        }
-
-        function handleSubmit(event) {
-            const submitBtn = document.getElementById('submitBtn');
-            const submitText = document.getElementById('submitText');
-            const description = document.querySelector('textarea[name="description"]').value.trim();
-
-            if (!description) {
-                alert('Please provide a description about yourself.');
-                event.preventDefault();
-                return false;
             }
 
-            if (description.length < 50) {
-                alert('Please provide a more detailed description (at least 50 characters).');
-                event.preventDefault();
-                return false;
+            function handleSubmit(event) {
+                const submitBtn = document.getElementById('submitBtn');
+                const submitText = document.getElementById('submitText');
+                const description = document.querySelector('textarea[name="description"]').value.trim();
+
+                if (!description) {
+                    alert('Please provide a description about yourself.');
+                    event.preventDefault();
+                    return false;
+                }
+
+                if (description.length < 50) {
+                    alert('Please provide a more detailed description (at least 50 characters).');
+                    event.preventDefault();
+                    return false;
+                }
+
+                submitBtn.classList.add('loading');
+                submitText.innerHTML = 'Completing Registration...';
+                submitBtn.disabled = true;
+
+                return true; // Let the form submit
             }
 
-            submitBtn.classList.add('loading');
-            submitText.innerHTML = 'Completing Registration...';
-            submitBtn.disabled = true;
+            document.addEventListener('DOMContentLoaded', function() {
+                const textarea = document.querySelector('textarea[name="description"]');
+                if (textarea.value) {
+                    updateCharCounter(textarea);
+                }
+                const urlInput = document.querySelector('input[name="sample_work_url"]');
+                if (urlInput.value) {
+                    previewUrl(urlInput);
+                }
+            });
 
-            return true; // Let the form submit
-        }
+            document.addEventListener('DOMContentLoaded', function() {
+                try {
+                    const hamburger = document.getElementById('hamburger');
+                    const navLinks = document.getElementById('navLinks');
+                    if (!hamburger || !navLinks) return;
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const textarea = document.querySelector('textarea[name="description"]');
-            if (textarea.value) {
-                updateCharCounter(textarea);
-            }
-            const urlInput = document.querySelector('input[name="sample_work_url"]');
-            if (urlInput.value) {
-                previewUrl(urlInput);
-            }
-        });
+                    hamburger.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        hamburger.classList.toggle('active');
+                        navLinks.classList.toggle('active');
+                        document.body.classList.toggle('noscroll');
+                    });
 
-document.addEventListener('DOMContentLoaded', function () {
-  try {
-    const hamburger = document.getElementById('hamburger');
-    const navLinks = document.getElementById('navLinks');
-    if (!hamburger || !navLinks) return;
+                    navLinks.querySelectorAll('.dropdown').forEach(drop => {
+                        const btn = drop.querySelector('button, .dropdown-toggle');
+                        const menu = drop.querySelector('.dropdown-menu');
+                        if (!btn || !menu) return;
+                        btn.addEventListener('click', function(ev) {
+                            ev.stopPropagation();
+                            drop.classList.toggle('open');
+                            menu.classList.toggle('open');
+                            if (window.innerWidth <= 900 && !navLinks.classList.contains('active')) {
+                                navLinks.classList.add('active');
+                                hamburger.classList.add('active');
+                                document.body.classList.add('noscroll');
+                            }
+                        });
+                    });
 
-    hamburger.addEventListener('click', function (e) {
-      e.stopPropagation();
-      hamburger.classList.toggle('active');
-      navLinks.classList.toggle('active');
-      document.body.classList.toggle('noscroll');
-    });
+                    navLinks.querySelectorAll('a').forEach(link => {
+                        link.addEventListener('click', function() {
+                            if (navLinks.classList.contains('active')) {
+                                navLinks.classList.remove('active');
+                                hamburger.classList.remove('active');
+                                document.body.classList.remove('noscroll');
+                            }
+                        });
+                    });
 
-    navLinks.querySelectorAll('.dropdown').forEach(drop => {
-      const btn = drop.querySelector('button, .dropdown-toggle');
-      const menu = drop.querySelector('.dropdown-menu');
-      if (!btn || !menu) return;
-      btn.addEventListener('click', function (ev) {
-        ev.stopPropagation();
-        drop.classList.toggle('open');
-        menu.classList.toggle('open');
-        if (window.innerWidth <= 900 && !navLinks.classList.contains('active')) {
-          navLinks.classList.add('active');
-          hamburger.classList.add('active');
-          document.body.classList.add('noscroll');
-        }
-      });
-    });
-
-    navLinks.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', function () {
-        if (navLinks.classList.contains('active')) {
-          navLinks.classList.remove('active');
-          hamburger.classList.remove('active');
-          document.body.classList.remove('noscroll');
-        }
-      });
-    });
-
-    document.addEventListener('click', function (e) {
-      if (!navLinks.contains(e.target) && !hamburger.contains(e.target)) {
-        navLinks.querySelectorAll('.dropdown.open').forEach(d => d.classList.remove('open'));
-      }
-    });
-  } catch (err) {
-    console.error('Nav init error:', err);
-  }
-});
+                    document.addEventListener('click', function(e) {
+                        if (!navLinks.contains(e.target) && !hamburger.contains(e.target)) {
+                            navLinks.querySelectorAll('.dropdown.open').forEach(d => d.classList.remove(
+                                'open'));
+                        }
+                    });
+                } catch (err) {
+                    console.error('Nav init error:', err);
+                }
+            });
 
 
 
-document.querySelectorAll('.dropdown button').forEach(btn => {
-  btn.addEventListener('click', e => {
-    const dropdown = btn.closest('.dropdown');
-    const isActive = dropdown.classList.contains('active');
-    
-    // close any open popups first
-    document.querySelectorAll('.dropdown.active').forEach(d => d.classList.remove('active'));
+            document.querySelectorAll('.dropdown button').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    const dropdown = btn.closest('.dropdown');
+                    const isActive = dropdown.classList.contains('active');
 
-    // toggle the current one
-    if (!isActive) dropdown.classList.add('active');
-  });
-});
+                    // close any open popups first
+                    document.querySelectorAll('.dropdown.active').forEach(d => d.classList.remove('active'));
 
-// close popup when clicking outside or close button
-document.addEventListener('click', e => {
-  if (e.target.classList.contains('dropdown-menu')) {
-    e.target.closest('.dropdown').classList.remove('active');
-  }
-});
+                    // toggle the current one
+                    if (!isActive) dropdown.classList.add('active');
+                });
+            });
 
-    </script>
+            // close popup when clicking outside or close button
+            document.addEventListener('click', e => {
+                if (e.target.classList.contains('dropdown-menu')) {
+                    e.target.closest('.dropdown').classList.remove('active');
+                }
+            });
+        </script>
 </body>
 
 </html>
