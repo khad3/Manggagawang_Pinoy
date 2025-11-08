@@ -9,13 +9,13 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/applicant/forum.css') }}">
     <link rel="stylesheet" href="{{ asset('css/applicant/profile.css') }}">
+    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}" />
 </head>
 
 <body>
 
     <!-- Main Forum Container -->
     <div class="forum-wrapper">
-
         <!-- Header Navigation -->
         <div class="forum-header">
             <div class="container">
