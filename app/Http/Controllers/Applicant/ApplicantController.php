@@ -1152,11 +1152,10 @@ public function ViewCallingCard() {
 //logout the applicant
 public function logout()
 {
-    $user = session('applicant_id') ;
+    $userId = session('applicant_id');
 
-    if ($user) {
-        // Set user offline and record last_seen timestamp
-        RegisterModel::where('id', $user)
+    if ($userId) {
+        RegisterModel::where('id', $userId)
             ->update([
                 'is_online' => false,
                 'last_seen' => now()
@@ -1164,11 +1163,15 @@ public function logout()
     }
 
     Auth::guard('applicant')->logout();
-    session()->invalidate();
-    session()->regenerateToken();
+
+    // Remove only applicant session keys
+    session()->forget('applicant_id');
+    session()->forget('applicant_login'); // optional, if you use this key
+    session()->regenerateToken(); // keep CSRF token safe
 
     return redirect()->route('applicant.login.display');
 }
+
 
 
 
