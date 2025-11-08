@@ -32,7 +32,8 @@
         <a-assets>
             <!-- Profile picture -->
             @if ($retrievedProfile && $retrievedProfile->work_background && $retrievedProfile->work_background->profileimage_path)
-                <img id="profilePic" src="{{ asset('storage/' . $retrievedProfile->work_background->profileimage_path) }}"
+                <img id="profilePic"
+                    src="{{ asset('storage/' . $retrievedProfile->work_background->profileimage_path) }}"
                     crossorigin="anonymous">
             @endif
 
