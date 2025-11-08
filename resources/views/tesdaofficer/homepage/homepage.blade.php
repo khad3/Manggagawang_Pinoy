@@ -35,9 +35,7 @@
                         <i class="fas fa-user"></i>
                     </div>
                     <div class="header-actions">
-                        <button class="header-btn" onclick="openModal('settingsModal')" title="Settings">
-                            <i class="fas fa-cog"></i>
-                        </button>
+
 
                         <form action="{{ route('tesda-officer.logout.store') }}" method="POST" style="display:inline;"
                             onsubmit="return confirm('Are you sure you want to logout?');">

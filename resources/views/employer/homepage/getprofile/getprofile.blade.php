@@ -632,7 +632,6 @@
 
             </div>
         </div>
-
         @php
             // Get current applicant profile
             $applicant = $retrievedProfile;
