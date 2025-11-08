@@ -106,7 +106,8 @@
                         <p class="mt-2">{{ $post->content }}</p>
 
                         @if ($post->image_path)
-                            <img src="{{ Storage::url($post->image_path) }}" alt="Post Image" class="img-fluid mt-2">
+                            <img src="{{ Storage::url($post->image_path) }}" alt="Post Image"
+                                class="img-fluid mt-2">
                         @endif
 
                         <div class="d-flex justify-content-between align-items-center mt-3">

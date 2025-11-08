@@ -32,14 +32,7 @@
     <div class="applicants-section">
         <div class="section-header">
             <h4 class="section-title">Recently Hired Applicants</h4>
-            {{-- <div class="section-actions">
-                <button class="btn-filter">
-                    <i class="fas fa-filter"></i> Filter
-                </button>
-                <button class="btn-export">
-                    <i class="fas fa-download"></i> Export
-                </button>
-            </div> --}}
+
         </div>
 
         <div class="table-container">

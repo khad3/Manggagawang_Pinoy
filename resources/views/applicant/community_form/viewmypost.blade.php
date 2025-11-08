@@ -29,7 +29,6 @@
                 @endforeach
             </select>
         </div>
-
         @inject('str', 'Illuminate\Support\Str')
         <div id="postsContainer">
             @forelse ($posts as $singlePost)
@@ -70,7 +69,6 @@
                             @endif
                         </div>
                     </div>
-
                     <!-- Post actions -->
                     @php
                         $applicantId = session('applicant_id');

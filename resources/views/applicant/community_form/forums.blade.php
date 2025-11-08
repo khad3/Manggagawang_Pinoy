@@ -276,7 +276,7 @@
                                                 @endif
                                             </div>
 
-                                            {{-- ✅ FIXED: Removed the nested @foreach --}}
+
                                             <div class="author-details">
                                                 <h4 class="author-name">
                                                     <a

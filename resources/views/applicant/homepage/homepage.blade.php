@@ -15,9 +15,8 @@
         rel="stylesheet">
     <!-- fav icon -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-
     <link rel="stylesheet" href="{{ asset('css/applicant/homepage.css') }}">
-
+    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}" />
 </head>
 
 <body>
@@ -1362,20 +1361,19 @@ $hasActiveApplication =
             return html;
         }
         // Logo click handlers
-    ['home', 'home2'].forEach(id => {
-        const logoElement = document.getElementById(id);
-        if (logoElement) {
-            logoElement.style.cursor = 'pointer'; // Make it look clickable
-            logoElement.addEventListener('click', function() {
-                // Scroll to top with smooth animation
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
+        ['home', 'home2'].forEach(id => {
+            const logoElement = document.getElementById(id);
+            if (logoElement) {
+                logoElement.style.cursor = 'pointer'; // Make it look clickable
+                logoElement.addEventListener('click', function() {
+                    // Scroll to top with smooth animation
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
                 });
-            });
-        }
-    });
-
+            }
+        });
     </script>
 
 </body>

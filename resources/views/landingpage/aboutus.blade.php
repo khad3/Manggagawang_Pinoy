@@ -157,11 +157,14 @@
 
                 <div class="team-member">
                     <div class="member-avatar">
-                        <span><img src="{{ asset('img/carlo formal.png') }}" alt="John Carlo Saulog" style="width:150%; position:absolute; left: -25%; top: -40%;"></span>
+                        <span><img src="{{ asset('img/carlo formal.png') }}" alt="John Carlo Saulog"
+                                style="width:150%; position:absolute; left: -25%; top: -40%;"></span>
                     </div>
                     <h3 class="member-name">John Carlo Saulog</h3>
                     <p class="member-role">Researcher & Writer</p>
-                    <p class="member-description">Detail-oriented research and writer specializing in clear, accurate project documentation. Skilled at gathering information, creating comprehensive reports, and ensuring 
+                    <p class="member-description">Detail-oriented research and writer specializing in clear, accurate
+                        project documentation. Skilled at gathering information, creating comprehensive reports, and
+                        ensuring
                         effective communication throughout the project lifecycle.</p>
                     <div class="member-skills">
                         <span class="skill-tag">ChatGPT</span>

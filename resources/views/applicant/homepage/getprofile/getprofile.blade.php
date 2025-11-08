@@ -754,8 +754,6 @@
                                                             Reply
                                                         </button>
                                                     </div>
-
-                                                    {{-- Hidden reply form --}}
                                                     <div id="reply-form-{{ $comment->id }}" class="mt-2 d-none">
                                                         <form action="" method="POST">
                                                             @csrf
@@ -776,25 +774,15 @@
                                                 form.classList.toggle('d-none');
                                             }
                                         </script>
-
-
                                     </div>
                                 </div>
                             @endforeach
-
                         </div>
-
-
-
-
-
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Modals (keeping your existing modal structure) -->
     <!-- Upload Image Modal -->
     <div class="modal fade" id="uploadImageModal" tabindex="-1" aria-labelledby="uploadImageModalLabel"
         aria-hidden="true">
@@ -1043,7 +1031,7 @@
             <form action="{{ route('applicant.applicantposts.store') }}" method="POST"
                 enctype="multipart/form-data">
                 @csrf
-                <!-- ✅ Add these hidden fields -->
+
                 <input type="hidden" name="personal_info_id"
                     value="{{ $retrievedProfile->personal_info->id ?? '' }}">
                 <input type="hidden" name="work_experience_id"

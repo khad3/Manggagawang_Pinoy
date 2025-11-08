@@ -56,7 +56,8 @@
                     </div>
                 </div>
                 <div>
-                    <a href="{{ route('applicant.forum.groupcommunity.display') }}" class="btn btn-outline-light me-2">←
+                    <a href="{{ route('applicant.forum.groupcommunity.display') }}"
+                        class="btn btn-outline-light me-2">←
                         Back</a>
                     <button class="btn btn-light text-primary" data-bs-toggle="modal" data-bs-target="#newPostModal">+
                         New Post</button>
