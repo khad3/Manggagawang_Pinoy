@@ -1167,7 +1167,7 @@ public function LikePost($id)
         'status' => 'pending',
     ]);
 
-    // 🔔 Send notification to the receiver
+    // Send notification to the receiver
     $sender = RegisterModel::find($applicantId);
     $firstName = $sender ?$this->safeDecrypt($sender->personal_info->first_name) : 'Someone';
     $lastName = $sender ? $this->safeDecrypt($sender->personal_info->last_name) : '';
