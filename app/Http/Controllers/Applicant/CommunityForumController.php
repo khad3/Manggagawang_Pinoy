@@ -1334,4 +1334,37 @@ private function safe_decrypt_string($value)
     }
 }
 
+
+
+
+//Kick the applicant who joined the group
+public function KickGroup($groupId, $memberId)
+{
+    $group = Group::findOrFail($groupId);
+    $currentUserId = session('applicant_id');
+
+    if ($group->applicant_id !== $currentUserId) {
+        return redirect()->back()->with('error', 'You are not authorized to perform this action.');
+    }
+
+    $group->members()->detach($memberId);
+
+    // Notification
+    $notification = new \App\Models\Notification\NotificationModel();
+    $notification->type = 'applicant';
+    $notification->type_id = $memberId;
+    $notification->title = 'Removed from Group';
+    $notification->message = "You have been removed from the group '{$group->group_name}' by the group creator.";
+    $notification->is_read = false;
+    $notification->save();
+
+    return redirect()->back()->with('success', 'Member kicked successfully.');
+}
+
+
+
+
+
+
+
 }

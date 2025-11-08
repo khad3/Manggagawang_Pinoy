@@ -122,6 +122,7 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
     Route::delete('communityforum/groupmembers/{groupId}/reject/{applicantId}', [CommunityForumController::class, 'RejectJoinRequest'])->name('applicant.forum.groupmembers.reject');
     Route::get('communityforum/view-group-creator', [CommunityForumController::class, 'ViewGroupByCreator'])->name('applicant.forum.viewgroupcreator.display');
     Route::delete('communityforum/{id}/view-group-creator', [CommunityForumController::class, 'DeleteGroupByCreator'])->name('applicant.forum.deletegroupcreator.delete');
+    Route::delete('communityforum/group/{groupId}/kick/{memberId}', [CommunityForumController::class, 'KickGroup'])->name('group.kickMember');
     Route::get('communityforum/view-specific-creator/view-group/{groupId}', [CommunityForumController::class, 'ViewGroupByCreatorPage'])->name('applicant.forum.creatorviewpage.display');
     Route::post('communityforum/view-specific-creator/view-group/{groupId}', [CommunityForumController::class, 'AddPostGroupSpecific'])->name('applicant.forum.addpostgroup.store');
     Route::post('communityforum/view-specific-creator/view-group/{groupId}/comment', [CommunityForumController::class, 'AddCommentGroupSpecific'])->name('applicant.forum.groupcomments.store');

@@ -244,25 +244,46 @@
 
             <!-- Members Tab -->
             <div class="tab-pane fade" id="members" role="tabpanel">
-                <div class="member-item">
-                    <strong>{{ $group->personalInfo->first_name ?? 'Unknown' }}
-                        {{ $group->personalInfo->last_name ?? '' }}</strong>
-                    (Group Creator)
-                    @if ($applicantId == $group->applicant_id)
-                        (You)
-                    @endif
+                <div class="member-item d-flex justify-content-between align-items-center border-bottom py-2">
+                    <div>
+                        <strong>{{ $group->personalInfo->first_name ?? 'Unknown' }}
+                            {{ $group->personalInfo->last_name ?? '' }}</strong>
+                        <span class="text-muted ms-1">(Group Creator)</span>
+                        @if ($applicantId == $group->applicant_id)
+                            <span class="badge bg-success ms-2">You</span>
+                        @endif
+                    </div>
                 </div>
 
                 @foreach ($members as $member)
-                    <div class="member-item">
-                        <strong>
-                            {{ $member->id == session('applicant_id') ? 'You' : $member->personal_info->first_name ?? 'Unknown' }}
-                            {{ $member->id != session('applicant_id') ? $member->personal_info->last_name ?? '' : '' }}
-                        </strong>
-                        ({{ $member->id == $group->applicant_id ? 'Creator' : 'Member' }})
+                    <div class="member-item d-flex justify-content-between align-items-center border-bottom py-2">
+                        <div>
+                            <strong>
+                                {{ $member->id == session('applicant_id') ? 'You' : $member->personal_info->first_name ?? 'Unknown' }}
+                                {{ $member->id != session('applicant_id') ? $member->personal_info->last_name ?? '' : '' }}
+                            </strong>
+                            <span class="text-muted ms-1">
+                                ({{ $member->id == $group->applicant_id ? 'Creator' : 'Member' }})
+                            </span>
+                        </div>
+
+                        @if ($group->applicant_id == session('applicant_id') && $member->id != session('applicant_id'))
+                            <form
+                                action="{{ route('group.kickMember', ['groupId' => $group->id, 'memberId' => $member->id]) }}"
+                                method="POST"
+                                onsubmit="return confirm('Are you sure you want to remove this member?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                    <i class="bi bi-person-dash"></i> Kick
+                                </button>
+                            </form>
+                        @endif
+
                     </div>
                 @endforeach
             </div>
+
 
             <!-- 🕒 Pending Members Tab -->
             @if ($group->applicant_id == $applicantId)
