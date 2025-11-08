@@ -203,7 +203,11 @@
 
 
                         <div class="profile-position">
-                            {{ $workBackgroundDecrypted['position'] ?? 'Position' }}
+                            @if ($workBackgroundDecrypted['position'] == 'Other')
+                                {{ $workBackgroundDecrypted['other_position'] ?? 'other position' }}
+                            @else
+                                {{ $workBackgroundDecrypted['position'] ?? 'Position' }}
+                            @endif
                         </div>
 
                         <div class="profile-experience">
