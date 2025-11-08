@@ -935,9 +935,13 @@ $retrievedApproveApplicants = \App\Models\Applicant\ApplyJobModel::where('status
         $query->where('employer_id', $employerId);
     })->count();
 
+    //Retrieve the online status of the employer
+    $is_online = AccountInformation::where('id', $employerId)->value('is_online', 1);
+
 
 
     return view('employer.homepage.homepage' , compact(
+        'is_online' ,
         'unreadCount' ,
         'allNotifications',
         'totalApprovedApplicant' ,

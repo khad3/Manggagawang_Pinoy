@@ -222,7 +222,19 @@
                         <div class="current-employer-info">
                             <h3 id="currentEmployerName">Select an employer</h3>
                             <p id="currentCompanyName">to start chatting</p>
-                            <span class="online-status-text">Online</span>
+                            @php
+                                $is_online = \App\Models\Employer\AccountInformationmodel::where(
+                                    'id',
+                                    $employerId,
+                                )->value('is_online');
+                            @endphp
+
+                            @if ($is_online)
+                                <span class="online-status-text">Online</span>
+                            @else
+                                <span class="offline-status-text">Offline</span>
+                            @endif
+
                         </div>
                     </div>
                 </div>
