@@ -223,17 +223,22 @@
                             <h3 id="currentEmployerName">Select an employer</h3>
                             <p id="currentCompanyName">to start chatting</p>
                             @php
-                                $is_online = \App\Models\Employer\AccountInformationmodel::where(
-                                    'id',
-                                    $employerId,
-                                )->value('is_online');
+                                // Check if $employerId is set and not null
+                                $is_online = isset($employerId)
+                                    ? \App\Models\Employer\AccountInformationmodel::where('id', $employerId)->value(
+                                        'is_online',
+                                    )
+                                    : null;
                             @endphp
 
-                            @if ($is_online)
+                            @if ($is_online === 1)
                                 <span class="online-status-text">Online</span>
-                            @else
+                            @elseif ($is_online === 0)
                                 <span class="offline-status-text">Offline</span>
+                            @else
+                                <span class="offline-status-text">No Employer</span>
                             @endif
+
 
                         </div>
                     </div>
