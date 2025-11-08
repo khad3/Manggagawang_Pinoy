@@ -1,0 +1,18 @@
+body {
+    background: #f8f9fa;
+}
+
+.form-container {
+    max-width: 600px;
+    margin: 50px auto;
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.form-title {
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+}
