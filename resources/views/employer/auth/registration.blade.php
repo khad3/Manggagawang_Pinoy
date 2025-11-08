@@ -9,8 +9,7 @@
      <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
      <link href="{{ asset('css/applicant/landingpage/landingpage.css') }}" rel="stylesheet">
      <link href="{{ asset('css/applicant/employer/registration.css') }}" rel="stylesheet">
-
-
+     <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}" />
  </head>
 
  <body>

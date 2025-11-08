@@ -23,8 +23,8 @@
                 <li><a href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
                 <li><a href="{{ route('display.aboutus') }}">About Us</a></li>
                 <li class="dropdown">
-                <button class="sign-in-b">Sign in</button>
-                <ul class="dropdown-menu">
+                    <button class="sign-in-b">Sign in</button>
+                    <ul class="dropdown-menu">
                         <li><a href="{{ route('applicant.login.display') }}">As Applicant</a></li>
                         <li><a href="{{ route('employer.login.display') }}">As Employer</a></li>
                     </ul>

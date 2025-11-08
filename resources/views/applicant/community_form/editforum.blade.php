@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/applicant/editforumpage.css') }}" />
     <title>Edit Post</title>
+    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}" />
 </head>
 
 <body>

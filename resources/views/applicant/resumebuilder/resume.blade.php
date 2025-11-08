@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TESDA Blue Collar Resume Builder</title>
     <link rel="stylesheet" href="{{ asset('css/applicant/resumebuilder/resume.css') }}">
+    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}" />
 </head>
 
 <body>
