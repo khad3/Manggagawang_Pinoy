@@ -45,9 +45,6 @@
                     </ul>
                 </li>
             </ul>
-
-
-
             <div class="hamburger" id="hamburger">
                 <div></div>
                 <div></div>

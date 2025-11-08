@@ -622,15 +622,6 @@
                             </div>
                         </div>
 
-                        <!-- Employer Options -->
-                        {{-- <div class="quick-actions mt-3">
-                            <button class="btn btn-sm btn-outline-success">
-                                <i class="fas fa-user-plus"></i> Add to Shortlist
-                            </button>
-                            <button class="btn btn-sm btn-outline-info">
-                                <i class="fas fa-comments"></i> Send Message
-                            </button>
-                        </div> --}}
                     </div>
                 </div>
 

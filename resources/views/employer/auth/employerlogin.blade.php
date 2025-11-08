@@ -9,9 +9,7 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/applicant/employer/login.css') }}">
     <link rel="stylesheet" href="{{ asset('css/applicant/landingpage/landingpage.css') }}">
-    <style>
-
-    </style>
+    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}" />
 </head>
 
 <body>

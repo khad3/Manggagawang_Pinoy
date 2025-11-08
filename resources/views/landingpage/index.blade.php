@@ -163,9 +163,9 @@
     </section>
     <section id="tutorial">
         <h1>Tutorial</h1><br>
-        <iframe width="100%" height="550" src="https://www.youtube.com/embed/d9fL7_BP3q8" 
-    title="Tutorial Video" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
-</iframe>
+        <iframe width="100%" height="550" src="https://www.youtube.com/embed/d9fL7_BP3q8" title="Tutorial Video"
+            frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
+        </iframe>
 
     </section>
 
@@ -215,196 +215,236 @@
     </footer>
 
     <!-- Role modal moved outside .section1 so fixed positioning and z-index work correctly -->
-<div class="modal" id="roleModal" aria-hidden="true" role="dialog" aria-modal="true">
-  <div class="modal-content">
-    <h2>SELECT YOUR ROLE</h2>
-    <div class="role-container">
-      <div class="role-card" onclick="window.location.href='{{ route('employer.register.display') }}'">
-        <img id="workeroremployer" src="https://img.icons8.com/ios-filled/100/000000/manager.png" alt="Employer">
-        <h3>Employer</h3>
-        <button class="select-btn">Select</button>
-      </div>
+    <div class="modal" id="roleModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal-content">
+            <h2>SELECT YOUR ROLE</h2>
+            <div class="role-container">
+                <div class="role-card" onclick="window.location.href='{{ route('employer.register.display') }}'">
+                    <img id="workeroremployer" src="https://img.icons8.com/ios-filled/100/000000/manager.png"
+                        alt="Employer">
+                    <h3>Employer</h3>
+                    <button class="select-btn">Select</button>
+                </div>
 
-      <div class="role-card" onclick="window.location.href='{{ route('applicant.register.display') }}'">
-        <img id="workeroremployer" src="https://img.icons8.com/ios-filled/100/000000/worker-male.png" alt="Worker">
-        <h3>Worker</h3>
-        <button class="select-btn">Select</button>
-      </div>
+                <div class="role-card" onclick="window.location.href='{{ route('applicant.register.display') }}'">
+                    <img id="workeroremployer" src="https://img.icons8.com/ios-filled/100/000000/worker-male.png"
+                        alt="Worker">
+                    <h3>Worker</h3>
+                    <button class="select-btn">Select</button>
+                </div>
+            </div>
+            <button class="close-btn" id="closeModal">Cancel</button>
+        </div>
     </div>
-    <button class="close-btn" id="closeModal">Cancel</button>
-  </div>
-</div>
 
-  <script>
-document.addEventListener('DOMContentLoaded', function () {
-  try {
-    const hamburger = document.getElementById('hamburger');
-    const navLinks = document.getElementById('navLinks');
-    const isMobile = () => window.innerWidth <= 900;
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                const hamburger = document.getElementById('hamburger');
+                const navLinks = document.getElementById('navLinks');
+                const isMobile = () => window.innerWidth <= 900;
 
-    const closeMobileMenu = () => {
-      if (!navLinks || !hamburger) return;
-      navLinks.classList.remove('active');
-      hamburger.classList.remove('active');
-      
-      // collapse open dropdowns
-      navLinks.querySelectorAll('.dropdown.open').forEach(d => {
-        d.classList.remove('open');
-        const m = d.querySelector('.dropdown-menu');
-        if (m) m.style.maxHeight = null;
-        const b = d.querySelector('button, .dropdown-toggle, [role="button"]');
-        if (b) b.setAttribute('aria-expanded', 'false');
-      });
-    };
+                const closeMobileMenu = () => {
+                    if (!navLinks || !hamburger) return;
+                    navLinks.classList.remove('active');
+                    hamburger.classList.remove('active');
 
-    if (hamburger && navLinks) {
-      // toggle panel
-      hamburger.addEventListener('click', e => {
-        e.stopPropagation();
-        hamburger.classList.toggle('active');
-        navLinks.classList.toggle('active');
-  
-      });
+                    // collapse open dropdowns
+                    navLinks.querySelectorAll('.dropdown.open').forEach(d => {
+                        d.classList.remove('open');
+                        const m = d.querySelector('.dropdown-menu');
+                        if (m) m.style.maxHeight = null;
+                        const b = d.querySelector('button, .dropdown-toggle, [role="button"]');
+                        if (b) b.setAttribute('aria-expanded', 'false');
+                    });
+                };
 
-      // close panel on real link click (mobile)
-      navLinks.querySelectorAll('a').forEach(a => {
-        a.addEventListener('click', () => { if (isMobile() && navLinks.classList.contains('active')) closeMobileMenu(); });
-      });
+                if (hamburger && navLinks) {
+                    // toggle panel
+                    hamburger.addEventListener('click', e => {
+                        e.stopPropagation();
+                        hamburger.classList.toggle('active');
+                        navLinks.classList.toggle('active');
 
-      // dropdown toggles
-      navLinks.querySelectorAll('.dropdown').forEach(drop => {
-        let trigger = drop.querySelector('button, .dropdown-toggle');
-        if (!trigger) {
-          const firstLink = drop.querySelector('a');
-          if (firstLink) { firstLink.setAttribute('role','button'); trigger = firstLink; }
-        }
-        const menu = drop.querySelector('.dropdown-menu');
-        if (!trigger || !menu) return;
+                    });
 
-        // init aria
-        trigger.setAttribute('aria-expanded', 'false');
-        trigger.setAttribute('aria-haspopup', 'true');
+                    // close panel on real link click (mobile)
+                    navLinks.querySelectorAll('a').forEach(a => {
+                        a.addEventListener('click', () => {
+                            if (isMobile() && navLinks.classList.contains('active'))
+                                closeMobileMenu();
+                        });
+                    });
 
-        trigger.addEventListener('click', function (ev) {
-          if (!isMobile()) return;
-          ev.preventDefault(); ev.stopPropagation();
-          const open = drop.classList.contains('open');
+                    // dropdown toggles
+                    navLinks.querySelectorAll('.dropdown').forEach(drop => {
+                        let trigger = drop.querySelector('button, .dropdown-toggle');
+                        if (!trigger) {
+                            const firstLink = drop.querySelector('a');
+                            if (firstLink) {
+                                firstLink.setAttribute('role', 'button');
+                                trigger = firstLink;
+                            }
+                        }
+                        const menu = drop.querySelector('.dropdown-menu');
+                        if (!trigger || !menu) return;
 
-          // close other dropdowns (accordion behavior)
-          navLinks.querySelectorAll('.dropdown.open').forEach(other => {
-            if (other === drop) return;
-            other.classList.remove('open');
-            const om = other.querySelector('.dropdown-menu');
-            if (om) om.style.maxHeight = null;
-            const ob = other.querySelector('button, .dropdown-toggle, [role="button"]');
-            if (ob) ob.setAttribute('aria-expanded', 'false');
-          });
+                        // init aria
+                        trigger.setAttribute('aria-expanded', 'false');
+                        trigger.setAttribute('aria-haspopup', 'true');
 
-          if (open) {
-            drop.classList.remove('open');
-            menu.style.maxHeight = null;
-            trigger.setAttribute('aria-expanded', 'false');
-          } else {
-            drop.classList.add('open');
-            // set explicit maxHeight for smooth transition
-            menu.style.maxHeight = menu.scrollHeight + 'px';
-            trigger.setAttribute('aria-expanded', 'true');
-            // ensure panel visible
-            if (!navLinks.classList.contains('active')) {
-              navLinks.classList.add('active');
-              hamburger.classList.add('active');
+                        trigger.addEventListener('click', function(ev) {
+                            if (!isMobile()) return;
+                            ev.preventDefault();
+                            ev.stopPropagation();
+                            const open = drop.classList.contains('open');
 
+                            // close other dropdowns (accordion behavior)
+                            navLinks.querySelectorAll('.dropdown.open').forEach(other => {
+                                if (other === drop) return;
+                                other.classList.remove('open');
+                                const om = other.querySelector('.dropdown-menu');
+                                if (om) om.style.maxHeight = null;
+                                const ob = other.querySelector(
+                                    'button, .dropdown-toggle, [role="button"]');
+                                if (ob) ob.setAttribute('aria-expanded', 'false');
+                            });
+
+                            if (open) {
+                                drop.classList.remove('open');
+                                menu.style.maxHeight = null;
+                                trigger.setAttribute('aria-expanded', 'false');
+                            } else {
+                                drop.classList.add('open');
+                                // set explicit maxHeight for smooth transition
+                                menu.style.maxHeight = menu.scrollHeight + 'px';
+                                trigger.setAttribute('aria-expanded', 'true');
+                                // ensure panel visible
+                                if (!navLinks.classList.contains('active')) {
+                                    navLinks.classList.add('active');
+                                    hamburger.classList.add('active');
+
+                                }
+                            }
+                        });
+
+                        // submenu links close panel on navigation (mobile)
+                        menu.querySelectorAll('a').forEach(sa => sa.addEventListener('click', () => {
+                            if (isMobile()) closeMobileMenu();
+                        }));
+                    });
+
+                    // click outside: collapse submenus
+                    document.addEventListener('click', function(e) {
+                        if (!navLinks.contains(e.target) && !hamburger.contains(e.target)) {
+                            navLinks.querySelectorAll('.dropdown.open').forEach(d => {
+                                d.classList.remove('open');
+                                const m = d.querySelector('.dropdown-menu');
+                                if (m) m.style.maxHeight = null;
+                                const b = d.querySelector(
+                                    'button, .dropdown-toggle, [role="button"]');
+                                if (b) b.setAttribute('aria-expanded', 'false');
+                            });
+                        }
+                    });
+                    document.querySelectorAll('.dropdown button').forEach(btn => {
+                        btn.addEventListener('click', e => {
+                            const dropdown = btn.closest('.dropdown');
+                            const isActive = dropdown.classList.contains('active');
+
+                            // close any open popups first
+                            document.querySelectorAll('.dropdown.active').forEach(d => d.classList
+                                .remove('active'));
+
+                            // toggle the current one
+                            if (!isActive) dropdown.classList.add('active');
+                        });
+                    });
+
+                    // close popup when clicking outside or close button
+                    document.addEventListener('click', e => {
+                        if (e.target.classList.contains('dropdown-menu')) {
+                            e.target.closest('.dropdown').classList.remove('active');
+                        }
+                    });
+
+
+                    // ESC closes panel and submenus
+                    document.addEventListener('keydown', function(e) {
+                        if (e.key === 'Escape') closeMobileMenu();
+                    });
+
+                    // on resize, cleanup mobile-only inline styles
+                    window.addEventListener('resize', function() {
+                        if (!isMobile() && navLinks) {
+                            navLinks.querySelectorAll('.dropdown .dropdown-menu').forEach(m => {
+                                m.style.maxHeight = null;
+                            });
+                            navLinks.querySelectorAll('.dropdown').forEach(d => {
+                                d.classList.remove('open');
+                                const b = d.querySelector(
+                                    'button, .dropdown-toggle, [role="button"]');
+                                if (b) b.setAttribute('aria-expanded', 'false');
+                            });
+
+                            if (hamburger) hamburger.classList.remove('active');
+                            navLinks.classList.remove('active');
+                        }
+                    });
+                }
+
+                // --- existing modal, tutorial, scroll handlers kept as before ---
+                const modal = document.getElementById('roleModal');
+                const getStartedBtn = document.getElementById('wideb');
+                const closeBtn = document.getElementById('closeModal');
+                if (getStartedBtn && modal) {
+                    getStartedBtn.addEventListener('click', () => {
+                        modal.style.display = 'flex';
+                    });
+                }
+                if (closeBtn && modal) {
+                    closeBtn.addEventListener('click', () => {
+                        modal.style.display = 'none';
+                    });
+                    window.addEventListener('click', (event) => {
+                        if (event.target === modal) modal.style.display = 'none';
+                    });
+                }
+
+                const tutorialBtn = document.getElementById('wideb2');
+                if (tutorialBtn) tutorialBtn.addEventListener('click', function() {
+                    const tutorial = document.getElementById('tutorial');
+                    if (tutorial) tutorial.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+
+                document.addEventListener('scroll', function() {
+                    const section = document.querySelector('.section1');
+                    if (!section) return;
+                    const rect = section.getBoundingClientRect();
+                    const scrolled = Math.min(Math.max(-rect.top, 0), rect.height);
+                    const scale = 1 + (scrolled / rect.height) * 0.20;
+                    section.style.setProperty('--bg-scale', scale);
+                }, {
+                    passive: true
+                });
+
+                ['home', 'home2'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.addEventListener('click', function() {
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'smooth'
+                        });
+                    });
+                });
+
+            } catch (err) {
+                console.error('Landing page init error:', err);
             }
-          }
         });
-
-        // submenu links close panel on navigation (mobile)
-        menu.querySelectorAll('a').forEach(sa => sa.addEventListener('click', () => { if (isMobile()) closeMobileMenu(); }));
-      });
-
-      // click outside: collapse submenus
-      document.addEventListener('click', function (e) {
-        if (!navLinks.contains(e.target) && !hamburger.contains(e.target)) {
-          navLinks.querySelectorAll('.dropdown.open').forEach(d => {
-            d.classList.remove('open');
-            const m = d.querySelector('.dropdown-menu');
-            if (m) m.style.maxHeight = null;
-            const b = d.querySelector('button, .dropdown-toggle, [role="button"]');
-            if (b) b.setAttribute('aria-expanded', 'false');
-          });
-        }
-      });
-document.querySelectorAll('.dropdown button').forEach(btn => {
-  btn.addEventListener('click', e => {
-    const dropdown = btn.closest('.dropdown');
-    const isActive = dropdown.classList.contains('active');
-    
-    // close any open popups first
-    document.querySelectorAll('.dropdown.active').forEach(d => d.classList.remove('active'));
-
-    // toggle the current one
-    if (!isActive) dropdown.classList.add('active');
-  });
-});
-
-// close popup when clicking outside or close button
-document.addEventListener('click', e => {
-  if (e.target.classList.contains('dropdown-menu')) {
-    e.target.closest('.dropdown').classList.remove('active');
-  }
-});
-
-
-      // ESC closes panel and submenus
-      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMobileMenu(); });
-
-      // on resize, cleanup mobile-only inline styles
-      window.addEventListener('resize', function () {
-        if (!isMobile() && navLinks) {
-          navLinks.querySelectorAll('.dropdown .dropdown-menu').forEach(m => { m.style.maxHeight = null; });
-          navLinks.querySelectorAll('.dropdown').forEach(d => {
-            d.classList.remove('open');
-            const b = d.querySelector('button, .dropdown-toggle, [role="button"]');
-            if (b) b.setAttribute('aria-expanded', 'false');
-          });
-
-          if (hamburger) hamburger.classList.remove('active');
-          navLinks.classList.remove('active');
-        }
-      });
-    }
-
-    // --- existing modal, tutorial, scroll handlers kept as before ---
-    const modal = document.getElementById('roleModal');
-    const getStartedBtn = document.getElementById('wideb');
-    const closeBtn = document.getElementById('closeModal');
-    if (getStartedBtn && modal) {
-      getStartedBtn.addEventListener('click', () => { modal.style.display = 'flex'; });
-    }
-    if (closeBtn && modal) {
-      closeBtn.addEventListener('click', () => { modal.style.display = 'none'; });
-      window.addEventListener('click', (event) => { if (event.target === modal) modal.style.display = 'none'; });
-    }
-
-    const tutorialBtn = document.getElementById('wideb2');
-    if (tutorialBtn) tutorialBtn.addEventListener('click', function () {
-      const tutorial = document.getElementById('tutorial'); if (tutorial) tutorial.scrollIntoView({ behavior: 'smooth' });
-    });
-
-    document.addEventListener('scroll', function () {
-      const section = document.querySelector('.section1'); if (!section) return;
-      const rect = section.getBoundingClientRect(); const scrolled = Math.min(Math.max(-rect.top, 0), rect.height);
-      const scale = 1 + (scrolled / rect.height) * 0.20; section.style.setProperty('--bg-scale', scale);
-    }, { passive: true });
-
-    ['home', 'home2'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
-    });
-
-  } catch (err) { console.error('Landing page init error:', err); }
-});
-</script>
+    </script>
 </body>
 
 </html>

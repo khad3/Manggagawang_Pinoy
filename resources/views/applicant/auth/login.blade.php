@@ -4,28 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Mangagawang Pinoy | Login</title>
+    <title>Mangagawang Pinoy - Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/applicant/login.css') }}">
     <link rel="stylesheet" href="{{ asset('css/applicant/landingpage/landingpage.css') }}">
-
-    <style>
-        .forgot-password {
-            font-size: 0.875rem;
-        }
-
-        .forgot-password a {
-            color: #007bff;
-            text-decoration: none;
-            transition: 0.2s;
-        }
-
-        .forgot-password a:hover {
-            text-decoration: underline;
-        }
-    </style>
-
+    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}" />
 </head>
 
 <body>

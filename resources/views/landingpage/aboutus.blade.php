@@ -99,16 +99,17 @@
             <div class="team-grid">
                 <div class="team-member">
                     <div class="member-avatar">
-                        <span><img src="{{ asset('img/xander formal.png') }}" alt="Alexander Bataller" style="margin-top: 90px;">
-</span>
+                        <span><img src="{{ asset('img/xander formal.png') }}" alt="Alexander Bataller"
+                                style="margin-top: 90px;">
+                        </span>
                     </div>
                     <h3 class="member-name">Alexander Bataller</h3>
                     <p class="member-role">Quality Assurance & Testing Lead</p>
-                    <p class="member-description">Quality Assurance Lead specializing in web app testing and automation. 
-                        I ensure seamless user experiences by delivering reliable, bug-free applications through 
+                    <p class="member-description">Quality Assurance Lead specializing in web app testing and automation.
+                        I ensure seamless user experiences by delivering reliable, bug-free applications through
                         expert test strategies.
 
-</p>
+                    </p>
                     <div class="member-skills">
                         <span class="skill-tag">Test Automation</span>
                         <span class="skill-tag">Selenium</span>
@@ -281,43 +282,47 @@
         });
 
         document.querySelectorAll('.dropdown button').forEach(btn => {
-  btn.addEventListener('click', e => {
-    const dropdown = btn.closest('.dropdown');
-    const isActive = dropdown.classList.contains('active');
-    
-    // close any open popups first
-    document.querySelectorAll('.dropdown.active').forEach(d => d.classList.remove('active'));
+            btn.addEventListener('click', e => {
+                const dropdown = btn.closest('.dropdown');
+                const isActive = dropdown.classList.contains('active');
 
-    // toggle the current one
-    if (!isActive) dropdown.classList.add('active');
-  });
-});
+                // close any open popups first
+                document.querySelectorAll('.dropdown.active').forEach(d => d.classList.remove('active'));
 
-// close popup when clicking outside or close button
-document.addEventListener('click', e => {
-  if (e.target.classList.contains('dropdown-menu')) {
-    e.target.closest('.dropdown').classList.remove('active');
-  }
-});
+                // toggle the current one
+                if (!isActive) dropdown.classList.add('active');
+            });
+        });
+
+        // close popup when clicking outside or close button
+        document.addEventListener('click', e => {
+            if (e.target.classList.contains('dropdown-menu')) {
+                e.target.closest('.dropdown').classList.remove('active');
+            }
+        });
 
 
-      // ESC closes panel and submenus
-      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMobileMenu(); });
+        // ESC closes panel and submenus
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeMobileMenu();
+        });
 
-      // on resize, cleanup mobile-only inline styles
-      window.addEventListener('resize', function () {
-        if (!isMobile() && navLinks) {
-          navLinks.querySelectorAll('.dropdown .dropdown-menu').forEach(m => { m.style.maxHeight = null; });
-          navLinks.querySelectorAll('.dropdown').forEach(d => {
-            d.classList.remove('open');
-            const b = d.querySelector('button, .dropdown-toggle, [role="button"]');
-            if (b) b.setAttribute('aria-expanded', 'false');
-          });
+        // on resize, cleanup mobile-only inline styles
+        window.addEventListener('resize', function() {
+            if (!isMobile() && navLinks) {
+                navLinks.querySelectorAll('.dropdown .dropdown-menu').forEach(m => {
+                    m.style.maxHeight = null;
+                });
+                navLinks.querySelectorAll('.dropdown').forEach(d => {
+                    d.classList.remove('open');
+                    const b = d.querySelector('button, .dropdown-toggle, [role="button"]');
+                    if (b) b.setAttribute('aria-expanded', 'false');
+                });
 
-          if (hamburger) hamburger.classList.remove('active');
-          navLinks.classList.remove('active');
-        }
-      });
+                if (hamburger) hamburger.classList.remove('active');
+                navLinks.classList.remove('active');
+            }
+        });
     </script>
 </body>
 

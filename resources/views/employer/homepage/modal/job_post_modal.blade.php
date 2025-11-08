@@ -5,19 +5,7 @@
                  <h5 class="modal-title" id="newJobModalLabel" style="color: black;">Post New Job</h5>
                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
              </div>
-             {{-- Show global error (invalid login)
-                @if ($errors->has('email'))
-                    <div class="alert alert-danger">
-                        {{ $errors->first('email') }}
-                    </div>
-                @endif
 
-                {{-- Show success message --}}
-             {{-- @if (session('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
-                    </div>
-                @endif  --}}
              <div class="modal-body">
                  <form action="{{ route('employer.jobsposts.store') }}" method="POST">
                      @csrf

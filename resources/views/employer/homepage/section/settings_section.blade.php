@@ -11,7 +11,7 @@
 
                <div class="row g-4">
 
-                   <!-- 🏢 Company Logo Upload -->
+                   <!-- Company Logo Upload -->
                    <div class="col-lg-6">
                        <div class="card shadow-sm border-0 rounded-4">
                            <div class="card-header bg-light fw-bold d-flex align-items-center">
@@ -186,7 +186,7 @@
                        </div>
                    </div>
 
-                   <!-- 🩸 Confirm Delete Modal -->
+                   <!-- Confirm Delete Modal -->
                    <div class="modal fade" id="confirmDeleteModal" tabindex="-1"
                        aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
                        <div class="modal-dialog modal-dialog-centered">

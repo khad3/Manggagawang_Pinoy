@@ -351,57 +351,7 @@
                                                 name="province" value="Cavite" readonly />
                                         </div>
                                     </div>
-
-
                                 </div>
-
-
-                                <!-- Emergency Contact -->
-                                {{-- <div class="section-divider">
-                                    <h5 class="fw-bold mb-3">
-                                        <i class="fas fa-phone text-danger me-2"></i>Emergency
-                                        Contact (Optional)
-                                    </h5>
-                                    <div class="info-highlight">
-                                        <p class="small mb-0">
-                                            <i class="fas fa-info-circle me-1"></i>
-                                            Provide an emergency contact person for urgent worker-related
-                                            matters or site emergencies.
-                                        </p>
-                                    </div>
-
-                                    <div class="row mb-4">
-                                        <div class="col-md-6">
-                                            <label for="emergencyName" class="form-label">Emergency Contact
-                                                Name</label>
-                                            <input type="text" class="form-control" id="emergencyName"
-                                                name="emergency_contact_name" placeholder="Full name" />
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="emergencyPhone" class="form-label">Emergency Contact
-                                                Phone</label>
-                                            <input type="tel" class="form-control"
-                                                name="emergency_contact_number" id="emergencyPhone"
-                                                placeholder="e.g. 09XX XXX XXXX" />
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-4">
-                                        <label for="emergencyRelation" class="form-label">Relationship to
-                                            Company</label>
-                                        <select class="form-select" id="emergencyRelation"
-                                            name="emergency_contact_relationship">
-                                            <option value="">Select relationship</option>
-                                            <option value="Company_Owner">Company Owner</option>
-                                            <option value="Manager/Supervisor">Manager/Supervisor</option>
-                                            <option value="Safety-officer">Safety Officer</option>
-                                            <option value="HR-representative">HR Representative</option>
-                                            <option value="Business-partner">Business Partner</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                    </div>
-                                </div> --}}
-
                                 <!-- Communication Preferences -->
                                 <div class="section-divider">
                                     <h5 class="fw-bold mb-3">
