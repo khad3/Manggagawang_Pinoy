@@ -687,7 +687,8 @@ public function LikePost($id)
     }
 
     //View the specific group //SI applicant toj
-   public function ViewSpecificGroup($id){
+  public function ViewSpecificGroup($id)
+{
     $applicantId = session('applicant_id');
 
     $group = Group::with([
@@ -713,35 +714,29 @@ public function LikePost($id)
         'comments.personal_info',
         'comments.applicant.work_background'
     ])
-        ->withCount('comments')
-        ->where('group_community_id', $id)
-        ->latest()
-        ->get();
+    ->withCount('comments')
+    ->where('group_community_id', $id)
+    ->latest()
+    ->get();
 
     // Decrypt post author and commenters
     foreach ($retrievePosts as $post) {
+        // Decrypt post author
         if ($post->personalInfo) {
-            $post->decryptedAuthor = [
-                'first_name' => $this->safeDecrypt($post->personalInfo->first_name),
-                'last_name'  => $this->safeDecrypt($post->personalInfo->last_name),
-            ];
-        } else {
-            $post->decryptedAuthor = null;
+            $post->personalInfo->first_name = $this->safeDecrypt($post->personalInfo->first_name);
+            $post->personalInfo->last_name  = $this->safeDecrypt($post->personalInfo->last_name);
         }
 
+        // Decrypt all commenters
         foreach ($post->comments as $comment) {
             if ($comment->personal_info) {
-                $comment->decryptedCommenter = [
-                    'first_name' => $this->safeDecrypt($comment->personal_info->first_name),
-                    'last_name'  => $this->safeDecrypt($comment->personal_info->last_name),
-                ];
-            } else {
-                $comment->decryptedCommenter = null;
+                $comment->personal_info->first_name = $this->safeDecrypt($comment->personal_info->first_name);
+                $comment->personal_info->last_name  = $this->safeDecrypt($comment->personal_info->last_name);
             }
         }
     }
 
-    // Filter and decrypt members
+    // Filter and decrypt approved members
     $members = $group->members
         ->filter(fn($member) => $member->pivot->status === 'approved' && $member->id !== $group->applicant_id)
         ->map(function ($member) {
@@ -752,12 +747,12 @@ public function LikePost($id)
             return $member;
         });
 
-
-       $retrievedJoinRequests = $group->members()
-    ->wherePivot('status', 'pending')
-    ->with('personal_info')
-    ->withPivot('created_at') // load pivot created_at
-    ->get();
+    // Decrypt pending join requests
+    $retrievedJoinRequests = $group->members()
+        ->wherePivot('status', 'pending')
+        ->with('personal_info')
+        ->withPivot('created_at')
+        ->get();
 
     foreach ($retrievedJoinRequests as $request) {
         if ($request->personal_info) {
@@ -770,6 +765,7 @@ public function LikePost($id)
         'group', 'members', 'applicantId', 'retrievePosts', 'retrievedJoinRequests'
     ));
 }
+
 
 
     //Accept join request
