@@ -651,6 +651,11 @@ $latestStatus = $applicantApplications->first()->status ?? null;
 // Check if already scheduled for interview
 $isAlreadyScheduled = \App\Models\Employer\SetInterviewModel::where('applicant_id', $applicant->id)
     ->where('employer_id', $employer_id)
+    ->exists();
+
+// Check if employer has messaged the applicant
+$hasMessaged = \App\Models\Employer\SendMessageModel::where('applicant_id', $applicant->id)
+    ->where('employer_id', $employer_id)
                 ->exists();
         @endphp
 
@@ -669,13 +674,23 @@ $isAlreadyScheduled = \App\Models\Employer\SetInterviewModel::where('applicant_i
                 <span>This applicant is scheduled for an interview. 🗓️</span>
             </div>
         @else
-            <!-- Show Schedule Interview button -->
+            <!-- Schedule Interview button -->
             <div class="sticky-hiring-bar d-flex justify-content-end gap-2 mt-4">
-                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#hireModal">
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#hireModal"
+                    {{ !$hasMessaged ? 'disabled' : '' }}
+                    title="{{ !$hasMessaged ? 'For security purposes, you need to message this applicant first before scheduling an interview. This ensures proper communication and verification.' : '' }}">
                     <i class="fas fa-user-check me-1"></i> Schedule Interview
                 </button>
+
+                @if (!$hasMessaged)
+                    <small class="text-warning mt-2 d-block">
+                        For security purposes, you need to message this applicant first before scheduling an interview.
+                        This ensures proper communication and verification.
+                    </small>
+                @endif
             </div>
         @endif
+
     </div>
 
     <!-- Hire / Schedule Interview Modal -->
