@@ -1164,13 +1164,14 @@ public function logout()
 
     Auth::guard('applicant')->logout();
 
-    // Remove only applicant session keys
+    // Only remove applicant session keys
     session()->forget('applicant_id');
-    session()->forget('applicant_login'); // optional, if you use this key
-    session()->regenerateToken(); // keep CSRF token safe
+    session()->forget('applicant_login'); // if you use this key
+    session()->regenerateToken(); // regenerate CSRF for safety
 
     return redirect()->route('applicant.login.display');
 }
+
 
 
 
