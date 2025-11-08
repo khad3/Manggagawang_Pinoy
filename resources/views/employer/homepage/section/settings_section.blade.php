@@ -231,35 +231,6 @@
                        </div>
                    </div>
 
-                   <!-- 💅 Inline Section Styles (kept scoped to this section for easy replacement) -->
-                   <style>
-                       #settings-section .card-header {
-                           font-size: 1.05rem;
-                       }
-
-                       #settings-section .btn-outline-danger:hover {
-                           background-color: #dc3545 !important;
-                           color: #fff !important;
-                           box-shadow: 0 4px 10px rgba(220, 53, 69, 0.25);
-                           transition: 0.18s ease;
-                       }
-
-                       #settings-section .modal-content {
-                           animation: fadeIn .28s ease-in-out;
-                       }
-
-                       @keyframes fadeIn {
-                           from {
-                               opacity: 0;
-                               transform: translateY(-8px);
-                           }
-
-                           to {
-                               opacity: 1;
-                               transform: translateY(0);
-                           }
-                       }
-                   </style>
 
                </div>
 

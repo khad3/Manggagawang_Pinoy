@@ -5,26 +5,8 @@
     <meta charset="UTF-8">
     <title>Create Group Community Forum</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: #f8f9fa;
-        }
-
-        .form-container {
-            max-width: 600px;
-            margin: 50px auto;
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-title {
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/applicant/group_create.css') }}">
+    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}" />
 </head>
 
 <body>

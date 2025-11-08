@@ -11,42 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('css/applicant/profile.css') }}" />
-
-    <style>
-        .friend-btn {
-            transition: all 0.3s ease;
-        }
-
-        .friend-btn:hover {
-            background-color: #dc3545 !important;
-            /* red */
-            border-color: #dc3545 !important;
-        }
-
-        .friend-btn:hover::after {
-            content: "Unfriend";
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            color: #fff;
-        }
-
-        .friend-btn:hover {
-            color: transparent;
-            /* hide original text */
-        }
-
-        /* Zoom in animation */
-        .modal.fade .modal-dialog {
-            transform: scale(0.7);
-            transition: transform 0.3s ease-out;
-        }
-
-        .modal.fade.show .modal-dialog {
-            transform: scale(1);
-        }
-    </style>
+    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}" />
 </head>
 
 <body>

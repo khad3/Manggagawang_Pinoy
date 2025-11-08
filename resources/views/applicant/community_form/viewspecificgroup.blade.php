@@ -6,75 +6,12 @@
     <title>Inside Group Community</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <style>
-        body {
-            background-color: #f4f6f9;
-            font-family: 'Segoe UI', sans-serif;
-        }
+    <link rel="stylesheet" href="{{ asset('css/applicant/created_group.css') }}" />
+    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}" />
+    <link rel="stylesheet" href="{{ asset('css/applicant/inside_community.css') }}" />
 
-        .group-banner {
-            background: linear-gradient(135deg, #007bff, #00c6ff);
-            color: white;
-            border-radius: 16px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
 
-        .group-title {
-            font-size: 2.2rem;
-            font-weight: bold;
-        }
 
-        .group-meta span {
-            display: inline-block;
-            margin-right: 15px;
-            font-size: 0.95rem;
-        }
-
-        .group-tabs .nav-link {
-            border-radius: 8px 8px 0 0;
-        }
-
-        .tab-content {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-        }
-
-        .post-card {
-            background-color: #ffffff;
-            border: 1px solid #ddd;
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .post-card h5 {
-            font-weight: 600;
-        }
-
-        .post-card p.text-muted {
-            font-size: 0.9rem;
-        }
-
-        .post-card .btn {
-            font-size: 0.85rem;
-        }
-
-        .member-item {
-            padding: 12px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-
-        .input-group input {
-            border-radius: 0.375rem 0 0 0.375rem;
-        }
-    </style>
 </head>
 
 <body>

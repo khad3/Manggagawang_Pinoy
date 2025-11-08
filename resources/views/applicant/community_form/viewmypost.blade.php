@@ -7,18 +7,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="{{ asset('css/applicant/forum.css') }}" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ asset('css/applicant/created_group.css') }}" />
+    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}" />
 </head>
 
 <body>
     <div class="container">
         <h2 class="forum-title">My Forum Posts</h2>
-
         <!-- return to forum -->
         <div class = "viewmypost">
-
             <a href="{{ route('applicant.forum.display') }}" class="btn btn-primary">Return to forum</a>
-
-
         </div>
 
         <!-- Filter by Topic (if you want to filter your own posts by topic) -->

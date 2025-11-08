@@ -893,26 +893,6 @@
 
     <!-- Upload Certification Modal -->
     @include('applicant.profile.modal.upload_certification')
-    <!-- View Certification Modal -->
-    {{-- <div class="modal fade" id="viewCertificationModal" tabindex="-1" aria-labelledby="viewCertificationModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body p-0">
-                    <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&h=600&fit=crop"
-                        alt="TESDA Certificate" class="w-100 rounded" />
-                </div>
-                <div class="modal-footer justify-content-between">
-                    <span class="text-muted">TESDA National Certificate II - Computer Systems Servicing</span>
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">
-                        Close
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div> --}}
-
-
 
     </div>
 

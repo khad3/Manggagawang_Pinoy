@@ -15,11 +15,11 @@
     <nav>
         <div class="navbar-container">
             <div class="nav-logo">
-                  <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2"
+                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2"
                     style="text-decoration:none;">
-                <img src="img/logotext.png" alt="MP Logo" id="home" /></a>
+                    <img src="img/logotext.png" alt="MP Logo" id="home" /></a>
                 <img src="img/logo.png" alt="MP Logo" id="home2" />
-            
+
             </div>
             <ul class="nav-links" id="navLinks">
                 <li><a href="#">Services</a></li>
@@ -27,8 +27,8 @@
                 <li><a href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
                 <li><a href="{{ route('display.aboutus') }}">About Us</a></li>
                 <li class="dropdown">
-                <button class="sign-in-b">Sign in</button>
-                <ul class="dropdown-menu">
+                    <button class="sign-in-b">Sign in</button>
+                    <ul class="dropdown-menu">
                         <li><a href="{{ route('applicant.login.display') }}">As Applicant</a></li>
                         <li><a href="{{ route('employer.login.display') }}">As Employer</a></li>
                     </ul>
@@ -119,13 +119,15 @@
 
                 <div class="team-member">
                     <div class="member-avatar">
-                        <span> <span><img src="{{ asset('img/paw formal.png') }}" alt="Rogelio Cerenado Jr." style="margin-top: 40px;">
-</span>
+                        <span> <span><img src="{{ asset('img/paw_formal.png') }}" alt="Rogelio Cerenado Jr."
+                                    style="width:180%; position:absolute; left: -40%; top: -65%;">
+                            </span>
                     </div>
                     <h3 class="member-name">Rogelio Cerenado Jr.</h3>
                     <p class="member-role">Full-Stack Developer & Database Architect</p>
-                    <p class="member-description">Skilled full-stack developer and database architect 
-                        delivering scalable web apps and optimized data solutions. Passionate about clean code, performance, and innovation.</p>
+                    <p class="member-description">Skilled full-stack developer and database architect
+                        delivering scalable web apps and optimized data solutions. Passionate about clean code,
+                        performance, and innovation.</p>
                     <div class="member-skills">
                         <span class="skill-tag">Hostinger</span>
                         <span class="skill-tag">MySQL</span>
@@ -136,11 +138,13 @@
 
                 <div class="team-member">
                     <div class="member-avatar">
-                        <span><img src="{{ asset('img/prins formal.png') }}" alt="Prince Robie Dimas" style="width:180%; position:absolute; left: -40%; top: -65%;"></span>
+                        <span><img src="{{ asset('img/prins formal.png') }}" alt="Prince Robie Dimas"
+                                style="width:180%; position:absolute; left: -40%; top: -65%;"></span>
                     </div>
                     <h3 class="member-name">Prince Robie Dimas</h3>
                     <p class="member-role">Researcher & Tester</p>
-                    <p class="member-description">Dedicated researcher and tester committed to ensuring quality and accuracy. Expert in analyzing data, identifying issues, 
+                    <p class="member-description">Dedicated researcher and tester committed to ensuring quality and
+                        accuracy. Expert in analyzing data, identifying issues,
                         and validating solutions to support informed decisions and high-quality outcomes.</p>
                     <div class="member-skills">
                         <span class="skill-tag">ChatGPT</span>
@@ -168,11 +172,13 @@
 
                 <div class="team-member">
                     <div class="member-avatar">
-                        <span><img src="{{ asset('img/khad formal.png') }}" alt="Khadley Cyle Wong" style="width:130%; position:absolute; left: -15%; top: -60%;"></span>
+                        <span><img src="{{ asset('img/khad formal.png') }}" alt="Khadley Cyle Wong"
+                                style="width:130%; position:absolute; left: -15%; top: -60%;"></span>
                     </div>
                     <h3 class="member-name">Khadley Cyle Wong</h3>
                     <p class="member-role">UI/UX Designer & Frontend Developer</p>
-                    <p class="member-description">Creative UI/UX designer and frontend developer crafting intuitive, visually engaging web experiences. Skilled in blending design and code 
+                    <p class="member-description">Creative UI/UX designer and frontend developer crafting intuitive,
+                        visually engaging web experiences. Skilled in blending design and code
                         to build responsive, user-centered interfaces that delight and perform</p>
                     <div class="member-skills">
                         <span class="skill-tag">Figma</span>
@@ -230,13 +236,13 @@
                 </span>mangaggawangpinoycompany@gmail.com</p>
         </div>
         <div class="footer-col links">
-            <h4>Project Links</h4>
+            <h4>Links</h4>
             <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">Features</a></li>
-                <li><a href="#">Documentation</a></li>
-                <li><a href="#">GitHub Repository</a></li>
-                <li><a href="#">TESDA Partnership</a></li>
+                <li><a href="index">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#tutorial">Tutorial</a></li>
+                <li><a href="https://www.tesda.gov.ph/">TESDA</a>
+                </li>
             </ul>
         </div>
     </footer>

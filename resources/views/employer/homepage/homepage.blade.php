@@ -56,39 +56,7 @@
                 </div>
             </div>
 
-            <style>
-                .company-avatar {
-                    flex: 0 0 auto;
-                    /* Prevent flex from stretching it */
-                    width: 80px;
-                    height: 80px;
-                    border-radius: 50%;
-                    /* Perfect circle */
-                    overflow: hidden;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    background-color: #f1f3f5;
-                    color: #495057;
-                    font-weight: 700;
-                    font-size: 1.5rem;
-                    text-transform: uppercase;
-                    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-                }
 
-                .company-avatar img {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                    /* Fill circle perfectly */
-                    border-radius: 50%;
-                }
-
-                .portal-info {
-                    flex: 1;
-                    /* Let text take remaining space without affecting avatar */
-                }
-            </style>
 
         </div>
 

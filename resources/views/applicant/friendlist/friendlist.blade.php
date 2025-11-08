@@ -14,48 +14,8 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
-
     <link rel="stylesheet" href="{{ asset('css/applicant/friendlist.css') }}">
-
-    <style>
-        .friend-request-card {
-            border-left: 4px solid #0d6efd;
-            border-radius: 8px;
-        }
-
-        .friend-avatar {
-            position: relative;
-            width: 40px;
-            height: 40px;
-            background: #6c757d;
-            color: white;
-            font-weight: bold;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-        }
-
-        .status-dot {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 10px;
-            height: 10px;
-            border: 2px solid white;
-            border-radius: 50%;
-        }
-
-        .status-dot.online {
-            background: #28a745;
-        }
-
-        .status-dot.offline {
-            background: #6c757d;
-        }
-    </style>
-
+    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}" />
 </head>
 
 <body>

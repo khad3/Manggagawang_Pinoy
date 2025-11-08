@@ -165,9 +165,9 @@
     </div>
 
 
-    <footer class="footer">
+    <footer class="footer">s
         <div class="footer-col about">
-            <img src="imgs/MPlogo.png" class="logo-placeholder">
+            <img src="img/logo.png" class="logo-placeholder">
             <p>
                 Manggagawang Pinoy is a web-based job-matching platform designed to help blue-collar Filipino workers
                 connect with employers.
@@ -200,10 +200,11 @@
         <div class="footer-col links">
             <h4>Links</h4>
             <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">Features</a></li>
-                <li><a href="#">Tutorial</a></li>
-                <li><a href="#">TESDA</a></li>
+                <li><a href="index">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#tutorial">Tutorial</a></li>
+                <li><a href="https://www.tesda.gov.ph/">TESDA</a>
+                </li>
             </ul>
         </div>
     </footer>
