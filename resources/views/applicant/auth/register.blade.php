@@ -4,42 +4,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mangagawang Pinoy - Create Account</title>
-
+    <title>Create Account</title>
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Page CSS (use same responsive registration CSS used by employer) -->
     <link rel="stylesheet" href="{{ asset('css/applicant/register.css') }}">
     <link rel="stylesheet" href="{{ asset('css/applicant/landingpage/landingpage.css') }}">
+    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}" />
 </head>
 
 <body>
     <nav>
         <div class="navbar-container">
             <div class="nav-logo d-flex align-items-center">
-                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2" style="text-decoration:none;">
-                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home"/>
-                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2"/>
+                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2"
+                    style="text-decoration:none;">
+                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
+                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" />
                 </a>
             </div>
 
-                        <ul class="nav-links" id="navLinks">
+            <ul class="nav-links" id="navLinks">
                 <li><a href="#">Services</a></li>
                 <li><a href="{{ route('display.topworker') }}">Top Workers</a></li>
                 <li><a href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
                 <li><a href="{{ route('display.aboutus') }}">About Us</a></li>
                 <li class="dropdown">
-  <button class="sign-in-b">Sign in</button>
-  <ul class="dropdown-menu">
-    <li><a href="{{ route('applicant.login.display') }}">As Applicant</a></li>
-    <li><a href="{{ route('employer.login.display') }}">As Employer</a></li>
-  </ul>
-</li>
+                    <button class="sign-in-b">Sign in</button>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ route('applicant.login.display') }}">As Applicant</a></li>
+                        <li><a href="{{ route('employer.login.display') }}">As Employer</a></li>
+                    </ul>
+                </li>
 
                 <!-- Sign Up Dropdown -->
                 <li class="dropdown">
