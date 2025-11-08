@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Sharing Policy - Mangagawang Pinoy</title>
+    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}" />
+
     <style>
         body {
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
