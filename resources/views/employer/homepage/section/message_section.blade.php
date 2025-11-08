@@ -40,10 +40,7 @@
             <div class="conversations-panel" id="conversationsPanel">
                 <div class="panel-header">
                     <h4>Applicants</h4>
-                    <div class="online-indicator">
-                        <div class="pulse"></div>
-                        Online
-                    </div>
+
                 </div>
                 <div class="conversations-list" id="applicantsList">
                     @foreach ($retrievedApplicants as $applicant)
@@ -56,14 +53,22 @@
                         @endphp
                         <div class="conversation-item" data-applicant-id="{{ $applicant->id }}"
                             data-name="{{ $applicant->personal_info->first_name ?? '' }} {{ $applicant->personal_info->last_name ?? '' }}"
-                            data-email="{{ $applicant->email ?? '' }}" data-unread="{{ $unreadCount }}">
+                            data-email="{{ $applicant->email ?? '' }}" data-unread="{{ $unreadCount }}"
+                            data-online="{{ $applicant->is_online ? '1' : '0' }}">
+
+
 
                             <div class="conversation-avatar">
-                                {{ strtoupper(substr($applicant->personal_info->first_name ?? 'U', 0, 1)) }}{{ strtoupper(substr($applicant->personal_info->last_name ?? 'A', 0, 1)) }}
-                                @if ($unreadCount > 0)
-                                    <div class="online-dot"></div>
+                                <span class="avatar-initials">
+                                    {{ strtoupper(substr($applicant->personal_info->first_name ?? 'U', 0, 1)) }}
+                                    {{ strtoupper(substr($applicant->personal_info->last_name ?? 'A', 0, 1)) }}
+                                </span>
+
+                                @if ($applicant->is_online)
+                                    <span class="status-dot"></span>
                                 @endif
                             </div>
+
 
                             <div class="conversation-details">
                                 <div class="conversation-name">
@@ -154,6 +159,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Image Viewer Modal -->
 <div id="imageViewerModal" class="image-viewer-modal" style="display: none;">
@@ -424,9 +430,29 @@
 
                 chatHeader.style.display = 'flex';
                 chatUserName.textContent = name;
-                chatUserStatus.textContent = `Active • ${email}`;
-                chatAvatar.textContent = name.split(' ').map(n => n[0]).join('')
+
+                const isOnline = item.getAttribute('data-online') === '1' || item
+                    .getAttribute('data-online') === 'true';
+
+                if (isOnline) {
+                    chatUserStatus.innerHTML = `
+        <span class="status-dot online-dot"></span>
+        Active • ${email} (Online)
+    `;
+                } else {
+                    chatUserStatus.innerHTML = `
+        <span class="status-dot offline-dot"></span>
+        Offline • ${email} (Offline)
+    `;
+                }
+
+
+                chatAvatar.textContent = name
+                    .split(' ')
+                    .map(n => n[0])
+                    .join('')
                     .toUpperCase();
+
 
                 receiverInput.value = currentApplicantId;
                 chatComposer.style.display = 'flex';
