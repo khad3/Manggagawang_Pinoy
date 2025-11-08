@@ -210,7 +210,8 @@
                                 {{ $retrievedDecrytedProfile['personal_info']['last_name'] }}
                             </h1>
                             <p class="profile-title">
-                                @if (in_array($retrievedDecrytedProfile['work_background']['position'], [
+                                @php
+                                    $positions = [
                                         'Automotive Servicing',
                                         'Bartender',
                                         'Barista',
@@ -233,15 +234,18 @@
                                         'Tile Setter',
                                         'Tourism Services Staff',
                                         'Waiter/Waitress',
-                                    ]))
-                                    {{ $retrievedDecrytedProfile['work_background']['position'] }}
-                                @else
-                                    {{ $retrievedDecrytedProfile['work_background']['position'] }}
-                                @endif
+                                    ];
+
+                                    $currentPosition = $retrievedDecrytedProfile['work_background']['position'];
+                                    $displayPosition = in_array($currentPosition, $positions)
+                                        ? $currentPosition
+                                        : decrypt($retrievedProfile->work_background->other_position);
+                                @endphp
+
+                                {{ $displayPosition }}
                                 | {{ $retrievedDecrytedProfile['work_background']['work_duration'] }}
                                 {{ $retrievedDecrytedProfile['work_background']['work_duration_unit'] }}
                             </p>
-
                         @endif
 
                         @foreach ($retrievedTesdaCertifacation as $certification)
@@ -252,8 +256,8 @@
                                 </div>
                             @endif
                         @endforeach
-
                     </div>
+
                     <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
                         @if ($retrievedProfile->applicant_id != session('applicant_id'))
                             <button class="btn btn-tesda btn-outline-tesda" data-bs-toggle="modal"
@@ -271,6 +275,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
         <!-- Edit Profile Modal -->
         @include('applicant.profile.modal.edit_profile')

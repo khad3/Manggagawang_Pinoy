@@ -68,74 +68,8 @@
                                  {{ empty($retrievedDecrytedProfile['work_background']['position']) ? 'selected' : '' }}>
                                  Select job position
                              </option>
-                             <option value="Automotive Servicing"
-                                 {{ $retrievedDecrytedProfile['work_background']['position'] == 'Automotive Servicing' ? 'selected' : '' }}>
-                                 Automotive Servicing</option>
-                             <option value="Bartender"
-                                 {{ $retrievedDecrytedProfile['work_background']['position'] == 'Bartender' ? 'selected' : '' }}>
-                                 Bartender</option>
-                             <option value="Barista"
-                                 {{ $retrievedDecrytedProfile['work_background']['position'] == 'Barista' ? 'selected' : '' }}>
-                                 Barista</option>
-                             <option value="Beauty Care Specialist"
-                                 {{ $retrievedDecrytedProfile['work_background']['position'] == 'Beauty Care Specialist' ? 'selected' : '' }}>
-                                 Beauty Care Specialist</option>
-                             <option value="Carpenter"
-                                 {{ $retrievedDecrytedProfile['work_background']['position'] == 'Carpenter' ? 'selected' : '' }}>
-                                 Carpenter</option>
-                             <option value="Cook"
-                                 {{ $retrievedDecrytedProfile['work_background']['position'] == 'Cook' ? 'selected' : '' }}>
-                                 Cook</option>
-                             <option value="Customer Service Representative"
-                                 {{ $retrievedDecrytedProfile['work_background']['position'] == 'Customer Service Representative' ? 'selected' : '' }}>
-                                 Customer Service Representative</option>
-                             <option value="Dressmaker/Tailor"
-                                 {{ $retrievedDecrytedProfile['work_background']['position'] == 'Dressmaker/Tailor' ? 'selected' : '' }}>
-                                 Dressmaker/Tailor</option>
-                             <option value="Electrician"
-                                 {{ $retrievedDecrytedProfile['work_background']['position'] == 'Electrician' ? 'selected' : '' }}>
-                                 Electrician</option>
-                             <option value="Food and Beverage Server"
-                                 {{ $retrievedDecrytedProfile['work_background']['position'] == 'Food and Beverage Server' ? 'selected' : '' }}>
-                                 Food and Beverage Server</option>
-                             <option value="Hairdresser"
-                                 {{ $retrievedDecrytedProfile['work_background']['position'] == 'Hairdresser' ? 'selected' : '' }}>
-                                 Hairdresser</option>
-                             <option value="Heavy Equipment Operator"
-                                 {{ $retrievedDecrytedProfile['work_background']['position'] == 'Heavy Equipment Operator' ? 'selected' : '' }}>
-                                 Heavy Equipment Operator</option>
-                             <option value="Housekeeping"
-                                 {{ $retrievedDecrytedProfile['work_background']['position'] == 'Housekeeping' ? 'selected' : '' }}>
-                                 Housekeeping</option>
-                             <option value="Mason"
-                                 {{ $retrievedDecrytedProfile['work_background']['position'] == 'Mason' ? 'selected' : '' }}>
-                                 Mason</option>
-                             <option value="Massage Therapist"
-                                 {{ $retrievedDecrytedProfile['work_background']['position'] == 'Massage Therapist' ? 'selected' : '' }}>
-                                 Massage Therapist</option>
-                             <option value="Mechanic"
-                                 {{ $retrievedDecrytedProfile['work_background']['position'] == 'Mechanic' ? 'selected' : '' }}>
-                                 Mechanic</option>
-                             <option value="Plumber"
-                                 {{ $retrievedDecrytedProfile['work_background']['position'] == 'Plumber' ? 'selected' : '' }}>
-                                 Plumber</option>
-                             <option value="Security Guard"
-                                 {{ $retrievedDecrytedProfile['work_background']['position'] == 'Security Guard' ? 'selected' : '' }}>
-                                 Security Guard</option>
-                             <option value="SMAW Welder"
-                                 {{ $retrievedDecrytedProfile['work_background']['position'] == 'SMAW Welder' ? 'selected' : '' }}>
-                                 SMAW Welder</option>
-                             <option value="Tile Setter"
-                                 {{ $retrievedDecrytedProfile['work_background']['position'] == 'Tile Setter' ? 'selected' : '' }}>
-                                 Tile Setter</option>
-                             <option value="Tourism Services Staff"
-                                 {{ $retrievedDecrytedProfile['work_background']['position'] == 'Tourism Services Staff' ? 'selected' : '' }}>
-                                 Tourism Services Staff</option>
-                             <option value="Waiter/Waitress"
-                                 {{ $retrievedDecrytedProfile['work_background']['position'] == 'Waiter/Waitress' ? 'selected' : '' }}>
-                                 Waiter/Waitress</option>
-                             <option value="Other"
-                                 {{ !in_array($retrievedDecrytedProfile['work_background']['position'], [
+                             @php
+                                 $positions = [
                                      'Automotive Servicing',
                                      'Bartender',
                                      'Barista',
@@ -158,43 +92,26 @@
                                      'Tile Setter',
                                      'Tourism Services Staff',
                                      'Waiter/Waitress',
-                                 ]) && $retrievedDecrytedProfile['work_background']['position'] == 'Other'
-                                     ? 'selected'
-                                     : '' }}>
+                                 ];
+                                 $currentPosition = $retrievedDecrytedProfile['work_background']['position'] ?? '';
+                             @endphp
+
+                             @foreach ($positions as $pos)
+                                 <option value="{{ $pos }}" {{ $currentPosition === $pos ? 'selected' : '' }}>
+                                     {{ $pos }}</option>
+                             @endforeach
+
+                             <option value="Other" {{ !in_array($currentPosition, $positions) ? 'selected' : '' }}>
                                  Other (Please specify)
                              </option>
                          </select>
 
                          <!-- Other Position Input -->
-                         <div class="mt-2" id="otherPositionContainer" style="display: none;">
+                         <div class="mt-2" id="otherPositionContainer"
+                             style="{{ !in_array($currentPosition, $positions) ? 'display:block;' : 'display:none;' }}">
                              <input type="text" class="form-control" id="other_position" name="other_position"
                                  placeholder="Please specify your position"
-                                 value="{{ !in_array($retrievedProfile->work_background->position, [
-                                     'Automotive Servicing',
-                                     'Bartender',
-                                     'Barista',
-                                     'Beauty Care Specialist',
-                                     'Carpenter',
-                                     'Cook',
-                                     'Customer Service Representative',
-                                     'Dressmaker/Tailor',
-                                     'Electrician',
-                                     'Food and Beverage Server',
-                                     'Hairdresser',
-                                     'Heavy Equipment Operator',
-                                     'Housekeeping',
-                                     'Mason',
-                                     'Massage Therapist',
-                                     'Mechanic',
-                                     'Plumber',
-                                     'Security Guard',
-                                     'SMAW Welder',
-                                     'Tile Setter',
-                                     'Tourism Services Staff',
-                                     'Waiter/Waitress',
-                                 ])
-                                     ? $retrievedProfile->work_background->position
-                                     : '' }}">
+                                 value="{{ !in_array($currentPosition, $positions) ? decrypt($retrievedProfile->work_background->other_position) : '' }}">
                          </div>
                      </div>
 
@@ -213,6 +130,7 @@
                          // Run on page load (to show Other if already selected)
                          document.addEventListener('DOMContentLoaded', toggleOtherPosition);
                      </script>
+
 
 
                      <div class="row">
