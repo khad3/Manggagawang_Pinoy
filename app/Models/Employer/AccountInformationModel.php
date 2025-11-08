@@ -19,6 +19,8 @@ class AccountInformationModel extends Model
         'verification_token ',
         'status',
         'verification_code',
+        'is_online',
+        'last_seen',
 
     ];
 

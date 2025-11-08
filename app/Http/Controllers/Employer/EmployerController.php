@@ -605,6 +605,8 @@ public function login(Request $request)
     }
 
    $employer->last_login = now();
+   $employer->is_online = true;
+   $employer->last_seen = now();
     $employer->save();
 
     
@@ -1244,12 +1246,31 @@ public function setScheduleInterviewByEmployer(Request $request)
 
 
 //logout
-public function logout() {
+public function logout()
+{
+    $employer_id = session('employer_id');
+
+    if ($employer_id) {
+        $employer = AccountInformation::find($employer_id);
+        if ($employer) {
+            $employer->is_online = false;
+            $employer->last_seen = now();
+            $employer->save();
+        }
+    }
+
     Auth::guard('employer')->logout();
-    session()->invalidate();
+
+    // Remove only employer-related data
+    session()->forget(['employer_id', 'employer_name']);
+
+    // Keep applicant session intact
     session()->regenerateToken();
+
     return redirect()->route('employer.login.display');
 }
+
+
 
 
 // add job post //try 
