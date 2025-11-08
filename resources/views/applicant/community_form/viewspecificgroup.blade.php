@@ -149,8 +149,6 @@
                             <img src="{{ Storage::url($post->image_path) }}" alt="Post Image"
                                 class="img-fluid mt-2">
                         @endif
-
-
                         <div class="d-flex justify-content-between align-items-center mt-3">
                             <div>
                                 @php
