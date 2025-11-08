@@ -44,11 +44,13 @@ return [
          'applicant' => [
         'driver' => 'session',
         'provider' => 'applicants',
+        'storage_key' => 'applicant_login',
     ],
 
         'employer' => [
         'driver' => 'session',
         'provider' => 'employers',
+        'storage_key' => 'employer_login',
         ],
 
         'admin' => [
