@@ -74,32 +74,7 @@
 
 
 
-           <style>
-               .chart-container {
-                   width: 100%;
-                   height: 500px;
-                   /* tall enough for landscape */
-                   margin-bottom: 30px;
-               }
 
-               .chart-container h3.chart-title {
-                   text-align: center;
-                   margin-bottom: 10px;
-                   font-size: 20px;
-               }
-
-               .chart-placeholder {
-                   width: 100%;
-                   height: calc(100% - 40px);
-                   /* fill remaining space below title */
-               }
-
-               .chart-placeholder>div {
-                   width: 100% !important;
-                   height: 100% !important;
-                   /* ensure chart fills container */
-               }
-           </style>
 
            <!-- Account Bans -->
            <div class="chart-container">
