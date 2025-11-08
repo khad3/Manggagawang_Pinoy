@@ -169,7 +169,8 @@
                         @csrf
 
                         <div class="mb-3">
-                            <label for="username" class="form-label">Username *</label>
+                            <label for="username" class="form-label">Username <span
+                                    style="color: red;">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-person"></i></span>
                                 <input type="text" id="username" name="username" class="form-control"
@@ -178,7 +179,8 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email Address *</label>
+                            <label for="email" class="form-label">Email Address <span
+                                    style="color: red;">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-envelope"></i></span>
                                 <input type="email" id="email" name="email" class="form-control"
@@ -187,7 +189,8 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="password" class="form-label">Password *</label>
+                            <label for="password" class="form-label">Password <span
+                                    style="color: red;">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-lock"></i></span>
                                 <input type="password" id="password" name="password" class="form-control"
@@ -200,7 +203,8 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="password_confirmation" class="form-label">Confirm Password *</label>
+                            <label for="password_confirmation" class="form-label">Confirm Password <span
+                                    style="color: red;">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
                                 <input type="password" id="password_confirmation" name="password_confirmation"
