@@ -52,15 +52,23 @@
                                 {{ $totalMembers }}
                                 {{ $totalMembers === 1 ? 'Member' : 'Members' }}
                             </strong></span>
-
                     </div>
                 </div>
                 <div>
                     <a href="{{ route('applicant.forum.groupcommunity.display') }}"
                         class="btn btn-outline-light me-2">←
                         Back</a>
-                    <button class="btn btn-light text-primary" data-bs-toggle="modal" data-bs-target="#newPostModal">+
-                        New Post</button>
+                    @php
+                        // Check if current user is a member of the group
+                        $isMember =
+                            $group->members->contains('id', session('applicant_id')) ||
+                            $group->applicant_id == session('applicant_id');
+                    @endphp
+
+                    <button class="btn btn-light text-primary" data-bs-toggle="modal" data-bs-target="#newPostModal"
+                        {{ !$isMember ? 'disabled' : '' }}>
+                        + New Post
+                    </button>
                 </div>
             </div>
         </div>
