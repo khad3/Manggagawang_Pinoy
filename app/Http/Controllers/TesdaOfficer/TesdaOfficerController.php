@@ -125,19 +125,33 @@ public function approvedOfficer(Request $request)
         ]);
         $certification->save();
 
-        // 🔔 Send notification to the applicant
-        $notification = new \App\Models\Notification\NotificationModel();
-        $notification->type = 'applicant';
-        $notification->type_id = $certification->applicant_id; // recipient
-        $notification->title = 'Certification Review';
-        $statusMessage = [
-            'approved' => 'Your certification has been approved.',
-            'rejected' => 'Your certification has been rejected.',
-            'request_revision' => 'Your certification requires revision.',
-        ];
-        $notification->message = $statusMessage[$request->status] ?? 'Your certification status has been updated.';
-        $notification->is_read = false;
-        $notification->save();
+// 🔔 Send notification to the applicant
+$notification = new \App\Models\Notification\NotificationModel();
+$notification->type = 'applicant';
+$notification->type_id = $certification->applicant_id; // recipient
+$notification->title = 'Certification Review: ' . $certification->certification_program;
+
+// Define professional messages
+$statusMessage = [
+    'approved' => 'Congratulations! Your certification "' . $certification->certification_program . '" has been approved. Your credentials have been verified and officially recognized. Thank you for your dedication and effort.',
+    'rejected' => 'We regret to inform you that your certification "' . $certification->certification_program . '" has been rejected. ',
+    'request_revision' => 'Your certification "' . $certification->certification_program . '" requires some revisions before approval. Kindly review the feedback and make the necessary updates.',
+];
+
+// Pick message or fallback
+$baseMessage = $statusMessage[$request->status] ??
+    'Your certification "' . $certification->certification_program . '" status has been updated.';
+
+// Append officer comment if available
+if (!empty($request->officer_comment)) {
+    $baseMessage .= ' Officer Comment: "' . $request->officer_comment . '"';
+}
+
+$notification->message = $baseMessage;
+$notification->is_read = false;
+$notification->save();
+
+
 
         return redirect()->back()->with('success', 'Review sent successfully.');
 

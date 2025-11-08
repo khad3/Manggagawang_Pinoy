@@ -1506,13 +1506,15 @@ public function approveApplicant($id) {
     $application->status = 'approved';
     $application->save();
 
-    //Send notification
-    $notification = new \App\Models\Notification\NotificationModel();
-    $notification->type = 'applicant';
-    $notification->type_id = $application->applicant_id;
-    $notification->title = 'Application Approved';
-    $notification->message = 'Your application has been approved.';
-    $notification->save();
+ // Send notification
+$notification = new \App\Models\Notification\NotificationModel();
+$notification->type = 'applicant'; // recipient type
+$notification->type_id = $application->applicant_id; // recipient id
+$notification->title = 'Application Approved';
+$notification->message = 'Your application has been approved. Please go to the "My Applications" section in your dashboard to view more details. Thank you.';
+$notification->is_read = false;
+$notification->save();
+
 
     return back()->with('success', 'Application approved successfully.');
 
@@ -1534,7 +1536,7 @@ public function scheduleInterview($id) {
     $notification->type = 'applicant';
     $notification->type_id = $application->applicant_id;
     $notification->title = 'Schedule Interview';
-    $notification->message = 'Your application has been schedule interview.';
+    $notification->message = 'Your application has been schedule interview. Please go to the "My Applications" section in your dashboard to view more details. Thank you.';
     $notification->save();
 
 
@@ -1557,7 +1559,7 @@ public function rejectApplicant($id) {
     $notification->type = 'applicant';
     $notification->type_id = $application->applicant_id;
     $notification->title = 'Application Rejected';
-    $notification->message = 'Your application has been rejected.';
+    $notification->message = 'Your application has been rejected. Sorry for the inconvenience. Please feel free to apply for other job openings that match your skills and experience. Thank you.';
     $notification->save();
 
     return back()->with('success', 'Application rejected successfully.');   
