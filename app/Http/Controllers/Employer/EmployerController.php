@@ -670,6 +670,7 @@ foreach ($retrievedApplicants as $applicant) {
     // Decrypt work background safely
     if ($applicant->work_background) {
         $applicant->work_background->position     = $this->safeDecryptField($applicant->work_background->position);
+        $applicant->work_background->other_position    = $this->safeDecryptField($applicant->work_background->other_position);
         $applicant->work_background->house_street = $this->safeDecryptField($applicant->work_background->house_street);
         $applicant->work_background->municipality = $this->safeDecryptField($applicant->work_background->municipality);
         $applicant->work_background->province     = $this->safeDecryptField($applicant->work_background->province);
@@ -1116,6 +1117,7 @@ if ($retrievedProfile->personal_info) {
 // Decrypt work background safely
 if ($retrievedProfile->work_background) {
     $retrievedProfile->work_background->position = $this->safeDecryptField($retrievedProfile->work_background->position);
+    $retrievedProfile->work_background->other_position = $this->safeDecryptField($retrievedProfile->work_background->other_position);
     $retrievedProfile->work_background->house_street = $this->safeDecryptField($retrievedProfile->work_background->house_street);
     $retrievedProfile->work_background->municipality = $this->safeDecryptField($retrievedProfile->work_background->municipality);
     $retrievedProfile->work_background->province = $this->safeDecryptField($retrievedProfile->work_background->province);
