@@ -74,12 +74,10 @@
                 </div>
             </div>
         </div>
-
         <div class="table-responsive">
             <table class="table modern-table" id="applicantsTable">
                 <thead>
                     <tr>
-                        <th class="checkbox-col"><input type="checkbox" class="form-check-input"></th>
                         <th class="applicant-col">Applicant</th>
                         <th class="position-col">Position Applied</th>
                         <th class="experience-col">Experience</th>
@@ -92,13 +90,11 @@
                         @foreach ($retrievedApplicants as $applicant)
                             <tr
                                 data-certifications="{{ implode(',', $applicant->certifications->pluck('certification_program')->toArray()) }}">
-                                <td class="checkbox-col" data-label="">
-                                    <input type="checkbox" class="form-check-input">
-                                </td>
                                 <td class="applicant-col" data-label="Applicant">
                                     <div class="applicant-info">
                                         <div class="applicant-avatar">
-                                            {{ strtoupper(substr($applicant->personal_info->first_name ?? 'N', 0, 1)) }}{{ strtoupper(substr($applicant->personal_info->last_name ?? 'A', 0, 1)) }}
+                                            {{ strtoupper(substr($applicant->personal_info->first_name ?? 'N', 0, 1)) }}
+                                            {{ strtoupper(substr($applicant->personal_info->last_name ?? 'A', 0, 1)) }}
                                         </div>
                                         <div class="applicant-details">
                                             <h6>{{ $applicant->personal_info->first_name ?? 'N/A' }}
@@ -118,7 +114,6 @@
                                                 N/A
                                             @endif
                                         </strong>
-
                                         <small class="text-muted position-meta">
                                             @php
                                                 $employedStatus = isset($applicant->work_background->employed)
@@ -198,7 +193,7 @@
                         @endforeach
                     @else
                         <tr>
-                            <td colspan="6" class="text-center py-4 empty-state-row">
+                            <td colspan="5" class="text-center py-4 empty-state-row">
                                 <div class="empty-state-content">
                                     <i class="fas fa-users fa-3x text-muted mb-3"></i>
                                     <p class="text-muted">No applicants found</p>
@@ -209,6 +204,7 @@
                 </tbody>
             </table>
         </div>
+
 
         <!-- Pagination -->
         @if (isset($retrievedApplicants) && method_exists($retrievedApplicants, 'links'))
