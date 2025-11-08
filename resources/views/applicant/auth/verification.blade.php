@@ -13,8 +13,8 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/applicant/landingpage/landingpage.css') }}">
-       <link rel="stylesheet" href="{{ asset('css/applicant/verification.css') }}">
-
+    <link rel="stylesheet" href="{{ asset('css/applicant/verification.css') }}">
+    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}" />
 </head>
 
 <body>
@@ -33,11 +33,11 @@
                 <li><a href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
                 <li><a href="{{ route('display.aboutus') }}">About Us</a></li>
                 <li class="dropdown"><button class="sign-in-b">Sign in</button>
-  <ul class="dropdown-menu">
-    <li><a href="{{ route('applicant.login.display') }}">As Applicant</a></li>
-    <li><a href="{{ route('employer.login.display') }}">As Employer</a></li>
-  </ul>
-</li>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ route('applicant.login.display') }}">As Applicant</a></li>
+                        <li><a href="{{ route('employer.login.display') }}">As Employer</a></li>
+                    </ul>
+                </li>
 
                 <!-- Sign Up Dropdown -->
                 <li class="dropdown">
@@ -298,50 +298,50 @@
             </script>
 
             <script>
-// ======= HAMBURGER TOGGLE FUNCTIONALITY ======= //
-const hamburger = document.getElementById("hamburger");
-const navLinks = document.getElementById("navLinks");
+                // ======= HAMBURGER TOGGLE FUNCTIONALITY ======= //
+                const hamburger = document.getElementById("hamburger");
+                const navLinks = document.getElementById("navLinks");
 
-// Toggle burger open/close
-hamburger.addEventListener("click", () => {
-  hamburger.classList.toggle("active");
-  navLinks.classList.toggle("active");
-  document.body.classList.toggle("noscroll");
-});
+                // Toggle burger open/close
+                hamburger.addEventListener("click", () => {
+                    hamburger.classList.toggle("active");
+                    navLinks.classList.toggle("active");
+                    document.body.classList.toggle("noscroll");
+                });
 
-// ======= DROPDOWN FUNCTIONALITY ======= //
-document.querySelectorAll(".dropdown > button").forEach(button => {
-  button.addEventListener("click", e => {
-    e.stopPropagation(); // prevent closing burger
-    const dropdown = button.parentElement;
+                // ======= DROPDOWN FUNCTIONALITY ======= //
+                document.querySelectorAll(".dropdown > button").forEach(button => {
+                    button.addEventListener("click", e => {
+                        e.stopPropagation(); // prevent closing burger
+                        const dropdown = button.parentElement;
 
-    // Close other dropdowns
-    document.querySelectorAll(".dropdown.active").forEach(d => {
-      if (d !== dropdown) d.classList.remove("active");
-    });
+                        // Close other dropdowns
+                        document.querySelectorAll(".dropdown.active").forEach(d => {
+                            if (d !== dropdown) d.classList.remove("active");
+                        });
 
-    // Toggle this dropdown
-    dropdown.classList.toggle("active");
-  });
-});
+                        // Toggle this dropdown
+                        dropdown.classList.toggle("active");
+                    });
+                });
 
-// Close dropdowns when clicking outside
-document.addEventListener("click", e => {
-  if (!e.target.closest(".dropdown")) {
-    document.querySelectorAll(".dropdown.active").forEach(d => d.classList.remove("active"));
-  }
-});
+                // Close dropdowns when clicking outside
+                document.addEventListener("click", e => {
+                    if (!e.target.closest(".dropdown")) {
+                        document.querySelectorAll(".dropdown.active").forEach(d => d.classList.remove("active"));
+                    }
+                });
 
-// ======= CLOSE BURGER ONLY ON REGULAR LINK CLICK ======= //
-document.querySelectorAll(".nav-links a").forEach(link => {
-  link.addEventListener("click", () => {
-    if (window.innerWidth <= 992) {
-      navLinks.classList.remove("active");
-      hamburger.classList.remove("active");
-      document.body.classList.remove("noscroll");
-    }
-  });
-});
+                // ======= CLOSE BURGER ONLY ON REGULAR LINK CLICK ======= //
+                document.querySelectorAll(".nav-links a").forEach(link => {
+                    link.addEventListener("click", () => {
+                        if (window.innerWidth <= 992) {
+                            navLinks.classList.remove("active");
+                            hamburger.classList.remove("active");
+                            document.body.classList.remove("noscroll");
+                        }
+                    });
+                });
 
 
                 // Hide loader after page load
@@ -510,9 +510,7 @@ document.querySelectorAll(".nav-links a").forEach(link => {
                         }
                     });
                 });
-// Optional: Close menu when a regular link is clicked (but NOT dropdown toggles)
-
-
+                // Optional: Close menu when a regular link is clicked (but NOT dropdown toggles)
             </script>
 </body>
 

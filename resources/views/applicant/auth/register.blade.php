@@ -63,7 +63,8 @@
     <!-- Loader -->
     <div id="loader-wrapper">
         <div id="loader-content">
-            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.4)); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 24px; font-weight: 700; color: white;">
+            <div
+                style="width: 80px; height: 80px; background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.4)); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 24px; font-weight: 700; color: white;">
                 <img src="{{ asset('img/logo.png') }}" alt="Logo" style="max-width: 100px;">
             </div>
             <div id="loader"></div>
@@ -79,7 +80,8 @@
                     <div class="container">
                         <div class="text-center mb-5">
                             <h1 class="display-4 fw-bold text-dark mb-3">Worker Registration</h1>
-                            <p class="lead text-muted">Showcase your TESDA-certified skills and connect with employers who value your expertise.</p>
+                            <p class="lead text-muted">Showcase your TESDA-certified skills and connect with employers
+                                who value your expertise.</p>
                         </div>
 
                         <!-- Progress Stepper (same structure as employer for responsive behavior) -->
@@ -144,7 +146,8 @@
                     @if (session('success'))
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
                             <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                aria-label="Close"></button>
                         </div>
                     @endif
 
@@ -157,7 +160,8 @@
                                     <li>{{ $error }}</li>
                                 @endforeach
                             </ul>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                aria-label="Close"></button>
                         </div>
                     @endif
 
@@ -168,7 +172,8 @@
                             <label for="username" class="form-label">Username *</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                <input type="text" id="username" name="username" class="form-control" placeholder="Enter your username" value="{{ old('username') }}" required>
+                                <input type="text" id="username" name="username" class="form-control"
+                                    placeholder="Enter your username" value="{{ old('username') }}" required>
                             </div>
                         </div>
 
@@ -176,7 +181,8 @@
                             <label for="email" class="form-label">Email Address *</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" value="{{ old('email') }}" required>
+                                <input type="email" id="email" name="email" class="form-control"
+                                    placeholder="Enter your email" value="{{ old('email') }}" required>
                             </div>
                         </div>
 
@@ -184,7 +190,8 @@
                             <label for="password" class="form-label">Password *</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                                <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" required oninput="checkPasswordStrength()">
+                                <input type="password" id="password" name="password" class="form-control"
+                                    placeholder="Enter password" required oninput="checkPasswordStrength()">
                             </div>
                             <div id="passwordHelp" class="form-text"></div>
                             <div class="strength-indicator mt-1" id="strengthIndicator" style="display: none;">
@@ -196,7 +203,9 @@
                             <label for="password_confirmation" class="form-label">Confirm Password *</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
-                                <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" placeholder="Re-enter password" required oninput="checkPasswordMatch()">
+                                <input type="password" id="password_confirmation" name="password_confirmation"
+                                    class="form-control" placeholder="Re-enter password" required
+                                    oninput="checkPasswordMatch()">
                             </div>
                             <div id="passwordMatchHelp" class="form-text"></div>
                         </div>
@@ -205,7 +214,8 @@
                             <input class="form-check-input" type="checkbox" name="terms" id="termsInput" required>
                             <label class="form-check-label" for="termsInput">
                                 I agree to the
-                                <a href="{{ route('display.termsandconditions') }}" target="_blank">Terms & Conditions</a> and
+                                <a href="{{ route('display.termsandconditions') }}" target="_blank">Terms &
+                                    Conditions</a> and
                                 <a href="{{ route('display.privacypolicy') }}" target="_blank">Privacy Policy</a>
                             </label>
                         </div>
@@ -229,7 +239,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        
         // Hide loader after page load
         window.addEventListener("load", function() {
             setTimeout(function() {
@@ -291,7 +300,7 @@
             // Update strength indicator
             if (fill) {
                 fill.className = 'strength-fill';
-                fill.classList.remove('strength-weak','strength-fair','strength-good','strength-strong');
+                fill.classList.remove('strength-weak', 'strength-fair', 'strength-good', 'strength-strong');
                 if (strength === 1) fill.classList.add('strength-weak');
                 else if (strength === 2) fill.classList.add('strength-fair');
                 else if (strength === 3) fill.classList.add('strength-good');
@@ -353,7 +362,7 @@
             const hamburger = document.getElementById('hamburger');
             const navLinks = document.getElementById('navLinks');
             if (hamburger && navLinks) {
-                hamburger.addEventListener('click', function () {
+                hamburger.addEventListener('click', function() {
                     navLinks.classList.toggle('active');
                     hamburger.classList.toggle('active');
                     document.body.classList.toggle('noscroll');
@@ -361,7 +370,7 @@
 
                 // Close menu only when actual links are clicked
                 navLinks.querySelectorAll('a').forEach(link => {
-                    link.addEventListener('click', function () {
+                    link.addEventListener('click', function() {
                         if (navLinks.classList.contains('active')) {
                             navLinks.classList.remove('active');
                             hamburger.classList.remove('active');
@@ -372,7 +381,7 @@
 
                 // Dropdown toggle handling (prevent closing burger on dropdown toggle)
                 navLinks.querySelectorAll('.dropdown > button').forEach(btn => {
-                    btn.addEventListener('click', function (e) {
+                    btn.addEventListener('click', function(e) {
                         e.stopPropagation();
                         const parent = this.parentElement;
                         parent.classList.toggle('open');
@@ -380,29 +389,27 @@
                 });
             }
         });
-document.querySelectorAll('.dropdown > button').forEach(button => {
-  button.addEventListener('click', e => {
-    e.stopPropagation(); // Prevent hamburger close
-    const dropdown = button.parentElement;
+        document.querySelectorAll('.dropdown > button').forEach(button => {
+            button.addEventListener('click', e => {
+                e.stopPropagation(); // Prevent hamburger close
+                const dropdown = button.parentElement;
 
-    // Close other dropdowns
-    document.querySelectorAll('.dropdown.active').forEach(d => {
-      if (d !== dropdown) d.classList.remove('active');
-    });
+                // Close other dropdowns
+                document.querySelectorAll('.dropdown.active').forEach(d => {
+                    if (d !== dropdown) d.classList.remove('active');
+                });
 
-    // Toggle this one
-    dropdown.classList.toggle('active');
-  });
-});
+                // Toggle this one
+                dropdown.classList.toggle('active');
+            });
+        });
 
-// Close dropdown if clicking outside
-document.addEventListener('click', e => {
-  if (!e.target.closest('.dropdown')) {
-    document.querySelectorAll('.dropdown.active').forEach(d => d.classList.remove('active'));
-  }
-});
-
-
+        // Close dropdown if clicking outside
+        document.addEventListener('click', e => {
+            if (!e.target.closest('.dropdown')) {
+                document.querySelectorAll('.dropdown.active').forEach(d => d.classList.remove('active'));
+            }
+        });
     </script>
 </body>
 
