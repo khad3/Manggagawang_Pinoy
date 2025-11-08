@@ -46,10 +46,21 @@
                     <select class="form-select filter-select" id="positionFilter">
                         <option value="">Filter by Position</option>
                         @if (isset($retrievedApplicants))
-                            @foreach ($retrievedApplicants->pluck('work_background.position')->filter()->unique() as $position)
+                            @php
+                                $positions = $retrievedApplicants
+                                    ->pluck('work_background.position')
+                                    ->merge($retrievedApplicants->pluck('work_background.other_position'))
+                                    ->filter() // remove null/empty
+                                    ->unique()
+                                    ->reject(fn($p) => strtolower($p) === 'other'); // remove literal "Other"
+                            @endphp
+
+                            @foreach ($positions as $position)
                                 <option value="{{ $position }}">{{ $position }}</option>
                             @endforeach
+
                         @endif
+
                     </select>
 
                     <select class="form-select filter-select" id="certificationFilter">
@@ -99,13 +110,15 @@
                                 <td class="position-col" data-label="Position">
                                     <div class="position-info">
                                         <strong class="position-title">
-                                            @if (isset($applicant->work_background->position) || isset($applicant->work_background->other_position))
-                                                {{ $applicant->work_background->position ?? '' }}
-                                                {{ $applicant->work_background->other_position ?? '' }}
+                                            @if (isset($applicant->work_background->position) && strtolower($applicant->work_background->position) === 'other')
+                                                {{ $applicant->work_background->other_position ?? 'N/A' }}
+                                            @elseif (!empty($applicant->work_background->position))
+                                                {{ $applicant->work_background->position }}
                                             @else
                                                 N/A
                                             @endif
                                         </strong>
+
                                         <small class="text-muted position-meta">
                                             @php
                                                 $employedStatus = isset($applicant->work_background->employed)
