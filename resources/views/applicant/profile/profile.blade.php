@@ -560,20 +560,25 @@
                                     {{-- Status Badge --}}
                                     <span
                                         class="badge mt-1 
-                                             @if ($certification->status === 'pending') bg-warning
-                                            @elseif ($certification->status === 'approved') bg-success
-                                            @elseif ($certification->status === 'rejected') bg-danger
-                                            @else bg-dark @endif">
+         @if ($certification->status === 'pending') bg-warning
+        @elseif ($certification->status === 'approved') bg-success
+        @elseif ($certification->status === 'rejected') bg-danger
+        @else bg-dark @endif">
                                         {{ $certification->status === 'request_revision' ? 'Request Revision' : ucfirst($certification->status) }}
                                     </span>
 
-                                    {{-- Show officer comment if status is request_revision and comment exists --}}
-                                    @if ($certification->status === 'request_revision' && $certification->officer_comment)
+                                    {{-- Show officer comment if status is request_revision or rejected and comment exists --}}
+                                    @if (
+                                        ($certification->status === 'request_revision' || $certification->status === 'rejected') &&
+                                            !empty($certification->officer_comment))
                                         <div class="mt-2 p-2 border rounded bg-light">
-                                            <strong>Reason for Revision:</strong>
+                                            <strong>
+                                                {{ $certification->status === 'request_revision' ? 'Reason for Revision:' : 'Rejection Reason:' }}
+                                            </strong>
                                             <p class="mb-0">{{ $certification->officer_comment }}</p>
                                         </div>
                                     @endif
+
 
                                 </div>
 
