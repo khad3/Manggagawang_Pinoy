@@ -108,10 +108,16 @@
                         <div class="candidate-basic-info">
                             <h4 class="candidate-name">{{ $retrievedProfile->personal_info->first_name }}
                                 {{ $retrievedProfile->personal_info->last_name }}</h4>
-                            <div class="candidate-role">{{ $retrievedProfile->work_background->position }}<span
-                                    class="experience-badge">{{ $retrievedProfile->work_background->work_duration }}
-                                    {{ $retrievedProfile->work_background->work_duration_unit }} experience</span>
+                            <div class="candidate-role">
+                                {{ strtolower($retrievedProfile->work_background->position) === 'other'
+                                    ? $retrievedProfile->work_background->other_position
+                                    : $retrievedProfile->work_background->position }}
+                                <span class="experience-badge">
+                                    {{ $retrievedProfile->work_background->work_duration }}
+                                    {{ $retrievedProfile->work_background->work_duration_unit }} experience
+                                </span>
                             </div>
+
                             <div class="candidate-location"><i class="fas fa-map-marker-alt"></i>
                                 {{ $retrievedProfile->personal_info->house_street }}
                                 {{ $retrievedProfile->personal_info->city }}
