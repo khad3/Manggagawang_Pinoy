@@ -897,116 +897,181 @@ public function LikePost($id)
     }
 
     //Add post for specific group forum in my created group co,,unities page
-    public function AddPostGroupSpecific(Request $request, $groupId){
-        $applicantId = session('applicant_id');
+    public function AddPostGroupSpecific(Request $request, $groupId)
+{
+    $applicantId = session('applicant_id');
 
-        // Load the group with its members
-        $group = Group::with('members')->find($groupId);
+    // Load the group with its members
+    $group = Group::with('members')->find($groupId);
 
-            if (!$group) {
-                return redirect()->back()->with('error', 'Group not found.');
-            }
-
-        // Check if the applicant is a member or the group creator
-        $isMember = $group->members->contains('id', $applicantId) || $group->applicant_id == $applicantId;
-
-            if (!$isMember) {
-                return redirect()->back()->with('error', 'You are not a member of this group.');
-            }
-
-        // Fetch the applicant and their personal info
-        $applicant = RegisterModel::with('personal_info')->find($applicantId);
-        $personalInfoId = $applicant->personal_info->id ?? null;
-
-        // Validate input
-        $validated = $request->validate([
-            'title'   => 'required|string|max:255',
-            'content' => 'required|string',
-            'image'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        // Handle image upload
-        $imagePath = null;
-            if ($request->hasFile('image')) {
-                $imagePath = $request->file('image')->store('group_posts', 'public');
-            }
-
-        // Create post
-        GroupPost::create([
-            'title'             => $validated['title'],
-            'content'           => $validated['content'],
-            'image_path'        => $imagePath,
-            'group_community_id'=> $groupId,
-            'applicant_id'      => $applicantId,
-            'personal_info_id'  => $personalInfoId,
-        ]);
-
-        return redirect()->back()->with('success', 'Post added successfully.');
+    if (!$group) {
+        return redirect()->back()->with('error', 'Group not found.');
     }
 
+    // Check if the applicant is a member or the group creator
+    $isMember = $group->members->contains('id', $applicantId) || $group->applicant_id == $applicantId;
 
-    //Add comment for group community forum 
-    public function AddCommentGroupSpecific(Request $request, $groupId){
-        $applicantId = session('applicant_id');
-
-        // Load the group with its members
-        $group = Group::with('members')->find($groupId);
-
-            if (!$group) {
-                return redirect()->back()->with('error', 'Group not found.');
-            }
-
-        // Check if the applicant is a member or the group creator
-        $isMember = $group->members->contains('id', $applicantId) || $group->applicant_id == $applicantId;
-
-            if (!$isMember) {
-                return redirect()->back()->with('error', 'You are not a member of this group.');
-            }
-
-        // Fetch the applicant and their personal info
-        $applicant = RegisterModel::with('personal_info' , 'work_background')->find($applicantId);
-        $personalInfoId = $applicant->personal_info->id ?? null;
-
-        // Validate input (including the post ID to comment on)
-        $validated = $request->validate([
-            'comment' => 'required|string',
-            'per_group_community_post_id' => 'required|exists:per_group_posts,id',
-        ]);
-
-        // Create comment
-        GroupComment::create([
-            'comment'                    => $validated['comment'],
-            'group_community_id'        => $groupId,
-            'applicant_id'              => $applicantId,
-            'personal_info_id'          => $personalInfoId,
-            'per_group_community_post_id' => $validated['per_group_community_post_id'],
-            'work_experience_id'        => $applicant->work_background->id ?? null
-        ]);
-
-        return redirect()->back()->with('success', 'Comment added successfully.');
+    if (!$isMember) {
+        return redirect()->back()->with('error', 'You are not a member of this group.');
     }
+
+    // Fetch the applicant and their personal info
+    $applicant = RegisterModel::with('personal_info')->find($applicantId);
+    $personalInfoId = $applicant->personal_info->id ?? null;
+
+    // Validate input
+    $validated = $request->validate([
+        'title'   => 'required|string|max:255',
+        'content' => 'required|string',
+        'image'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+
+    // Handle image upload
+    $imagePath = null;
+    if ($request->hasFile('image')) {
+        $imagePath = $request->file('image')->store('group_posts', 'public');
+    }
+
+    // Create post
+    $post = GroupPost::create([
+        'title'             => $validated['title'],
+        'content'           => $validated['content'],
+        'image_path'        => $imagePath,
+        'group_community_id'=> $groupId,
+        'applicant_id'      => $applicantId,
+        'personal_info_id'  => $personalInfoId,
+    ]);
+
+    // -----------------------------------
+    // 
+    foreach ($group->members as $member) {
+        if ($member->id != $applicantId) {
+            $notification = new \App\Models\Notification\NotificationModel();
+            $notification->type = 'applicant'; 
+            $notification->type_id = $member->id; 
+            $notification->title = 'New Group Post';
+            $notification->message =
+                $this->safeDecrypt($applicant->personal_info->first_name) .
+                ' posted in "' . $group->group_name . '" group: "' . $validated['title'] . '".';
+            $notification->is_read = false;
+            $notification->save();
+        }
+    }
+
+    // 
+    if ($group->applicant_id != $applicantId) {
+        $notification = new \App\Models\Notification\NotificationModel();
+        $notification->type = 'applicant';
+        $notification->type_id = $group->applicant_id; // group creator
+        $notification->title = 'New Post in Your Group';
+        $notification->message =
+            $this->safeDecrypt($applicant->personal_info->first_name) .
+            ' added a new post in your group "' . $group->group_name . '".';
+        $notification->is_read = false;
+        $notification->save();
+    }
+
+    return redirect()->back()->with('success', 'Post added successfully.');
+}
+
+
+
+    //Add comment for group community forum \
+    public function AddCommentGroupSpecific(Request $request, $groupId)
+{
+    $applicantId = session('applicant_id');
+
+    // Load the group with its members
+    $group = Group::with('members')->find($groupId);
+
+    if (!$group) {
+        return redirect()->back()->with('error', 'Group not found.');
+    }
+
+    // Check if the applicant is a member or the group creator
+    $isMember = $group->members->contains('id', $applicantId) || $group->applicant_id == $applicantId;
+
+    if (!$isMember) {
+        return redirect()->back()->with('error', 'You are not a member of this group.');
+    }
+
+    // Fetch the applicant and their personal info
+    $applicant = RegisterModel::with('personal_info', 'work_background')->find($applicantId);
+    $personalInfoId = $applicant->personal_info->id ?? null;
+
+    // Validate input
+    $validated = $request->validate([
+        'comment' => 'required|string',
+        'per_group_community_post_id' => 'required|exists:per_group_posts,id',
+    ]);
+
+    // Create comment
+    GroupComment::create([
+        'comment' => $validated['comment'],
+        'group_community_id' => $groupId,
+        'applicant_id' => $applicantId,
+        'personal_info_id' => $personalInfoId,
+        'per_group_community_post_id' => $validated['per_group_community_post_id'],
+        'work_experience_id' => $applicant->work_background->id ?? null,
+    ]);
+
+    // -----------------------------------
+    // ✅ Create notification for all approved group members except the commenter
+    foreach ($group->members as $member) {
+        if ($member->id != $applicantId) {
+            $notification = new \App\Models\Notification\NotificationModel();
+            $notification->type = 'applicant'; // recipient type
+            $notification->type_id = $member->id; // ✅ Correct recipient id
+            $notification->title = 'New Group Comment';
+            $notification->message =
+                $this->safeDecrypt($applicant->personal_info->first_name) .
+                ' commented in "' . $group->group_name . '" group.';
+            $notification->is_read = false;
+            $notification->save();
+        }
+    }
+
+    // ✅ Notify the group creator too (if not the same user)
+    if ($group->applicant_id != $applicantId) {
+        $notification = new \App\Models\Notification\NotificationModel();
+        $notification->type = 'applicant';
+        $notification->type_id = $group->applicant_id; // group creator
+        $notification->title = 'New Comment in Your Group';
+        $notification->message =
+            $this->safeDecrypt($applicant->personal_info->first_name) .
+            ' commented in your group "' . $group->group_name . '".';
+        $notification->is_read = false;
+        $notification->save();
+    }
+
+    return redirect()->back()->with('success', 'Comment added successfully.');
+}
+
+
 
 
     //Delete comment 
-    public function DeleteCommentGroup($groupId, $commentId){
-        $group = Group::findOrFail($groupId); //  Correct model
+   public function DeleteCommentGroup($groupId, $commentId)
+{
+    $group = Group::findOrFail($groupId); // Correct model
 
-        // Prevent deleting from private groups
-        if ($group->privacy === 'private') {
-            return redirect()->back()->with('error', 'You cannot delete comments in a private group.');
-        }
-
-        $comment = GroupComment::findOrFail($commentId);
-
-        // Only allow deletion by the comment owner
-        if ($comment->applicant_id !== session('applicant_id')) {
-            return redirect()->back()->with('error', 'You can only delete your own comment.');
-        }
-
-        $comment->delete();
-
-        return redirect()->route('applicant.forum.creatorviewpage.display', ['groupId' => $groupId])->with('success', 'Comment deleted successfully.');
+    // Prevent deleting from private groups
+    if ($group->privacy === 'private') {
+        return redirect()->back()->with('error', 'You cannot delete comments in a private group.');
     }
+
+    $comment = GroupComment::findOrFail($commentId);
+
+    // Only allow deletion by the comment owner
+    if ($comment->applicant_id !== session('applicant_id')) {
+        return redirect()->back()->with('error', 'You can only delete your own comment.');
+    }
+
+    $comment->delete();
+
+    return redirect()->back()->with('success', 'Comment deleted successfully.');
+}
+
 
 
     //Add like for the group forum
