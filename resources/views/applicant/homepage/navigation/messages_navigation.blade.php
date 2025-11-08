@@ -9,6 +9,8 @@
 
         @if ($unreadCount > 0)
             <span class="nav-badge" id="messagesBadge">{{ $unreadCount }}</span>
+        @else
+            <span class="nav-badge" id="messagesBadge" style="display: none;">0</span>
         @endif
     </button>
 
@@ -50,7 +52,7 @@
                     @endphp
 
                     <div class="employer-item {{ $unreadCount > 0 ? 'unread' : '' }}"
-                        data-employer-id="{{ $employerId }}"
+                        data-employer-id="{{ $employerId }}" data-unread-count="{{ $unreadCount }}"
                         onclick="openChatWithEmployer({{ $employerId }}, '{{ addslashes($employer->personal_info->first_name ?? 'N/A') }}', '{{ addslashes($employer->personal_info->last_name ?? 'N/A') }}', '{{ addslashes($company->company_name ?? 'Company') }}')">
 
                         {{-- Unread indicator --}}
@@ -294,19 +296,6 @@
     </div>
 </div>
 
-<!-- New message alert -->
-<div id="newMessageAlert" class="new-message-alert" onclick="scrollToBottom()"
-    style="display: none; position: fixed; bottom: 100px; right: 30px; background: #007bff; color: white; padding: 10px 20px; border-radius: 25px; cursor: pointer; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-    <i class="bi bi-arrow-down me-1"></i>
-    New message
-</div>
-
-<!-- Auto-refresh indicator -->
-<div id="refreshIndicator" class="refresh-indicator"
-    style="display: none; position: fixed; top: 20px; right: 20px; background: rgba(0,0,0,0.7); color: white; padding: 8px 15px; border-radius: 20px; z-index: 9999; font-size: 14px;">
-    <i class="bi bi-arrow-repeat spin-animation me-1"></i>
-    Updating...
-</div>
 
 
 
@@ -360,6 +349,10 @@
     let isUserAtBottom = true;
     let isPageVisible = true;
     let lastSeenUpdateTime = 0;
+    let lastMessageId = 0;
+    let isChatModalOpen = false;
+    let isActivelyViewingMessages = false; // NEW: Only true when scrolled and viewing
+    let messageReadTimer = null; // NEW: Timer for delayed read marking
 
     const messagesByEmployer = {};
     allMessages.forEach(msg => {
@@ -375,17 +368,28 @@
     function openChatWithEmployer(employerId, firstName, lastName, companyName) {
         document.getElementById('chatModal').style.display = 'flex';
         document.body.style.overflow = 'hidden';
+        isChatModalOpen = true;
         loadConversation(employerId);
     }
 
     function openAllChats() {
         document.getElementById('chatModal').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
+        document.body.style.overflow = 'auto';
+        isChatModalOpen = true;
     }
 
     function closeChatModal() {
         document.getElementById('chatModal').style.display = 'none';
         document.body.style.overflow = 'auto';
+        isChatModalOpen = false;
+        isActivelyViewingMessages = false;
+        currentEmployerId = null;
+
+        // Clear any pending read timers
+        if (messageReadTimer) {
+            clearTimeout(messageReadTimer);
+            messageReadTimer = null;
+        }
 
         document.getElementById('chatHeader').style.display = 'none';
         document.getElementById('replyArea').style.display = 'none';
@@ -405,7 +409,14 @@
     }
 
     function loadConversation(employerId) {
+        // Clear previous timer
+        if (messageReadTimer) {
+            clearTimeout(messageReadTimer);
+            messageReadTimer = null;
+        }
+
         currentEmployerId = employerId;
+        isActivelyViewingMessages = false; // Reset on load
 
         const replyEmployerInput = document.getElementById('replyEmployerId');
         replyEmployerInput.value = employerId;
@@ -470,7 +481,13 @@
             document.querySelector('.employers-sidebar').classList.add('hide-mobile');
         }
 
-        markMessagesAsRead(employerId);
+        // Set a timer to mark as actively viewing after 3 seconds at bottom
+        messageReadTimer = setTimeout(() => {
+            if (isChatModalOpen && currentEmployerId === employerId && isUserAtBottom && isPageVisible) {
+                isActivelyViewingMessages = true;
+                markMessagesAsRead(employerId);
+            }
+        }, 3000); // 3 second delay before marking as read
     }
 
     function showEmployersList() {
@@ -504,8 +521,25 @@
             const isFromEmployer = msg.sender_type === 'employer';
             const bubbleClass = isFromEmployer ? 'from-employer' : 'from-applicant';
 
+            const hasValidText = msg.message &&
+                msg.message.trim() !== '' &&
+                msg.message !== 'Unable to decrypt message' &&
+                msg.message !== 'Cannot decrypt message' &&
+                !msg.message.includes('decrypt');
+
+            const hasAttachment = msg.attachment && msg.attachment.trim() !== '';
+
+            if (!hasValidText && !hasAttachment) {
+                return '';
+            }
+
+            let messageTextHtml = '';
+            if (hasValidText) {
+                messageTextHtml = `<div class="message-text">${msg.message}</div>`;
+            }
+
             let attachmentHtml = '';
-            if (msg.attachment) {
+            if (hasAttachment) {
                 attachmentHtml = `
                     <div class="message-attachment mt-2">
                         <img src="/storage/${msg.attachment}" 
@@ -521,7 +555,7 @@
             return `
                 <div class="message-bubble ${bubbleClass}" data-message-id="${msg.id}">
                     <div class="message-content">
-                        ${msg.message || ''}
+                        ${messageTextHtml}
                         ${attachmentHtml}
                         <div class="message-timestamp ${bubbleClass}" title="${fullDate}">
                             ${timestamp}
@@ -554,7 +588,6 @@
         const container = document.getElementById('messagesContainer');
         if (container) {
             container.scrollTop = container.scrollHeight;
-            document.getElementById('newMessageAlert').style.display = 'none';
             isUserAtBottom = true;
         }
     }
@@ -564,16 +597,28 @@
         if (!container) return;
 
         const threshold = 50;
+        const wasAtBottom = isUserAtBottom;
         isUserAtBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - threshold;
+
+        // If user just scrolled to bottom, start timer for marking as read
+        if (!wasAtBottom && isUserAtBottom && currentEmployerId && !isActivelyViewingMessages) {
+            if (messageReadTimer) {
+                clearTimeout(messageReadTimer);
+            }
+            messageReadTimer = setTimeout(() => {
+                if (isUserAtBottom && isChatModalOpen && isPageVisible) {
+                    isActivelyViewingMessages = true;
+                    markMessagesAsRead(currentEmployerId);
+                }
+            }, 3000);
+        }
     }
 
     // ========================================
     // REAL-TIME MESSAGE REFRESH
     // ========================================
-    let lastMessageId = null; // track the last message received
-
     function refreshMessages() {
-        if (!currentEmployerId) return;
+        if (!currentEmployerId || !isChatModalOpen) return;
 
         fetch(`/applicant/messages/fetch/${currentEmployerId}`, {
                 method: 'GET',
@@ -584,66 +629,95 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (data.success && data.messages) {
-                    const container = document.getElementById('messagesContainer');
+                if (!(data && data.success && Array.isArray(data.messages))) return;
 
-                    // Filter only new messages (based on last message ID)
-                    let newMessages = lastMessageId ?
-                        data.messages.filter(msg => msg.id > lastMessageId) :
-                        data.messages;
+                const container = document.getElementById('messagesContainer');
+                if (!container) return;
 
-                    // Append new messages
-                    newMessages.forEach(msg => {
-                        const messageDiv = document.createElement('div');
-                        messageDiv.className = 'message-bubble ' +
-                            (msg.sender_type === 'applicant' ? 'from-applicant' : 'from-employer');
-                        messageDiv.innerHTML = `
-                    <div class="message-content">
-                        ${msg.message || ''}
-                        ${msg.attachment ? 
-                            `<div class="message-attachment mt-2">
-                                <img src="/storage/${msg.attachment}" class="img-fluid rounded-2 shadow-sm">
-                             </div>` 
-                            : ''}
-                        <div class="message-timestamp ${msg.sender_type}">
-                            ${msg.time}
-                        </div>
-                    </div>
-                `;
-                        container.appendChild(messageDiv);
-                    });
+                const wasAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
 
-                    // Update last message ID
-                    if (data.messages.length > 0) {
-                        lastMessageId = data.messages[data.messages.length - 1].id;
+                const existingIds = new Set();
+                container.querySelectorAll('[data-message-id]').forEach(el => {
+                    const id = el.getAttribute('data-message-id');
+                    if (id) {
+                        existingIds.add(parseInt(id));
+                    }
+                });
+
+                let hasNewMessages = false;
+
+                data.messages.forEach(msg => {
+                    if (existingIds.has(msg.id)) {
+                        return;
                     }
 
-                    // Handle scrolling and read logic
-                    if (newMessages.length > 0) {
-                        const isAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight <
-                            50;
+                    const hasValidText = msg.message &&
+                        msg.message.trim() !== '' &&
+                        msg.message !== 'Unable to decrypt message' &&
+                        msg.message !== 'Cannot decrypt message';
 
-                        // Auto-scroll if you're already at the bottom or the new message is from you
-                        if (isAtBottom || newMessages.some(m => m.sender_type === 'applicant')) {
-                            container.scrollTop = container.scrollHeight;
-                        }
+                    const hasAttachment = msg.attachment && msg.attachment.trim() !== '';
 
-                        // ✅ Only mark as read if:
-                        //    1) user is at bottom, and
-                        //    2) the tab is visible
-                        if (isAtBottom && document.visibilityState === 'visible') {
-                            setTimeout(() => markMessagesAsRead(currentEmployerId), 800);
-                        } else {
-                            // Show alert for new message if not at bottom
-                            const alertEl = document.getElementById('newMessageAlert');
-                            if (alertEl) alertEl.style.display = 'block';
-                        }
+                    if (!hasValidText && !hasAttachment) {
+                        return;
+                    }
+
+                    hasNewMessages = true;
+
+                    const messageDiv = document.createElement('div');
+                    const bubbleClass = msg.sender_type === 'applicant' ? 'from-applicant' :
+                        'from-employer';
+                    messageDiv.className = `message-bubble ${bubbleClass}`;
+                    messageDiv.setAttribute('data-message-id', msg.id);
+
+                    let contentHtml = '';
+
+                    if (hasValidText) {
+                        contentHtml += `<div class="message-text">${escapeHtml(msg.message)}</div>`;
+                    }
+
+                    if (hasAttachment) {
+                        contentHtml += `<div class="message-attachment mt-2">
+                           <img src="/storage/${encodeURI(msg.attachment)}" class="img-fluid rounded-2 shadow-sm" alt="attachment">
+                       </div>`;
+                    }
+
+                    contentHtml +=
+                        `<div class="message-timestamp ${msg.sender_type}">${escapeHtml(msg.time || 'Just now')}</div>`;
+
+                    messageDiv.innerHTML = `<div class="message-content">${contentHtml}</div>`;
+                    container.appendChild(messageDiv);
+                });
+
+                if (data.messages.length > 0) {
+                    lastMessageId = data.messages[data.messages.length - 1].id;
+                }
+
+                if (hasNewMessages && wasAtBottom) {
+                    setTimeout(() => {
+                        container.scrollTop = container.scrollHeight;
+                        isUserAtBottom = true;
+                    }, 10);
+
+                    // Only mark as read if actively viewing
+                    if (isActivelyViewingMessages && isPageVisible) {
+                        setTimeout(() => markMessagesAsRead(currentEmployerId), 1000);
                     }
                 }
             })
             .catch(error => {
                 console.error('Error refreshing messages:', error);
             });
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
     }
 
     // ========================================
@@ -810,7 +884,6 @@
         const badge = document.getElementById('messagesBadge');
         if (!badge) return;
 
-        // Count only unread messages from employer
         const totalUnread = messages.reduce((count, msg) => {
             if (msg.sender_type === 'employer' && msg.is_read === 0) {
                 return count + 1;
@@ -828,9 +901,15 @@
 
 
     // ========================================
-    // MARK AS READ FUNCTION
+    // MARK AS READ FUNCTION - COMPLETELY REWRITTEN
     // ========================================
     function markMessagesAsRead(employerId) {
+        // CRITICAL: Only mark as read if user is ACTIVELY viewing messages
+        if (!isActivelyViewingMessages || !isChatModalOpen || !isPageVisible) {
+            console.log('⛔ NOT marking as read - User not actively viewing');
+            return;
+        }
+
         const dropdownItem = document.querySelector(`.employer-item[data-employer-id="${employerId}"]`);
         const sidebarItem = document.querySelector(`.employer-list-item[data-employer-id="${employerId}"]`);
 
@@ -842,8 +921,13 @@
 
         // Prevent too frequent requests
         const now = Date.now();
-        if (now - lastSeenUpdateTime < 2000) return;
+        if (now - lastSeenUpdateTime < 5000) {
+            console.log('⏱️ Rate limit - waiting before marking as read');
+            return;
+        }
         lastSeenUpdateTime = now;
+
+        console.log('✅ Marking messages as read for employer:', employerId);
 
         fetch(`/applicant/read-message/${employerId}`, {
                 method: 'PUT',
@@ -855,7 +939,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    console.log('Messages marked as read');
+                    console.log('✅ Messages marked as read successfully');
 
                     if (dropdownItem) {
                         dropdownItem.classList.remove('unread');
@@ -900,7 +984,7 @@
                 }
             })
             .catch(error => {
-                console.error(' Error marking messages as read:', error);
+                console.error('❌ Error marking messages as read:', error);
             });
     }
 
@@ -921,23 +1005,6 @@
                 return;
             }
 
-            // Optimistically add message to UI
-            if (messageText || attachmentFile) {
-                const container = document.getElementById('messagesContainer');
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'message-bubble from-applicant';
-                messageDiv.innerHTML = `
-                    <div class="message-content">
-                        ${messageText || ''}
-                        ${attachmentFile ? `<div class="message-attachment mt-2"><img src="${URL.createObjectURL(attachmentFile)}" class="img-fluid rounded-2 shadow-sm"></div>` : ''}
-                        <div class="message-timestamp from-applicant">Just now</div>
-                    </div>
-                `;
-                container.appendChild(messageDiv);
-                container.scrollTop = container.scrollHeight;
-            }
-
-            // Clear input
             document.getElementById('replyInput').value = '';
             document.getElementById('attachment').value = '';
             document.getElementById('attachmentPreview').innerHTML = '';
@@ -952,35 +1019,43 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    console.log(' Message sent successfully');
-                    // Immediate refresh after sending
-                    setTimeout(() => {
-                        refreshMessages();
-                    }, 100);
+                    console.log('✅ Message sent successfully');
+                    setTimeout(() => refreshMessages(), 200);
                 } else {
-                    console.error(' Failed to send message');
+                    console.error('❌ Failed to send message');
                 }
             } catch (error) {
-                console.error(' Error:', error);
+                console.error('❌ Error:', error);
             }
         });
 
-        // Add scroll listener
+        // Add scroll listener - UPDATED with new logic
         const container = document.getElementById('messagesContainer');
         if (container) {
             container.addEventListener('scroll', () => {
                 checkIfUserAtBottom();
-                if (isUserAtBottom && currentEmployerId) {
-                    setTimeout(() => markMessagesAsRead(currentEmployerId), 500);
-                }
             });
         }
 
-        // Page visibility handling
+        // Page visibility handling - UPDATED
         document.addEventListener('visibilitychange', function() {
             isPageVisible = !document.hidden;
-            if (isPageVisible && isUserAtBottom && currentEmployerId) {
-                setTimeout(() => markMessagesAsRead(currentEmployerId), 1000);
+
+            if (!isPageVisible) {
+                // User left the page - stop treating as actively viewing
+                isActivelyViewingMessages = false;
+                if (messageReadTimer) {
+                    clearTimeout(messageReadTimer);
+                    messageReadTimer = null;
+                }
+            } else if (isUserAtBottom && currentEmployerId && isChatModalOpen) {
+                // User came back - restart the timer
+                messageReadTimer = setTimeout(() => {
+                    if (isUserAtBottom && isChatModalOpen && isPageVisible) {
+                        isActivelyViewingMessages = true;
+                        markMessagesAsRead(currentEmployerId);
+                    }
+                }, 3000);
             }
         });
 
@@ -992,18 +1067,22 @@
         // ========================================
         // START REAL-TIME POLLING
         // ========================================
-        console.log('Starting real-time message system...');
+        console.log('🚀 Starting real-time message system...');
 
-        // Refresh messages every 2 seconds
+        // Refresh messages every 2 seconds ONLY if modal is open
         setInterval(() => {
-            if (isPageVisible) {
+            if (isPageVisible && isChatModalOpen && currentEmployerId) {
                 refreshMessages();
             }
         }, 2000);
 
         // Initial refresh after 1 second
-        setTimeout(refreshMessages, 1000);
+        setTimeout(() => {
+            if (isChatModalOpen && currentEmployerId) {
+                refreshMessages();
+            }
+        }, 1000);
 
-        console.log(' Real-time messaging active (polling every 2 seconds)');
+        console.log('Real-time messaging active (polling every 2 seconds)');
     });
 </script>
