@@ -515,7 +515,7 @@ public function LikePost($id)
     $listOfGroups = Group::with(['members', 'personalInfo'])
         ->withCount([
             'members',
-            // ✅ count only pending members for each group
+            // count only pending members for each group
             'members as pending_members_count' => function ($query) {
                 $query->where('group_participants.status', 'pending');
             },
