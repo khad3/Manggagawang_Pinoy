@@ -69,3 +69,239 @@ body {
     padding: 6px 16px;
     font-size: 0.9rem;
 }
+
+.group-card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.group-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #d1d5db;
+}
+
+.group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.group-name {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.5rem;
+}
+
+.creator-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.creator-badge {
+    background: #f3f4f6;
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.pending-alert {
+    background: #fef3c7;
+    border-left: 3px solid #f59e0b;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.25rem;
+    color: #92400e;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.group-stats {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1.25rem;
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 8px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #374151;
+    font-size: 0.95rem;
+}
+
+.stat-value {
+    font-weight: 600;
+    color: #111827;
+}
+
+.group-description {
+    margin-bottom: 1.25rem;
+}
+
+.description-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+
+.description-text {
+    color: #4b5563;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.group-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid #f3f4f6;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.privacy-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.9rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.badge-public {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge-private {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.timestamp {
+    color: #9ca3af;
+    font-size: 0.85rem;
+}
+
+.btn-clean {
+    padding: 0.6rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #2563eb;
+    color: white;
+}
+
+.btn-warning {
+    background: #f59e0b;
+    color: white;
+}
+
+.btn-warning:hover {
+    background: #d97706;
+    color: white;
+}
+
+.btn-success {
+    background: #10b981;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #059669;
+    color: white;
+}
+
+.btn-secondary {
+    background: #e5e7eb;
+    color: #6b7280;
+    cursor: not-allowed;
+}
+
+.btn-danger-disabled {
+    background: #fee2e2;
+    color: #dc2626;
+    cursor: not-allowed;
+}
+
+.dropdown-toggle-clean {
+    background: white;
+    border: 1px solid #d1d5db;
+    color: #374151;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dropdown-toggle-clean:hover {
+    background: #f9fafb;
+    border-color: #9ca3af;
+}
+
+.dropdown-menu {
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-item {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+}
+
+#groupsContainer {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+    .group-stats {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .group-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn-clean {
+        width: 100%;
+        text-align: center;
+    }
+}
