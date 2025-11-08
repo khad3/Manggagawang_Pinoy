@@ -159,8 +159,6 @@
         </div>
     </div>
 </div>
-
-
 <!-- Image Viewer Modal -->
 <div id="imageViewerModal" class="image-viewer-modal" style="display: none;">
     <div class="image-viewer-overlay"></div>
@@ -175,8 +173,6 @@
         <div class="image-viewer-caption" id="viewerCaption"></div>
     </div>
 </div>
-
-
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
