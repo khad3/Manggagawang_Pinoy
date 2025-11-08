@@ -354,8 +354,9 @@
                         "Santo Cristo", "Santo Niño I", "Santo Niño II"
                     ],
 
-                    "Alfonso": ["Esperanza Ibaba", "Esperanza Ilaya", "Kaysuyo", "Kaytitinga I, II, and III",
-                        "Luksuhin and Luksuhin Ilaya", "Mangas I and II"
+                    "Alfonso": ["Esperanza Ibaba", "Esperanza Ilaya", "Kaysuyo", "Kaysuyo Ibaba",
+                        "Kaysuyo Ilaya", "Kaytitinga I", "Kaytitinga II", "Kaytitinga III",
+                        "Luksuhin Ibaba", "Luksuhin Ilaya", "Mangas I", "Mangas II"
                     ],
 
                     "Amadeo": ["Barangay I (Poblacion)", "Barangay II (Poblacion)", "Barangay III (Poblacion)",
@@ -363,7 +364,8 @@
                     ],
 
                     "Bacoor": ["Alima", "Banalo", "Camposanto", "Daang Bukid", "Habay I", "Mambog I",
-                        "Mambog IIQueens Row East", "Queens Row West", "San Nicolas IZapote I", "Zapote II"
+                        "Mambog II", "Queens Row East", "Queens Row West", "San Nicolas I", "San Nicolas II",
+                        "San Zapote I", "Zapote II"
                     ],
 
                     "Carmona": ["Bancal", "Cabilang Baybay", "Lantic", "Mabuhay", "Maduya", "Milagro"],
@@ -392,7 +394,7 @@
                     "Imus": ["Anabu I-A", "Anabu I-B", "Anabu I-C",
                         "Malagasang I-A", "Malagasang I-B", "Malagasang I-C",
                         "Medicion I-A", "Medicion I-B", "Medicion I-C",
-                        "Pag-asa I", "Pag-asa II", ,
+                        "Pag-asa I", "Pag-asa II", "Pag-asa III",
                         "Poblacion I-A", "Poblacion I-B", "Poblacion I-C", "Poblacion II-A"
                     ],
 
