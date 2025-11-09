@@ -15,6 +15,91 @@
         rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/applicant/friendlist.css') }}">
     <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}" />
+
+    <style>
+        /* Additional Responsive Styles Only */
+        @media (max-width: 767px) {
+            .main-container {
+                padding: 0;
+            }
+
+            .chat-card {
+                position: relative;
+                overflow: hidden;
+                height: calc(100vh - 60px);
+            }
+
+            .friends-section {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 2;
+                transition: transform 0.3s ease;
+                background: #fff;
+            }
+
+            .friends-section.hidden {
+                transform: translateX(-100%);
+            }
+
+            .chat-section {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 1;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .chat-section.active {
+                transform: translateX(0);
+                z-index: 3;
+            }
+
+            .back-to-friends {
+                display: block !important;
+            }
+
+            /* Proper message container height on mobile */
+            .messages-container {
+                flex: 1;
+                overflow-y: auto;
+                min-height: auto !important;
+                max-height: none !important;
+            }
+
+            .message-input {
+                flex-shrink: 0;
+            }
+
+            /* Friend request mobile responsive */
+            .friend-request-card {
+                flex-wrap: wrap;
+            }
+
+            .friend-request-card .ms-auto {
+                width: 100%;
+                margin-left: 0 !important;
+                margin-top: 0.5rem;
+                display: flex;
+                gap: 0.5rem;
+            }
+
+            .friend-request-card .ms-auto form {
+                flex: 1;
+            }
+
+            .friend-request-card .ms-auto button {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -50,10 +135,7 @@
     <div class="main-container">
         <div class="chat-card">
             <!-- Friends Section -->
-            <div class="friends-section">
-                <button class="back-to-friends d-md-none" onclick="toggleFriends()">
-                    <i class="fas fa-arrow-left"></i> Back to Chat
-                </button>
+            <div class="friends-section" id="friendsSection">
                 <div class="friends-header">
                     <h3>
                         <i class="fas fa-users me-2"></i>Friends List
@@ -138,7 +220,8 @@
                         @if ($friendUser && $friendUser->personal_info)
                             <a href="?friend_id={{ $friendUser->id }}"
                                 class="friend-card {{ $isActive ? 'active' : '' }} {{ $unreadCount > 0 ? 'has-unread' : '' }}"
-                                data-friend-id="{{ $friendUser->id }}" data-unread-count="{{ $unreadCount }}">
+                                data-friend-id="{{ $friendUser->id }}" data-unread-count="{{ $unreadCount }}"
+                                onclick="handleFriendClick(event, {{ $friendUser->id }})">
                                 <div class="friend-avatar">
                                     {{ strtoupper(substr($friendUser->personal_info->first_name, 0, 1)) }}{{ strtoupper(substr($friendUser->personal_info->last_name, 0, 1)) }}
 
@@ -177,7 +260,7 @@
             </div>
 
             <!-- Chat Section -->
-            <div class="chat-section">
+            <div class="chat-section" id="chatSection">
                 @php
                     $selectedFriendId = request('friend_id');
                     $selectedFriend = null;
@@ -207,9 +290,14 @@
                 @endphp
 
                 @if ($selectedFriend)
+                    <!-- Back to Friends Button -->
+                    <button class="back-to-friends d-md-none" onclick="showFriendsSection()">
+                        <i class="fas fa-arrow-left"></i> Back to Friends
+                    </button>
+
                     <!-- Chat Header -->
                     <div class="chat-header">
-                        <button class="btn btn-sm btn-outline-primary d-md-none" onclick="toggleFriends()">
+                        <button class="btn btn-sm btn-outline-primary d-md-none" onclick="showFriendsSection()">
                             <i class="fas fa-users me-1"></i> Friends
                         </button>
 
