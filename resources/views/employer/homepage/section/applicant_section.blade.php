@@ -96,11 +96,41 @@
                                             {{ strtoupper(substr($applicant->personal_info->first_name ?? 'N', 0, 1)) }}
                                             {{ strtoupper(substr($applicant->personal_info->last_name ?? 'A', 0, 1)) }}
                                         </div>
+                                        @php
+                                            $recentHire = \App\Models\Applicant\ApplyJobModel::where(
+                                                'applicant_id',
+                                                $applicant->id,
+                                            )
+                                                ->where('status', 'approved')
+                                                ->orderBy('created_at', 'desc')
+                                                ->first();
+
+                                            $statusLabel = null;
+                                            $statusTime = null;
+
+                                            if ($recentHire && $recentHire->created_at >= now()->subDays(30)) {
+                                                $statusLabel = 'Recently Hired';
+                                                $statusTime = $recentHire->created_at->diffForHumans();
+                                            }
+                                        @endphp
+
                                         <div class="applicant-details">
-                                            <h6>{{ $applicant->personal_info->first_name ?? 'N/A' }}
-                                                {{ $applicant->personal_info->last_name ?? '' }}</h6>
-                                            <p>{{ $applicant->email ?? 'N/A' }}</p>
+                                            <h6 class="fw-semibold mb-1">
+                                                {{ $applicant->personal_info->first_name ?? 'N/A' }}
+                                                {{ $applicant->personal_info->last_name ?? '' }}
+                                            </h6>
+
+                                            <p class="text-muted mb-1">{{ $applicant->email ?? 'N/A' }}</p>
+
+                                            @if ($statusLabel)
+                                                <span class="badge bg-success px-3 py-2 rounded-pill shadow-sm">
+                                                    {{ $statusLabel }}
+                                                    <small class="text-light ms-1">({{ $statusTime }})</small>
+                                                </span>
+                                            @endif
                                         </div>
+
+
                                     </div>
                                 </td>
                                 <td class="position-col" data-label="Position">
