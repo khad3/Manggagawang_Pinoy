@@ -401,8 +401,8 @@
     let lastSeenUpdateTime = 0;
     let lastMessageId = 0;
     let isChatModalOpen = false;
-    let isActivelyViewingMessages = false; // NEW: Only true when scrolled and viewing
-    let messageReadTimer = null; // NEW: Timer for delayed read marking
+    let isActivelyViewingMessages = false;
+    let messageReadTimer = null;
 
     const messagesByEmployer = {};
     allMessages.forEach(msg => {
@@ -435,7 +435,6 @@
         isActivelyViewingMessages = false;
         currentEmployerId = null;
 
-        // Clear any pending read timers
         if (messageReadTimer) {
             clearTimeout(messageReadTimer);
             messageReadTimer = null;
@@ -459,14 +458,13 @@
     }
 
     function loadConversation(employerId) {
-        // Clear previous timer
         if (messageReadTimer) {
             clearTimeout(messageReadTimer);
             messageReadTimer = null;
         }
 
         currentEmployerId = employerId;
-        isActivelyViewingMessages = false; // Reset on load
+        isActivelyViewingMessages = false;
 
         const replyEmployerInput = document.getElementById('replyEmployerId');
         replyEmployerInput.value = employerId;
@@ -531,13 +529,12 @@
             document.querySelector('.employers-sidebar').classList.add('hide-mobile');
         }
 
-        // Set a timer to mark as actively viewing after 3 seconds at bottom
         messageReadTimer = setTimeout(() => {
             if (isChatModalOpen && currentEmployerId === employerId && isUserAtBottom && isPageVisible) {
                 isActivelyViewingMessages = true;
                 markMessagesAsRead(employerId);
             }
-        }, 3000); // 3 second delay before marking as read
+        }, 3000);
     }
 
     function showEmployersList() {
@@ -650,7 +647,6 @@
         const wasAtBottom = isUserAtBottom;
         isUserAtBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - threshold;
 
-        // If user just scrolled to bottom, start timer for marking as read
         if (!wasAtBottom && isUserAtBottom && currentEmployerId && !isActivelyViewingMessages) {
             if (messageReadTimer) {
                 clearTimeout(messageReadTimer);
@@ -749,7 +745,6 @@
                         isUserAtBottom = true;
                     }, 10);
 
-                    // Only mark as read if actively viewing
                     if (isActivelyViewingMessages && isPageVisible) {
                         setTimeout(() => markMessagesAsRead(currentEmployerId), 1000);
                     }
@@ -951,10 +946,9 @@
 
 
     // ========================================
-    // MARK AS READ FUNCTION - COMPLETELY REWRITTEN
+    // MARK AS READ FUNCTION
     // ========================================
     function markMessagesAsRead(employerId) {
-        // CRITICAL: Only mark as read if user is ACTIVELY viewing messages
         if (!isActivelyViewingMessages || !isChatModalOpen || !isPageVisible) {
             console.log('⛔ NOT marking as read - User not actively viewing');
             return;
@@ -969,7 +963,6 @@
             return;
         }
 
-        // Prevent too frequent requests
         const now = Date.now();
         if (now - lastSeenUpdateTime < 5000) {
             console.log('⏱️ Rate limit - waiting before marking as read');
@@ -1087,7 +1080,7 @@
             }
         });
 
-        // Add scroll listener - UPDATED with new logic
+        // Add scroll listener
         const container = document.getElementById('messagesContainer');
         if (container) {
             container.addEventListener('scroll', () => {
@@ -1095,19 +1088,17 @@
             });
         }
 
-        // Page visibility handling - UPDATED
+        // Page visibility handling
         document.addEventListener('visibilitychange', function() {
             isPageVisible = !document.hidden;
 
             if (!isPageVisible) {
-                // User left the page - stop treating as actively viewing
                 isActivelyViewingMessages = false;
                 if (messageReadTimer) {
                     clearTimeout(messageReadTimer);
                     messageReadTimer = null;
                 }
             } else if (isUserAtBottom && currentEmployerId && isChatModalOpen) {
-                // User came back - restart the timer
                 messageReadTimer = setTimeout(() => {
                     if (isUserAtBottom && isChatModalOpen && isPageVisible) {
                         isActivelyViewingMessages = true;
@@ -1125,22 +1116,20 @@
         // ========================================
         // START REAL-TIME POLLING
         // ========================================
-        console.log('🚀 Starting real-time message system...');
+        console.log('🚀 Starting real-time message system with profanity filter...');
 
-        // Refresh messages every 2 seconds ONLY if modal is open
         setInterval(() => {
             if (isPageVisible && isChatModalOpen && currentEmployerId) {
                 refreshMessages();
             }
         }, 2000);
 
-        // Initial refresh after 1 second
         setTimeout(() => {
             if (isChatModalOpen && currentEmployerId) {
                 refreshMessages();
             }
         }, 1000);
 
-        console.log('Real-time messaging active (polling every 2 seconds)');
+        console.log('✅ Real-time messaging active with auto profanity filter');
     });
 </script>
