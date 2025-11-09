@@ -224,82 +224,145 @@
                window.addEventListener('resize', drawSuspendedChart);
            </script>
 
-           </ <!-- Recent Activity Log -->
+           <!-- Recent Activity Log -->
            <div class="report-card" style="grid-column: 1 / -1;">
-               <div class="report-card-header">
-                   <h3 class="report-title">Recent Activity logs</h3>
+               <div class="report-card-header d-flex justify-content-between align-items-center">
+                   <h3 class="report-title">Recent Activity Logs</h3>
                    <div class="report-actions">
                        <button class="action-btn btn-view" title="View All">
                            <i class="fas fa-list"></i>
                        </button>
                    </div>
                </div>
-               <!--- Activity logs status --->
+
+               <!-- Filter Buttons -->
+               <div class="activity-filters mb-3 d-flex flex-wrap gap-2">
+                   <button class="btn btn-sm btn-outline-primary filter-btn active" data-filter="all">All</button>
+                   <button class="btn btn-sm btn-outline-secondary filter-btn"
+                       data-filter="certification">Certifications</button>
+                   <button class="btn btn-sm btn-outline-success filter-btn" data-filter="job">Jobs</button>
+                   <button class="btn btn-sm btn-outline-warning filter-btn"
+                       data-filter="announcement">Announcements</button>
+                   <button class="btn btn-sm btn-outline-danger filter-btn" data-filter="report">Reports</button>
+                   <button class="btn btn-sm btn-outline-info filter-btn" data-filter="rating">Ratings</button>
+                   <button class="btn btn-sm btn-outline-dark filter-btn" data-filter="system">System</button>
+               </div>
+
                <div id="activityLog">
                    @foreach ($activityLogs as $log)
-                       <div class="activity-item">
+                       @php
+                           $action = $log['action'];
+                           $category = 'system'; // default
+
+                           if (Str::contains($action, ['certification'])) {
+                               $category = 'certification';
+                           } elseif (Str::contains($action, ['job', 'interview'])) {
+                               $category = 'job';
+                           } elseif (Str::contains($action, ['announcement', 'post_announcement'])) {
+                               $category = 'announcement';
+                           } elseif (Str::contains($action, ['report'])) {
+                               $category = 'report';
+                           } elseif (Str::contains($action, ['rating'])) {
+                               $category = 'rating';
+                           }
+                       @endphp
+
+                       <div class="activity-item" data-category="{{ $category }}">
                            <div class="activity-icon activity-{{ $log['action'] }}">
-                               @if ($log['action'] === 'banned')
-                                   <i class="fa-solid fa-ban"></i>
-                               @elseif($log['action'] === 'unbanned')
-                                   <i class="fas fa-check"></i>
-                               @elseif($log['action'] === 'suspended')
-                                   <i class="fas fa-pause"></i>
-                               @elseif($log['action'] === 'post')
-                                   <i class="fas fa-bullhorn"></i>
-                               @elseif($log['action'] === 'login')
-                                   <i class="fas fa-sign-in-alt"></i>
-                               @elseif($log['action'] === 'created_account')
-                                   <i class="fas fa-user-plus"></i>
-                               @elseif($log['action'] === 'upload_certification')
-                                   <i class="fas fa-certificate" style="color: gold;"></i>
-                               @elseif($log['action'] === 'approved_certification')
-                                   <i class="bi bi-patch-check-fill" style="color: green;"></i>
-                               @elseif($log['action'] === 'rejected_certification')
-                                   <i class="bi bi-patch-minus-fill" style="color: red;"></i>
-                               @elseif($log['action'] === 'request_revision_certification')
-                                   <i class="bi bi-patch-exclamation-fill" style="color: orange;"></i>
-                               @elseif($log['action'] === 'apply_job')
-                                   <i class="bi bi-file-earmark-person-fill" style="color:brown;"></i>
-                               @elseif($log['action'] === 'reject_job')
-                                   <i class="bi bi-x-circle-fill text-danger" style="color:red;"></i>
-                               @elseif($log['action'] === 'post_announcement')
-                                   <i class="bi bi-megaphone-fill" style="color:green"></i>
-                               @elseif($log['action'] === 'report_job')
-                                   <i class="bi bi-flag-fill" style="color:darkred"></i>
-                               @elseif($log['action'] === 'report_applicant')
-                                   <i class="bi bi-flag-fill" style="color:darkred"></i>
-                               @elseif($log['action'] === 'approved_job')
-                                   <i class="bi bi-patch-check-fill" style="color:green;"></i>
-                               @elseif($log['action'] === 'published_job')
-                                   <i class="bi bi-briefcase-fill text-success"></i>
-                               @elseif($log['action'] === 'draft_job')
-                                   <i class="bi bi-briefcase text-warning"></i>
-                               @elseif($log['action'] === 'interview_job')
-                                   <i class="fas fa-calendar text-info-balanced me-1" style="color: blue;"></i>
-                               @elseif($log['action'] === 'send_rating_to_job_post')
-                                   <i class="bi bi-star-fill" style="color: gold;"></i>
-                               @elseif($log['action'] === 'send_rating_to_applicant')
-                                   <i class="bi bi-star-fill" style="color: gold;"></i>
-                               @endif
+                               @switch($log['action'])
+                                   @case('banned')
+                                       <i class="fa-solid fa-ban text-danger"></i>
+                                   @break
+
+                                   @case('unbanned')
+                                       <i class="fas fa-check text-success"></i>
+                                   @break
+
+                                   @case('suspended')
+                                       <i class="fas fa-pause text-warning"></i>
+                                   @break
+
+                                   @case('post')
+                                       <i class="fas fa-bullhorn text-info"></i>
+                                   @break
+
+                                   @case('login')
+                                       <i class="fas fa-sign-in-alt text-primary"></i>
+                                   @break
+
+                                   @case('created_account')
+                                       <i class="fas fa-user-plus text-success"></i>
+                                   @break
+
+                                   @case('upload_certification')
+                                       <i class="fas fa-certificate" style="color: gold;"></i>
+                                   @break
+
+                                   @case('approved_certification')
+                                       <i class="bi bi-patch-check-fill" style="color: green;"></i>
+                                   @break
+
+                                   @case('rejected_certification')
+                                       <i class="bi bi-patch-minus-fill" style="color: red;"></i>
+                                   @break
+
+                                   @case('request_revision_certification')
+                                       <i class="bi bi-patch-exclamation-fill" style="color: orange;"></i>
+                                   @break
+
+                                   @case('apply_job')
+                                       <i class="bi bi-file-earmark-person-fill" style="color:brown;"></i>
+                                   @break
+
+                                   @case('reject_job')
+                                       <i class="bi bi-x-circle-fill text-danger"></i>
+                                   @break
+
+                                   @case('approved_job')
+                                       <i class="bi bi-patch-check-fill text-success"></i>
+                                   @break
+
+                                   @case('published_job')
+                                       <i class="bi bi-briefcase-fill text-success"></i>
+                                   @break
+
+                                   @case('draft_job')
+                                       <i class="bi bi-briefcase text-warning"></i>
+                                   @break
+
+                                   @case('interview_job')
+                                       <i class="fas fa-calendar" style="color: blue;"></i>
+                                   @break
+
+                                   @case('post_announcement')
+                                       <i class="bi bi-megaphone-fill" style="color:green"></i>
+                                   @break
+
+                                   @case('report_job')
+                                       <i class="bi bi-flag-fill" style="color:darkred"></i>
+                                   @break
+
+                                   @case('report_applicant')
+                                       <i class="bi bi-flag-fill" style="color:darkred"></i>
+                                   @break
+
+                                   @case('send_rating_to_job_post')
+                                       <i class="bi bi-star-fill" style="color: gold;"></i>
+                                   @break
+
+                                   @case('send_rating_to_applicant')
+                                       <i class="bi bi-star-fill" style="color: gold;"></i>
+                                   @break
+
+                                   @default
+                                       <i class="fas fa-info-circle text-secondary"></i>
+                               @endswitch
                            </div>
+
                            <div class="activity-content">
-                               @php
-                                   $adminActions = ['banned', 'unbanned', 'suspended', 'post_announcement'];
-
-                                   // Convert action to professional label
-                                   $actionLabel = ucwords(str_replace('_', ' ', $log['action']));
-                               @endphp
-
-                               @if (in_array($log['action'], $adminActions))
-                                   <h6>Admin {{ $actionLabel }}</h6>
-                               @else
-                                   <h6>User {{ $actionLabel }}</h6>
-                               @endif
-
+                               <h6>{{ ucwords(str_replace('_', ' ', $log['action'])) }}</h6>
                                <p>{!! $log['description'] !!}</p>
 
-                               {{-- Display attachment as a button if exists --}}
                                @if (!empty($log['attachment']))
                                    <div class="mt-2">
                                        <strong>Attachment:</strong><br>
@@ -316,9 +379,30 @@
                            </div>
                        </div>
                    @endforeach
-
                </div>
-
            </div>
+
+           <script>
+               document.querySelectorAll('.filter-btn').forEach(button => {
+                   button.addEventListener('click', () => {
+                       // remove active class from all buttons
+                       document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                       button.classList.add('active');
+
+                       const filter = button.dataset.filter;
+                       const items = document.querySelectorAll('#activityLog .activity-item');
+
+                       items.forEach(item => {
+                           if (filter === 'all' || item.dataset.category === filter) {
+                               item.style.display = 'flex';
+                           } else {
+                               item.style.display = 'none';
+                           }
+                       });
+                   });
+               });
+           </script>
+
+
        </div>
    </section>
