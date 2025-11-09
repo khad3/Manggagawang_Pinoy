@@ -175,6 +175,76 @@
 </div>
 
 <script>
+    // ========================================
+    // PROFANITY FILTER SYSTEM - AUTO FILTER
+    // ========================================
+
+    // Comprehensive bad words list in multiple languages
+    const profanityList = [
+        // English profanity
+        'fuck', 'fucking', 'fucked', 'fucker', 'fucks', 'shit', 'shitty', 'shitting', 'bitch', 'bitches',
+        'bitching', 'ass', 'asses', 'asshole', 'assholes', 'bastard', 'bastards', 'damn', 'damned',
+        'dammit', 'crap', 'crappy', 'piss', 'pissed', 'pissing', 'dick', 'dicks', 'cock', 'cocks',
+        'pussy', 'pussies', 'cunt', 'cunts', 'whore', 'whores', 'slut', 'sluts', 'slutty', 'fag',
+        'fags', 'faggot', 'faggots', 'nigger', 'niggers', 'nigga', 'niggas', 'retard', 'retarded',
+        'retards', 'idiot', 'idiots', 'idiotic', 'moron', 'morons', 'moronic', 'dumbass', 'dumbasses',
+        'motherfucker', 'motherfuckers', 'motherfucking', 'bullshit', 'goddamn', 'goddam', 'wtf',
+        'stfu', 'milf', 'dildo', 'dildos', 'jackass', 'jackasses', 'SOB', 'son of a bitch',
+        'piece of shit', 'bitch ass', 'dumb fuck', 'shut up', 'shutup', 'stupid', 'stupidity',
+        'hell', 'hells', 'bloody', 'bollocks', 'bugger', 'wanker', 'twat', 'prick', 'douche',
+
+        // Tagalog/Filipino profanity
+        'putang', 'putangina', 'putanginamo', 'puta', 'putas', 'gago', 'gaga', 'gagong', 'tangina',
+        'tanginamo', 'tarantado', 'tarantados', 'tarantada', 'ulol', 'ulols', 'bobo', 'bobos',
+        'tanga', 'tangang', 'pakyu', 'pakyou', 'punyeta', 'punyemas', 'hayop', 'hayop ka',
+        'hindot', 'kantot', 'kantotan', 'kantutan', 'buwisit', 'bwisit', 'leche', 'lecheng',
+        'yawa', 'yawang', 'peste', 'pesteng', 'hinayupak', 'hayup', 'animal', 'kupal', 'kupals',
+        'kingina', 'kinginamo', 'potangina', 'potanginamo', 'putragis', 'putraydis', 'siraulo',
+        'inutil', 'walang kwenta', 'walang hiya', 'gunggong', 'lintik', 'lintek', 'pukinangina',
+        'puke', 'puki', 'tite', 'titi', 'bilat', 'tamod', 'jakol', 'salsal', 'chupa', 'sup sup', 'shibal',
+        'taenamo',
+        'tanginamo', 'tangina', 'tanginamo', 'tangina', 'tanginamo', 'tangina', 'tangainamo',
+
+        // Spanish profanity
+        'puta', 'putas', 'mierda', 'mierdas', 'coño', 'coños', 'joder', 'jodido', 'pendejo',
+        'pendejos', 'pendeja', 'idiota', 'idiotas', 'estúpido', 'estupido', 'estúpida',
+        'carajo', 'carajos', 'puto', 'putos', 'cabron', 'cabrones', 'cabrona', 'culo', 'culos',
+        'verga', 'vergas', 'chingar', 'chingado', 'pinche', 'mamada', 'culero', 'hijueputa',
+        'gonorrea', 'malparido', 'marica', 'maricon',
+
+        // Common variations and leetspeak
+        'fck', 'fuk', 'fuq', 'fack', 'sh1t', 'sh!t', 'sh*t', 'b1tch', 'b!tch', 'biatch',
+        'beotch', 'a$$', 'a**', '@ss', 'fvck', 'phuck', 'phuk', 'azz', 'p00sy', 'p*ssy',
+        'c0ck', 'c*ck', 'd1ck', 'd!ck', 'cnt', 'fcuk', 'fk', 'sht', 'btch', 'shtty',
+        'dafuq', 'da fuq', 'af', 'asf', 'mf', 'mofo', 'sonovabitch', 'sumofabitch'
+    ];
+
+    /**
+     * Filter profanity from text - automatically replaces with asterisks
+     */
+    function filterProfanity(text) {
+        if (!text) return text;
+
+        let filteredText = text;
+
+        // Sort by length (longest first) to catch longer phrases before shorter ones
+        const sortedList = [...profanityList].sort((a, b) => b.length - a.length);
+
+        sortedList.forEach(word => {
+            // Escape special regex characters
+            const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp('\\b' + escapedWord + '\\b', 'gi');
+            filteredText = filteredText.replace(regex, (match) => {
+                return '*'.repeat(match.length);
+            });
+        });
+
+        return filteredText;
+    }
+
+    // ========================================
+    // MAIN MESSAGING SCRIPT
+    // ========================================
     document.addEventListener('DOMContentLoaded', () => {
         let retrieveMessages = @json($retrieveMessages);
         const employerId = "{{ session('employer_id') }}";
@@ -466,14 +536,22 @@
             });
         });
 
-        // ---------- Send Message ----------
+        // ---------- Send Message WITH PROFANITY FILTER ----------
         chatComposer.addEventListener('submit', async e => {
             e.preventDefault();
-            const message = messageInput.value.trim();
+            let message = messageInput.value.trim();
             const file = fileInput.files[0];
             if (!message && !file) return;
 
+            // AUTOMATICALLY FILTER PROFANITY
+            if (message) {
+                message = filterProfanity(message);
+            }
+
             const formData = new FormData(chatComposer);
+            // Update the message in FormData with filtered version
+            formData.set('message', message);
+
             messageInput.value = '';
             fileInput.value = '';
             uploadPreview.innerHTML = '';
@@ -553,5 +631,7 @@
         // ---------- Init ----------
         updateGlobalNotificationCount();
         window.addEventListener('beforeunload', stopMessagePolling);
+
+        console.log(' Employer messaging system loaded with auto profanity filter');
     });
 </script>

@@ -361,6 +361,65 @@
     </div>
 
     <script>
+        // ============ PROFANITY FILTER ============
+        const badWords = [
+            'fuck', 'shit', 'bitch', 'asshole', 'damn', 'bastard', 'crap', 'piss',
+            'dick', 'pussy', 'cock', 'slut', 'whore', 'fag', 'nigger', 'cunt',
+            'bullshit', 'motherfucker', 'ass', 'hell', 'prick', 'douchebag',
+            'tanga', 'gago', 'putangina', 'tarantado', 'bobo', 'ulol', 'inutil',
+            'pokpok', 'puta', 'tangina', 'leche', 'peste', 'animal', 'syet', 'hindot', 'stupid', 'stupidity',
+            'hell', 'hells', 'bloody', 'bollocks', 'bugger', 'wanker', 'twat', 'prick', 'douche', 'kwenta',
+            'walang kwenta'
+        ];
+
+        function filterProfanity(text) {
+            let filteredText = text;
+            badWords.forEach(word => {
+                const regex = new RegExp('\\b' + word + '\\b', 'gi');
+                filteredText = filteredText.replace(regex, (match) => {
+                    return '*'.repeat(match.length);
+                });
+            });
+            return filteredText;
+        }
+
+        // ============ MOBILE NAVIGATION ============
+        function handleFriendClick(event, friendId) {
+            if (window.innerWidth < 768) {
+                event.preventDefault();
+                window.location.href = `?friend_id=${friendId}`;
+                setTimeout(() => {
+                    document.getElementById('friendsSection').classList.add('hidden');
+                    document.getElementById('chatSection').classList.add('active');
+                }, 50);
+            }
+        }
+
+        function showFriendsSection() {
+            document.getElementById('chatSection').classList.remove('active');
+            document.getElementById('friendsSection').classList.remove('hidden');
+        }
+
+        // Check if chat should be shown on mobile on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const friendId = urlParams.get('friend_id');
+
+            if (window.innerWidth < 768 && friendId) {
+                document.getElementById('friendsSection').classList.add('hidden');
+                document.getElementById('chatSection').classList.add('active');
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 768) {
+                document.getElementById('friendsSection').classList.remove('hidden');
+                document.getElementById('chatSection').classList.remove('active');
+            }
+        });
+
+        // ============ ORIGINAL FUNCTIONALITY ============
         let lastMessageCount = {{ $currentMessages ? $currentMessages->count() : 0 }};
         let isUserAtBottom = true;
         let typingTimeout;
@@ -673,9 +732,15 @@
             setInterval(refreshNotificationCounts, 5000);
         };
 
-        // Handle message form submission
+        // Handle message form submission WITH PROFANITY FILTER
         document.getElementById('messageForm')?.addEventListener('submit', function(e) {
             e.preventDefault();
+
+            const messageInput = document.getElementById('messageInput');
+            const originalMessage = messageInput.value.trim();
+
+            // Apply profanity filter
+            const filteredMessage = filterProfanity(originalMessage);
 
             // Stop typing indicator when sending message
             if (isCurrentlyTyping) {
@@ -692,6 +757,8 @@
             }
 
             const formData = new FormData(this);
+            // Replace the message with filtered version
+            formData.set('message', filteredMessage);
 
             fetch(this.action, {
                     method: 'POST',

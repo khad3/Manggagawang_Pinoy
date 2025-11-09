@@ -341,6 +341,56 @@
 
 <script>
     // ========================================
+    // PROFANITY FILTER SYSTEM - AUTO FILTER
+    // ========================================
+
+    // Comprehensive bad words list in multiple languages
+    const profanityList = [
+        // English profanity
+        'fuck', 'shit', 'bitch', 'ass', 'bastard', 'damn', 'crap', 'piss',
+        'dick', 'cock', 'pussy', 'cunt', 'whore', 'slut', 'fag', 'nigger',
+        'retard', 'idiot', 'moron', 'dumbass', 'asshole', 'motherfucker',
+        'bullshit', 'goddamn', 'wtf', 'stfu', 'milf', 'dildo', 'jackass',
+        'piece of shit', 'bitch ass', 'dumb fuck', 'shut up', 'stupid',
+        'hell', 'bloody', 'bugger', 'wanker', 'twat', 'douche',
+
+        // Tagalog/Filipino profanity
+        'putang', 'putangina', 'puta', 'gago', 'tangina', 'tarantado',
+        'ulol', 'bobo', 'tanga', 'tarantada', 'pakyu', 'punyeta',
+        'hayop', 'hindot', 'kantot', 'buwisit', 'leche', 'yawa',
+        'peste', 'hinayupak', 'animal', 'kupal', 'kingina', 'potangina',
+        'taena', 'tanginamo', 'tangina', 'tanginamo', 'tangina', 'tanginamo',
+        'tangina', 'tanginamo', 'tangina', 'tanginamo', 'tangina', 'tangainamo',
+        'shibal',
+
+        // Spanish profanity
+        'puta', 'mierda', 'coño', 'joder', 'pendejo', 'idiota',
+        'estúpido', 'carajo', 'puto', 'cabron', 'culo', 'verga',
+
+        // Common variations and leetspeak
+        'fck', 'fuk', 'sh1t', 'b1tch', 'a$', 'fvck', 'phuck',
+        'azz', 'biatch', 'beotch', 'p00sy', 'c0ck', 'sh!t'
+    ];
+
+    /**
+     * Filter profanity from text - automatically replaces with asterisks
+     */
+    function filterProfanity(text) {
+        if (!text) return text;
+
+        let filteredText = text;
+
+        profanityList.forEach(word => {
+            const regex = new RegExp('\\b' + word + '\\b', 'gi');
+            filteredText = filteredText.replace(regex, (match) => {
+                return '*'.repeat(match.length);
+            });
+        });
+
+        return filteredText;
+    }
+
+    // ========================================
     // VARIABLES & INITIALIZATION
     // ========================================
     let currentEmployerId = null;
@@ -989,7 +1039,7 @@
     }
 
     // ========================================
-    // FORM SUBMISSION
+    // FORM SUBMISSION WITH AUTO PROFANITY FILTER
     // ========================================
     document.addEventListener('DOMContentLoaded', function() {
         const replyForm = document.getElementById('replyForm');
@@ -997,14 +1047,22 @@
         replyForm.addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const formData = new FormData(replyForm);
-            const messageText = document.getElementById('replyInput').value.trim();
+            let messageText = document.getElementById('replyInput').value.trim();
             const attachmentFile = document.getElementById('attachment').files[0];
 
             if (!messageText && !attachmentFile) {
                 return;
             }
 
+            // Create FormData and automatically filter profanity from the message
+            const formData = new FormData(replyForm);
+
+            if (messageText) {
+                const filteredMessage = filterProfanity(messageText);
+                formData.set('message', filteredMessage);
+            }
+
+            // Clear input and preview
             document.getElementById('replyInput').value = '';
             document.getElementById('attachment').value = '';
             document.getElementById('attachmentPreview').innerHTML = '';
