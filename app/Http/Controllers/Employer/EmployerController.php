@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Employer;
 
 use App\Http\Controllers\Controller;
+use App\Models\Employer\InterviewScreeningModel;
 use App\Models\Employer\PersonalInformationModel;
+use App\Models\Employer\SpecialRequirementModel;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
@@ -47,6 +49,115 @@ use App\Mail\Applicant\ResetPasswordMail;
 
 class EmployerController extends Controller
 {
+
+    //Update registration
+  public function updateCompanyDetails(Request $request, $employer_id)
+{
+    $employer_id = $employer_id ?? session('employer_id');
+
+    CompanyAddress::updateOrCreate(
+        ['employer_id' => $employer_id],
+        [
+            'company_name' => $request->company_name,
+            'company_complete_address' => $request->company_complete_address,
+        ]
+    );
+
+    JobDetails::updateOrCreate(
+        ['employer_id' => $employer_id],
+        [
+            'department' => $request->department,
+            'job_description' => $request->job_description,
+        ]
+    );
+
+    return back()->with('success', 'Company details updated successfully.');
+}
+
+
+public function contactInformationUpdateDetails(Request $request, $employer_id) {
+    $employer_id = $employer_id ?? session('employer_id');  
+
+    PersonalInformationModel::updateOrCreate(
+        ['employer_id' => $employer_id],
+        [
+            'first_name' => $request->firstName,
+            'last_name' => $request->lastName,
+            'phone_number' => $request->phone_number,
+            'email' => $request->email,
+            'company_complete_address' => $request->address,
+           
+        ]
+    );
+
+    CommunicationPreference::updateOrCreate(
+        ['employer_id' => $employer_id],
+        [
+            'contact_method' => $request->contact_method,
+            'contact_time' => $request->contact_time,
+            'language_preference' => $request->language_preference,
+        ]
+        );
+
+    return back()->with('success', 'Contact information updated successfully.');
+
+}
+
+public function updateJobDetails(Request $request, $employer_id) {
+    $employer_id = $employer_id ?? session('employer_id');
+
+    JobDetails::updateOrCreate(
+        ['employer_id' => $employer_id],
+        [
+            'title' => $request->title,
+            'department' => $request->department,
+            'experience_level' => $request->experience_level,
+            'job_salary' => $request->job_salary_range,
+            'location' => $request->location, // <-- match input name
+            'work_type' => $request->work_type,
+            'job_description' => $request->job_description,
+            'additional_requirements' => $request->additional_requirements,
+            'tesda_certification' => $request->tesda_certification,
+    
+            'benefits' => $request->benefits,
+        ]
+    );
+
+    return back()->with('success', 'Job details updated successfully.');
+}
+
+
+public function updateHiringPreference(Request $request, $employer_id) {
+    $employer_id = $employer_id ?? session('employer_id');
+
+    InterviewScreeningModel::updateOrCreate(
+        ['employer_id' => $employer_id],
+        [
+            'preferred_screening_method' => json_encode($request->preferred_screening_method),
+            'preferred_interview_location' => $request->preferred_interview_location,
+        ]
+    );
+    $predefined = $request->special_requirements ?? []; // from checkboxes
+    $custom = $request->custom_special_requirements ?? ''; // from textarea
+
+    // Split textarea by line and remove empty lines
+    $customArr = array_filter(array_map('trim', explode("\n", $custom)));
+
+    // Merge both arrays
+    $allRequirements = array_values(array_unique(array_merge($predefined, $customArr)));
+
+    SpecialRequirementModel::updateOrCreate(
+    ['employer_id' => $employer_id],
+        ['special_requirements' => json_encode($allRequirements)]
+    );
+
+
+
+    return back()->with('success', 'Hiring preference updated successfully.');
+}
+
+
+
 
     //Insert logo 
     public function insertCompanyLogo(Request $request) {
