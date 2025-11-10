@@ -224,6 +224,12 @@ Route::group(['prefix' => 'employer'], function () {
 //Protected routes for employer
 Route::middleware(['employer.authenticate'])->prefix('employer')->group(function () {
 
+    //Update registration 
+    Route::put('update-contact-information/{employer_id}', [EmployerController::class, 'updateCompanyDetails'])->name('employer.updatecontactinformation.store');
+    Route::put('update-hiring-preference/{employer_id}', [EmployerController::class, 'contactInformationUpdateDetails'])->name('employer.updatehiringpreference.store');
+    Route::put('update-job-details/{employer_id}', [EmployerController::class, 'updateJobDetails'])->name('employer.updatejobdetails.store');
+    Route::put('update-review-reference/{employer_id}', [EmployerController::class, 'updateHiringPreference'])->name('employer.updatereviewreference.store');
+
     Route::get('messages/fetch/{applicantId}', [SendMessageController::class, 'fetchMessages'])->name('applicant.messages.fetch');
     Route::post('typing/{applicantId}', [SendMessageController::class, 'setTypingStatus']);
     //insert loho
