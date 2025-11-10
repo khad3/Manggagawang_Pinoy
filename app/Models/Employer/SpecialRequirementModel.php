@@ -12,7 +12,7 @@ class SpecialRequirementModel extends Model
         
         'employer_id',
         'personal_info_id',
-        'special_requirement',
+        'special_requirements',
         'additional_requirements_or_notes'
 
     ];
