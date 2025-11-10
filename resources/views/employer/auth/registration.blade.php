@@ -226,11 +226,45 @@
                                      </select>
                                  </div>
                                  <div class="col-md-6">
-                                     <label for="salaryRange" class="form-label">Salary Range <span
-                                             style="color: red;">*</span></label>
-                                     <input type="text" name="job_salary_range" class="form-control"
-                                         id="salaryRange" placeholder="e.g. 18,000 - 35,000/month or 500-800/day">
+                                     <label for="salaryRange" class="form-label">
+                                         Salary Range <span style="color: red;">*</span>
+                                     </label>
+                                     <div class="input-group">
+                                         <span class="input-group-text">Minimum</span>
+                                         <input type="number" id="salaryAmount" class="form-control"
+                                             placeholder="e.g. 500" min="0">
+                                         <select id="salaryType" class="form-select" style="max-width: 150px;">
+                                             <option value="per day">per day</option>
+                                             <option value="per month">per month</option>
+                                         </select>
+                                     </div>
+                                     <input type="hidden" name="job_salary_range" id="salaryRange">
+                                     <small class="form-text text-muted">Example: Minimum 500 per day or 15,000 per
+                                         month</small>
                                  </div>
+
+                                 <script>
+                                     const salaryAmount = document.getElementById('salaryAmount');
+                                     const salaryType = document.getElementById('salaryType');
+                                     const salaryRange = document.getElementById('salaryRange');
+
+                                     function formatNumber(num) {
+                                         return num ? num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '';
+                                     }
+
+                                     function updateSalaryText() {
+                                         const amount = formatNumber(salaryAmount.value);
+                                         const type = salaryType.value;
+                                         if (amount) {
+                                             salaryRange.value = `Minimum ${amount} ${type}`;
+                                         } else {
+                                             salaryRange.value = '';
+                                         }
+                                     }
+
+                                     [salaryAmount, salaryType].forEach(el => el.addEventListener('input', updateSalaryText));
+                                 </script>
+
                              </div>
 
                              <!-- Job Description -->
