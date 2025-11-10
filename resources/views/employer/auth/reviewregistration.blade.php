@@ -13,6 +13,7 @@
 </head>
 
 <body>
+
     <nav>
         <div class="navbar-container">
             <div class="nav-logo d-flex align-items-center">
@@ -52,12 +53,36 @@
             </div>
         </div>
     </nav>
+
+
     <!-- Review Content -->
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="card form-card">
                 <div class="registration-container">
                     <div class="container">
+                        @if (session('success'))
+                            <div class="container mt-3">
+                                <div class="alert alert-success alert-dismissible fade show text-center" role="alert"
+                                    id="success-alert">
+                                    {{ session('success') }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                                </div>
+                            </div>
+
+                            <script>
+                                // Hide the alert after 2 seconds (2000 ms)
+                                setTimeout(() => {
+                                    const alert = document.getElementById('success-alert');
+                                    if (alert) {
+                                        alert.classList.remove('show'); // fade out
+                                        alert.classList.add('fade'); // keep bootstrap fade animation
+                                        setTimeout(() => alert.remove(), 500); // remove from DOM after fade
+                                    }
+                                }, 2000);
+                            </script>
+                        @endif
                         <!-- Header -->
                         <div class="text-center mb-5">
                             <h1 class="display-4 fw-bold text-dark mb-3">
@@ -128,7 +153,8 @@
                                     <i class="fas fa-building text-primary me-2"></i>Company
                                     Information
                                 </h5>
-                                <a href="employer-registration.html" class="edit-link">
+                                <a href="#" class="edit-link" data-bs-toggle="modal"
+                                    data-bs-target="#editCompanyModal">
                                     <i class="fas fa-edit me-1"></i>Edit
                                 </a>
                             </div>
@@ -136,17 +162,99 @@
 
                         <div class="card-body">
                             <div class="summary-item">
-                                <strong>{{ $retrievedCompanyAddress->company_name }}</strong>
-                                <div class="text-muted">{{ $retrievedJobDetail->department }}</div>
-                                <div class="small text-muted">{{ $retrievedCompanyAddress->company_complete_address }}
+                                <strong>{{ $retrievedCompanyAddress->company_name ?? '' }}</strong>
+                                <div class="text-muted">{{ $retrievedJobDetail->department ?? '' }}</div>
+                                <div class="small text-muted">
+                                    {{ $retrievedCompanyAddress->company_complete_address ?? '' }}
                                 </div>
                             </div>
                             <div class="mt-3">
                                 <p class="small">
-                                    {{ $retrievedJobDetail->job_description }}
+                                    {{ $retrievedJobDetail->job_description ?? 'No company description provided.' }}
                                 </p>
                             </div>
+                        </div>
 
+
+                        <div class="modal fade" id="editCompanyModal" tabindex="-1"
+                            aria-labelledby="editCompanyModalLabel" aria-hidden="true" data-bs-backdrop="false">
+                            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editCompanyModalLabel">Edit Company Information
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <form
+                                            action="{{ route('employer.updatecontactinformation.store', session('employer_id')) }}"
+                                            method="POST">
+                                            @csrf
+                                            @method('PUT')
+
+
+                                            <div class="row g-3">
+                                                <div class="col-md-12">
+                                                    <label for="companyName" class="form-label">Company Name</label>
+                                                    <input type="text" name="company_name" id="companyName"
+                                                        class="form-control"
+                                                        value="{{ $retrievedCompanyAddress->company_name ?? '' }}"
+                                                        required>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <label for="department" class="form-label">Department</label>
+                                                    <select name="department" id="department" class="form-select">
+                                                        <option value="">Select department</option>
+                                                        <option value="Management"
+                                                            {{ ($retrievedJobDetail->department ?? '') == 'Management' ? 'selected' : '' }}>
+                                                            Management</option>
+                                                        <option value="Human-resource"
+                                                            {{ ($retrievedJobDetail->department ?? '') == 'Human-resource' ? 'selected' : '' }}>
+                                                            Human Resources</option>
+                                                        <option value="Operations"
+                                                            {{ ($retrievedJobDetail->department ?? '') == 'Operations' ? 'selected' : '' }}>
+                                                            Operations</option>
+                                                        <option value="Project-management"
+                                                            {{ ($retrievedJobDetail->department ?? '') == 'Project-management' ? 'selected' : '' }}>
+                                                            Project Management</option>
+                                                        <option value="Safety-compliance"
+                                                            {{ ($retrievedJobDetail->department ?? '') == 'Safety-compliance' ? 'selected' : '' }}>
+                                                            Safety & Compliance</option>
+                                                        <option value="Administration"
+                                                            {{ ($retrievedJobDetail->department ?? '') == 'Administration' ? 'selected' : '' }}>
+                                                            Administration</option>
+                                                        <option value="Other"
+                                                            {{ ($retrievedJobDetail->department ?? '') == 'Other' ? 'selected' : '' }}>
+                                                            Other</option>
+                                                    </select>
+                                                </div>
+
+
+                                                <div class="col-md-12">
+                                                    <label for="companyAddress" class="form-label">Company
+                                                        Address</label>
+                                                    <textarea name="company_complete_address" id="companyAddress" rows="3" class="form-control" required>{{ $retrievedCompanyAddress->company_complete_address ?? '' }}</textarea>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <label for="companyDescription" class="form-label">Company
+                                                        Description</label>
+                                                    <textarea name="job_description" id="companyDescription" rows="4" class="form-control">{{ $retrievedJobDetail->job_description ?? '' }}</textarea>
+                                                </div>
+                                            </div>
+
+                                            <div class="mt-4">
+                                                <button type="submit" class="btn btn-primary w-100">Save
+                                                    Changes</button>
+                                            </div>
+                                        </form>
+
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
@@ -158,14 +266,24 @@
                         <div class="card-header bg-white border-0 py-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">
-                                    <i class="fas fa-user text-success me-2"></i>Contact
-                                    Information
+                                    <i class="fas fa-user text-success me-2"></i>Contact Information
                                 </h5>
-                                <a href="contact-info.html" class="edit-link">
+
+                                <a href="#" class="edit-link" data-bs-toggle="modal"
+                                    data-bs-target="#editContactModal"
+                                    data-firstname="{{ $retrievedPersonalInfo->first_name }}"
+                                    data-lastname="{{ $retrievedPersonalInfo->last_name }}"
+                                    data-email="{{ $retrievedPersonalInfo->email }}"
+                                    data-phone="{{ $retrievedPersonalInfo->phone_number }}"
+                                    data-address="{{ $retrievedCompanyAddress->company_complete_address }} {{ $retrievedCompanyAddress->company_municipality }}, {{ $retrievedCompanyAddress->company_province }}"
+                                    data-contact="{{ $retrievedCommunication->contact_method }}"
+                                    data-time="{{ $retrievedCommunication->contact_time }}"
+                                    data-language="{{ $retrievedCommunication->language_preference }}">
                                     <i class="fas fa-edit me-1"></i>Edit
                                 </a>
                             </div>
                         </div>
+
                         <div class="card-body">
                             <div class="summary-item">
                                 <strong>{{ $retrievedPersonalInfo->first_name }}
@@ -174,12 +292,11 @@
                             </div>
                             <div class="mt-3">
                                 <p class="mb-1">
-                                    <i class="fas fa-envelope text-muted me-2"></i>
-                                    {{ $retrievedPersonalInfo->email }}
+                                    <i class="fas fa-envelope text-muted me-2"></i>{{ $retrievedPersonalInfo->email }}
                                 </p>
                                 <p class="mb-1">
-                                    <i class="fas fa-phone text-muted me-2"></i>
-                                    {{ $retrievedPersonalInfo->phone_number }}
+                                    <i
+                                        class="fas fa-phone text-muted me-2"></i>{{ $retrievedPersonalInfo->phone_number }}
                                 </p>
                                 <p class="mb-3">
                                     <i class="fas fa-map-marker-alt text-muted me-2"></i>
@@ -198,6 +315,132 @@
                     </div>
                 </div>
 
+                <div class="modal fade" id="editContactModal" tabindex="-1" aria-labelledby="editContactModalLabel"
+                    aria-hidden="true" data-bs-backdrop="false" data-bs-keyboard="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                        <div class="modal-content border-0 shadow-lg rounded-4">
+                            <div class="modal-header bg-success text-white rounded-top-4">
+                                <h5 class="modal-title fw-semibold" id="editContactModalLabel">
+                                    <i class="fas fa-user-edit me-2"></i>Edit Contact Information
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+
+                            <form
+                                action="{{ route('employer.updatehiringpreference.store', session('employer_id')) }}"
+                                method="POST">
+                                @csrf
+                                @method('PUT')
+                                <!-- Make the modal body scrollable with max-height -->
+                                <div class="modal-body p-4" style="max-height: 70vh; overflow-y: auto;">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">First Name</label>
+                                            <input type="text" name="firstName" id="firstName"
+                                                class="form-control form-control-lg" placeholder="Enter first name">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Last Name</label>
+                                            <input type="text" name="lastName" id="lastName"
+                                                class="form-control form-control-lg" placeholder="Enter last name">
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Email</label>
+                                            <input type="email" name="email" id="email"
+                                                class="form-control form-control-lg" placeholder="example@email.com">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Phone Number</label>
+                                            <input type="text" name="phone_number" id="phone"
+                                                class="form-control form-control-lg" placeholder="09xxxxxxxxx">
+                                        </div>
+
+                                        <div class="col-12">
+                                            <label class="form-label fw-semibold">Complete Address</label>
+                                            <input type="text" name="address" id="address"
+                                                class="form-control form-control-lg"
+                                                placeholder="Street, Barangay, City">
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Preferred Contact Method</label>
+                                            <select id="contactMethod" name="contact_method"
+                                                class="form-select form-select-lg">
+                                                <option value="Email">Email</option>
+                                                <option value="Phone">Phone</option>
+                                                <option value="Sms">Sms</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Best Time to Contact</label>
+                                            <select id="contactTime" name="contact_time"
+                                                class="form-select form-select-lg">
+                                                <option value="">Select best time</option>
+                                                <option value="morning">Morning (8AM - 12PM)</option>
+                                                <option value="afternoon">Afternoon (12PM - 5PM)</option>
+                                                <option value="evening">Evening (5PM - 8PM)</option>
+                                                <option value="anytime">Anytime during business hours</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Language Preference</label>
+                                            <select id="languagePreference" name="language_preference"
+                                                class="form-select form-select-lg">
+                                                <option value="english">English</option>
+                                                <option value="filipino">Filipino/Tagalog</option>
+                                                <option value="cebuano">Cebuano</option>
+                                                <option value="ilocano">Ilocano</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer bg-light rounded-bottom-4">
+                                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+                                        <i class="fas fa-times me-1"></i>Cancel
+                                    </button>
+                                    <button type="submit" class="btn btn-success px-4">
+                                        <i class="fas fa-save me-1"></i>Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const editLinks = document.querySelectorAll('.edit-link[data-bs-target="#editContactModal"]');
+
+                        editLinks.forEach(link => {
+                            link.addEventListener('click', function() {
+                                document.getElementById('firstName').value = this.getAttribute(
+                                    'data-firstname') || '';
+                                document.getElementById('lastName').value = this.getAttribute(
+                                    'data-lastname') || '';
+                                document.getElementById('email').value = this.getAttribute('data-email') || '';
+                                document.getElementById('phone').value = this.getAttribute('data-phone') || '';
+                                document.getElementById('address').value = this.getAttribute('data-address') ||
+                                    '';
+                                document.getElementById('contactMethod').value = this.getAttribute(
+                                    'data-contact') || 'Email';
+                                document.getElementById('contactTime').value = this.getAttribute('data-time') ||
+                                    '';
+                                document.getElementById('languagePreference').value = this.getAttribute(
+                                    'data-language') || 'english';
+                            });
+                        });
+                    });
+                </script>
+
+                <!-- Job Details -->
                 <!-- Job Details -->
                 <div class="col-12 mb-4">
                     <div class="review-card">
@@ -206,19 +449,21 @@
                                 <h5 class="mb-0">
                                     <i class="fas fa-briefcase text-warning me-2"></i>Job Details
                                 </h5>
-                                <a href="job-details.html" class="edit-link">
+                                <a href="#" class="edit-link" data-bs-toggle="modal"
+                                    data-bs-target="#editJobModal">
                                     <i class="fas fa-edit me-1"></i>Edit
                                 </a>
                             </div>
                         </div>
+
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-8">
                                     <div class="summary-item">
                                         <strong>{{ $retrievedJobDetail->title }}</strong>
                                         <div class="text-muted">
-                                            {{ $retrievedCompanyAddress->department }} •
-                                            {{ $retrievedJobDetail->location }}• {{ $retrievedJobDetail->work_type }}
+                                            {{ $retrievedJobDetail->department }} •
+                                            {{ $retrievedJobDetail->location }} • {{ $retrievedJobDetail->work_type }}
                                         </div>
                                         <div class="text-muted">
                                             {{ $retrievedJobDetail->experience_level }} •
@@ -229,16 +474,16 @@
                                         <p class="small">
                                             <strong>Job Description:</strong>
                                             {{ $retrievedJobDetail->job_description }}
-
                                             <br />
                                             <strong>Job Requirements:</strong>
                                             {{ $retrievedJobDetail->additional_requirements ?? 'No additional requirements' }}
                                         </p>
                                     </div>
                                 </div>
+
                                 <div class="col-md-4">
                                     <div class="tesda-highlight">
-                                        <strong class="">Required TESDA Certifications:</strong>
+                                        <strong>Required TESDA Certifications:</strong>
                                         <div class="mt-2">
                                             @php
                                                 $certs = [];
@@ -257,12 +502,9 @@
 
                                                 if ($certsRaw) {
                                                     $decoded = json_decode($certsRaw, true);
-
                                                     if (is_array($decoded)) {
-                                                        // Stored as JSON
                                                         $certs = $decoded;
                                                     } else {
-                                                        // Stored as comma-separated string
                                                         $certs = array_map('trim', explode(',', $certsRaw));
                                                     }
                                                 }
@@ -284,18 +526,13 @@
                                 <div class="col-md-6">
                                     <strong>Benefits Offered:</strong>
                                     <div class="mt-2">
-
                                         @php
                                             $benefits = [];
-
                                             if (!empty($retrievedJobDetail->benefits)) {
                                                 $decoded = json_decode($retrievedJobDetail->benefits, true);
-
                                                 if (is_array($decoded)) {
-                                                    // Benefits stored as JSON array
                                                     $benefits = $decoded;
                                                 } else {
-                                                    // Fallback: plain comma-separated string
                                                     $benefits = array_map(
                                                         'trim',
                                                         explode(',', $retrievedJobDetail->benefits),
@@ -311,9 +548,160 @@
                                         @else
                                             <span class="text-muted">No benefits selected.</span>
                                         @endif
-
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edit Job Modal (No Backdrop + Scrollable) -->
+                <div class="modal fade" id="editJobModal" tabindex="-1" aria-labelledby="editJobModalLabel"
+                    aria-hidden="true" data-bs-backdrop="false">
+                    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editJobModalLabel">Edit Job Details</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                <form action="{{ route('employer.updatejobdetails.store', session('employer_id')) }}"
+                                    method="POST" id="editJobForm">
+                                    @csrf
+                                    @method('PUT')
+
+                                    <div class="row g-3">
+                                        <!-- Job Title -->
+                                        <div class="col-md-6">
+                                            <label for="jobTitle" class="form-label">Job Title</label>
+                                            <input type="text" name="title" id="jobTitle" class="form-control"
+                                                value="{{ $retrievedJobDetail->title ?? '' }}" required>
+                                        </div>
+
+                                        <!-- Department -->
+                                        <div class="col-md-6">
+                                            <label for="department" class="form-label">Department </label>
+                                            <select class="form-select" name="department" id="department" required>
+                                                <option value="">Select department</option>
+                                                @php
+                                                    $departments = [
+                                                        'Construction',
+                                                        'Electrical',
+                                                        'Mechanical',
+                                                        'Welding & Fabrication',
+                                                        'Carpentry',
+                                                        'Plumbing',
+                                                        'Automotive',
+                                                        'Maintenance',
+                                                        'Food Production',
+                                                        'Quality Control',
+                                                        'Operations',
+                                                        'Safety & Security',
+                                                    ];
+                                                @endphp
+                                                @foreach ($departments as $dept)
+                                                    <option value="{{ $dept }}"
+                                                        {{ ($retrievedJobDetail->department ?? '') == $dept ? 'selected' : '' }}>
+                                                        {{ $dept }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <!-- Salary Range -->
+                                        <div class="col-md-6">
+                                            <label for="jobSalary" class="form-label">Salary Range</label>
+                                            <input type="text" name="job_salary_range" id="jobSalary"
+                                                class="form-control"
+                                                value="{{ $retrievedJobDetail->job_salary ?? '' }}"
+                                                placeholder="e.g. Minimum ₱500/day or ₱15,000/month" required>
+                                        </div>
+
+                                        <!-- Location -->
+                                        <div class="col-md-6">
+                                            <label for="jobLocation" class="form-label">Location</label>
+                                            <input type="text" name="location" id="jobLocation"
+                                                class="form-control"
+                                                value="{{ $retrievedJobDetail->location ?? '' }} " required>
+                                        </div>
+
+                                        <!-- Work Type -->
+                                        <div class="col-md-6">
+                                            <label for="workType" class="form-label">Work Type</label>
+                                            <select name="work_type" id="workType" class="form-select">
+                                                @php
+                                                    $workTypes = ['On-site', 'Project-based', 'Contract', 'Seasonal'];
+                                                @endphp
+                                                @foreach ($workTypes as $type)
+                                                    <option value="{{ $type }}"
+                                                        {{ ($retrievedJobDetail->work_type ?? '') == $type ? 'selected' : '' }}>
+                                                        {{ $type }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <!-- Experience Level -->
+                                        <div class="col-md-6">
+                                            <label for="experienceLevel" class="form-label">Experience Level</label>
+                                            <select name="experience_level" id="experienceLevel" class="form-select">
+                                                @php
+                                                    $levels = [
+                                                        'Apprentice Level (0-1 years)',
+                                                        'Skilled Worker (2-5 years)',
+                                                        'Experienced Craftsman (6-10 years)',
+                                                        'Master Craftsman (10+ years)',
+                                                        'Supervisor/Foreman',
+                                                    ];
+                                                @endphp
+                                                @foreach ($levels as $level)
+                                                    <option value="{{ $level }}"
+                                                        {{ ($retrievedJobDetail->experience_level ?? '') == $level ? 'selected' : '' }}>
+                                                        {{ $level }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <!-- Job Description -->
+                                        <div class="col-md-12">
+                                            <label for="jobDescription" class="form-label">Job Description</label>
+                                            <textarea name="job_description" id="jobDescription" rows="4" class="form-control">{{ $retrievedJobDetail->job_description ?? '' }}</textarea>
+                                        </div>
+
+                                        <!-- Job Requirements -->
+                                        <div class="col-md-12">
+                                            <label for="jobRequirements" class="form-label">Job Requirements</label>
+                                            <textarea name="additional_requirements" id="jobRequirements" rows="3" class="form-control">{{ $retrievedJobDetail->additional_requirements ?? '' }}</textarea>
+                                        </div>
+
+                                        <!-- TESDA Certifications -->
+                                        <div class="col-md-12">
+                                            <label for="tesdaCerts" class="form-label">TESDA Certifications</label>
+                                            <input type="text" name="tesda_certification" id="tesdaCerts"
+                                                class="form-control" value="{{ implode(', ', $certs ?? []) }}"
+                                                placeholder="e.g. NCII, Housekeeping, Welding">
+                                            <small class="text-muted">Separate multiple certifications with
+                                                commas</small>
+                                        </div>
+
+                                        <!-- Benefits -->
+                                        <div class="col-md-12">
+                                            <label for="benefits" class="form-label">Benefits Offered</label>
+                                            <input type="text" name="benefits" id="benefits"
+                                                class="form-control" value="{{ implode(', ', $benefits ?? []) }}"
+                                                placeholder="e.g. SSS, PhilHealth, Free meals">
+                                            <small class="text-muted">Separate multiple benefits with commas</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4">
+                                        <button type="submit" class="btn btn-warning w-100">Save Changes</button>
+                                    </div>
+                                </form>
+
                             </div>
                         </div>
                     </div>
@@ -327,46 +715,219 @@
                                 <h5 class="mb-0">
                                     <i class="fas fa-cog text-info me-2"></i>Hiring Preferences
                                 </h5>
-                                <a href="preferences.html" class="edit-link">
+                                <a href="#" class="edit-link" data-bs-toggle="modal"
+                                    data-bs-target="#editPreferencesModal">
                                     <i class="fas fa-edit me-1"></i>Edit
                                 </a>
                             </div>
                         </div>
                         <div class="card-body">
-
-
-
-
                             <div class="mt-3">
                                 <strong>Screening Methods:</strong>
                                 @foreach (json_decode($retrievedInterviewScreening->preferred_screening_method ?? '[]') as $interview)
                                     <span class="skill-badge">{{ $interview }}</span>
                                 @endforeach
-
-                                <span
-                                    class="skill-badge">{{ $retrievedInterviewScreening->preferred_interview_location }}</span>
-
                             </div>
 
                             <div class="mt-3">
-                                <strong>location of interview:</strong>
+                                <strong>Location of Interview:</strong>
                                 <span
                                     class="skill-badge">{{ $retrievedInterviewScreening->preferred_interview_location }}</span>
-
                             </div>
+
+                            @php
+                                $specialReqs = json_decode(
+                                    $retrievedSpecialRequirement->special_requirements ?? '[]',
+                                    true,
+                                );
+                                if (!is_array($specialReqs)) {
+                                    $specialReqs = []; // fallback to empty array
+                                }
+                            @endphp
 
                             <div class="mt-3">
                                 <strong>Special Requirements:</strong>
                                 <div class="mt-1">
-                                    @foreach (json_decode($retrievedSpecialRequirement->special_requirements ?? '[]') as $requirements)
-                                        <i class="fas fa-check text-success me-2"></i>{{ $requirements }}<br />
+                                    @foreach ($specialReqs as $requirements)
+                                        <i class="fas fa-check text-success me-2"></i>{{ $requirements ?? '' }}<br />
                                     @endforeach
                                 </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edit Hiring Preferences Modal (No Backdrop + Scrollable) -->
+                <div class="modal fade" id="editPreferencesModal" tabindex="-1"
+                    aria-labelledby="editPreferencesModalLabel" aria-hidden="true" data-bs-backdrop="false">
+                    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editPreferencesModalLabel">Edit Hiring Preferences</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                <form
+                                    action="{{ route('employer.updatereviewreference.store', session('employer_id')) }}"
+                                    method="POST">
+                                    @csrf
+                                    @method('PUT')
+
+                                    <div class="row g-3">
+                                        <!-- Screening Methods -->
+                                        <div class="col-md-12">
+                                            <label class="form-label">Screening Methods</label>
+                                            <div class="row">
+                                                @php
+                                                    $selectedMethods = json_decode(
+                                                        $retrievedInterviewScreening->preferred_screening_method ??
+                                                            '[]',
+                                                    );
+                                                @endphp
+                                                <div class="col-md-6">
+                                                    @php $methodsLeft = ['Phone/Video interview', 'In-person interview', 'Skills demonstration/test']; @endphp
+                                                    @foreach ($methodsLeft as $method)
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                name="preferred_screening_method[]"
+                                                                value="{{ $method }}"
+                                                                id="{{ str_replace([' ', '/'], '', $method) }}"
+                                                                {{ in_array($method, $selectedMethods) ? 'checked' : '' }}>
+                                                            <label class="form-check-label"
+                                                                for="{{ str_replace([' ', '/'], '', $method) }}">
+                                                                {{ $method }}
+                                                            </label>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                                <div class="col-md-6">
+                                                    @php $methodsRight = ['Reference check', 'Background verification', 'Drug testing']; @endphp
+                                                    @foreach ($methodsRight as $method)
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                name="preferred_screening_method[]"
+                                                                value="{{ $method }}"
+                                                                id="{{ str_replace([' ', '/'], '', $method) }}"
+                                                                {{ in_array($method, $selectedMethods) ? 'checked' : '' }}>
+                                                            <label class="form-check-label"
+                                                                for="{{ str_replace([' ', '/'], '', $method) }}">
+                                                                {{ $method }}
+                                                            </label>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Interview Location -->
+                                        <div class="col-md-12 mt-3">
+                                            <label for="interviewLocation" class="form-label">Preferred Interview
+                                                Location</label>
+                                            @php
+                                                $selectedLocation =
+                                                    $retrievedInterviewScreening->preferred_interview_location ?? '';
+                                            @endphp
+                                            <select class="form-select" id="interviewLocation"
+                                                name="preferred_interview_location">
+                                                <option value="">Select location</option>
+                                                <option value="Our office/headquarters"
+                                                    {{ $selectedLocation == 'Our office/headquarters' ? 'selected' : '' }}>
+                                                    Our office/headquarters</option>
+                                                <option value="Job site/project location"
+                                                    {{ $selectedLocation == 'Job site/project location' ? 'selected' : '' }}>
+                                                    Job site/project location</option>
+                                                <option value="Neutral location (cafe, etc.)"
+                                                    {{ $selectedLocation == 'Neutral location (cafe, etc.)' ? 'selected' : '' }}>
+                                                    Neutral location (cafe, etc.)</option>
+                                                <option value="Online/Video call only"
+                                                    {{ $selectedLocation == 'Online/Video call only' ? 'selected' : '' }}>
+                                                    Online/Video call only</option>
+                                                <option value="Flexible - worker's choice"
+                                                    {{ $selectedLocation == "Flexible - worker's choice" ? 'selected' : '' }}>
+                                                    Flexible - worker's choice</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Special Requirements -->
+                                        <div class="col-md-12 mt-3">
+                                            <label for="specialRequirements" class="form-label">Special
+                                                Requirements</label>
+                                            @php
+                                                $specialReqs = json_decode(
+                                                    $retrievedSpecialRequirement->special_requirements ?? '[]',
+                                                    true,
+                                                );
+                                                if (!is_array($specialReqs)) {
+                                                    $specialReqs = []; // fallback to empty array
+                                                }
+
+                                                $predefinedReqs = [
+                                                    'Workers must have safety training certificates',
+                                                    'Workers must bring their own basic tools',
+                                                    'Provide transportation or allowance',
+                                                ];
+                                            @endphp
+
+                                            <!-- Predefined checkboxes -->
+                                            @foreach ($predefinedReqs as $req)
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input special-checkbox"
+                                                        name="special_requirements[]" type="checkbox"
+                                                        value="{{ $req }}"
+                                                        id="{{ str_replace([' ', '/'], '', $req) }}"
+                                                        {{ in_array($req, $specialReqs) ? 'checked' : '' }}>
+                                                    <label class="form-check-label"
+                                                        for="{{ str_replace([' ', '/'], '', $req) }}">{{ $req }}</label>
+                                                </div>
+                                            @endforeach
+
+                                            <!-- Textarea for custom special requirements -->
+                                            <textarea name="custom_special_requirements" id="specialRequirements" rows="6" class="form-control mt-2"
+                                                placeholder="Enter custom special requirements (one per line)">{{ implode("\n", array_diff($specialReqs, $predefinedReqs)) }}</textarea>
+                                            <small class="text-muted d-block">
+                                                Checked boxes will automatically appear here. You can also add custom
+                                                requirements manually.
+                                            </small>
+
+                                        </div>
+
+                                        <div class="mt-4">
+                                            <button type="submit" class="btn btn-info w-100">Save Changes</button>
+                                        </div>
+                                </form>
+
+                                <script>
+                                    // Sync predefined checkboxes with textarea
+                                    const specialTextarea = document.getElementById('specialRequirements');
+                                    const specialCheckboxes = document.querySelectorAll('.special-checkbox');
+
+                                    specialCheckboxes.forEach(cb => {
+                                        cb.addEventListener('change', () => {
+                                            let currentValues = specialTextarea.value.split("\n").map(v => v.trim()).filter(v => v);
+                                            if (cb.checked && !currentValues.includes(cb.value)) {
+                                                currentValues.push(cb.value);
+                                            } else if (!cb.checked) {
+                                                currentValues = currentValues.filter(v => v !== cb.value);
+                                            }
+                                            specialTextarea.value = currentValues.join("\n");
+                                        });
+                                    });
+                                </script>
+
+
                             </div>
                         </div>
                     </div>
                 </div>
+
+
             </div>
+
+            <!---modal--->
+
 
             <!-- Final Checklist -->
             <div class="row justify-content-center">
