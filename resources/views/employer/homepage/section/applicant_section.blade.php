@@ -478,4 +478,234 @@
             });
         }
     });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get filter elements
+        const searchInput = document.getElementById('searchApplicants');
+        const positionFilter = document.getElementById('positionFilter');
+        const certificationFilter = document.getElementById('certificationFilter');
+        const tableBody = document.querySelector('#applicantsTable tbody');
+        const rows = Array.from(tableBody.querySelectorAll('tr')).filter(row => !row.querySelector(
+            '.empty-state-row'));
+
+        // Function to filter rows
+        function filterTable() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const selectedPosition = positionFilter.value.toLowerCase().trim();
+            const selectedCertification = certificationFilter.value.toLowerCase().trim();
+
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                // Get row data
+                const applicantName = row.querySelector('.applicant-details h6')?.textContent
+                    .toLowerCase() || '';
+                const applicantEmail = row.querySelector('.applicant-details p')?.textContent
+                    .toLowerCase() || '';
+                const location = row.querySelector('.location')?.textContent.toLowerCase() || '';
+                const position = row.querySelector('.position-title')?.textContent.toLowerCase()
+                    .trim() || '';
+                const certifications = row.getAttribute('data-certifications')?.toLowerCase() || '';
+
+                // Check search match (name, email, or location)
+                const searchMatch = !searchTerm ||
+                    applicantName.includes(searchTerm) ||
+                    applicantEmail.includes(searchTerm) ||
+                    location.includes(searchTerm);
+
+                // Check position match
+                const positionMatch = !selectedPosition || position === selectedPosition;
+
+                // Check certification match
+                const certificationMatch = !selectedCertification ||
+                    certifications.split(',').some(cert => cert.trim() === selectedCertification);
+
+                // Show/hide row based on all filters
+                if (searchMatch && positionMatch && certificationMatch) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Show "no results" message if no rows visible
+            updateEmptyState(visibleCount);
+        }
+
+        // Function to update empty state
+        function updateEmptyState(visibleCount) {
+            let emptyRow = tableBody.querySelector('.empty-state-row');
+
+            if (visibleCount === 0) {
+                if (!emptyRow) {
+                    emptyRow = document.createElement('tr');
+                    emptyRow.innerHTML = `
+                    <td colspan="5" class="text-center py-4 empty-state-row">
+                        <div class="empty-state-content">
+                            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No applicants match your filters</p>
+                            <button class="btn btn-sm btn-outline-primary" onclick="clearAllFilters()">
+                                <i class="fas fa-times me-1"></i> Clear Filters
+                            </button>
+                        </div>
+                    </td>
+                `;
+                    tableBody.appendChild(emptyRow);
+                }
+                emptyRow.style.display = '';
+            } else {
+                if (emptyRow) {
+                    emptyRow.style.display = 'none';
+                }
+            }
+        }
+
+        // Clear all filters function
+        window.clearAllFilters = function() {
+            searchInput.value = '';
+            positionFilter.value = '';
+            certificationFilter.value = '';
+            filterTable();
+        };
+
+        // Add event listeners
+        if (searchInput) {
+            searchInput.addEventListener('input', filterTable);
+            searchInput.addEventListener('keyup', filterTable);
+        }
+
+        if (positionFilter) {
+            positionFilter.addEventListener('change', filterTable);
+        }
+
+        if (certificationFilter) {
+            certificationFilter.addEventListener('change', filterTable);
+        }
+
+        // Message Button Handler
+        document.querySelectorAll('.message-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const applicantId = this.dataset.applicantId;
+                const applicantName = this.dataset.applicantName;
+                const applicantEmail = this.dataset.applicantEmail;
+
+                // Go to Messages Section
+                if (typeof openSection === 'function') {
+                    openSection('messages-section');
+                }
+
+                // Select that applicant's conversation
+                const applicantItem = document.querySelector(
+                    `.conversation-item[data-applicant-id="${applicantId}"]`);
+                if (applicantItem) {
+                    applicantItem.click();
+                } else {
+                    // Fallback if not in list
+                    const chatHeader = document.getElementById('chatHeader');
+                    const chatUserName = document.getElementById('chatUserName');
+                    const chatUserStatus = document.getElementById('chatUserStatus');
+                    const receiverId = document.getElementById('receiver_id');
+                    const chatComposer = document.getElementById('chatComposer');
+                    const chatMessages = document.getElementById('chatMessages');
+
+                    if (chatHeader) chatHeader.style.display = 'flex';
+                    if (chatUserName) chatUserName.textContent = applicantName;
+                    if (chatUserStatus) chatUserStatus.textContent = applicantEmail;
+                    if (receiverId) receiverId.value = applicantId;
+                    if (chatComposer) chatComposer.style.display = 'flex';
+                    if (chatMessages) {
+                        chatMessages.innerHTML =
+                            `<div class="no-messages"><p>No messages yet with ${applicantName}</p></div>`;
+                    }
+                }
+            });
+        });
+
+        // Report Modal Handler
+        const reportApplicantModal = document.getElementById('reportApplicantModal');
+        if (reportApplicantModal) {
+            reportApplicantModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const applicantId = button.getAttribute('data-applicant-id');
+                const applicantName = button.getAttribute('data-applicant-name');
+                const applicantEmail = button.getAttribute('data-applicant-email');
+
+                document.getElementById('report_applicant_id').value = applicantId;
+                document.getElementById('report_applicant_name').textContent = applicantName;
+                document.getElementById('report_applicant_email').textContent = applicantEmail;
+            });
+
+            // Reset form on close
+            reportApplicantModal.addEventListener('hidden.bs.modal', function() {
+                const form = document.getElementById('reportApplicantForm');
+                if (form) form.reset();
+                const otherWrapper = document.getElementById('other_reason_applicant_wrapper');
+                if (otherWrapper) otherWrapper.classList.add('d-none');
+                const photoWrapper = document.getElementById('photo_preview_applicant_wrapper');
+                if (photoWrapper) photoWrapper.classList.add('d-none');
+            });
+        }
+
+        // Other reason toggle
+        const reasonSelect = document.getElementById('report_reason_applicant');
+        const otherWrapper = document.getElementById('other_reason_applicant_wrapper');
+        const otherInput = document.getElementById('other_reason_applicant');
+
+        if (reasonSelect && otherWrapper && otherInput) {
+            reasonSelect.addEventListener('change', function() {
+                if (this.value === 'other') {
+                    otherWrapper.classList.remove('d-none');
+                    otherInput.setAttribute('required', 'required');
+                } else {
+                    otherWrapper.classList.add('d-none');
+                    otherInput.removeAttribute('required');
+                    otherInput.value = '';
+                }
+            });
+        }
+
+        // Form validation
+        const form = document.getElementById('reportApplicantForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const details = document.getElementById('report_details_applicant').value;
+                if (details.length < 20) {
+                    e.preventDefault();
+                    alert('Please provide at least 20 characters in the details section.');
+                    return false;
+                }
+            });
+        }
+
+        // Photo preview
+        const photoInput = document.getElementById('report_photo_applicant');
+        const photoWrapper = document.getElementById('photo_preview_applicant_wrapper');
+        const photoPreview = document.getElementById('photo_preview_applicant');
+
+        if (photoInput && photoWrapper && photoPreview) {
+            photoInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    // Check file size (5MB max)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('File size must be less than 5MB');
+                        photoInput.value = '';
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        photoPreview.src = event.target.result;
+                        photoWrapper.classList.remove('d-none');
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    photoWrapper.classList.add('d-none');
+                    photoPreview.src = '';
+                }
+            });
+        }
+    });
 </script>

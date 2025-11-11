@@ -13,7 +13,6 @@
 </head>
 
 <body>
-
     <nav>
         <div class="navbar-container">
             <div class="nav-logo d-flex align-items-center">
