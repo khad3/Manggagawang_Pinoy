@@ -97,7 +97,7 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
     Route::delete('/notifications/delete/{id}', [ApplicantController::class, 'deleteNotification']);
 
     Route::post('notifications/retrieve/{id}/read', [ApplicantController::class, 'ReadNotifications']);
-    Route::post('notifications/retrieve/mark-all-read', [ApplicantController::class, 'markAllAsRead']);
+    Route::post('notifications/retrieve/mark-all-read', [ApplicantController::class, 'markAllasread']);
     //Community Forum
     Route::get('communityforum', [CommunityForumController::class, 'ShowForum'])->name('applicant.forum.display');
     Route::post('communityforum/create', [CommunityForumController::class, 'CreatePost'])->name('applicant.forum.store');
@@ -240,7 +240,7 @@ Route::middleware(['employer.authenticate'])->prefix('employer')->group(function
     // Employer Notifications Routes
     Route::post('notifications/{id}/read', [EmployerController::class, 'markAsRead']);
     Route::post('announcements/{id}/read', [EmployerController::class, 'markAnnouncementAsRead']);
-    Route::post('notifications/mark-all-read', [EmployerController::class, 'markAllAsRead']);
+    Route::post('notifications/mark-all-read', [EmployerController::class, 'markAllasread']);
     Route::delete('/notifications/delete/{id}', [EmployerController::class, 'deleteNotification']);
     // Employer Announcements Routes
     Route::post('messages/mark-as-read/{applicantId}', [EmployerController::class, 'viewMessageAsRead'])->name('employer.messages.markAsRead');

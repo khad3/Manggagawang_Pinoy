@@ -1827,6 +1827,22 @@ public function viewMessageAsRead($applicantId)
 
 }
 
+public function markAllasread() 
+{
+
+    $employerId = session('employer_id');
+
+   \App\Models\Notification\NotificationModel::where('type', 'employer')
+                ->where('type_id', $employerId)
+                ->update(['is_read' => 1]);
+
+    \App\Models\Admin\AnnouncementModel::whereIn('target_audience', ['employers', 'all'])
+                ->whereIn('status', ['published', 'scheduled'])
+                ->update(['is_read' => true]);
+
+    return response()->json(['success' => true, 'message' => 'All messages marked as read.']);
+
+}
 
 
 }

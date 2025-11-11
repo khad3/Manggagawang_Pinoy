@@ -1596,5 +1596,22 @@ public function sendRating(Request $request)
     return back()->with('success', 'Rating sent successfully.');
 }
 
+public function markAllasread() 
+{
+
+    $applicantId = session('applicant_id');
+
+   \App\Models\Notification\NotificationModel::where('type', 'applicant')
+                ->where('type_id', $applicantId)
+                ->update(['is_read' => 1]);
+
+    \App\Models\Admin\AnnouncementModel::whereIn('target_audience', ['applicants', 'all'])
+                ->whereIn('status', ['published', 'scheduled'])
+                ->update(['is_read' => true]);
+
+    return response()->json(['success' => true, 'message' => 'All messages marked as read.']);
+
+}
+
 
 }

@@ -361,7 +361,7 @@
         try {
             const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            const res = await fetch(`notifications/mark-all-read`, {
+            const res = await fetch(`/applicant/notifications/retrieve/mark-all-read`, {
                 method: 'POST',
                 credentials: 'same-origin',
                 headers: {
