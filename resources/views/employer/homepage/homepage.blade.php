@@ -206,22 +206,6 @@
             </div>
         @endif
 
-        {{-- Validation Errors --}}
-        @if ($errors->any())
-            <div class="alert alert-warning alert-dismissible fade show mt-3 shadow-sm rounded-3" role="alert"
-                id="warning-alert">
-                <center>
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    <strong>There were some issues with your input:</strong>
-                </center>
-                <ul class="mt-2 mb-0 small">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
 
         {{-- Auto Fade Script (applies to all alerts) --}}
         <script>
