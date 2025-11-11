@@ -225,6 +225,7 @@
            </script>
 
            <!-- Recent Activity Log -->
+           <!-- Recent Activity Log -->
            <div class="report-card" style="grid-column: 1 / -1;">
                <div class="report-card-header d-flex justify-content-between align-items-center">
                    <h3 class="report-title">Recent Activity Logs</h3>
@@ -243,7 +244,10 @@
                    <button class="btn btn-sm btn-outline-success filter-btn" data-filter="job">Jobs</button>
                    <button class="btn btn-sm btn-outline-warning filter-btn"
                        data-filter="announcement">Announcements</button>
-                   <button class="btn btn-sm btn-outline-danger filter-btn" data-filter="report">Reports</button>
+                   <button class="btn btn-sm btn-outline-danger filter-btn" data-filter="report_applicant">Applicant
+                       Reports</button>
+                   <button class="btn btn-sm btn-outline-danger filter-btn" data-filter="report_employer">Employer
+                       Reports</button>
                    <button class="btn btn-sm btn-outline-info filter-btn" data-filter="rating">Ratings</button>
                    <button class="btn btn-sm btn-outline-dark filter-btn" data-filter="system">System</button>
                </div>
@@ -254,14 +258,18 @@
                            $action = $log['action'];
                            $category = 'system'; // default
 
+                           // Set category
                            if (Str::contains($action, ['certification'])) {
                                $category = 'certification';
-                           } elseif (Str::contains($action, ['job', 'interview'])) {
+                           } elseif (in_array($action, ['report_job'])) {
+                               $category = 'report_employer';
+                           } elseif (in_array($action, ['report_applicant'])) {
+                               $category = 'report_applicant';
+                           } elseif (Str::contains($action, ['job', 'interview']) && $action !== 'report_job') {
+                               // Exclude report_job from job category
                                $category = 'job';
                            } elseif (Str::contains($action, ['announcement', 'post_announcement'])) {
                                $category = 'announcement';
-                           } elseif (Str::contains($action, ['report'])) {
-                               $category = 'report';
                            } elseif (Str::contains($action, ['rating'])) {
                                $category = 'rating';
                            }
@@ -270,6 +278,14 @@
                        <div class="activity-item" data-category="{{ $category }}">
                            <div class="activity-icon activity-{{ $log['action'] }}">
                                @switch($log['action'])
+                                   @case('report_applicant')
+                                       <i class="bi bi-flag-fill text-danger"></i>
+                                   @break
+
+                                   @case('report_job')
+                                       <i class="bi bi-flag-fill text-darkred"></i>
+                                   @break
+
                                    @case('banned')
                                        <i class="fa-solid fa-ban text-danger"></i>
                                    @break
@@ -338,18 +354,7 @@
                                        <i class="bi bi-megaphone-fill" style="color:green"></i>
                                    @break
 
-                                   @case('report_job')
-                                       <i class="bi bi-flag-fill" style="color:darkred"></i>
-                                   @break
-
-                                   @case('report_applicant')
-                                       <i class="bi bi-flag-fill" style="color:darkred"></i>
-                                   @break
-
                                    @case('send_rating_to_job_post')
-                                       <i class="bi bi-star-fill" style="color: gold;"></i>
-                                   @break
-
                                    @case('send_rating_to_applicant')
                                        <i class="bi bi-star-fill" style="color: gold;"></i>
                                    @break
@@ -385,7 +390,7 @@
            <script>
                document.querySelectorAll('.filter-btn').forEach(button => {
                    button.addEventListener('click', () => {
-                       // remove active class from all buttons
+                       // Remove active class from all buttons
                        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
                        button.classList.add('active');
 
@@ -402,6 +407,7 @@
                    });
                });
            </script>
+
 
 
        </div>
