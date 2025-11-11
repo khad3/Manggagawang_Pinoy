@@ -55,42 +55,41 @@ class SendMessageEmployerController extends Controller
         return redirect()->back()->with('success', 'Message sent successfully.');
     }
 
-    public function fetchMessages($employerId)
-    {
-        $applicantId = session('applicant_id');
-        if (!$applicantId) {
-            return response()->json(['success' => false, 'error' => 'Applicant not authenticated'], 401);
-        }
-
-        $messages = DB::table('employer_messages_to_applicant')
-            ->where('employer_id', $employerId)
-            ->where('applicant_id', $applicantId)
-            ->orderBy('created_at', 'asc')
-            ->get();
-
-        $messagesFormatted = $messages->map(function ($msg) {
-            $decryptedMessage = $this->safeDecrypt($msg->message);
-
-            return [
-                'id' => $msg->id,
-                'employer_id' => $msg->employer_id,
-                'applicant_id' => $msg->applicant_id,
-                'message' => $decryptedMessage,
-                'attachment' => $msg->attachment,
-                'sender_type' => $msg->sender_type,
-                'is_read' => (bool) $msg->is_read,
-                'is_typing' => (bool) $msg->is_typing,
-                'created_at' => $msg->created_at,
-                'time' => Carbon::parse($msg->created_at)->format('g:i A'),
-            ];
-        });
-
-        return response()->json([
-            'success' => true,
-            'messages' => $messagesFormatted,
-            'count' => $messagesFormatted->count(),
-        ]);
+   public function fetchMessages($employerId)
+{
+    $applicantId = session('applicant_id');
+    if (!$applicantId) {
+        return response()->json(['success' => false, 'error' => 'Applicant not authenticated'], 401);
     }
+
+    $messages = DB::table('employer_messages_to_applicant')
+        ->where('employer_id', $employerId)
+        ->where('applicant_id', $applicantId)
+        ->orderBy('created_at', 'asc')
+        ->get();
+
+    $messagesFormatted = $messages->map(function ($msg) {
+        $decryptedMessage = $this->safeDecrypt($msg->message);
+
+        return [
+            'id' => $msg->id,
+            'employer_id' => $msg->employer_id,
+            'applicant_id' => $msg->applicant_id,
+            'message' => $decryptedMessage,
+            'attachment' => $msg->attachment,
+            'sender_type' => $msg->sender_type,
+            'is_read' => (bool) $msg->is_read, // ✅ keep the correct DB value
+            'created_at' => $msg->created_at,
+            'time' => Carbon::parse($msg->created_at)->format('g:i A'),
+        ];
+    });
+
+    return response()->json([
+        'success' => true,
+        'messages' => $messagesFormatted,
+        'count' => $messagesFormatted->count(),
+    ]);
+}
 
     public function setTypingStatus(Request $request, $employerId)
     {
