@@ -15,7 +15,7 @@
                    <div class="col-lg-6">
                        <div class="card shadow-sm border-0 rounded-4">
                            <div class="card-header bg-light fw-bold d-flex align-items-center">
-                               <i class="fas fa-image me-2 text-primary" aria-hidden="true"></i>
+                               
                                <span>Company Logo</span>
                            </div>
                            <div class="card-body text-center">
@@ -72,7 +72,7 @@
                    <div class="col-lg-6">
                        <div class="card shadow-sm border-0 rounded-4">
                            <div class="card-header bg-light fw-bold d-flex align-items-center">
-                               <i class="fas fa-building me-2 text-secondary" aria-hidden="true"></i>
+                              
                                <span>Edit Company Name</span>
                            </div>
                            <div class="card-body">
@@ -107,7 +107,7 @@
                    <div class="col-lg-6">
                        <div class="card shadow-sm border-0 rounded-4">
                            <div class="card-header bg-light fw-bold d-flex align-items-center">
-                               <i class="fas fa-lock me-2 text-warning" aria-hidden="true"></i>
+                               
                                <span>Change Password</span>
                            </div>
                            <div class="card-body">
@@ -148,8 +148,8 @@
                                        @enderror
                                    </div>
 
-                                   <button type="submit" class="btn btn-warning w-100" aria-label="Update Password">
-                                       <i class="fas fa-key me-1" aria-hidden="true"></i> Update Password
+                                   <button type="submit" class="btn btn-primary w-100" aria-label="Update Password">
+                                     Update Password
                                    </button>
                                </form>
                            </div>

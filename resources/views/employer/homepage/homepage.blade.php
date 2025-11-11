@@ -42,10 +42,9 @@
                 <div class="company-avatar">
                     @if ($retrievelogo && $retrievelogo->company_logo)
                         <img src="{{ asset('storage/' . $retrievelogo->company_logo) }}" alt="Company Logo">
-                    @elseif($retrievelogo && $retrievelogo->company_name)
-                        <span>{{ strtoupper(Str::limit($retrievelogo->company_name, 2, '')) }}</span>
+               
                     @else
-                        <span>MP</span>
+                        <span>  <img src="{{ asset('img/employer default.png') }}" alt="Employer Default" /></span>
                     @endif
                 </div>
 
@@ -239,10 +238,17 @@
         </script>
         <!-- Welcome Section -->
         <br>
-        <div class="welcome-header">
-            <div class="welcome-title">Welcome back, {{ $retrievePersonal->first_name ?? 'Employer' }}
-                {{ $retrievePersonal->last_name ?? '' }}! 👋</div>
-            <div class="welcome-subtitle">Here's what's happening with your job postings today</div>
+        <div class="welcome-header d-flex align-items-center justify-content-between">
+            <div class="welcome-text">
+                <div class="welcome-title">Welcome back, {{ $retrievePersonal->first_name ?? 'Employer' }}
+                    {{ $retrievePersonal->last_name ?? '' }}! </div>
+                <div class="welcome-subtitle">Here's what's happening with your job postings today</div>
+            </div>
+
+            <!-- Right aligned logo -->
+            <div class="welcome-logo-wrapper">
+                <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" class="welcome-logo">
+            </div>
         </div>
 
         <!-- Dashboard Section -->

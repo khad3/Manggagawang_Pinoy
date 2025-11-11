@@ -4,7 +4,7 @@
 
           <!-- 🪄 Chart Title -->
           <div class="text-center" style="margin-bottom: 20px;">
-              <i class="fas fa-chart-bar fa-3x mb-2" style="color: #4CAF50;"></i>
+              <i class="fas fa-chart-bar fa-3x mb-2"    ></i>
               <h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 8px;">Applicant Status Analytics</h2>
               <p style="color: #666; font-size: 1rem;">Approved vs Rejected Applicants per Job Post & Employer</p>
           </div>

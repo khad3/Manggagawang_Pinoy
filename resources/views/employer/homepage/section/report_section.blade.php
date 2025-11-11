@@ -3,7 +3,7 @@
         <div class="reports-header">
             <div class="header-content">
                 <h3 class="fw-bold mb-0">
-                    <i class="fas fa-flag me-2 text-danger"></i>Reported Applicants
+                  Reported Applicants
                 </h3>
                 @if (count($retrievedApplicantReported) === 1)
                     <span class="badge bg-danger reports-badge">{{ count($retrievedApplicantReported) }} Report</span>

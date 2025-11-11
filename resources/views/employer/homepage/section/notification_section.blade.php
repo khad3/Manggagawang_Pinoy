@@ -2,7 +2,7 @@
     <div class="content-section">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h3 class="fw-bold mb-0">
-                <i class="bi bi-bell me-2 text-primary"></i>Notifications
+              <span style="margin:20px;">Notifications</span>
                 @if ($unreadCount > 0)
                     <span class="badge bg-danger rounded-pill" id="unreadCountBadge">{{ $unreadCount }}</span>
                 @endif
