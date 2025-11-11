@@ -309,11 +309,12 @@
 
                             <div class="form-group animated-field" style="animation-delay: 0.8s;">
                                 <label for="zip_code" class="form-label">
-                                    <i class="bi bi-mailbox me-1"></i>Zip Code<span
-                                        style="color: red;">*</span></label>
+                                    <i class="bi bi-mailbox me-1"></i>Zip Code<span style="color: red;">*</span>
                                 </label>
                                 <input type="text" class="form-input" id="zip_code" name="zipcode"
-                                    maxlength="4" required value="{{ old('zipcode') }}" oninput="updateProgress()">
+                                    pattern="\d{4}" title="Please enter exactly 4 digits" maxlength="4" required
+                                    value="{{ old('zipcode') }}"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, ''); updateProgress();">
                             </div>
                         </div>
 
