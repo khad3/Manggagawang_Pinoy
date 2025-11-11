@@ -316,8 +316,8 @@
                                 </select>
 
                                 <!-- Hidden input for "Other" reason -->
-                                <input type="text" name="other_reason" id="otherReasonInput" class="filter-select"
-                                    placeholder="Enter custom reason..."
+                                <input type="text" name="other_reason" id="otherReasonInput"
+                                    class="filter-select" placeholder="Enter custom reason..."
                                     style="width: 100%; margin-bottom: 15px; display: none;" />
                             </div>
 
