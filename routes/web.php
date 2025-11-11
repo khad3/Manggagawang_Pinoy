@@ -113,6 +113,8 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
     Route::get('communityforum/create-group', [CommunityForumController::class, 'ShowGroupForum'])->name('applicant.forum.group.display');
     Route::post('communityforum/create-group', [CommunityForumController::class, 'AddGroupForum'])->name('applicant.forum.group.store');
     Route::get('communityforum/group-community', [CommunityForumController::class, 'DisplayGroupForum'])->name('applicant.forum.groupcommunity.display');
+    Route::delete('communityforum/delete-group/{id}', [CommunityForumController::class, 'DeleteGroupPost'])->name('applicant.forum.deletegroup.delete');
+    Route::put('communityforum/group/{groupId}/update', [CommunityForumController::class, 'EditGroupPost'])->name('applicant.forum.group.update');
     Route::post('communityforum/join-group', [CommunityForumController::class, 'RequestAndJoinGroup'])->name('applicant.forum.joingroup.store');
     // Group-specific posts/comments/likes
     Route::post('communityforum/view-specific-group/{groupId}', [CommunityForumController::class, 'AddPostGroupCommunity'])->name('applicant.forum.addpostgroupcommunity.store');

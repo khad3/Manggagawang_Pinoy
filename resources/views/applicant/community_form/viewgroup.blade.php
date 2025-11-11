@@ -78,9 +78,19 @@
                                     Actions
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="groupActionsDropdown{{ $group->id }}">
-                                    <li><a class="dropdown-item" href="#">Edit Group</a></li>
                                     <li>
-                                        <form action="#" method="POST"
+                                        <a class="dropdown-item edit-group-btn" href="#" data-bs-toggle="modal"
+                                            data-bs-target="#editGroupModal" data-id="{{ $group->id }}"
+                                            data-title="{{ $group->group_name }}"
+                                            data-description="{{ $group->group_description }}"
+                                            data-privacy="{{ $group->privacy }}">
+                                            Edit Group
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <form action="{{ route('applicant.forum.deletegroup.delete', $group->id) }}"
+                                            method="POST"
                                             onsubmit="return confirm('Are you sure you want to delete this group?');">
                                             @csrf
                                             @method('DELETE')
@@ -92,6 +102,85 @@
                             </div>
                         @endif
                     </div>
+
+
+                    <div class="modal fade" id="editGroupModal" tabindex="-1" aria-labelledby="editGroupModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <form id="editGroupForm" method="POST">
+                                    @csrf
+                                    @method('PUT')
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editGroupModalLabel">Edit Group</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="edit_group_name" class="form-label">Group Name</label>
+                                            <input type="text" class="form-control" id="edit_group_name"
+                                                name="group_title" required>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="edit_description" class="form-label">Description</label>
+                                            <textarea class="form-control" id="edit_description" name="group_description" rows="4" required></textarea>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label d-block">Visibility</label>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="group_privacy"
+                                                    id="edit_public" value="Public">
+                                                <label class="form-check-label" for="edit_public">Public</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="group_privacy"
+                                                    id="edit_private" value="Private">
+                                                <label class="form-check-label" for="edit_private">Private</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-primary">Update Group</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+                        document.querySelectorAll('.edit-group-btn').forEach(btn => {
+                            btn.addEventListener('click', function() {
+                                const groupId = this.getAttribute('data-id');
+                                const title = this.getAttribute('data-title');
+                                const description = this.getAttribute('data-description');
+                                const privacy = this.getAttribute('data-privacy');
+
+                                // Populate inputs
+                                document.getElementById('edit_group_name').value = title;
+                                document.getElementById('edit_description').value = description;
+
+                                // Case-insensitive check for radio
+                                if (privacy.toLowerCase() === 'public') {
+                                    document.getElementById('edit_public').checked = true;
+                                } else {
+                                    document.getElementById('edit_private').checked = true;
+                                }
+
+                                // Dynamically set form action
+                                const form = document.getElementById('editGroupForm');
+                                form.action = form.action =
+                                    `/applicant/communityforum/group/${groupId}/update`;
+                            });
+                        });
+                    </script>
+
+
 
                     {{-- Pending Requests Alert --}}
                     @if ($isCreator && $group->pending_members_count > 0)

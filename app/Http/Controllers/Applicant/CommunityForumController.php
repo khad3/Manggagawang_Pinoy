@@ -1361,10 +1361,53 @@ public function KickGroup($groupId, $memberId)
     return redirect()->back()->with('success', 'Member kicked successfully.');
 }
 
+public function DeleteGroupPost($groupId)
+{
+    $creatorId = session('applicant_id');
+
+    // Find the group post
+    $group = Group::findOrFail($groupId);
+
+    // Check if the logged-in user is the creator
+    if ($group->applicant_id != $creatorId) {
+        return redirect()->back()->with('error', 'Unauthorized action.');
+    }
+
+    // Delete the post
+    $group->delete();
+
+    return redirect()->back()->with('success', 'Group post deleted successfully.');
+}
 
 
+//edit group post by creator
+public function EditGroupPost(Request $request, $groupId)
+{
+    $creatorId = session('applicant_id');
 
+    // Find the group post
+    $group = Group::findOrFail($groupId);
 
+    // Check if the logged-in user is the creator
+    if ($group->applicant_id != $creatorId) {
+        return redirect()->back()->with('error', 'Unauthorized action.');
+    }
+
+    // Validate input
+    $validated = $request->validate([
+        'group_title' => 'required|string|max:255',
+        'group_description' => 'nullable|string',
+        'group_privacy' => 'required|in:Public,Private',
+    ]);
+
+    // Update group details
+    $group->group_name = $validated['group_title'];
+    $group->group_description = $validated['group_description'];
+    $group->privacy = $validated['group_privacy'];
+    $group->save();
+
+    return redirect()->back()->with('success', 'Group post updated successfully.');
+}
 
 
 }
