@@ -229,41 +229,20 @@
                                      <label for="salaryRange" class="form-label">
                                          Salary Range <span style="color: red;">*</span>
                                      </label>
-                                     <div class="input-group">
-                                         <span class="input-group-text">Minimum</span>
-                                         <input type="number" id="salaryAmount" class="form-control"
-                                             placeholder="e.g. 500" min="0">
-                                         <select id="salaryType" class="form-select" style="max-width: 150px;">
-                                             <option value="per day">per day</option>
-                                             <option value="per month">per month</option>
-                                         </select>
-                                     </div>
-                                     <input type="hidden" name="job_salary_range" id="salaryRange">
-                                     <small class="form-text text-muted">Example: Minimum 500 per day or 15,000 per
-                                         month</small>
+
+                                     <!-- Option 1: Predefined salary ranges -->
+                                     <select class="form-select" id="jobSalarySelect"
+                                         name="job_salary_range"required>
+                                         <option value="" disabled selected>Select Salary Range</option>
+                                         <option value="Below 10,000">Below 10,000 monthly</option>
+                                         <option value="10,000 - 20,000">10,000 - 20,000 monthly</option>
+                                         <option value="20,001 - 30,000">20,001 - 30,000 monthly</option>
+                                         <option value="30,001 - 40,000">30,001 - 40,000 monthly</option>
+                                         <option value="40,001 - 50,000">40,001 - 50,000 monthly</option>
+                                         <option value="50,001 - 60,000">50,001 - 60,000 monthly</option>
+                                         <option value="Above 60,000">Above 60,000 monthly</option>
+                                     </select>
                                  </div>
-
-                                 <script>
-                                     const salaryAmount = document.getElementById('salaryAmount');
-                                     const salaryType = document.getElementById('salaryType');
-                                     const salaryRange = document.getElementById('salaryRange');
-
-                                     function formatNumber(num) {
-                                         return num ? num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '';
-                                     }
-
-                                     function updateSalaryText() {
-                                         const amount = formatNumber(salaryAmount.value);
-                                         const type = salaryType.value;
-                                         if (amount) {
-                                             salaryRange.value = `Minimum ${amount} ${type}`;
-                                         } else {
-                                             salaryRange.value = '';
-                                         }
-                                     }
-
-                                     [salaryAmount, salaryType].forEach(el => el.addEventListener('input', updateSalaryText));
-                                 </script>
 
                              </div>
 

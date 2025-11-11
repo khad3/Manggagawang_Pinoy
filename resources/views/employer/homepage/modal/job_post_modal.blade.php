@@ -77,9 +77,18 @@
                          </div>
                          <div class="col-md-6">
                              <label for="jobSalary" class="form-label">Salary Range</label>
-                             <input type="text" class="form-control" id="jobSalary" name="job_salary_range"
-                                 placeholder="e.g. 35,000 to 45,000 month">
+                             <select class="form-select" id="jobSalary" name="job_salary_range" required>
+                                 <option value="" disabled selected>Select Salary Range</option>
+                                 <option value="Below 10,000">Below 10,000 monthly</option>
+                                 <option value="10,000 - 20,000">10,000 - 20,000 monthly</option>
+                                 <option value="20,001 - 30,000">20,001 - 30,000 monthly</option>
+                                 <option value="30,001 - 40,000">30,001 - 40,000 monthly</option>
+                                 <option value="40,001 - 50,000">40,001 - 50,000 monthly</option>
+                                 <option value="50,001 - 60,000">50,001 - 60,000 monthly</option>
+                                 <option value="Above 60,000">Above 60,000 monthly</option>
+                             </select>
                          </div>
+
                          <div class="col-md-6">
                              <label for="experience" class="form-label">Experience Level *</label>
                              <select class="form-select" id="experience" name="job_experience" required>

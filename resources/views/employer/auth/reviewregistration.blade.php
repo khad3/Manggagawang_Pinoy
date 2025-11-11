@@ -584,7 +584,9 @@
                                         <div class="col-md-6">
                                             <label for="department" class="form-label">Department </label>
                                             <select class="form-select" name="department" id="department" required>
-                                                <option value="">Select department</option>
+                                                <option value="">
+                                                    {{ $retrievedJobDetail->department ?? 'Select department' }}
+                                                </option>
                                                 @php
                                                     $departments = [
                                                         'Construction',
@@ -612,11 +614,23 @@
 
                                         <!-- Salary Range -->
                                         <div class="col-md-6">
-                                            <label for="jobSalary" class="form-label">Salary Range</label>
-                                            <input type="text" name="job_salary_range" id="jobSalary"
-                                                class="form-control"
-                                                value="{{ $retrievedJobDetail->job_salary ?? '' }}"
-                                                placeholder="e.g. Minimum ₱500/day or ₱15,000/month" required>
+                                            <label for="salaryRange" class="form-label">
+                                                Salary Range
+                                            </label>
+
+
+                                            <select class="form-select" id="jobSalarySelect"
+                                                name="job_salary_range"required>
+                                                <option value="{{ $retrievedJobDetail->job_salary ?? '' }}" disabled
+                                                    selected>{{ $retrievedJobDetail->job_salary ?? '' }}</option>
+                                                <option value="Below 10,000">Below 10,000 monthly</option>
+                                                <option value="10,000 - 20,000">10,000 - 20,000 monthly</option>
+                                                <option value="20,001 - 30,000">20,001 - 30,000 monthly</option>
+                                                <option value="30,001 - 40,000">30,001 - 40,000 monthly</option>
+                                                <option value="40,001 - 50,000">40,001 - 50,000 monthly</option>
+                                                <option value="50,001 - 60,000">50,001 - 60,000 monthly</option>
+                                                <option value="Above 60,000">Above 60,000 monthly</option>
+                                            </select>
                                         </div>
 
                                         <!-- Location -->
