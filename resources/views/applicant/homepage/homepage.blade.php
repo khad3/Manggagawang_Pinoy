@@ -83,11 +83,8 @@
                                         alt="Profile Picture" width="50" height="50"
                                         style="border-radius: 50%; object-fit: cover;">
                                 @else
-                                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
-                                        style="width: 50px; height: 50px; font-weight: bold;">
-                                        {{ strtoupper(substr($retrieveDataDecrypted['first_name'] ?? 'U', 0, 1)) }}
-                                        {{ strtoupper(substr($retrieveDataDecrypted['last_name'] ?? 'N', 0, 1)) }}
-                                    </div>
+                                    <img src="{{ asset('img/worker default.png') }}"  alt="Default Profile Picture" width="50" height="50"
+                                        style="border-radius: 50%; object-fit: cover;"/>
                                 @endif
                             </button>
                         @endif
@@ -101,11 +98,10 @@
                                             alt="Profile Picture" width="50" height="50"
                                             style="border-radius: 50%; object-fit: cover;">
                                     @else
-                                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
-                                            style="width: 50px; height: 50px; font-weight: bold;">
-                                            {{ strtoupper(substr($retrieveDataDecrypted['first_name'] ?? 'U', 0, 1)) }}
-                                            {{ strtoupper(substr($retrieveDataDecrypted['last_name'] ?? 'N', 0, 1)) }}
-                                        </div>
+                                          {{-- Show initials fallback (from first & last name) --}}
+                               <img src="{{ asset('img/worker default.png') }}" alt="Default Profile Image" class="profile-image"
+                                    style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+         
                                     @endif
                                 </div>
 
