@@ -39,7 +39,7 @@
                 <!-- Search -->
                 <div class="nav-search d-none d-md-block">
                     <i class="bi bi-search search-icon"></i>
-                    <input type="text" id="navSearch" placeholder="Search companies, industries, employers...">
+                    <input type="text" id="navSearch" placeholder="Search companies, industries, descriptions...">
                 </div>
 
                 <!-- Navigation Actions -->
@@ -169,7 +169,8 @@
             <!-- Mobile Search -->
             <div class="nav-search d-md-none mt-3">
                 <i class="bi bi-search search-icon"></i>
-                <input type="text" id="mobileNavSearch" placeholder="Search companies, industries, employers...">
+                <input type="text" id="mobileNavSearch"
+                    placeholder="Search companies, industries, descriptions...">
             </div>
         </div>
     </header>
@@ -231,7 +232,9 @@
                                 $averageRating = $ratingsForJob->count() > 0 ? $ratingsForJob->avg('rating') : 0;
                             @endphp
 
-                            <div class="employer-card" data-name="{{ $jobDetail->title ?? 'N/A' }}"
+                            <div class="employer-card"
+                                data-company="{{ $jobDetail->employer->addressCompany->company_name ?? 'N/A' }}"
+                                data-name="{{ $jobDetail->title ?? 'N/A' }}"
                                 data-industry="{{ $jobDetail->department ?? 'N/A' }}"
                                 data-location="{{ $jobDetail->location ?? 'N/A' }}" data-hiring="true"
                                 data-remote="false" data-featured="false"
@@ -894,18 +897,22 @@ $hasActiveApplication =
             cards.forEach(card => {
                 let isVisible = true;
 
-                // Search filter
+                // Assuming searchValue is already in lowercase
                 if (searchValue) {
-                    const name = card.dataset.name.toLowerCase();
-                    const industry = card.dataset.industry.toLowerCase();
-                    const description = card.querySelector('.company-description').textContent.toLowerCase();
+                    const company = card.dataset.company ? card.dataset.company.toLowerCase() : '';
+                    const name = card.dataset.name ? card.dataset.name.toLowerCase() : '';
+                    const industry = card.dataset.industry ? card.dataset.industry.toLowerCase() : '';
+                    const descriptionEl = card.querySelector('.company-description');
+                    const description = descriptionEl ? descriptionEl.textContent.toLowerCase() : '';
 
-                    if (!name.includes(searchValue) &&
+                    if (!company.includes(searchValue) &&
+                        !name.includes(searchValue) &&
                         !industry.includes(searchValue) &&
                         !description.includes(searchValue)) {
                         isVisible = false;
                     }
                 }
+
 
                 // Industry filter
                 if (industryValue && card.dataset.industry !== industryValue) {

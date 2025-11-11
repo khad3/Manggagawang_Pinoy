@@ -770,6 +770,7 @@ public function ShowHomepage()
     // Get all the employer and also the active post
     $JobPostRetrieved = \App\Models\Employer\JobDetailModel::with(
         'employer',
+        'company',
         'interviewScreening',
         'workerRequirement',
         'specialRequirement',
