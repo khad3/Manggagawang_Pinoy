@@ -122,27 +122,130 @@
                             <td>
                                 <div class="actions">
 
+                                    @php
+                                        $unreadReports = 0;
+                                        $totalReports = 0;
+
+                                        if ($user['data']) {
+                                            $reportedId = $user['data']->id;
+                                            $reportedType = $user['type']; // 'applicant' or 'employer'
+
+                                            $totalReports = \App\Models\Report\ReportModel::where(
+                                                'reported_type',
+                                                $reportedType,
+                                            )
+                                                ->where('reported_id', $reportedId)
+                                                ->count();
+
+                                            $unreadReports = \App\Models\Report\ReportModel::where(
+                                                'reported_type',
+                                                $reportedType,
+                                            )
+                                                ->where('reported_id', $reportedId)
+                                                ->where('is_read', false)
+                                                ->count();
+                                        }
+                                    @endphp
+
                                     @if ($user['type'] === 'applicant')
-                                        <button type="button" class="action-btn btn-suspend"
-                                            onclick="openSuspendModal(
-            {{ $user['data']->id }}, 
-            '{{ addslashes($user['data']->personal_info?->first_name ?? '') }}', 
+                                        <button type="button" class="action-btn btn-suspend position-relative"
+                                            onclick="markReadThenOpen(this,
+            {{ $user['data']->id }},
+            '{{ addslashes($user['data']->personal_info?->first_name ?? '') }}',
             'applicant',
-            {{ $user['reports_received'] ?? 0 }}
+            {{ $totalReports }}
         )">
                                             <i class="fas fa-pause-circle"></i>
+
+                                            @if ($unreadReports > 0)
+                                                <span
+                                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                                    {{ $unreadReports }}/{{ $totalReports }}
+                                                </span>
+                                            @endif
                                         </button>
                                     @elseif ($user['type'] === 'employer')
-                                        <button type="button" class="action-btn btn-suspend"
-                                            onclick="openSuspendModal(
-            {{ $user['data']->id }}, 
-            '{{ addslashes($user['data']->addressCompany?->company_name ?? '') }}', 
+                                        <button type="button" class="action-btn btn-suspend position-relative"
+                                            onclick="markReadThenOpen(this,
+            {{ $user['data']->id }},
+            '{{ addslashes($user['data']->addressCompany?->company_name ?? '') }}',
             'employer',
-            {{ $user['reports_received'] ?? 0 }}
+            {{ $totalReports }}
         )">
                                             <i class="fas fa-pause-circle"></i>
+
+                                            @if ($unreadReports > 0)
+                                                <span
+                                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                                    {{ $unreadReports }}/{{ $totalReports }}
+                                                </span>
+                                            @endif
                                         </button>
                                     @endif
+                                    <script>
+                                        async function markReadThenOpen(btnEl, userId, name, type, totalReports) {
+                                            const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+                                            try {
+                                                const res = await fetch(`/admin/markasread/${userId}/${type}`, {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'X-CSRF-TOKEN': csrf,
+                                                        'Accept': 'application/json',
+                                                        'Content-Type': 'application/json'
+                                                    },
+                                                    body: JSON.stringify({})
+                                                });
+
+                                                // parse JSON if possible
+                                                let data = null;
+                                                try {
+                                                    data = await res.json();
+                                                } catch (e) {
+                                                    /* ignore parse */
+                                                }
+
+                                                if (res.ok && data && data.success) {
+                                                    // remove badge on this button
+                                                    const badge = btnEl.querySelector('.badge');
+                                                    if (badge) badge.remove();
+
+
+                                                } else {
+                                                    // server returned okay but not success, or JSON parse failed
+                                                    console.warn('Mark-as-read server response:', data || res.statusText);
+                                                }
+                                            } catch (err) {
+                                                console.error('Error marking reports as read:', err);
+                                                // still continue to open modal even on failure
+                                            }
+
+
+                                            if (typeof openSuspendModal === 'function') {
+                                                openSuspendModal(userId, name, type, totalReports);
+                                            } else {
+                                                // If you are using a custom modal overlay (not bootstrap), open it manually:
+                                                const modal = document.getElementById('suspendUserModals');
+                                                if (modal) {
+                                                    modal.style.display = 'flex'; // your modal CSS may use flex
+                                                    // populate the modal fields if present
+                                                    const idInput = modal.querySelector('#suspendUserId');
+                                                    const typeInput = modal.querySelector('#suspendUserType');
+                                                    const info = modal.querySelector('#suspendUserInfo');
+                                                    if (idInput) idInput.value = userId;
+                                                    if (typeInput) typeInput.value = type;
+                                                    if (info) {
+                                                        info.innerHTML = `<p><strong>User:</strong> ${name}</p>
+                                  <p><strong>Type:</strong> ${type}</p>
+                                  <p><strong>Total Reports:</strong> ${totalReports}</p>`;
+                                                    }
+                                                } else {
+                                                    console.warn('No suspend modal found (id=suspendUserModals) and openSuspendModal is not defined.');
+                                                }
+                                            }
+                                        }
+                                    </script>
+
 
                                     <!-- Ban User (smaller button like action-btn) -->
                                     @if ($user['data']->status === 'banned')

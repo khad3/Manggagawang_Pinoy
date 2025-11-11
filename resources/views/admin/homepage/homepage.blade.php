@@ -49,11 +49,36 @@
                     <span>Reports & Analytics</span>
                     <i class="fas fa-chevron-right chevron"></i>
                 </button>
-                <button class="menu-item" onclick="showSection('users', this)">
+                @php
+                    use App\Models\Report\ReportModel;
+
+                    // Count unread reports for both applicants and employers
+                    $pendingApplicants = ReportModel::where('reported_type', 'applicant')
+                        ->where('is_read', false)
+                        ->count();
+
+                    $pendingEmployers = ReportModel::where('reported_type', 'employer')
+                        ->where('is_read', false)
+                        ->count();
+
+                    // Combine both counts
+                    $totalPending = $pendingApplicants + $pendingEmployers;
+                @endphp
+
+                <button class="menu-item position-relative" onclick="showSection('users', this)">
                     <i class="fas fa-users"></i>
                     <span>User Management</span>
                     <i class="fas fa-chevron-right chevron"></i>
+
+                    @if ($totalPending > 0)
+                        <!-- Badge showing total unread reports -->
+                        <span class="badge bg-danger position-absolute top-0 end-0">
+                            {{ $totalPending }}
+                        </span>
+                    @endif
                 </button>
+
+
                 <button class="menu-item" data-bs-toggle="modal" data-bs-target="#logoutModal">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>

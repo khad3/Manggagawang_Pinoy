@@ -1289,5 +1289,25 @@ public function deleteApplicantOrEmployer(Request $request, $id)
     }
 }
 
+// AdminController.php
+public function markReportsAsRead($reportedId, $reportedType)
+{
+    try {
+        \App\Models\Report\ReportModel::where('reported_id', $reportedId)
+            ->where('reported_type', $reportedType)
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        return response()->json(['success' => true, 'message' => 'Reports marked as read.']);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to mark reports as read: ' . $e->getMessage(),
+        ], 500);
+    }
+}
+
+
+
 
 }
