@@ -189,7 +189,6 @@
                     <form method="POST" action="{{ route('applicant.verification.store') }}" id="verificationForm">
                         @csrf
 
-                        <!-- Hidden input for form submission -->
                         <input type="hidden" name="verification_code" id="verification_code" required>
 
                         <!-- Code Input Digits -->
@@ -212,24 +211,127 @@
                         <!-- Timer -->
                         <div class="timer-container">
                             <div class="timer-text">Code expires in:</div>
-                            <div class="timer-countdown" id="countdown">05:00</div>
+                            <div class="timer-countdown" id="expiryCountdown">10:00</div>
                         </div>
-
-                        <!-- Resend -->
-                        <div class="resend-container">
-                            <span style="color: #64748b; font-size: 14px;">Didn't receive the code?</span>
-                            <button type="button" class="resend-btn" id="resendBtn" onclick="resendCode()"
-                                disabled>
-                                Resend Code (<span id="countdown">30</span>s)
-                            </button>
-                        </div>
-
-
                         <!-- Submit Button -->
                         <button type="submit" class="submit-btn" id="submitBtn" disabled>
                             <i class="bi bi-shield-check me-2"></i>Verify Email
                         </button>
                     </form>
+                    <!-- Resend -->
+                    <div class="resend-container" style="margin-top: 10px;">
+                        <span style="color: #64748b; font-size: 14px;">Didn't receive the code?</span>
+
+                        <form action="{{ route('verification.resend') }}" method="POST" style="display: inline;">
+                            @csrf
+                            <button type="submit" class="resend-btn" id="resendBtn" disabled>
+                                Resend Code (<span id="countdown">30</span>s)
+                            </button>
+                        </form>
+                    </div>
+
+                    <script>
+                        const resendBtn = document.getElementById('resendBtn');
+                        const countdownSpan = document.getElementById('countdown');
+                        const expiryCountdownDisplay = document.getElementById('expiryCountdown');
+
+                        let resendCountdown = 30;
+                        let resendTimer = null;
+
+                        let expiryCountdown = 600; // 10 minutes = 600 seconds
+                        let expiryTimer = null;
+
+                        // Format time as mm:ss
+                        function formatTime(seconds) {
+                            const minutes = Math.floor(seconds / 60);
+                            const secs = seconds % 60;
+                            return `${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+                        }
+
+                        // Start 10-minute expiry countdown
+                        function startExpiryCountdown() {
+                            clearInterval(expiryTimer);
+                            expiryCountdown = 600;
+                            expiryCountdownDisplay.textContent = formatTime(expiryCountdown);
+
+                            expiryTimer = setInterval(() => {
+                                expiryCountdown--;
+                                expiryCountdownDisplay.textContent = formatTime(expiryCountdown);
+
+                                if (expiryCountdown <= 0) {
+                                    clearInterval(expiryTimer);
+                                    expiryCountdownDisplay.textContent = "Expired";
+                                    expiryCountdownDisplay.style.color = "red";
+                                    alert("Your verification code has expired. Please resend a new one.");
+                                }
+                            }, 1000);
+                        }
+
+                        // Start 30-second resend countdown
+                        function startResendCountdown() {
+                            clearInterval(resendTimer);
+                            resendCountdown = 30;
+                            resendBtn.disabled = true;
+                            countdownSpan.textContent = resendCountdown;
+
+                            resendTimer = setInterval(() => {
+                                resendCountdown--;
+                                countdownSpan.textContent = resendCountdown;
+
+                                if (resendCountdown <= 0) {
+                                    clearInterval(resendTimer);
+                                    resendBtn.disabled = false;
+                                    resendBtn.textContent = "Resend Code";
+                                }
+                            }, 1000);
+                        }
+
+                        // Handle resend click
+                        resendBtn.addEventListener('click', () => {
+                            resendBtn.disabled = true;
+                            resendBtn.textContent = "Sending...";
+
+                            fetch("{{ route('verification.resend') }}", {
+                                    method: "POST",
+                                    headers: {
+                                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                        "Content-Type": "application/json",
+                                        "Accept": "application/json",
+                                    },
+                                    body: JSON.stringify({})
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    alert(data.message || "A new code has been sent to your email.");
+                                    resendBtn.textContent = "Resend Code (30s)";
+                                    startResendCountdown(); // restart 30s
+                                    startExpiryCountdown(); // restart 10-minute expiry
+                                })
+                                .catch(error => {
+                                    console.error(error);
+                                    alert("Something went wrong: " + error.message);
+                                    resendBtn.disabled = false;
+                                    resendBtn.textContent = "Resend Code";
+                                });
+                        });
+
+                        // Start both timers on page load
+                        document.addEventListener('DOMContentLoaded', function() {
+                            startResendCountdown(); // 30s resend cooldown
+                            startExpiryCountdown(); // 10-minute expiry countdown
+                        });
+                    </script>
+
+                    @if (session('message'))
+                        <script>
+                            alert("{{ session('message') }}");
+                        </script>
+                    @endif
+                    @if (session('error'))
+                        <script>
+                            alert("{{ session('error') }}");
+                        </script>
+                    @endif
 
                     <!-- Help Text -->
                     <div class="help-text">
@@ -241,61 +343,6 @@
 
             <!-- Bootstrap JS -->
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-            <script>
-                let countdown = 30; // seconds
-                let resendBtn = document.getElementById('resendBtn');
-                let countdownSpan = document.getElementById('countdown');
-
-                let timer = setInterval(function() {
-                    countdown--;
-                    countdownSpan.textContent = countdown;
-
-                    if (countdown <= 0) {
-                        clearInterval(timer);
-                        resendBtn.disabled = false;
-                        countdownSpan.textContent = '';
-                        resendBtn.textContent = 'Resend Code';
-                    }
-                }, 1000);
-
-                // Function to handle resend
-                function resendCode() {
-                    resendBtn.disabled = true;
-                    resendBtn.textContent = "Resending...";
-
-                    // Example: send AJAX request to backend
-                    fetch("{{ route('verification.resend') }}", {
-                            method: "POST",
-                            headers: {
-                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({})
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            alert(data.message || "A new code has been sent to your email.");
-                            // restart countdown
-                            countdown = 30;
-                            resendBtn.textContent = "Resend Code (30s)";
-                            resendBtn.disabled = true;
-                            timer = setInterval(function() {
-                                countdown--;
-                                resendBtn.textContent = "Resend Code (" + countdown + "s)";
-                                if (countdown <= 0) {
-                                    clearInterval(timer);
-                                    resendBtn.disabled = false;
-                                    resendBtn.textContent = "Resend Code";
-                                }
-                            }, 1000);
-                        })
-                        .catch(error => {
-                            console.error("Error:", error);
-                            resendBtn.disabled = false;
-                            resendBtn.textContent = "Resend Code";
-                        });
-                }
-            </script>
 
             <script>
                 // ======= HAMBURGER TOGGLE FUNCTIONALITY ======= //

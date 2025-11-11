@@ -41,6 +41,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\App;
 use Symfony\Contracts\Service\Attribute\Required;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log; 
 
 
 class ApplicantController extends Controller
@@ -371,9 +372,10 @@ public function ShowVerifyForm(){
     
     return view('applicant.auth.verification');
 }
-
 public function resend(Request $request)
 {
+    $request->session()->reflash(); // Keep session data for this request
+
     $applicantId = session('applicant_id');
 
     if (!$applicantId) {
@@ -388,23 +390,32 @@ public function resend(Request $request)
 
     // Generate new code
     $newCode = mt_rand(100000, 999999);
-    $expiration = Carbon::now()->addMinutes(10);
+    $expiration = now()->addMinutes(10);
 
     $applicant->update([
         'verification_code' => $newCode,
         'email_verification_code_expires_at' => $expiration,
     ]);
 
-    // Debug log
-    \Log::info("Resend Code for {$applicant->email}: $newCode");
-
-    // Send email
-    Mail::to($applicant->email)->send(new VerifyEmail($newCode));
+    try {
+        Mail::to($applicant->email)->send(new VerifyEmail($newCode));
+    } catch (\Exception $e) {
+        \Log::error('Mail send failed: ' . $e->getMessage());
+        return response()->json([
+            'message' => 'Failed to send verification email. Please try again.',
+            'error' => $e->getMessage()
+        ], 500);
+    }
 
     return response()->json([
         'message' => 'A new verification code has been sent to your email.',
+        'debug_code' => config('app.debug') ? $newCode : null
     ]);
 }
+
+
+
+
 
 
 
