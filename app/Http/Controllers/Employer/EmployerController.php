@@ -1477,64 +1477,19 @@ if ($isOther) {
 
     $job->other_certifications = $validated['other_certification'] ?? null;
 
-    // ✅ Save benefits
+    // Save benefits
     $job->benefits = !empty($validated['job_benefits'])
         ? implode(',', $validated['job_benefits'])
         : null;
 
     $job->save();
 
-    $jobId = $job->id;
-
-    // --- Communication Preferences ---
-    $request->validate([
-        'contact_method' => 'required|string|in:email,phone,sms',
-        'contact_time' => 'required|string|in:morning,afternoon,evening,anytime',
-        'language_preference' => 'required|string',
-    ]);
-
-    $preference = new CommunicationPreference();
-    $preference->job_id = $jobId;
-    $preference->employer_id = $employer_id;
-    $preference->personal_info_id = $personalInfoID;
-    $preference->contact_method = $request->input('contact_method');
-    $preference->contact_time = $request->input('contact_time');
-    $preference->language_preference = $request->input('language_preference');
-    $preference->save();
-
-    // Validate Interview Screening
-    $request->validate([
-        'preferred_screening_method' => 'required|array',
-        'preferred_interview_location' => 'required|string',
-    ]);
-
-    $interviewScreening = new InterviewScreening();
-    $interviewScreening->job_id = $jobId;
-    $interviewScreening->employer_id = $employer_id;
-    $interviewScreening->personal_info_id = $personalInfoID;
-    $interviewScreening->preferred_screening_method = json_encode($request->preferred_screening_method); 
-    $interviewScreening->preferred_interview_location = $request->preferred_interview_location;
-    $interviewScreening->save();
-
-    // Validate Special Requirements
-    $request->validate([
-        'special_requirements' => 'nullable|array',
-        'additional_requirements' => 'nullable|string',
-    ]);
-
-    $specialRequirements = new SpecialRequirement();
-    $specialRequirements->job_id = $jobId;
-    $specialRequirements->employer_id = $employer_id;
-    $specialRequirements->personal_info_id = $personalInfoID;
-    $specialRequirements->special_requirements = json_encode($request->special_requirements); 
-    $specialRequirements->additional_requirements_or_notes = $request->additional_requirements;
-    $specialRequirements->save();
-    
-
-
-
-    return back()->with('success', 'Job posting created successfully.');
-
+// Flash message based on status
+if ($status === 'draft') {
+    return back()->with('success', 'Job saved as draft successfully.');
+} else {
+    return back()->with('success', 'Job posting published successfully.');
+}
 }
 
 
