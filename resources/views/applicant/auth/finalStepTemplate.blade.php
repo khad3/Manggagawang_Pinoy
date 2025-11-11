@@ -165,26 +165,11 @@
                                     style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
                             @else
                                 {{-- Show initials fallback (from first & last name) --}}
-                                @php
-                                    $firstName = $personalInfoDecrypted['first_name'] ?? 'First';
-                                    $lastName = $personalInfoDecrypted['last_name'] ?? 'Last';
-                                    $initials = strtoupper(mb_substr($firstName, 0, 1) . mb_substr($lastName, 0, 1));
-                                @endphp
-                                <div
-                                    style="
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 28px;
-        ">
-                                    {{ $initials }}
-                                </div>
+                               <img src="{{ asset('img/worker default.png') }}" alt="Default Profile Image" class="profile-image"
+                                    style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
+         
+                                    
+                            
                             @endif
 
                             {{-- Badge --}}

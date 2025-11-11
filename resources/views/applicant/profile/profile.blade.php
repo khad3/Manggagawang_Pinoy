@@ -68,7 +68,7 @@
 
                     <!-- Cover Photo -->
                     <img src="{{ asset('storage/' . $retrievedDecrytedProfile['work_background']['cover_photo_path']) }}"
-                        alt="Cover Photo" class="cover-image w-100 d-block"
+                        alt="" class="cover-image w-100 d-block"
                         style="max-height: 350px; object-fit: cover;">
 
                     <div class="cover-overlay"></div>
@@ -170,7 +170,9 @@
                             @if ($profileImage)
                                 <img src="{{ $profileImage }}" alt="Profile Picture" />
                             @else
-                                <i class="bi bi-person-circle" style="font-size: 100px;"></i>
+                                   {{-- Show initials fallback (from first & last name) --}}
+                               <img src="{{ asset('img/worker default.png') }}" alt="Default Profile Image">
+         
                             @endif
                         </div>
 
