@@ -343,6 +343,10 @@
     // PROFANITY FILTER SYSTEM - AUTO FILTER
     // ========================================
 
+    // ========================================
+    // PROFANITY FILTER SYSTEM - AUTO FILTER
+    // ========================================
+
     // Comprehensive bad words list in multiple languages
     const profanityList = [
         // English profanity
@@ -358,9 +362,7 @@
         'ulol', 'bobo', 'tanga', 'tarantada', 'pakyu', 'punyeta',
         'hayop', 'hindot', 'kantot', 'buwisit', 'leche', 'yawa',
         'peste', 'hinayupak', 'animal', 'kupal', 'kingina', 'potangina',
-        'taena', 'tanginamo', 'tangina', 'tanginamo', 'tangina', 'tanginamo',
-        'tangina', 'tanginamo', 'tangina', 'tanginamo', 'tangina', 'tangainamo',
-        'shibal',
+        'taena', 'tanginamo', 'shibal', 'mamatay',
 
         // Spanish profanity
         'puta', 'mierda', 'coño', 'joder', 'pendejo', 'idiota',
@@ -402,6 +404,7 @@
     let isChatModalOpen = false;
     let isActivelyViewingMessages = false;
     let messageReadTimer = null;
+    let hasMarkedAsReadForCurrentEmployer = false; // NEW: Track if we've already marked this conversation as read
 
     const messagesByEmployer = {};
     allMessages.forEach(msg => {
@@ -433,6 +436,7 @@
         isChatModalOpen = false;
         isActivelyViewingMessages = false;
         currentEmployerId = null;
+        hasMarkedAsReadForCurrentEmployer = false; // Reset flag
 
         if (messageReadTimer) {
             clearTimeout(messageReadTimer);
@@ -442,14 +446,14 @@
         document.getElementById('chatHeader').style.display = 'none';
         document.getElementById('replyArea').style.display = 'none';
         document.getElementById('messagesContainer').innerHTML = `
-            <div class="no-conversation">
-                <div class="no-conversation-icon">
-                    <i class="bi bi-chat-square-dots"></i>
-                </div>
-                <h3>Select a conversation</h3>
-                <p>Choose an employer from the list to view your messages</p>
+        <div class="no-conversation">
+            <div class="no-conversation-icon">
+                <i class="bi bi-chat-square-dots"></i>
             </div>
-        `;
+            <h3>Select a conversation</h3>
+            <p>Choose an employer from the list to view your messages</p>
+        </div>
+    `;
 
         document.querySelectorAll('.employer-list-item').forEach(item => {
             item.classList.remove('active');
@@ -462,8 +466,10 @@
             messageReadTimer = null;
         }
 
+        // Reset flags when switching conversations
         currentEmployerId = employerId;
         isActivelyViewingMessages = false;
+        hasMarkedAsReadForCurrentEmployer = false;
 
         const replyEmployerInput = document.getElementById('replyEmployerId');
         replyEmployerInput.value = employerId;
@@ -512,12 +518,11 @@
 
         if (employer.address_company?.company_logo) {
             avatarElement.innerHTML = `<img src="/storage/${employer.address_company.company_logo}" 
-        alt="${employer.address_company.company_name}" 
-        style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    alt="${employer.address_company.company_name}" 
+    style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
         } else {
             avatarElement.textContent = (employer.address_company?.company_name || 'C').charAt(0).toUpperCase();
         }
-
 
         displayMessages(employerMessages);
         lastMessageCount = employerMessages.length;
@@ -528,8 +533,10 @@
             document.querySelector('.employers-sidebar').classList.add('hide-mobile');
         }
 
+        // Start timer to mark as read ONLY ONCE after 3 seconds of viewing
         messageReadTimer = setTimeout(() => {
-            if (isChatModalOpen && currentEmployerId === employerId && isUserAtBottom && isPageVisible) {
+            if (isChatModalOpen && currentEmployerId === employerId && isUserAtBottom && isPageVisible && !
+                hasMarkedAsReadForCurrentEmployer) {
                 isActivelyViewingMessages = true;
                 markMessagesAsRead(employerId);
             }
@@ -550,14 +557,14 @@
 
         if (messages.length === 0) {
             container.innerHTML = `
-                <div class="no-conversation">
-                    <div class="no-conversation-icon">
-                        <i class="bi bi-chat-square"></i>
-                    </div>
-                    <h3>No messages yet</h3>
-                    <p>Start the conversation by sending a message</p>
+            <div class="no-conversation">
+                <div class="no-conversation-icon">
+                    <i class="bi bi-chat-square"></i>
                 </div>
-            `;
+                <h3>No messages yet</h3>
+                <p>Start the conversation by sending a message</p>
+            </div>
+        `;
             return;
         }
 
@@ -587,28 +594,28 @@
             let attachmentHtml = '';
             if (hasAttachment) {
                 attachmentHtml = `
-                    <div class="message-attachment mt-2">
-                        <img src="/storage/${msg.attachment}" 
-                             alt="Attachment" 
-                             class="img-fluid rounded-2 shadow-sm">
-                    </div>
-                `;
+                <div class="message-attachment mt-2">
+                    <img src="/storage/${msg.attachment}" 
+                         alt="Attachment" 
+                         class="img-fluid rounded-2 shadow-sm">
+                </div>
+            `;
             }
 
             const timestamp = formatMessageTime(msg.created_at);
             const fullDate = new Date(msg.created_at).toLocaleString();
 
             return `
-                <div class="message-bubble ${bubbleClass}" data-message-id="${msg.id}">
-                    <div class="message-content">
-                        ${messageTextHtml}
-                        ${attachmentHtml}
-                        <div class="message-timestamp ${bubbleClass}" title="${fullDate}">
-                            ${timestamp}
-                        </div>
+            <div class="message-bubble ${bubbleClass}" data-message-id="${msg.id}">
+                <div class="message-content">
+                    ${messageTextHtml}
+                    ${attachmentHtml}
+                    <div class="message-timestamp ${bubbleClass}" title="${fullDate}">
+                        ${timestamp}
                     </div>
                 </div>
-            `;
+            </div>
+        `;
         }).join('');
 
         if (isUserAtBottom) {
@@ -646,12 +653,14 @@
         const wasAtBottom = isUserAtBottom;
         isUserAtBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - threshold;
 
-        if (!wasAtBottom && isUserAtBottom && currentEmployerId && !isActivelyViewingMessages) {
+        // Only trigger mark as read if scrolling TO bottom AND haven't marked yet
+        if (!wasAtBottom && isUserAtBottom && currentEmployerId && !isActivelyViewingMessages && !
+            hasMarkedAsReadForCurrentEmployer) {
             if (messageReadTimer) {
                 clearTimeout(messageReadTimer);
             }
             messageReadTimer = setTimeout(() => {
-                if (isUserAtBottom && isChatModalOpen && isPageVisible) {
+                if (isUserAtBottom && isChatModalOpen && isPageVisible && !hasMarkedAsReadForCurrentEmployer) {
                     isActivelyViewingMessages = true;
                     markMessagesAsRead(currentEmployerId);
                 }
@@ -660,7 +669,7 @@
     }
 
     // ========================================
-    // REAL-TIME MESSAGE REFRESH
+    // REAL-TIME MESSAGE REFRESH - FIXED VERSION
     // ========================================
     function refreshMessages() {
         if (!currentEmployerId || !isChatModalOpen) return;
@@ -681,6 +690,7 @@
 
                 const wasAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
 
+                // Get existing message IDs
                 const existingIds = new Set();
                 container.querySelectorAll('[data-message-id]').forEach(el => {
                     const id = el.getAttribute('data-message-id');
@@ -690,10 +700,35 @@
                 });
 
                 let hasNewMessages = false;
+                let hasNewUnreadMessages = false;
 
+                // Update messagesByEmployer with fresh data preserving is_read status
+                data.messages.forEach(msg => {
+                    // Find if this message already exists in our local data
+                    const existingMsg = messagesByEmployer[currentEmployerId]?.find(m => m.id === msg.id);
+
+                    if (existingMsg) {
+                        // Preserve local is_read status if we've already marked it
+                        if (hasMarkedAsReadForCurrentEmployer && msg.sender_type === 'employer') {
+                            msg.is_read = 1; // Keep it marked as read locally
+                        } else {
+                            msg.is_read = existingMsg.is_read; // Preserve existing status
+                        }
+                    } else {
+                        // New message - check if it's unread
+                        if (msg.sender_type === 'employer' && msg.is_read === 0) {
+                            hasNewUnreadMessages = true;
+                        }
+                    }
+                });
+
+                // Update the local message store
+                messagesByEmployer[currentEmployerId] = data.messages;
+
+                // Append only NEW messages to the UI
                 data.messages.forEach(msg => {
                     if (existingIds.has(msg.id)) {
-                        return;
+                        return; // Skip existing messages
                     }
 
                     const hasValidText = msg.message &&
@@ -723,8 +758,8 @@
 
                     if (hasAttachment) {
                         contentHtml += `<div class="message-attachment mt-2">
-                           <img src="/storage/${encodeURI(msg.attachment)}" class="img-fluid rounded-2 shadow-sm" alt="attachment">
-                       </div>`;
+                       <img src="/storage/${encodeURI(msg.attachment)}" class="img-fluid rounded-2 shadow-sm" alt="attachment">
+                   </div>`;
                     }
 
                     contentHtml +=
@@ -738,16 +773,21 @@
                     lastMessageId = data.messages[data.messages.length - 1].id;
                 }
 
+                // Auto-scroll only if user was at bottom
                 if (hasNewMessages && wasAtBottom) {
                     setTimeout(() => {
                         container.scrollTop = container.scrollHeight;
                         isUserAtBottom = true;
                     }, 10);
 
-                    if (isActivelyViewingMessages && isPageVisible) {
+                    // Only mark new messages as read if actively viewing AND at bottom AND already marked once
+                    if (isActivelyViewingMessages && isPageVisible && hasMarkedAsReadForCurrentEmployer) {
                         setTimeout(() => markMessagesAsRead(currentEmployerId), 1000);
                     }
                 }
+
+                // Update UI lists to reflect unread counts (but don't mark as read)
+                updateUnreadCountsInUI();
             })
             .catch(error => {
                 console.error('Error refreshing messages:', error);
@@ -767,6 +807,88 @@
     // ========================================
     // UPDATE UI FUNCTIONS
     // ========================================
+    function updateUnreadCountsInUI() {
+        // Update badge count
+        let totalUnread = 0;
+        Object.values(messagesByEmployer).forEach(messages => {
+            messages.forEach(msg => {
+                if (msg.sender_type === 'employer' && msg.is_read === 0) {
+                    totalUnread++;
+                }
+            });
+        });
+
+        const badge = document.getElementById('messagesBadge');
+        if (badge) {
+            if (totalUnread > 0) {
+                badge.textContent = totalUnread;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        // Update individual employer items
+        Object.keys(messagesByEmployer).forEach(employerId => {
+            const unreadCount = messagesByEmployer[employerId].filter(msg =>
+                msg.sender_type === 'employer' && msg.is_read === 0
+            ).length;
+
+            const dropdownItem = document.querySelector(`.employer-item[data-employer-id="${employerId}"]`);
+            const sidebarItem = document.querySelector(`.employer-list-item[data-employer-id="${employerId}"]`);
+
+            if (dropdownItem) {
+                dropdownItem.dataset.unreadCount = unreadCount;
+                if (unreadCount > 0) {
+                    dropdownItem.classList.add('unread');
+                    if (!dropdownItem.querySelector('.unread-indicator')) {
+                        const indicator = document.createElement('div');
+                        indicator.className = 'unread-indicator';
+                        dropdownItem.insertBefore(indicator, dropdownItem.firstChild);
+                    }
+                    let countBadge = dropdownItem.querySelector('.unread-count');
+                    if (!countBadge) {
+                        countBadge = document.createElement('span');
+                        countBadge.className = 'unread-count';
+                        dropdownItem.querySelector('.message-meta').appendChild(countBadge);
+                    }
+                    countBadge.textContent = unreadCount;
+                } else {
+                    dropdownItem.classList.remove('unread');
+                    const indicator = dropdownItem.querySelector('.unread-indicator');
+                    if (indicator) indicator.remove();
+                    const countBadge = dropdownItem.querySelector('.unread-count');
+                    if (countBadge) countBadge.remove();
+                }
+            }
+
+            if (sidebarItem) {
+                sidebarItem.dataset.unreadCount = unreadCount;
+                if (unreadCount > 0) {
+                    sidebarItem.classList.add('has-unread');
+                    if (!sidebarItem.querySelector('.online-status')) {
+                        const status = document.createElement('div');
+                        status.className = 'online-status';
+                        sidebarItem.querySelector('.employer-avatar').appendChild(status);
+                    }
+                    let countBadge = sidebarItem.querySelector('.unread-count');
+                    if (!countBadge) {
+                        countBadge = document.createElement('span');
+                        countBadge.className = 'unread-count';
+                        sidebarItem.appendChild(countBadge);
+                    }
+                    countBadge.textContent = unreadCount;
+                } else {
+                    sidebarItem.classList.remove('has-unread');
+                    const status = sidebarItem.querySelector('.online-status');
+                    if (status) status.remove();
+                    const countBadge = sidebarItem.querySelector('.unread-count');
+                    if (countBadge) countBadge.remove();
+                }
+            }
+        });
+    }
+
     function updateEmployersList(newMessagesByEmployer) {
         const employersList = document.getElementById('employersList');
         if (!employersList) return;
@@ -775,11 +897,11 @@
 
         if (employerEntries.length === 0) {
             employersList.innerHTML = `
-                <div class="no-employers">
-                    <i class="bi bi-chat-dots"></i>
-                    <p>No conversations yet</p>
-                </div>
-            `;
+            <div class="no-employers">
+                <i class="bi bi-chat-dots"></i>
+                <p>No conversations yet</p>
+            </div>
+        `;
             return;
         }
 
@@ -805,37 +927,37 @@
             );
 
             html += `
-                <div class="employer-list-item ${unreadCount > 0 ? 'has-unread' : ''} ${currentEmployerId == employerId ? 'active' : ''}"
-                    data-employer-id="${employerId}" 
-                    data-unread-count="${unreadCount}"
-                    onclick="loadConversation(${employerId})">
+            <div class="employer-list-item ${unreadCount > 0 ? 'has-unread' : ''} ${currentEmployerId == employerId ? 'active' : ''}"
+                data-employer-id="${employerId}" 
+                data-unread-count="${unreadCount}"
+                onclick="loadConversation(${employerId})">
 
-                    <div class="employer-avatar">
-                        ${employer.address_company?.company_logo 
-                            ? `<img src="${employer.address_company.company_logo}" alt="${employer.address_company.company_name}">`
-                            : `<div class="avatar-placeholder">${(employer.address_company?.company_name || 'C').charAt(0).toUpperCase()}</div>`
-                        }
-                        ${unreadCount > 0 ? '<div class="online-status"></div>' : ''}
-                    </div>
-
-                    <div class="employer-info">
-                        <div class="employer-name">
-                            ${employer.personal_info?.first_name || 'N/A'} ${employer.personal_info?.last_name || ''}
-                        </div>
-                        <div class="company-name">
-                            ${employer.address_company?.company_name || 'Company'}
-                        </div>
-                        <div class="last-message-preview">
-                            ${lastMessage.message ? lastMessage.message.substring(0, 30) : 'Attachment'}
-                        </div>
-                        <div class="last-message-time">
-                            ${formatMessageTime(lastMessage.created_at)}
-                        </div>
-                    </div>
-
-                    ${unreadCount > 0 ? `<span class="unread-count">${unreadCount}</span>` : ''}
+                <div class="employer-avatar">
+                    ${employer.address_company?.company_logo 
+                        ? `<img src="${employer.address_company.company_logo}" alt="${employer.address_company.company_name}">`
+                        : `<div class="avatar-placeholder">${(employer.address_company?.company_name || 'C').charAt(0).toUpperCase()}</div>`
+                    }
+                    ${unreadCount > 0 ? '<div class="online-status"></div>' : ''}
                 </div>
-            `;
+
+                <div class="employer-info">
+                    <div class="employer-name">
+                        ${employer.personal_info?.first_name || 'N/A'} ${employer.personal_info?.last_name || ''}
+                    </div>
+                    <div class="company-name">
+                        ${employer.address_company?.company_name || 'Company'}
+                    </div>
+                    <div class="last-message-preview">
+                        ${lastMessage.message ? lastMessage.message.substring(0, 30) : 'Attachment'}
+                    </div>
+                    <div class="last-message-time">
+                        ${formatMessageTime(lastMessage.created_at)}
+                    </div>
+                </div>
+
+                ${unreadCount > 0 ? `<span class="unread-count">${unreadCount}</span>` : ''}
+            </div>
+        `;
         });
 
         employersList.innerHTML = html;
@@ -849,11 +971,11 @@
 
         if (employerEntries.length === 0) {
             messagesList.innerHTML = `
-                <div class="no-messages">
-                    <i class="bi bi-chat-dots"></i>
-                    <p>No conversations yet</p>
-                </div>
-            `;
+            <div class="no-messages">
+                <i class="bi bi-chat-dots"></i>
+                <p>No conversations yet</p>
+            </div>
+        `;
             return;
         }
 
@@ -880,45 +1002,45 @@
             const totalMessages = employerMessages.length;
 
             html += `
-                <div class="employer-item ${unreadCount > 0 ? 'unread' : ''}"
-                    data-employer-id="${employerId}" data-unread-count="${unreadCount}"
-                    onclick="openChatWithEmployer(${employerId}, '${(employer.personal_info?.first_name || 'N/A').replace(/'/g, "\\'")}', '${(employer.personal_info?.last_name || '').replace(/'/g, "\\'")}', '${(employer.address_company?.company_name || 'Company').replace(/'/g, "\\'")}')">
+            <div class="employer-item ${unreadCount > 0 ? 'unread' : ''}"
+                data-employer-id="${employerId}" data-unread-count="${unreadCount}"
+                onclick="openChatWithEmployer(${employerId}, '${(employer.personal_info?.first_name || 'N/A').replace(/'/g, "\\'")}', '${(employer.personal_info?.last_name || '').replace(/'/g, "\\'")}', '${(employer.address_company?.company_name || 'Company').replace(/'/g, "\\'")}')">
 
-                    ${unreadCount > 0 ? '<div class="unread-indicator"></div>' : ''}
+                ${unreadCount > 0 ? '<div class="unread-indicator"></div>' : ''}
 
-                    <div class="message-avatar">
-                        ${employer.address_company?.company_logo 
-                            ? `<img src="${employer.address_company.company_logo}" alt="${employer.address_company.company_name}">`
-                            : `<div class="avatar-placeholder">${(employer.address_company?.company_name || 'C').charAt(0).toUpperCase()}</div>`
-                        }
-                    </div>
-
-                    <div class="message-content">
-                        <div class="message-header">
-                            <span class="sender-name">
-                                ${employer.personal_info?.first_name || 'N/A'} ${employer.personal_info?.last_name || ''}
-                            </span>
-                            <span class="company-name">
-                                ${employer.address_company?.company_name || 'Company'}
-                            </span>
-                            <div class="message-meta">
-                                <span class="message-time">${formatMessageTime(lastMessage.created_at)}</span>
-                                ${unreadCount > 0 ? `<span class="unread-count">${unreadCount}</span>` : ''}
-                            </div>
-                        </div>
-                        <div class="message-preview">
-                            ${totalMessages} message${totalMessages > 1 ? 's' : ''} •
-                            ${lastMessage.message ? lastMessage.message.substring(0, 60) : 'Attachment'}
-                        </div>
-                    </div>
-
-                    <button class="message-actions"
-                        onclick="event.stopPropagation(); openChatWithEmployer(${employerId}, '${(employer.personal_info?.first_name || 'N/A').replace(/'/g, "\\'")}', '${(employer.personal_info?.last_name || '').replace(/'/g, "\\'")}', '${(employer.address_company?.company_name || 'Company').replace(/'/g, "\\'")}')"
-                        title="Open chat">
-                        <i class="bi bi-chat-square-text"></i>
-                    </button>
+                <div class="message-avatar">
+                    ${employer.address_company?.company_logo 
+                        ? `<img src="${employer.address_company.company_logo}" alt="${employer.address_company.company_name}">`
+                        : `<div class="avatar-placeholder">${(employer.address_company?.company_name || 'C').charAt(0).toUpperCase()}</div>`
+                    }
                 </div>
-            `;
+
+                <div class="message-content">
+                    <div class="message-header">
+                        <span class="sender-name">
+                            ${employer.personal_info?.first_name || 'N/A'} ${employer.personal_info?.last_name || ''}
+                        </span>
+                        <span class="company-name">
+                            ${employer.address_company?.company_name || 'Company'}
+                        </span>
+                        <div class="message-meta">
+                            <span class="message-time">${formatMessageTime(lastMessage.created_at)}</span>
+                            ${unreadCount > 0 ? `<span class="unread-count">${unreadCount}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="message-preview">
+                        ${totalMessages} message${totalMessages > 1 ? 's' : ''} •
+                        ${lastMessage.message ? lastMessage.message.substring(0, 60) : 'Attachment'}
+                    </div>
+                </div>
+
+                <button class="message-actions"
+                    onclick="event.stopPropagation(); openChatWithEmployer(${employerId}, '${(employer.personal_info?.first_name || 'N/A').replace(/'/g, "\\'")}', '${(employer.personal_info?.last_name || '').replace(/'/g, "\\'")}', '${(employer.address_company?.company_name || 'Company').replace(/'/g, "\\'")}')"
+                    title="Open chat">
+                    <i class="bi bi-chat-square-text"></i>
+                </button>
+            </div>
+        `;
         });
 
         messagesList.innerHTML = html;
@@ -943,13 +1065,13 @@
         }
     }
 
-
     // ========================================
-    // MARK AS READ FUNCTION
+    // MARK AS READ FUNCTION - IMPROVED
     // ========================================
     function markMessagesAsRead(employerId) {
-        if (!isActivelyViewingMessages || !isChatModalOpen || !isPageVisible) {
-            console.log('⛔ NOT marking as read - User not actively viewing');
+        // Prevent marking as read if not actively viewing or already marked
+        if (!isActivelyViewingMessages || !isChatModalOpen || !isPageVisible || hasMarkedAsReadForCurrentEmployer) {
+            console.log('⛔ NOT marking as read - Conditions not met');
             return;
         }
 
@@ -969,6 +1091,9 @@
         }
         lastSeenUpdateTime = now;
 
+        // Set flag to prevent repeated marking
+        hasMarkedAsReadForCurrentEmployer = true;
+
         console.log('✅ Marking messages as read for employer:', employerId);
 
         fetch(`/applicant/read-message/${employerId}`, {
@@ -983,6 +1108,16 @@
                 if (data.success) {
                     console.log('✅ Messages marked as read successfully');
 
+                    // Update local message store
+                    if (messagesByEmployer[employerId]) {
+                        messagesByEmployer[employerId].forEach(msg => {
+                            if (msg.sender_type === 'employer') {
+                                msg.is_read = 1;
+                            }
+                        });
+                    }
+
+                    // Update UI elements
                     if (dropdownItem) {
                         dropdownItem.classList.remove('unread');
                         dropdownItem.dataset.unreadCount = '0';
@@ -1015,18 +1150,11 @@
                             badge.style.display = 'none';
                         }
                     }
-
-                    if (messagesByEmployer[employerId]) {
-                        messagesByEmployer[employerId].forEach(msg => {
-                            if (msg.sender_type === 'employer') {
-                                msg.is_read = 1;
-                            }
-                        });
-                    }
                 }
             })
             .catch(error => {
                 console.error('❌ Error marking messages as read:', error);
+                hasMarkedAsReadForCurrentEmployer = false; // Reset flag on error
             });
     }
 
@@ -1089,21 +1217,28 @@
 
         // Page visibility handling
         document.addEventListener('visibilitychange', function() {
+            const previousVisibility = isPageVisible;
             isPageVisible = !document.hidden;
 
             if (!isPageVisible) {
+                // Page hidden - stop marking as read
                 isActivelyViewingMessages = false;
                 if (messageReadTimer) {
                     clearTimeout(messageReadTimer);
                     messageReadTimer = null;
                 }
-            } else if (isUserAtBottom && currentEmployerId && isChatModalOpen) {
-                messageReadTimer = setTimeout(() => {
-                    if (isUserAtBottom && isChatModalOpen && isPageVisible) {
-                        isActivelyViewingMessages = true;
-                        markMessagesAsRead(currentEmployerId);
-                    }
-                }, 3000);
+            } else if (previousVisibility === false && isPageVisible) {
+                // Page became visible again - restart timer only if not already marked
+                if (isUserAtBottom && currentEmployerId && isChatModalOpen && !
+                    hasMarkedAsReadForCurrentEmployer) {
+                    messageReadTimer = setTimeout(() => {
+                        if (isUserAtBottom && isChatModalOpen && isPageVisible && !
+                            hasMarkedAsReadForCurrentEmployer) {
+                            isActivelyViewingMessages = true;
+                            markMessagesAsRead(currentEmployerId);
+                        }
+                    }, 3000);
+                }
             }
         });
 
