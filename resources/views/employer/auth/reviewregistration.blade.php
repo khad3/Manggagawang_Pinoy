@@ -207,7 +207,8 @@
                                                 <div class="col-md-12">
                                                     <label for="department" class="form-label">Department</label>
                                                     <select name="department" id="department" class="form-select">
-                                                        <option value="">Select department</option>
+                                                        <option value="">
+                                                            {{ $retrievedJobDetail->department ?? '' }}</option>
                                                         <option value="Management"
                                                             {{ ($retrievedJobDetail->department ?? '') == 'Management' ? 'selected' : '' }}>
                                                             Management</option>
@@ -366,13 +367,20 @@
 
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold">Preferred Contact Method</label>
-                                            <select id="contactMethod" name="contact_method"
-                                                class="form-select form-select-lg">
-                                                <option value="Email">Email</option>
-                                                <option value="Phone">Phone</option>
-                                                <option value="Sms">Sms</option>
+                                            <select id="contactMethods" name="contact_method"
+                                                class="form-select form-select-lg" required>
+                                                <option value="email"
+                                                    {{ $retrievedCommunication->contact_method == 'email' ? 'selected' : '' }}>
+                                                    Email</option>
+                                                <option value="phone"
+                                                    {{ $retrievedCommunication->contact_method == 'phone' ? 'selected' : '' }}>
+                                                    Phone</option>
+                                                <option value="sms"
+                                                    {{ $retrievedCommunication->contact_method == 'sms' ? 'selected' : '' }}>
+                                                    Sms</option>
                                             </select>
                                         </div>
+
 
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold">Best Time to Contact</label>
@@ -429,8 +437,8 @@
                                 document.getElementById('phone').value = this.getAttribute('data-phone') || '';
                                 document.getElementById('address').value = this.getAttribute('data-address') ||
                                     '';
-                                document.getElementById('contactMethod').value = this.getAttribute(
-                                    'data-contact') || 'Email';
+                                document.getElementById('contactMethods').value = this.getAttribute(
+                                    'data-contact') || '';
                                 document.getElementById('contactTime').value = this.getAttribute('data-time') ||
                                     '';
                                 document.getElementById('languagePreference').value = this.getAttribute(
