@@ -123,25 +123,44 @@
                                 <div class="actions">
 
                                     @php
-                                        $unreadReports = 0;
-                                        $totalReports = 0;
+
+                                        $unreadReportsApplicant = 0;
+                                        $totalReportsApplicant = 0;
+                                        $unreadReportsEmployer = 0;
+                                        $totalReportsEmployer = 0;
 
                                         if ($user['data']) {
-                                            $reportedId = $user['data']->id;
-                                            $reportedType = $user['type']; // 'applicant' or 'employer'
+                                            $userId = $user['data']->id;
 
-                                            $totalReports = \App\Models\Report\ReportModel::where(
+                                            // Applicant reports
+                                            $totalReportsApplicant = \App\Models\Report\ReportModel::where(
                                                 'reported_type',
-                                                $reportedType,
+                                                'applicant',
                                             )
-                                                ->where('reported_id', $reportedId)
+                                                ->where('reported_id', $userId)
                                                 ->count();
 
-                                            $unreadReports = \App\Models\Report\ReportModel::where(
+                                            $unreadReportsApplicant = \App\Models\Report\ReportModel::where(
                                                 'reported_type',
-                                                $reportedType,
+                                                'applicant',
                                             )
-                                                ->where('reported_id', $reportedId)
+                                                ->where('reported_id', $userId)
+                                                ->where('is_read', false)
+                                                ->count();
+
+                                            // Employer reports
+                                            $totalReportsEmployer = \App\Models\Report\ReportModel::where(
+                                                'reported_type',
+                                                'employer',
+                                            )
+                                                ->where('employer_id', $userId)
+                                                ->count();
+
+                                            $unreadReportsEmployer = \App\Models\Report\ReportModel::where(
+                                                'reported_type',
+                                                'employer',
+                                            )
+                                                ->where('employer_id', $userId)
                                                 ->where('is_read', false)
                                                 ->count();
                                         }
@@ -153,14 +172,14 @@
             {{ $user['data']->id }},
             '{{ addslashes($user['data']->personal_info?->first_name ?? '') }}',
             'applicant',
-            {{ $totalReports }}
+            {{ $totalReportsApplicant }}
         )">
                                             <i class="fas fa-pause-circle"></i>
 
-                                            @if ($unreadReports > 0)
+                                            @if ($unreadReportsApplicant > 0)
                                                 <span
                                                     class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                                    {{ $unreadReports }}/{{ $totalReports }}
+                                                    {{ $unreadReportsApplicant }}/{{ $totalReportsApplicant }}
                                                 </span>
                                             @endif
                                         </button>
@@ -170,18 +189,20 @@
             {{ $user['data']->id }},
             '{{ addslashes($user['data']->addressCompany?->company_name ?? '') }}',
             'employer',
-            {{ $totalReports }}
+            {{ $totalReportsEmployer }}
         )">
                                             <i class="fas fa-pause-circle"></i>
 
-                                            @if ($unreadReports > 0)
+                                            @if ($unreadReportsEmployer > 0)
                                                 <span
                                                     class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                                    {{ $unreadReports }}/{{ $totalReports }}
+                                                    {{ $unreadReportsEmployer }}/{{ $totalReportsEmployer }}
                                                 </span>
                                             @endif
                                         </button>
                                     @endif
+
+
                                     <script>
                                         async function markReadThenOpen(btnEl, userId, name, type, totalReports) {
                                             const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
@@ -197,54 +218,45 @@
                                                     body: JSON.stringify({})
                                                 });
 
-                                                // parse JSON if possible
                                                 let data = null;
                                                 try {
                                                     data = await res.json();
-                                                } catch (e) {
-                                                    /* ignore parse */
-                                                }
+                                                } catch (e) {}
 
                                                 if (res.ok && data && data.success) {
-                                                    // remove badge on this button
                                                     const badge = btnEl.querySelector('.badge');
                                                     if (badge) badge.remove();
-
-
                                                 } else {
-                                                    // server returned okay but not success, or JSON parse failed
-                                                    console.warn('Mark-as-read server response:', data || res.statusText);
+                                                    console.warn('Server response:', data || res.statusText);
                                                 }
                                             } catch (err) {
                                                 console.error('Error marking reports as read:', err);
-                                                // still continue to open modal even on failure
                                             }
-
 
                                             if (typeof openSuspendModal === 'function') {
                                                 openSuspendModal(userId, name, type, totalReports);
                                             } else {
-                                                // If you are using a custom modal overlay (not bootstrap), open it manually:
                                                 const modal = document.getElementById('suspendUserModals');
                                                 if (modal) {
-                                                    modal.style.display = 'flex'; // your modal CSS may use flex
-                                                    // populate the modal fields if present
+                                                    modal.style.display = 'flex';
                                                     const idInput = modal.querySelector('#suspendUserId');
                                                     const typeInput = modal.querySelector('#suspendUserType');
                                                     const info = modal.querySelector('#suspendUserInfo');
                                                     if (idInput) idInput.value = userId;
                                                     if (typeInput) typeInput.value = type;
                                                     if (info) {
-                                                        info.innerHTML = `<p><strong>User:</strong> ${name}</p>
-                                  <p><strong>Type:</strong> ${type}</p>
-                                  <p><strong>Total Reports:</strong> ${totalReports}</p>`;
+                                                        info.innerHTML = `
+                    <p><strong>User:</strong> ${name}</p>
+                    <p><strong>Type:</strong> ${type}</p>
+                    <p><strong>Total Reports:</strong> ${totalReports}</p>
+                `;
                                                     }
-                                                } else {
-                                                    console.warn('No suspend modal found (id=suspendUserModals) and openSuspendModal is not defined.');
                                                 }
                                             }
                                         }
                                     </script>
+
+
 
 
                                     <!-- Ban User (smaller button like action-btn) -->

@@ -1293,18 +1293,26 @@ public function deleteApplicantOrEmployer(Request $request, $id)
 public function markReportsAsRead($reportedId, $reportedType)
 {
     try {
+    if ($reportedType === 'applicant') {
         \App\Models\Report\ReportModel::where('reported_id', $reportedId)
             ->where('reported_type', $reportedType)
             ->where('is_read', false)
             ->update(['is_read' => true]);
-
-        return response()->json(['success' => true, 'message' => 'Reports marked as read.']);
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Failed to mark reports as read: ' . $e->getMessage(),
-        ], 500);
+    } elseif ($reportedType === 'employer') {
+        \App\Models\Report\ReportModel::where('employer_id', $reportedId) // use employer_id
+            ->where('reported_type', $reportedType)
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
     }
+
+    return response()->json(['success' => true, 'message' => 'Reports marked as read.']);
+} catch (\Exception $e) {
+    return response()->json([
+        'success' => false,
+        'message' => 'Failed to mark reports as read: ' . $e->getMessage(),
+    ], 500);
+}
+
 }
 
 

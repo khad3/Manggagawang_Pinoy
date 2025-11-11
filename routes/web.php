@@ -68,6 +68,7 @@ Route::prefix('applicant')->group(function () {
 Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(function () {
     //Report display file
     Route::get('messages/fetch/{employerId}', [SendMessageEmployerController::class, 'fetchMessages'])->name('applicant.messages.fetch');
+    
     Route::post('typing/{employerId}', [SendMessageEmployerController::class, 'setTypingStatus']);
     Route::get('report-list', [ReportEmployerController::class, 'index'])->name('applicant.report.display');
     Route::delete('report-list/{id}', [ReportEmployerController::class, 'removeReport'])->name('applicant.report.delete');
@@ -289,8 +290,7 @@ Route::middleware(['admin.authenticate'])->prefix('admin')->group(function () {
     Route::delete('/delete-account/{id}', [AdminController::class, 'deleteApplicantOrEmployer'])->name('admin.deleteaccount.destroy');
 
     //MarkasRead
-Route::post('markasread/{reportedId}/{reportedType}', [AdminController::class, 'markReportsAsRead'])
-    ->name('admin.markasread.store');
+    Route::post('markasread/{reportedId}/{reportedType}', [AdminController::class, 'markReportsAsRead'])->name('admin.markasread.store');
 
     Route::get('homepage', [AdminController::class, 'homepageDisplay'])->name('admin.homepage.display');
     Route::post('logout', [AdminController::class, 'logout'])->name('admin.logout.store');
