@@ -91,11 +91,26 @@
                                 <td data-label="Company Name">
                                     <div class="company-info">
                                         <div class="company-icon">
-                                            {{ Str::substr($report->employer->Addresscompany->company_name ?? 'Unknown', 0, 1) }}
+                                            @if (!empty($report->employer?->Addresscompany?->company_name))
+                                                {{ Str::substr($report->employer->Addresscompany->company_name, 0, 1) }}
+                                            @elseif (!empty($report->employer?->personal_info))
+                                                {{ Str::substr($report->employer->personal_info->first_name ?? '', 0, 1) }}
+                                            @else
+                                                U
+                                            @endif
                                         </div>
-                                        <strong
-                                            class="company-name">{{ $report->employer->Addresscompany->company_name ?? 'Unknown Company' }}</strong>
+                                        <strong class="company-name">
+                                            @if (!empty($report->employer?->Addresscompany?->company_name))
+                                                {{ $report->employer->Addresscompany->company_name }}
+                                            @elseif (!empty($report->employer?->personal_info))
+                                                {{ $report->employer->personal_info->first_name ?? '' }}
+                                                {{ $report->employer->personal_info->last_name ?? '' }}
+                                            @else
+                                                Unknown
+                                            @endif
+                                        </strong>
                                     </div>
+
                                 </td>
                                 <td data-label="Job Title">
                                     <div class="job-title">{{ $report->job->title ?? 'N/A' }}</div>

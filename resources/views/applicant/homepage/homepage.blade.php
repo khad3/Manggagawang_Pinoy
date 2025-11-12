@@ -294,7 +294,8 @@
                                                 data-employer-id="{{ $jobDetail->employer_id ?? 'Unknown Employer' }}"
                                                 data-job-id="{{ $jobDetail->id }}"
                                                 data-title="{{ $jobDetail->title }}"
-                                                data-company="{{ $company->company_name ?? 'Unknown Company' }}"
+                                                data-company="{{ $jobDetail->employer?->addressCompany?->company_name ?? '' }}"
+                                                data-individual="{{ optional($jobDetail->employer?->personal_info)->first_name ?? '' }} {{ optional($jobDetail->employer?->personal_info)->last_name ?? '' }}"
                                                 data-bs-toggle="modal" data-bs-target="#reportJobModal"
                                                 title="Report this job">
                                                 <i class="bi bi-flag"></i>
@@ -654,7 +655,6 @@ $hasActiveApplication =
         });
     </script>
 
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Handle Report Job Modal
@@ -665,13 +665,24 @@ $hasActiveApplication =
                     const employerId = button.getAttribute('data-employer-id');
                     const jobId = button.getAttribute('data-job-id');
                     const jobTitle = button.getAttribute('data-title');
-                    const companyName = button.getAttribute('data-company');
+                    const companyName = button.getAttribute('data-company')?.trim();
+                    const individualName = button.getAttribute('data-individual')?.trim();
+
+                    // Decide what to show in modal
+                    let displayName = '';
+                    if (companyName) {
+                        displayName = `Company: ${companyName}`;
+                    } else if (individualName) {
+                        displayName = `Individual: ${individualName}`;
+                    } else {
+                        displayName = 'Unknown';
+                    }
 
                     // Update modal content
                     document.getElementById('report_employer_id').value = employerId;
                     document.getElementById('report_job_id').value = jobId;
-                    document.getElementById('report_job_title').textContent = jobTitle;
-                    document.getElementById('report_company_name').textContent = companyName;
+                    document.getElementById('report_job_title').textContent = jobTitle || 'Job Title';
+                    document.getElementById('report_company_name').textContent = displayName;
                 });
 
                 // Reset form when modal is closed
@@ -694,6 +705,7 @@ $hasActiveApplication =
             }
         });
     </script>
+
 
 
     <script>
@@ -1192,9 +1204,18 @@ $hasActiveApplication =
                         <!-- Job Title & Company -->
                         <div class="text-center mb-4">
                             <h6 class="fw-bold">{{ $jobDetail->title }}</h6>
-                            <small
-                                class="text-muted">{{ $jobDetail->employer->addressCompany->company_name ?? 'Unknown Company' }}</small>
+                            <small class="text-muted">
+                                @if (!empty($jobDetail->employer?->addressCompany?->company_name))
+                                    Company: {{ $jobDetail->employer->addressCompany->company_name }}
+                                @elseif (!empty($jobDetail->employer?->personal_info))
+                                    Individual: {{ $jobDetail->employer->personal_info->first_name ?? '' }}
+                                    {{ $jobDetail->employer->personal_info->last_name ?? '' }}
+                                @else
+                                    Unknown
+                                @endif
+                            </small>
                         </div>
+
 
                         @php
                             $ratings = $jobDetail->ratings; // make sure relation exists
