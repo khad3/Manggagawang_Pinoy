@@ -10,7 +10,20 @@
              <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
                  <!-- Added max-height and scroll -->
                  <h4 id="modalJobTitle"></h4>
-                 <p><strong>Company:</strong> <span id="modalCompanyName"></span></p>
+                 @if (!empty($company->company_name))
+                     <p>
+                         <strong>Company:</strong>
+                         <span id="modalCompanyName">{{ $company->company_name }}</span>
+                     </p>
+                 @else
+                     <p>
+                         <strong>Individual:</strong>
+                         <span id="modalCompanyName">
+                             {{ optional($company->employer->personal_info)->first_name . ' ' . optional($company->employer->personal_info)->last_name ?? 'Unknown' }}
+                         </span>
+                     </p>
+                 @endif
+
                  <p><strong>Industry:</strong> <span id="modalIndustry"></span></p>
                  <p><strong>Location:</strong> <span id="modalLocation"></span></p>
                  <p><strong>Description:</strong></p>

@@ -230,6 +230,7 @@
 
                             <div class="employer-card"
                                 data-company="{{ $jobDetail->employer->addressCompany->company_name ?? 'N/A' }}"
+                                data-individual="{{ $jobDetail->employer?->personal_info?->first_name ?? '' }} {{ $jobDetail->employer?->personal_info?->last_name ?? '' }}"
                                 data-name="{{ $jobDetail->title ?? 'N/A' }}"
                                 data-industry="{{ $jobDetail->department ?? 'N/A' }}"
                                 data-location="{{ $jobDetail->location ?? 'N/A' }}" data-hiring="true"
@@ -261,14 +262,19 @@
                                                 <div class="company-avatar-initials">MP</div> <!-- default fallback -->
                                             @endif
                                         </div>
-
-
-
                                         <div class="company-details">
                                             <h3>{{ $jobDetail->title }}</h3>
                                             <div class="company-industry">
                                                 {{ $jobDetail->department }} • {{ $jobDetail->job_type }}
                                             </div>
+                                            <div class="company-name" style="color:gold;">
+                                                @if (!empty($jobDetail->employer->addressCompany->company_name))
+                                                    {{ $jobDetail->employer->addressCompany->company_name }}
+                                                @else
+                                                    Individual
+                                                @endif
+                                            </div>
+
                                         </div>
                                     </div>
                                     <div class="company-badges">
@@ -402,7 +408,8 @@
                                         <!-- View Details -->
                                         <button class="btn btn-primary btn-sm view-details-btn"
                                             data-title="{{ $jobDetail->title }}"
-                                            data-company="{{ $company->company_name ?? 'Unknown Company' }}"
+                                            data-company="{{ $company->company_name ?? ($company->employer->personal_info->first_name . ' ' . $company->employer->personal_info->last_name ?? 'Unknown') }}"
+                                            data-has-company="{{ !empty($company->company_name) ? '1' : '0' }}"
                                             data-industry="{{ $jobDetail->department }}"
                                             data-location="{{ $jobDetail->location }}"
                                             data-description="{{ $jobDetail->job_description }}"
@@ -696,7 +703,14 @@ $hasActiveApplication =
             buttons.forEach(btn => {
                 btn.addEventListener('click', function() {
                     document.getElementById('modalJobTitle').textContent = btn.dataset.title;
+
+                    const modalCompanyLabel = document.querySelector('#modalCompanyName')
+                        .previousElementSibling;
+                    const hasCompany = btn.dataset.hasCompany === '1';
+
+                    modalCompanyLabel.textContent = hasCompany ? 'Company:' : 'Individual:';
                     document.getElementById('modalCompanyName').textContent = btn.dataset.company;
+
                     document.getElementById('modalIndustry').textContent = btn.dataset.industry;
                     document.getElementById('modalLocation').textContent = btn.dataset.location;
                     document.getElementById('modalDescription').textContent = btn.dataset
@@ -709,7 +723,6 @@ $hasActiveApplication =
                         .tesda;
                     document.getElementById('modalNoneCertificationsQualification').textContent =
                         btn.dataset.none;
-
                 });
             });
         });
@@ -895,6 +908,7 @@ $hasActiveApplication =
 
                 // Assuming searchValue is already in lowercase
                 if (searchValue) {
+                    const individualName = card.dataset.individual ? card.dataset.individual.toLowerCase() : '';
                     const company = card.dataset.company ? card.dataset.company.toLowerCase() : '';
                     const name = card.dataset.name ? card.dataset.name.toLowerCase() : '';
                     const industry = card.dataset.industry ? card.dataset.industry.toLowerCase() : '';
@@ -903,6 +917,7 @@ $hasActiveApplication =
 
                     if (!company.includes(searchValue) &&
                         !name.includes(searchValue) &&
+                        !individualName.includes(searchValue) &&
                         !industry.includes(searchValue) &&
                         !description.includes(searchValue)) {
                         isVisible = false;
