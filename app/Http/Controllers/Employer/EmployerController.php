@@ -448,11 +448,11 @@ public function resetPassword(Request $request)
         'last_name' => 'required|string',
         'email' => 'required|email|unique:employer_personal_info,email',
         'phone_number' => 'required|digits:11',
-        'employer_job_title' => 'required|string',
-        'employer_department' => 'required|in:Management,Human-resource,Operations,Project-management,Safety-compliance,Administration,Other',
+        'employer_job_title' => 'nullable|string',
+        'employer_department' => 'nullable|in:Management,Human-resource,Operations,Project-management,Safety-compliance,Administration,Other',
 
         // Company Address
-        'company_name' => 'required|string',
+        'company_name' => 'nullable|string',
         'complete_address' => 'required|string',
         'municipality' => 'required|string',
         'province' => 'required|string',

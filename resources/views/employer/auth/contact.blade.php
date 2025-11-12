@@ -165,6 +165,37 @@
                             <form id="contactForm" action="{{ route('employer.contact.store') }}" method="POST">
                                 @csrf
 
+                                <!-- Employer Type Selection -->
+                                <div class="section-divider" style="border-top: none; padding-top: 0;">
+                                    <h5 class="fw-bold mb-4">
+                                        <i class="fas fa-users text-primary me-2"></i>Employer Type
+                                    </h5>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="employer-type-card" id="individualCard">
+                                                <input type="radio" name="employer_type" value="individual"
+                                                    required onchange="toggleEmployerType()">
+                                                <div class="employer-type-icon text-primary">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
+                                                <h6 class="fw-bold">Individual</h6>
+                                                <p class="text-muted small mb-0">I'm hiring as an individual person</p>
+                                            </label>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="employer-type-card" id="companyCard">
+                                                <input type="radio" name="employer_type" value="company" required
+                                                    onchange="toggleEmployerType()">
+                                                <div class="employer-type-icon text-warning">
+                                                    <i class="fas fa-building"></i>
+                                                </div>
+                                                <h6 class="fw-bold">Company</h6>
+                                                <p class="text-muted small mb-0">I'm hiring on behalf of a company</p>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Employer Account Section -->
                                 <div class="section-divider">
                                     <h5 class="fw-bold mb-3">
@@ -220,12 +251,9 @@
                                     </div>
                                 </div>
 
-
-
                                 <!-- Personal Information -->
                                 <h5 class="fw-bold mb-3">
-                                    <i class="fas fa-user text-primary me-2"></i>Personal
-                                    Information
+                                    <i class="fas fa-user text-primary me-2"></i>Personal Information
                                 </h5>
 
                                 <div class="row mb-4">
@@ -258,43 +286,45 @@
                                     </div>
                                 </div>
 
-                                <div class="row mb-4">
-                                    <div class="col-md-6">
-                                        <label for="jobTitle" class="form-label">Your Job Title <span
-                                                style="color: red;">*</span></label>
-                                        <input type="text" class="form-control" name="employer_job_title"
-                                            id="jobTitle" placeholder="e.g. HR Manager, Project Manager, Owner"
-                                            required />
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="department" class="form-label">Department <span
-                                                style="color: red;">*</span></label>
-                                        <select class="form-select" id="department" name="employer_department">
-                                            <option value="">Select department</option>
-                                            <option value="Management">Management</option>
-                                            <option value="Human-resource">Human Resources</option>
-                                            <option value="Operations">Operations</option>
-                                            <option value="Project-management">
-                                                Project Management
-                                            </option>
-                                            <option value="Safety-compliance">Safety & Compliance</option>
-                                            <option value="Administration">Administration</option>
-                                            <option value="Other">Other</option>
-                                        </select>
+                                <!-- Company-specific fields -->
+                                <div id="companyFields" style="display: none;">
+                                    <div class="row mb-4">
+                                        <div class="col-md-6">
+                                            <label for="jobTitle" class="form-label">Your Job Title <span
+                                                    class="required-star" style="color: red;">*</span></label>
+                                            <input type="text" class="form-control" name="employer_job_title"
+                                                id="jobTitle"
+                                                placeholder="e.g. HR Manager, Project Manager, Owner" />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="department" class="form-label">Department <span
+                                                    class="required-star" style="color: red;">*</span></label>
+                                            <select class="form-select" id="department" name="employer_department">
+                                                <option value="">Select department</option>
+                                                <option value="Management">Management</option>
+                                                <option value="Human-resource">Human Resources</option>
+                                                <option value="Operations">Operations</option>
+                                                <option value="Project-management">Project Management</option>
+                                                <option value="Safety-compliance">Safety & Compliance</option>
+                                                <option value="Administration">Administration</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <!-- Company Address Section - Cavite Only -->
+                                <!-- Company Address Section -->
                                 <div class="section-divider">
                                     <h5 class="fw-bold mb-3">
-                                        <i class="fas fa-building text-warning me-2"></i>Company Address
+                                        <i class="fas fa-building text-warning me-2"></i><span
+                                            id="addressTitle">Company Address</span>
                                     </h5>
-                                    <div class="mb-4">
-                                        <label for="address" class="form-label">Company Name <span
-                                                style="color: red;">*</span></label>
+
+                                    <div class="mb-4" id="companyNameField">
+                                        <label for="companyname" class="form-label">Company Name <span
+                                                class="required-star" style="color: red;">*</span></label>
                                         <input type="text" class="form-control" id="companyname"
-                                            name="company_name" placeholder="e.g. ABC Construction Company"
-                                            required />
+                                            name="company_name" placeholder="e.g. ABC Construction Company" />
                                     </div>
 
                                     <div class="mb-4">
@@ -352,11 +382,11 @@
                                         </div>
                                     </div>
                                 </div>
+
                                 <!-- Communication Preferences -->
                                 <div class="section-divider">
                                     <h5 class="fw-bold mb-3">
-                                        <i class="fas fa-comments text-success me-2"></i>Communication
-                                        Preferences
+                                        <i class="fas fa-comments text-success me-2"></i>Communication Preferences
                                     </h5>
 
                                     <div class="row">
@@ -410,8 +440,7 @@
                                 <!-- Additional Information -->
                                 <div class="section-divider">
                                     <h5 class="fw-bold mb-3">
-                                        <i class="fas fa-clipboard text-info me-2"></i>Additional
-                                        Information
+                                        <i class="fas fa-clipboard text-info me-2"></i>Additional Information
                                     </h5>
 
                                     <div class="mb-4">
@@ -431,8 +460,8 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" id="agreeTerms" required />
                                         <label class="form-check-label" for="agreeTerms">
-                                            I agree to receive communications regarding worker
-                                            applications and project updates *
+                                            I agree to receive communications regarding worker applications and project
+                                            updates *
                                         </label>
                                     </div>
                                 </div>
@@ -448,20 +477,129 @@
                                             <small class="text-muted">Step 2 of 4</small>
                                             <button type="submit" class="btn btn-primary-custom">Next <i
                                                     class="fas fa-arrow-right ms-2"></i></button>
-
                                         </div>
                                     </div>
                                 </div>
+                            </form>
                         </div>
-                        </form>
                     </div>
                 </div>
             </div>
+
+
         </div>
-
-
     </div>
-    </div>
+    <script>
+        function toggleEmployerType() {
+            const individualRadio = document.querySelector('input[name="employer_type"][value="individual"]');
+            const companyRadio = document.querySelector('input[name="employer_type"][value="company"]');
+            const companyFields = document.getElementById('companyFields');
+            const companyNameField = document.getElementById('companyNameField');
+            const addressTitle = document.getElementById('addressTitle');
+            const jobTitle = document.getElementById('jobTitle');
+            const department = document.getElementById('department');
+            const companyName = document.getElementById('companyname');
+
+            // Update card selection styling
+            document.getElementById('individualCard').classList.remove('selected');
+            document.getElementById('companyCard').classList.remove('selected');
+
+            if (individualRadio.checked) {
+                document.getElementById('individualCard').classList.add('selected');
+                companyFields.style.display = 'none';
+                companyNameField.style.display = 'none';
+                addressTitle.textContent = 'Your Address';
+
+                // Remove required attribute for company fields
+                jobTitle.removeAttribute('required');
+                department.removeAttribute('required');
+                companyName.removeAttribute('required');
+
+                // Clear values of company fields when individual is selected
+                jobTitle.value = '';
+                department.value = '';
+                companyName.value = '';
+            } else if (companyRadio.checked) {
+                document.getElementById('companyCard').classList.add('selected');
+                companyFields.style.display = 'block';
+                companyNameField.style.display = 'block';
+                addressTitle.textContent = 'Company Address';
+
+                // Add required attribute for company fields
+                jobTitle.setAttribute('required', 'required');
+                department.setAttribute('required', 'required');
+                companyName.setAttribute('required', 'required');
+            }
+        }
+
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const icon = field.nextElementSibling.querySelector('i');
+
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                field.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function checkPasswordStrength(password) {
+            const strengthBar = document.getElementById('passwordStrengthBar');
+            const feedback = document.getElementById('passwordFeedback');
+
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (password.length >= 12) strength++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/\d/.test(password)) strength++;
+            if (/[^a-zA-Z\d]/.test(password)) strength++;
+
+            const percentage = (strength / 5) * 100;
+            strengthBar.style.width = percentage + '%';
+
+            if (strength <= 2) {
+                strengthBar.className = 'progress-bar bg-danger';
+                feedback.textContent = 'Weak password';
+                feedback.className = 'form-text text-danger mt-1';
+            } else if (strength === 3) {
+                strengthBar.className = 'progress-bar bg-warning';
+                feedback.textContent = 'Medium password';
+                feedback.className = 'form-text text-warning mt-1';
+            } else {
+                strengthBar.className = 'progress-bar bg-success';
+                feedback.textContent = 'Strong password';
+                feedback.className = 'form-text text-success mt-1';
+            }
+        }
+
+        function checkPasswordMatch() {
+            const password = document.getElementById('password').value;
+            const confirmation = document.getElementById('password_confirmation').value;
+            const feedback = document.getElementById('matchFeedback');
+
+            if (confirmation.length === 0) {
+                feedback.textContent = '';
+                return;
+            }
+
+            if (password === confirmation) {
+                feedback.textContent = 'Passwords match';
+                feedback.className = 'form-text text-success mt-1';
+            } else {
+                feedback.textContent = 'Passwords do not match';
+                feedback.className = 'form-text text-danger mt-1';
+            }
+        }
+
+        function previousStep() {
+            // Add your previous step logic here
+            console.log('Going to previous step');
+        }
+    </script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const hamburger = document.getElementById("hamburger");

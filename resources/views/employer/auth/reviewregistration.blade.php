@@ -199,8 +199,7 @@
                                                     <label for="companyName" class="form-label">Company Name</label>
                                                     <input type="text" name="company_name" id="companyName"
                                                         class="form-control"
-                                                        value="{{ $retrievedCompanyAddress->company_name ?? '' }}"
-                                                        required>
+                                                        value="{{ $retrievedCompanyAddress->company_name ?? '' }}">
                                                 </div>
 
                                                 <div class="col-md-12">
@@ -467,20 +466,21 @@
                             <div class="row">
                                 <div class="col-md-8">
                                     <div class="summary-item">
-                                        <strong>{{ $retrievedJobDetail->title }}</strong>
+                                        <strong>{{ $retrievedJobDetail->title ?? '' }}</strong>
                                         <div class="text-muted">
-                                            {{ $retrievedJobDetail->department }} •
-                                            {{ $retrievedJobDetail->location }} • {{ $retrievedJobDetail->work_type }}
+                                            {{ $retrievedJobDetail->department ?? '' }} •
+                                            {{ $retrievedJobDetail->location ?? '' }} •
+                                            {{ $retrievedJobDetail->work_type ?? '' }}
                                         </div>
                                         <div class="text-muted">
-                                            {{ $retrievedJobDetail->experience_level }} •
-                                            ₱{{ $retrievedJobDetail->job_salary }}/month
+                                            {{ $retrievedJobDetail->experience_level ?? '' }} •
+                                            ₱{{ $retrievedJobDetail->job_salary ?? '' }}/month
                                         </div>
                                     </div>
                                     <div class="mt-3">
                                         <p class="small">
                                             <strong>Job Description:</strong>
-                                            {{ $retrievedJobDetail->job_description }}
+                                            {{ $retrievedJobDetail->job_description ?? 'No job description provided.' }}
                                             <br />
                                             <strong>Job Requirements:</strong>
                                             {{ $retrievedJobDetail->additional_requirements ?? 'No additional requirements' }}
@@ -1017,77 +1017,105 @@
                             </div>
                         </div>
 
-
-                        </form>
                     </div>
+                </div>
 
 
-                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-                    <script>
-                        function submitRegistration() {
-                            // Check all required checkboxes
-                            const requiredCheckboxes = [
-                                "reviewComplete",
-                                "agreeTerms",
-                                "communicationConsent",
-                                "dataProcessing",
-                            ];
+            </div>
+            <script>
+                document.querySelector('form[action="{{ route('employer.sendVerificationEmail') }}"]').addEventListener('submit',
+                    function(e) {
+                        const requiredCheckboxes = [
+                            document.getElementById('reviewComplete'),
+                            document.getElementById('agreeTerms'),
+                            document.getElementById('communicationConsent'),
+                            document.getElementById('dataProcessing')
+                        ];
 
-                            let allChecked = true;
-                            requiredCheckboxes.forEach((id) => {
-                                if (!document.getElementById(id).checked) {
-                                    allChecked = false;
-                                }
-                            });
-
-                            if (!allChecked) {
-                                alert(
-                                    "Please complete all required checkboxes before submitting.",
-                                );
-                                return;
+                        let allChecked = true;
+                        requiredCheckboxes.forEach(checkbox => {
+                            if (!checkbox.checked) {
+                                allChecked = false;
+                                checkbox.classList.add('is-invalid');
+                            } else {
+                                checkbox.classList.remove('is-invalid');
                             }
-
-                            // Show loading state
-                            const submitBtn = document.getElementById("submitBtn");
-                            submitBtn.innerHTML =
-                                '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
-                            submitBtn.disabled = true;
-
-                            // Simulate submission delay
-                            setTimeout(() => {
-                                window.location.href = "{{ route('employer.successregistration.display') }}";
-                            }, 2000);
-                        }
-
-                        function previousStep() {
-                            window.location.href = "{{ route('employer.hiringpreference.display') }}";
-                        }
-
-
-                        document.addEventListener('DOMContentLoaded', function() {
-                            const hamburger = document.getElementById('hamburger');
-                            const navLinks = document.getElementById('navLinks');
-
-                            if (!hamburger || !navLinks) return;
-
-                            hamburger.addEventListener('click', function() {
-                                navLinks.classList.toggle('active');
-                                hamburger.classList.toggle('active');
-                                document.body.classList.toggle('noscroll');
-                            });
-
-                            // Close menu when any nav link/button is clicked (mobile)
-                            navLinks.querySelectorAll('a, button').forEach(link => {
-                                link.addEventListener('click', function() {
-                                    if (navLinks.classList.contains('active')) {
-                                        navLinks.classList.remove('active');
-                                        hamburger.classList.remove('active');
-                                        document.body.classList.remove('noscroll');
-                                    }
-                                });
-                            });
                         });
-                    </script>
+
+                        if (!allChecked) {
+                            e.preventDefault();
+                            alert('⚠️ Please check all required boxes before submitting.');
+                        }
+                    });
+            </script>
+
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <script>
+                function submitRegistration() {
+                    // Check all required checkboxes
+                    const requiredCheckboxes = [
+                        "reviewComplete",
+                        "agreeTerms",
+                        "communicationConsent",
+                        "dataProcessing",
+                    ];
+
+                    let allChecked = true;
+                    requiredCheckboxes.forEach((id) => {
+                        if (!document.getElementById(id).checked) {
+                            allChecked = false;
+                        }
+                    });
+
+                    if (!allChecked) {
+                        alert(
+                            "Please complete all required checkboxes before submitting.",
+                        );
+                        return;
+                    }
+
+                    // Show loading state
+                    const submitBtn = document.getElementById("submitBtn");
+                    submitBtn.innerHTML =
+                        '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
+                    submitBtn.disabled = true;
+
+                    // Simulate submission delay
+                    setTimeout(() => {
+                        window.location.href = "{{ route('employer.successregistration.display') }}";
+                    }, 2000);
+                }
+
+                function previousStep() {
+                    window.location.href = "{{ route('employer.hiringpreference.display') }}";
+                }
+
+
+                document.addEventListener('DOMContentLoaded', function() {
+                    const hamburger = document.getElementById('hamburger');
+                    const navLinks = document.getElementById('navLinks');
+
+                    if (!hamburger || !navLinks) return;
+
+                    hamburger.addEventListener('click', function() {
+                        navLinks.classList.toggle('active');
+                        hamburger.classList.toggle('active');
+                        document.body.classList.toggle('noscroll');
+                    });
+
+                    // Close menu when any nav link/button is clicked (mobile)
+                    navLinks.querySelectorAll('a, button').forEach(link => {
+                        link.addEventListener('click', function() {
+                            if (navLinks.classList.contains('active')) {
+                                navLinks.classList.remove('active');
+                                hamburger.classList.remove('active');
+                                document.body.classList.remove('noscroll');
+                            }
+                        });
+                    });
+                });
+            </script>
 </body>
 
 </html>
