@@ -59,6 +59,7 @@ Route::prefix('applicant')->group(function () {
     //Forgotpassword applicant
     Route::get('forgot-password', [ApplicantController::class, 'forgotPassword'])->name('applicant.forgotpassword.display');
     Route::post('forgot-password', [ApplicantController::class, 'forgotPasswordStore'])->name('applicant.forgotpassword.store');
+    Route::post('resend-code', [ApplicantController::class, 'resendForgot'])->name('applicant.resendcode.store');
     Route::post('verify-code', [ApplicantController::class, 'verifyCode'])->name('applicant.verifycode.store');
     Route::post('reset-password', [ApplicantController::class, 'resetPassword'])->name('applicant.resetpassword.store');
 
@@ -219,6 +220,7 @@ Route::group(['prefix' => 'employer'], function () {
      //Forgot password employer
     Route::get('forgot-password', [EmployerController::class, 'forgotPassword'])->name('employer.forgotpassword.display');
     Route::post('forgot-password', [EmployerController::class, 'forgotPasswordStore'])->name('employer.forgotpassword.store');
+    Route::post('resend-code', [EmployerController::class, 'resendForgot'])->name('employer.resendcode.store');
     Route::post('verify-code', [EmployerController::class, 'verifyCode'])->name('employer.verifycode.store');
     Route::post('reset-password', [EmployerController::class, 'resetPassword'])->name('employer.resetpassword.store');
 

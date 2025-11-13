@@ -413,6 +413,45 @@ public function resend(Request $request)
     ]);
 }
 
+public function resendForgot(Request $request)
+{
+    $email = $request->input('email');
+
+    if (!$email) {
+        return response()->json(['message' => 'Email not found in session.'], 400);
+    }
+
+    $user = RegisterModel::where('email', $email)->first();
+
+    if (!$user) {
+        return response()->json(['message' => 'No account found with this email address.'], 404);
+    }
+
+    // Generate new code and expiration
+    $newCode = mt_rand(100000, 999999);
+    $expiration = now()->addMinutes(10);
+
+    $user->update([
+        'verification_code' => $newCode,
+        'email_verification_code_expires_at' => $expiration,
+    ]);
+
+    try {
+        Mail::to($user->email)->send(new ResetPasswordMail($newCode));
+    } catch (\Exception $e) {
+        \Log::error('Mail send failed: ' . $e->getMessage());
+        return response()->json([
+            'message' => 'Failed to send verification email. Please try again.',
+        ], 500);
+    }
+
+    return response()->json([
+        'message' => 'A new verification code has been sent to your email.',
+        'debug_code' => config('app.debug') ? $newCode : null
+    ]);
+}
+
+
 
 
 
