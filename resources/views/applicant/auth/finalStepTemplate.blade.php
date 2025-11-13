@@ -148,36 +148,40 @@
                 <div class="form-content">
                     <!-- Profile Header -->
                     <div class="profile-header">
-
-
-
                         @php
                             use Illuminate\Support\Facades\Storage;
 
-                            // Safely get profile image
+                            // Safely get the image path (e.g., "profile_picture/filename.jpg")
                             $imagePath = $workBackground->profileimage_path ?? null;
+
+                            // Check if the image exists inside the 'public/profile_picture' folder
+                            $hasProfileImage =
+                                $imagePath &&
+                                Storage::disk('public')->exists('profile_picture/' . basename($imagePath));
+
+                            // Default image path
+                            $defaultImage = asset('img/workerdefault.png');
                         @endphp
 
                         <div class="profile-image-container" style="position: relative; width: 100px; height: 100px;">
-                            @if ($imagePath)
+                            @if ($hasProfileImage)
                                 {{-- Show uploaded profile image --}}
-                                <img src="{{ Storage::url($imagePath) }}" alt="Profile Image" class="profile-image"
+                                <img src="{{ Storage::url('profile_picture/' . basename($imagePath)) }}"
+                                    alt="Profile Image" class="profile-image"
                                     style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
                             @else
-                                {{-- Show initials fallback (from first & last name) --}}
-                               <img src="{{ asset('img/worker default.png') }}" alt="Default Profile Image" class="profile-image"
+                                {{-- Show fallback default --}}
+                                <img src="{{ $defaultImage }}" alt="Default Profile Image" class="profile-image"
                                     style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
-         
-                                    
-                            
                             @endif
 
-                            {{-- Badge --}}
+                            {{-- Verified badge --}}
                             <div class="profile-badge"
                                 style="position: absolute; bottom: 5px; right: 5px; background: #4CAF50; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;">
                                 <i class="bi bi-check" style="color: white; font-size: 12px;"></i>
                             </div>
                         </div>
+
 
                         {{-- Display decrypted names using foreach (for future multiple records) --}}
                         @foreach ([$personalInfoDecrypted] as $info)

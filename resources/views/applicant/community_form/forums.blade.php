@@ -259,22 +259,52 @@
                                     <!-- Post Header -->
                                     <header class="post-header">
                                         <div class="author-info">
+                                            @php
+                                                // Safely extract profile image path
+                                                $profileImagePath = $post->workBackground->profileimage_path ?? null;
+                                                $hasProfileImage =
+                                                    $profileImagePath &&
+                                                    \Illuminate\Support\Facades\Storage::disk('public')->exists(
+                                                        $profileImagePath,
+                                                    );
+
+                                                // Fallback default image
+                                                $defaultImage = asset('img/workerdefault.png');
+
+                                                // Safely decrypt or fallback for names
+                                                try {
+                                                    $firstName = isset($post->personalInfo->first_name)
+                                                        ? decrypt($post->personalInfo->first_name)
+                                                        : 'Unknown';
+                                                    $lastName = isset($post->personalInfo->last_name)
+                                                        ? decrypt($post->personalInfo->last_name)
+                                                        : '';
+                                                } catch (\Exception $e) {
+                                                    // If already decrypted or broken, fallback gracefully
+                                                    $firstName = $post->personalInfo->first_name ?? 'Unknown';
+                                                    $lastName = $post->personalInfo->last_name ?? '';
+                                                }
+                                            @endphp
+
                                             <div class="author-avatar">
-                                                @if (!empty($post->workBackground->profileimage_path))
-                                                    <a href="">
-                                                        <img src="{{ asset('storage/' . $post->workBackground->profileimage_path) }}"
-                                                            alt="{{ $post->personalInfo->first_name }}'s avatar"
-                                                            class="avatar-img">
+                                                @if ($hasProfileImage)
+                                                    {{-- Show uploaded profile image --}}
+                                                    <a href="#">
+                                                        <img src="{{ Storage::url($profileImagePath) }}"
+                                                            alt="{{ $firstName }}'s avatar" class="avatar-img"
+                                                            style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
                                                     </a>
                                                 @else
-                                                    <a href="">
-                                                        <div class="avatar-placeholder">
-                                                            {{ substr($post->personalInfo->first_name ?? 'U', 0, 1) }}
-                                                            {{ substr($post->personalInfo->last_name ?? '', 0, 1) }}
+                                                    {{-- Fallback to initials if no image --}}
+                                                    <a href="#">
+                                                        <div class="avatar-placeholder"
+                                                            style="width: 50px; height: 50px; border-radius: 50%; background: #ccc; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">
+                                                            {{ strtoupper(substr($firstName, 0, 1)) }}{{ strtoupper(substr($lastName, 0, 1)) }}
                                                         </div>
                                                     </a>
                                                 @endif
                                             </div>
+
 
 
                                             <div class="author-details">
