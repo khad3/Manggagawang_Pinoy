@@ -83,8 +83,6 @@
                             Back to Login
                         </a>
                     </div>
-
-
                 </form>
 
                 <form id="verificationForm" action="{{ route('applicant.verifycode.store') }}" method="POST"
