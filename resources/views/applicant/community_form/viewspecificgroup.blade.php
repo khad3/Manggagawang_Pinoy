@@ -179,19 +179,29 @@
                                 @foreach ($post->comments as $comment)
                                     <div class="d-flex mb-3">
                                         <div class="me-3">
-                                            @if (
-                                                $comment->applicant &&
-                                                    $comment->applicant->work_background &&
-                                                    $comment->applicant->work_background->profileimage_path)
-                                                <img src="{{ Storage::url($comment->applicant->work_background->profileimage_path) }}"
-                                                    alt="Profile Picture" class="rounded-circle me-2"
-                                                    style="width: 40px; height: 40px;">
-                                            @else
-                                                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2"
-                                                    style="width: 40px; height: 40px;">
-                                                    {{ strtoupper(substr($comment->personal_info->first_name ?? 'U', 0, 1)) }}
-                                                </div>
-                                            @endif
+                                            @php
+                                                $profileImage =
+                                                    !empty($comment->applicant) &&
+                                                    !empty($comment->applicant->work_background) &&
+                                                    !empty($comment->applicant->work_background->profileimage_path) &&
+                                                    file_exists(
+                                                        storage_path(
+                                                            'app/public/' .
+                                                                $comment->applicant->work_background->profileimage_path,
+                                                        ),
+                                                    )
+                                                        ? asset(
+                                                            'storage/' .
+                                                                $comment->applicant->work_background->profileimage_path,
+                                                        )
+                                                        : asset('img/worker-default.png'); // default image
+                                            @endphp
+
+                                            <img src="{{ $profileImage }}"
+                                                alt="{{ $comment->applicant->personal_info->first_name ?? 'User' }} Profile"
+                                                class="rounded-circle me-2"
+                                                style="width: 40px; height: 40px; object-fit: cover;">
+
                                         </div>
                                         <div class="flex-grow-1 bg-light p-3 rounded shadow-sm">
                                             <div class="d-flex justify-content-between align-items-center mb-1">
