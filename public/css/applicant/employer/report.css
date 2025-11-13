@@ -36,7 +36,9 @@
     overflow: hidden;
     border: 1px solid var(--gray-200);
 }
-
+.content-section.messages-wrapper{
+    display: inline;
+}
 /* Reports Header */
 .reports-header {
     padding: 1.5rem 2rem;

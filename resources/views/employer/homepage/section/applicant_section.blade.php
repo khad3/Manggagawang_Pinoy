@@ -41,12 +41,7 @@
     }
 
     /* Add data-label as pseudo-content for mobile */
-    #applicantsTable tbody tr td[data-label]::before {
-        content: attr(data-label);
-        font-weight: 600;
-        color: #555;
-        flex-basis: 40%;
-    }
+
 
     /* Adjust action buttons for mobile */
     .action-buttons-wrapper.actions-desktop {
@@ -57,7 +52,7 @@
     .mobile-actions-wrapper {
         display: flex !important;
         gap: 2rem;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         margin-top: 0.5rem;
     }
 }

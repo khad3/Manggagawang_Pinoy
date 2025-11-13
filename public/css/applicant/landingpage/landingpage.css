@@ -977,6 +977,7 @@ nav {
         width: 90vw;
         max-width: 320px;
         padding: 12px 0;
+        display: block;
     }
 
     .back {
