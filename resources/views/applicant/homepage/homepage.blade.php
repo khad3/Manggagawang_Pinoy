@@ -73,35 +73,46 @@
                     <!-- Profile Dropdown -->
                     <div class="nav-dropdown">
 
-                        @if (
-                            !empty($profile->profileimage_path) ||
-                                (!empty($retrieveDataDecrypted['first_name']) && !empty($retrieveDataDecrypted['last_name'])))
+                        @php
+                            $profileImage =
+                                !empty($profile->profileimage_path) &&
+                                file_exists(storage_path('app/public/' . $profile->profileimage_path))
+                                    ? asset('storage/' . $profile->profileimage_path)
+                                    : asset('img/workerdefault.png'); // default image
+                        @endphp
+
+                        @if (!empty($retrieveDataDecrypted['first_name']) || !empty($retrieveDataDecrypted['last_name']))
                             <button class="profile-pic" onclick="toggleDropdown('profileDropdown')" title="main menu"
                                 style="border: none; background: transparent;">
-                                @if (!empty($profile->profileimage_path))
-                                    <img src="{{ asset('storage/' . $profile->profileimage_path) }}"
-                                        alt="Profile Picture" width="50" height="50"
-                                        style="border-radius: 50%; object-fit: cover;">
-                                @else
-                                    <img src="{{ asset('img/worker default.png') }}" alt="Default Profile Picture"
-                                        width="50" height="50" style="border-radius: 50%; object-fit: cover;" />
-                                @endif
+                                <img src="{{ $profileImage }}"
+                                    alt="{{ $retrieveDataDecrypted['first_name'] ?? 'User' }} Profile" width="50"
+                                    height="50" style="border-radius: 50%; object-fit: cover;">
                             </button>
                         @endif
-
-
                         <div class="dropdown-menu profile-menu" id="profileDropdown">
+                            @php
+                                use Illuminate\Support\Facades\Storage;
+
+                                // Get image path safely
+                                $imagePath = $profile->profileimage_path ?? null;
+
+                                // Check if file exists in 'public' disk (e.g., storage/app/public/profile_picture/...)
+                                $hasProfileImage = $imagePath && Storage::disk('public')->exists($imagePath);
+
+                                // Default placeholder image
+                                $defaultImage = asset('img/workerdefault.png');
+                            @endphp
+
                             <div class="profile-header">
                                 <div class="profile-avatar">
-                                    @if (!empty($profile->profileimage_path))
-                                        <img src="{{ asset('storage/' . $profile->profileimage_path) }}"
-                                            alt="Profile Picture" width="50" height="50"
-                                            style="border-radius: 50%; object-fit: cover;">
+                                    @if ($hasProfileImage)
+                                        {{-- Show uploaded profile image --}}
+                                        <img src="{{ Storage::url($imagePath) }}" alt="Profile Picture" width="50"
+                                            height="50" style="border-radius: 50%; object-fit: cover;">
                                     @else
-                                        {{-- Show initials fallback (from first & last name) --}}
-                                        <img src="{{ asset('img/worker default.png') }}" alt="Default Profile Image"
-                                            class="profile-image"
-                                            style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                                        {{-- Show default profile image --}}
+                                        <img src="{{ $defaultImage }}" alt="Default Profile Image" width="50"
+                                            height="50" style="border-radius: 50%; object-fit: cover;">
                                     @endif
                                 </div>
 

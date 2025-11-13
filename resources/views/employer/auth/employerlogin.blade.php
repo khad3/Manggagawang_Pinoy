@@ -53,25 +53,43 @@
                         placeholder="glicompany@example.com">
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-3 position-relative">
                     <label for="password" class="form-label">Password</label>
                     <input type="password" id="password" name="password" class="form-control" required
-                        placeholder="password">
+                        placeholder="password" style="padding-right: 4rem;">
+                    <button type="button" id="togglePassword"
+                        style="position: absolute; top: 50%; right: 0.5rem; transform: translateY(-50%); border: none; background: none; color: #007bff; cursor: pointer; font-weight: 500;">
+                        Show
+                    </button>
+
                     <div class="forgot-password text-end mt-1">
                         <a href="{{ route('employer.forgotpassword.display') }}">Forgot Password?</a>
                     </div>
                 </div>
 
-
                 <button type="submit" class="sign-in-b login-btn w-100">Login</button>
 
-
-
-
-                <div class="form-text">
+                <div class="form-text mt-3">
                     <p>Don’t have an account? <a href="{{ route('employer.register.display') }}">Register</a></p>
                 </div>
             </form>
+
+            <script>
+                const togglePassword = document.getElementById('togglePassword');
+                const passwordInput = document.getElementById('password');
+
+                togglePassword.addEventListener('click', () => {
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        togglePassword.textContent = 'Hide';
+                    } else {
+                        passwordInput.type = 'password';
+                        togglePassword.textContent = 'Show';
+                    }
+                });
+            </script>
+
+
             <div class="text-start mt-3 back-btn-container">
                 <a href="{{ route('display.index') }}" class="back-btn">← Back to Home</a>
             </div>

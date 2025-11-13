@@ -47,37 +47,50 @@
                         <div class="candidate-photo-container"
                             style="position: relative; width: 100px; height: 100px; cursor: pointer;"
                             data-bs-toggle="modal" data-bs-target="#profilePhotoModal">
+
                             @php
+                                use Illuminate\Support\Facades\Storage;
+
                                 $firstName = $retrievedProfile->personal_info->first_name ?? 'F';
                                 $lastName = $retrievedProfile->personal_info->last_name ?? 'L';
                                 $initials = strtoupper(mb_substr($firstName, 0, 1) . mb_substr($lastName, 0, 1));
                                 $isOnline = (bool) ($retrievedProfile->is_online ?? false);
-                                $profileImage = $retrievedProfile->work_background->profileimage_path ?? null;
+
+                                $profileImagePath = $retrievedProfile->work_background->profileimage_path ?? null;
+                                $profileImage =
+                                    $profileImagePath && Storage::disk('public')->exists($profileImagePath)
+                                        ? asset('storage/' . $profileImagePath)
+                                        : asset('img/workerdefault.png'); // default image if no profile picture or hosting missing
                             @endphp
 
-                            @if ($profileImage)
-                                <img src="{{ asset('storage/' . $profileImage) }}" alt="Profile Photo"
-                                    class="candidate-photo"
-                                    style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
-                            @else
+                            <!-- Profile Image -->
+                            <img src="{{ $profileImage }}" alt="Profile Photo" class="candidate-photo"
+                                style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;">
+
+                            <!-- Optional: Initials only if default image is used -->
+                            @if (!$profileImagePath || !Storage::disk('public')->exists($profileImagePath))
                                 <div class="candidate-initials"
-                                    style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 36px;">
+                                    style="width: 100%; height: 100%; border-radius: 50%; 
+                    background: linear-gradient(135deg, #667eea, #764ba2); 
+                    display: flex; align-items: center; justify-content: center; 
+                    color: white; font-weight: 600; font-size: 36px; 
+                    position: absolute; top: 0; left: 0; pointer-events: none;">
                                     {{ $initials }}
                                 </div>
                             @endif
 
-                            {{-- Online/Offline indicator --}}
+                            <!-- Online/Offline Indicator -->
                             <div class="status-indicator"
                                 style="
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            border: 2px solid white;
-            background-color: {{ $isOnline ? '#4CAF50' : '#B0B0B0' }};
-            z-index: 10;
+             position: absolute;
+             bottom: 5px;
+             right: 5px;
+             width: 15px;
+             height: 15px;
+             border-radius: 50%;
+             border: 2px solid white;
+             background-color: {{ $isOnline ? '#4CAF50' : '#B0B0B0' }};
+             z-index: 10;
          "
                                 title="{{ $isOnline ? 'Online' : 'Offline' }}">
                             </div>
@@ -88,14 +101,12 @@
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content" style="background: transparent; border: none;">
                                     <div class="modal-body text-center p-0">
-                                        @if ($profileImage)
-                                            <img src="{{ asset('storage/' . $profileImage) }}" alt="Profile Photo"
+                                        @if ($profileImagePath && Storage::disk('public')->exists($profileImagePath))
+                                            <img src="{{ asset('storage/' . $profileImagePath) }}" alt="Profile Photo"
                                                 style="max-width: 90vw; max-height: 90vh; border-radius: 10px;">
                                         @else
-                                            <div
-                                                style="width: 200px; height: 200px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 72px; margin: auto;">
-                                                {{ $initials }}
-                                            </div>
+                                            <img src="{{ asset('img/workerdefault.png') }}" alt="Default Profile Image"
+                                                style="max-width: 90vw; max-height: 90vh; border-radius: 10px;">
                                         @endif
                                     </div>
                                 </div>

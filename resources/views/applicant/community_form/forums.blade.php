@@ -259,22 +259,52 @@
                                     <!-- Post Header -->
                                     <header class="post-header">
                                         <div class="author-info">
+                                            @php
+                                                // Safely extract profile image path
+                                                $profileImagePath = $post->workBackground->profileimage_path ?? null;
+                                                $hasProfileImage =
+                                                    $profileImagePath &&
+                                                    \Illuminate\Support\Facades\Storage::disk('public')->exists(
+                                                        $profileImagePath,
+                                                    );
+
+                                                // Fallback default image
+                                                $defaultImage = asset('img/workerdefault.png');
+
+                                                // Safely decrypt or fallback for names
+                                                try {
+                                                    $firstName = isset($post->personalInfo->first_name)
+                                                        ? decrypt($post->personalInfo->first_name)
+                                                        : 'Unknown';
+                                                    $lastName = isset($post->personalInfo->last_name)
+                                                        ? decrypt($post->personalInfo->last_name)
+                                                        : '';
+                                                } catch (\Exception $e) {
+                                                    // If already decrypted or broken, fallback gracefully
+                                                    $firstName = $post->personalInfo->first_name ?? 'Unknown';
+                                                    $lastName = $post->personalInfo->last_name ?? '';
+                                                }
+                                            @endphp
+
                                             <div class="author-avatar">
-                                                @if (!empty($post->workBackground->profileimage_path))
-                                                    <a href="">
-                                                        <img src="{{ asset('storage/' . $post->workBackground->profileimage_path) }}"
-                                                            alt="{{ $post->personalInfo->first_name }}'s avatar"
-                                                            class="avatar-img">
+                                                @if ($hasProfileImage)
+                                                    {{-- Show uploaded profile image --}}
+                                                    <a href="#">
+                                                        <img src="{{ Storage::url($profileImagePath) }}"
+                                                            alt="{{ $firstName }}'s avatar" class="avatar-img"
+                                                            style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
                                                     </a>
                                                 @else
-                                                    <a href="">
-                                                        <div class="avatar-placeholder">
-                                                            {{ substr($post->personalInfo->first_name ?? 'U', 0, 1) }}
-                                                            {{ substr($post->personalInfo->last_name ?? '', 0, 1) }}
+                                                    {{-- Fallback to initials if no image --}}
+                                                    <a href="#">
+                                                        <div class="avatar-placeholder"
+                                                            style="width: 50px; height: 50px; border-radius: 50%; background: #ccc; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">
+                                                            {{ strtoupper(substr($firstName, 0, 1)) }}{{ strtoupper(substr($lastName, 0, 1)) }}
                                                         </div>
                                                     </a>
                                                 @endif
                                             </div>
+
 
 
                                             <div class="author-details">
@@ -364,14 +394,14 @@
                                                 </form>
                                             </div>
                                         @endif
-
-                                        <div class="comments-list">
+                                        <div class="comments-list" id="commentsContainer">
                                             @foreach ($post->comments as $comment)
                                                 <div class="comment-item" data-comment-id="{{ $comment->id }}">
                                                     <div class="comment-header">
-                                                        <strong
-                                                            class="commenter-name">{{ $comment->applicant->personal_info->first_name ?? 'Unknown' }}
-                                                            {{ $comment->applicant->personal_info->last_name ?? '' }}</strong>
+                                                        <strong class="commenter-name">
+                                                            {{ $comment->applicant->personal_info->first_name ?? 'Unknown' }}
+                                                            {{ $comment->applicant->personal_info->last_name ?? '' }}
+                                                        </strong>
                                                         <time>{{ $comment->created_at->diffForHumans() }}</time>
                                                     </div>
                                                     <p class="comment-text">{{ $comment->comment }}</p>
@@ -385,12 +415,12 @@
                                                         @if (session('applicant_id') == $comment->applicant_id)
                                                             <form method="POST"
                                                                 action="{{ route('applicant.forum.comments.delete', $comment->id) }}"
-                                                                class="delete-form"
-                                                                onsubmit="return confirm('Delete this comment?')">
+                                                                class="delete-comment-form"
+                                                                data-comment-id="{{ $comment->id }}">
                                                                 @csrf
                                                                 @method('DELETE')
-                                                                <button type="submit" class="btn-delete"
-                                                                    data-id="{{ $comment->id }}">Delete</button>
+                                                                <button type="submit"
+                                                                    class="btn-delete">Delete</button>
                                                             </form>
                                                         @endif
                                                     </div>
@@ -413,11 +443,13 @@
 
                                                     <div class="replies-list">
                                                         @foreach ($comment->replies as $reply)
-                                                            <div class="reply-item">
+                                                            <div class="reply-item"
+                                                                data-reply-id="{{ $reply->id }}">
                                                                 <div class="reply-header">
-                                                                    <strong
-                                                                        class="replier-name">{{ $reply->applicant->personal_info->first_name ?? 'Unknown' }}
-                                                                        {{ $reply->applicant->personal_info->last_name ?? '' }}</strong>
+                                                                    <strong class="replier-name">
+                                                                        {{ $reply->applicant->personal_info->first_name ?? 'Unknown' }}
+                                                                        {{ $reply->applicant->personal_info->last_name ?? '' }}
+                                                                    </strong>
                                                                     <time>{{ $reply->created_at->diffForHumans() }}</time>
                                                                 </div>
                                                                 <p class="reply-text">{{ $reply->reply }}</p>
@@ -425,13 +457,12 @@
                                                                 @if (session('applicant_id') == $reply->applicant_id)
                                                                     <form method="POST"
                                                                         action="{{ route('applicant.forum.replycomments.delete', $reply->id) }}"
-                                                                        class="delete-form"
-                                                                        onsubmit="return confirm('Delete this reply?')">
+                                                                        class="delete-reply-form"
+                                                                        data-reply-id="{{ $reply->id }}">
                                                                         @csrf
                                                                         @method('DELETE')
                                                                         <button type="submit"
-                                                                            class="btn-delete-reply"
-                                                                            data-id="{{ $reply->id }}">Delete</button>
+                                                                            class="btn-delete-reply">Delete</button>
                                                                     </form>
                                                                 @endif
                                                             </div>
@@ -440,6 +471,7 @@
                                                 </div>
                                             @endforeach
                                         </div>
+
                                     </div>
 
 
@@ -500,7 +532,9 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
+            // ----------------------
             // LIKE BUTTON
+            // ----------------------
             document.addEventListener('submit', async e => {
                 if (!e.target.classList.contains('like-form')) return;
                 e.preventDefault();
@@ -527,33 +561,41 @@
                 }
             });
 
-            // ADD COMMENT
-            document.addEventListener('submit', async e => {
-                if (!e.target.classList.contains('comment-form')) return;
+            // ----------------------
+            // EVENT DELEGATION: COMMENTS CONTAINER
+            // ----------------------
+            const commentsContainer = document.querySelector('.comments-section');
+
+            // Add comment, reply, delete (delegated)
+            commentsContainer.addEventListener('submit', async e => {
                 e.preventDefault();
 
                 const form = e.target;
-                const formData = new FormData(form);
                 const csrfToken = form.querySelector('input[name="_token"]').value;
 
-                try {
-                    const res = await fetch(form.action, {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest'
-                        },
-                        body: formData
-                    });
-                    const data = await res.json();
+                // ----------------------
+                // ADD COMMENT
+                // ----------------------
+                if (form.classList.contains('comment-form')) {
+                    const formData = new FormData(form);
 
-                    if (data.success) {
-                        const commentsSection = form.closest('.comments-section');
-                        let commentList = commentsSection.querySelector('.comments-list');
+                    try {
+                        const res = await fetch(form.action, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: formData
+                        });
+                        const data = await res.json();
+                        if (!data.success) return;
+
+                        let commentList = commentsContainer.querySelector('.comments-list');
                         if (!commentList) {
                             commentList = document.createElement('div');
                             commentList.classList.add('comments-list');
-                            commentsSection.appendChild(commentList);
+                            commentsContainer.appendChild(commentList);
                         }
 
                         const newComment = document.createElement('div');
@@ -567,7 +609,7 @@
                     <p class="comment-text">${data.comment}</p>
                     <div class="comment-actions">
                         <button type="button" class="btn-reply" data-comment-id="${data.comment_id}">Reply</button>
-                        <form method="POST" action="/applicant/forum/comments/delete/${data.comment_id}" class="delete-form">
+                        <form method="POST" action="/applicant/forum/comments/delete/${data.comment_id}" class="delete-comment-form" data-comment-id="${data.comment_id}">
                             <input type="hidden" name="_token" value="${csrfToken}">
                             <input type="hidden" name="_method" value="DELETE">
                             <button type="submit" class="btn-delete">Delete</button>
@@ -585,14 +627,126 @@
                 `;
                         commentList.prepend(newComment);
                         form.reset();
+
+                    } catch (err) {
+                        console.error(err);
                     }
-                } catch (err) {
-                    console.error(err);
+                    return;
+                }
+
+                // ----------------------
+                // ADD REPLY
+                // ----------------------
+                if (form.classList.contains('reply-form')) {
+                    const formData = new FormData(form);
+                    try {
+                        const res = await fetch(form.action, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: formData
+                        });
+                        const data = await res.json();
+                        if (!data.success) return;
+
+                        const repliesList = form.closest('.comment-item').querySelector(
+                            '.replies-list');
+                        const newReply = document.createElement('div');
+                        newReply.classList.add('reply-item');
+                        newReply.dataset.replyId = data.reply_id;
+                        newReply.innerHTML = `
+                    <div class="reply-header">
+                        <strong class="replier-name">${data.first_name} ${data.last_name}</strong>
+                        <time class="reply-time">${data.created_at}</time>
+                    </div>
+                    <p class="reply-text">${data.reply}</p>
+                    <form method="POST" action="/applicant/forum/replycomments/delete/${data.reply_id}" class="delete-reply-form" data-reply-id="${data.reply_id}">
+                        <input type="hidden" name="_token" value="${csrfToken}">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn-delete-reply">Delete</button>
+                    </form>
+                `;
+                        repliesList.appendChild(newReply);
+                        form.reset();
+                    } catch (err) {
+                        console.error(err);
+                    }
+                    return;
+                }
+
+                // ----------------------
+                // DELETE COMMENT
+                // ----------------------
+                if (form.classList.contains('delete-comment-form')) {
+                    const commentId = form.dataset.commentId;
+                    if (!confirm('Delete this comment?')) return;
+                    try {
+                        const res = await fetch(form.action, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: new URLSearchParams({
+                                '_method': 'DELETE'
+                            })
+                        });
+                        if (res.ok) {
+                            const commentItem = form.closest('.comment-item');
+                            commentItem.style.opacity = 0;
+                            setTimeout(() => commentItem.remove(), 300);
+                        } else {
+                            alert('Failed to delete comment.');
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert('Error deleting comment.');
+                    }
+                    return;
+                }
+
+                // ----------------------
+                // DELETE REPLY
+                // ----------------------
+                if (form.classList.contains('delete-reply-form')) {
+                    const replyId = form.dataset.replyId;
+                    if (!confirm('Delete this reply?')) return;
+                    try {
+                        const res = await fetch(form.action, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: new URLSearchParams({
+                                '_method': 'DELETE'
+                            })
+                        });
+                        if (res.ok) {
+                            const replyItem = form.closest('.reply-item');
+                            replyItem.style.opacity = 0;
+                            setTimeout(() => replyItem.remove(), 300);
+                        } else {
+                            alert('Failed to delete reply.');
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert('Error deleting reply.');
+                    }
+                    return;
                 }
             });
 
+            // ----------------------
             // TOGGLE REPLY FORM
-            document.addEventListener('click', e => {
+            // ----------------------
+            commentsContainer.addEventListener('click', e => {
                 if (e.target.classList.contains('btn-reply')) {
                     const commentItem = e.target.closest('.comment-item');
                     const replyForm = commentItem.querySelector('.reply-form');
@@ -600,55 +754,6 @@
                         replyForm.style.display = replyForm.style.display === 'block' ? 'none' : 'block';
                         replyForm.querySelector('.reply-input').focus();
                     }
-                }
-            });
-
-            // ADD REPLY
-            document.addEventListener('submit', async e => {
-                if (!e.target.classList.contains('reply-form')) return;
-                e.preventDefault();
-
-                const form = e.target;
-                const formData = new FormData(form);
-
-                try {
-                    const res = await fetch(form.action, {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest'
-                        },
-                        body: formData
-                    });
-                    const data = await res.json();
-
-                    if (data.success) {
-                        let repliesList = form.closest('.comment-item').querySelector('.replies-list');
-                        if (!repliesList) {
-                            repliesList = document.createElement('div');
-                            repliesList.classList.add('replies-list');
-                            form.closest('.comment-item').appendChild(repliesList);
-                        }
-
-                        const newReply = document.createElement('div');
-                        newReply.classList.add('reply-item');
-                        newReply.innerHTML = `
-                    <div class="reply-header">
-                        <strong class="replier-name">${data.first_name} ${data.last_name}</strong>
-                        <time class="reply-time">${data.created_at}</time>
-                    </div>
-                    <p class="reply-text">${data.reply}</p>
-                    <form method="POST" action="/applicant/forum/replycomments/delete/${data.reply_id}" class="delete-form">
-                        <input type="hidden" name="_token" value="${form.querySelector('input[name="_token"]').value}">
-                        <input type="hidden" name="_method" value="DELETE">
-                        <button type="submit" class="btn-delete-reply">Delete</button>
-                    </form>
-                `;
-                        repliesList.appendChild(newReply);
-                        form.reset();
-                    }
-                } catch (err) {
-                    console.error(err);
                 }
             });
 

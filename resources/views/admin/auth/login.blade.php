@@ -32,13 +32,34 @@
                 <input type="email" name="email" id="email" class="form-control" required autofocus>
             </div>
 
-            <div class="mb-3 text-start">
+            <div class="mb-3 text-start position-relative">
                 <label for="password" class="form-label">Password</label>
-                <input type="password" name="password" id="password" class="form-control" required>
+                <input type="password" name="password" id="password" class="form-control" required
+                    style="padding-right: 4rem;">
+                <button type="button" id="togglePassword"
+                    style="position: absolute; top: 50%; right: 0.5rem; transform: translateY(-50%); border: none; background: none; color: #007bff; cursor: pointer; font-weight: 500;">
+                    Show
+                </button>
             </div>
 
             <button type="submit" class="btn btn-tesda w-100 mt-3">Login</button>
         </form>
+
+        <script>
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+
+            togglePassword.addEventListener('click', () => {
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    togglePassword.textContent = 'Hide';
+                } else {
+                    passwordInput.type = 'password';
+                    togglePassword.textContent = 'Show';
+                }
+            });
+        </script>
+
     </div>
 </body>
 

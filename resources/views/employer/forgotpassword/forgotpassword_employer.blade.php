@@ -5,13 +5,13 @@
     <meta charset="UTF-8" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <title>Forgot Password</title>
+    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}" />
+
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
-    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}" />
-    <link rel="stylesheet" href="{{ asset('css/applicant/employer/forgotpassword.css') }}" />
+    <link rel="stylesheet" href="{{ asset('css/applicant/forgot_password.css') }}" />
 </head>
 
 <body>
@@ -74,7 +74,7 @@
                     <button id="sendCodeBtn" type="submit" class="btn b1"><span class="spinner"></span><span
                             class="t">Send Reset Code</span></button>
                     <div class="back" style="display: flex; justify-content: center; margin-top: 15px;">
-                        <a href="{{ route('employer.login.display') }}"
+                        <a href="{{ route('applicant.login.display') }}"
                             style="color: #000; text-decoration: none; display: flex; align-items: center; gap: 6px;">
                             <svg viewBox="0 0 24 24" fill="none" stroke="#000" style="width:16px;height:16px;">
                                 <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -83,8 +83,6 @@
                             Back to Login
                         </a>
                     </div>
-
-
                 </form>
 
                 <form id="verificationForm" action="{{ route('employer.verifycode.store') }}" method="POST"
@@ -134,21 +132,28 @@
                     <button id="verifyCodeBtn" type="submit" class="btn b1"><span class="spinner"></span><span
                             class="t">Verify Code</span></button>
 
-                    <div class="resend">
-                        <p>Didn't receive the code?</p>
-                        <form id="resendForm" action="" method="POST" style="display:inline">
-                            @csrf
-                            <button id="resendBtn" type="submit" disabled>Resend Code <span id="resendTimer"
-                                    class="timer"></span></button>
-                        </form>
-                    </div>
+
                 </form>
+                <!-- RESEND SECTION - Only show on step 2 -->
+                @if ($step === 2)
+                    <div class="resend" style="margin-top: 20px;">
+                        <p>Didn't receive the code?</p>
+                        <div id="resendFormWrapper" style="display:inline">
+                            <input type="hidden" id="resendEmail" value="{{ session('email') }}">
+                            <button id="resendBtn" type="button" disabled>
+                                Resend Code <span id="resendTimer" class="timer">30s</span>
+                            </button>
+                        </div>
+                    </div>
+                @endif
+
+
 
                 <form action="{{ route('employer.resetpassword.store') }}" method="POST"
                     class="form-section {{ $step === 3 ? 'active' : '' }}">
                     @csrf
                     <div class="group">
-                        <input type="hidden" name="email" value="{{ session(key: 'email') }}">
+                        <input type="hidden" name="email" value="{{ session('email') }}">
 
                         <label for="newPassword">New Password</label>
                         <div class="input-wrap">
@@ -235,8 +240,12 @@
 
     <script>
         (function() {
-            var emailForm = document.getElementById('emailForm');
-            var sendCodeBtn = document.getElementById('sendCodeBtn');
+            // ===============================
+            // EMAIL FORM SUBMIT - Disable button
+            // ===============================
+            const emailForm = document.getElementById('emailForm');
+            const sendCodeBtn = document.getElementById('sendCodeBtn');
+
             if (emailForm && sendCodeBtn) {
                 emailForm.addEventListener('submit', function() {
                     sendCodeBtn.classList.add('loading');
@@ -244,72 +253,60 @@
                 });
             }
 
-            var codes = Array.prototype.slice.call(document.querySelectorAll('.code'));
-            var full = document.getElementById('fullCode');
+            // ===============================
+            // VERIFICATION CODE INPUT LOGIC
+            // ===============================
+            const codes = Array.from(document.querySelectorAll('.code'));
+            const fullCodeInput = document.getElementById('fullCode');
 
-            function rebuild() {
-                var v = codes.map(function(i) {
-                    return i.value.replace(/\D/g, '') || ''
-                }).join('');
-                full.value = v;
-            }
+            const rebuildCode = () => {
+                fullCodeInput.value = codes.map(i => i.value.replace(/\D/g, '') || '').join('');
+            };
 
-            function focusNext(idx) {
-                if (idx < codes.length - 1) {
-                    codes[idx + 1].focus();
-                    codes[idx + 1].select();
-                }
-            }
+            const focusNext = idx => {
+                if (idx < codes.length - 1) codes[idx + 1].focus();
+            };
+            const focusPrev = idx => {
+                if (idx > 0) codes[idx - 1].focus();
+            };
 
-            function focusPrev(idx) {
-                if (idx > 0) {
-                    codes[idx - 1].focus();
-                    codes[idx - 1].select();
-                }
-            }
-
-            codes.forEach(function(inp, idx) {
-                inp.addEventListener('input', function(e) {
+            codes.forEach((inp, idx) => {
+                inp.addEventListener('input', function() {
                     this.value = this.value.replace(/\D/g, '').slice(0, 1);
-                    rebuild();
-                    if (this.value.length === 1) {
-                        focusNext(idx);
-                    }
+                    rebuildCode();
+                    if (this.value.length === 1) focusNext(idx);
                 });
+
                 inp.addEventListener('keydown', function(e) {
-                    if (e.key === 'Backspace' && !this.value) {
-                        focusPrev(idx);
-                    }
-                    if (e.key.length === 1 && !/[0-9]/.test(e.key)) {
-                        e.preventDefault();
-                    }
+                    if (e.key === 'Backspace' && !this.value) focusPrev(idx);
+                    if (e.key.length === 1 && !/[0-9]/.test(e.key)) e.preventDefault();
                 });
+
+                inp.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const pasteData = (e.clipboardData || window.clipboardData).getData('text').replace(
+                        /\D/g, '').slice(0, 6);
+                    pasteData.split('').forEach((val, i) => codes[i].value = val || '');
+                    rebuildCode();
+                });
+
                 inp.addEventListener('focus', function() {
                     this.select();
                 });
-                inp.addEventListener('paste', function(e) {
-                    e.preventDefault();
-                    var t = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '')
-                        .slice(0, 6);
-                    if (!t) return;
-                    for (var i = 0; i < codes.length; i++) {
-                        codes[i].value = t[i] || '';
-                    }
-                    rebuild();
-                    if (t.length >= 6) {
-                        codes[codes.length - 1].focus();
-                    }
-                });
             });
 
-            var verificationForm = document.getElementById('verificationForm');
-            var verifyBtn = document.getElementById('verifyCodeBtn');
+            // ===============================
+            // VERIFICATION FORM SUBMIT
+            // ===============================
+            const verificationForm = document.getElementById('verificationForm');
+            const verifyBtn = document.getElementById('verifyCodeBtn');
+
             if (verificationForm && verifyBtn) {
                 verificationForm.addEventListener('submit', function(e) {
-                    rebuild();
-                    if (full.value.length !== 6) {
+                    rebuildCode();
+                    if (fullCodeInput.value.length !== 6) {
                         e.preventDefault();
-                        var ce = document.getElementById('codeError');
+                        const ce = document.getElementById('codeError');
                         if (ce) {
                             ce.style.display = 'flex';
                             ce.querySelector('span').textContent = 'Please enter all 6 digits';
@@ -321,75 +318,125 @@
                 });
             }
 
-            var resendBtn = document.getElementById('resendBtn');
-            var resendTimer = document.getElementById('resendTimer');
-            var resendForm = document.getElementById('resendForm');
+            // ===============================
+            // RESEND CODE BUTTON LOGIC
+            // ===============================
+            const resendBtn = document.getElementById('resendBtn');
+            const resendTimer = document.getElementById('resendTimer');
+            const resendEmail = document.getElementById('resendEmail');
+            let countdown = 30;
+            let timerInterval;
 
-            function startTimer(sec) {
+            const startCountdown = () => {
                 if (!resendBtn || !resendTimer) return;
-                var t = sec;
                 resendBtn.disabled = true;
-                resendTimer.textContent = '(' + t + 's)';
-                var it = setInterval(function() {
-                    t--;
-                    resendTimer.textContent = '(' + t + 's)';
-                    if (t <= 0) {
-                        clearInterval(it);
+                resendTimer.textContent = countdown + 's';
+
+                timerInterval = setInterval(() => {
+                    countdown--;
+                    resendTimer.textContent = countdown + 's';
+                    if (countdown <= 0) {
+                        clearInterval(timerInterval);
                         resendBtn.disabled = false;
                         resendTimer.textContent = '';
+                        countdown = 30;
                     }
                 }, 1000);
-            }
+            };
+
+            @if ($step === 2)
+                startCountdown();
+            @endif
+
             if (resendBtn) {
-                startTimer(60);
-            }
-            if (resendForm) {
-                resendForm.addEventListener('submit', function() {
-                    if (resendBtn) {
-                        resendBtn.disabled = true;
+                resendBtn.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    const email = resendEmail.value;
+                    if (!email) {
+                        alert('Email not found. Please start over.');
+                        return;
+                    }
+
+                    resendBtn.disabled = true;
+                    resendTimer.textContent = 'Sending...';
+
+                    try {
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute(
+                            'content');
+                        const res = await fetch('{{ route('employer.resendcode.store') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: JSON.stringify({
+                                email
+                            })
+                        });
+
+                        const data = await res.json();
+
+                        if (res.ok) {
+                            alert(data.message || 'Verification code resent successfully!');
+                            countdown = 30;
+                            startCountdown();
+                            if (data.debug_code) console.log('Debug code:', data.debug_code);
+                        } else {
+                            alert(data.message || 'Failed to resend code.');
+                            resendBtn.disabled = false;
+                            resendTimer.textContent = '';
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert('Error sending code. Please try again.');
+                        resendBtn.disabled = false;
+                        resendTimer.textContent = '';
                     }
                 });
             }
 
-            var pw = document.getElementById('newPassword');
-            var cf = document.getElementById('confirmPassword');
-            var cfErr = document.getElementById('confirmErr');
-            var rb = document.getElementById('resetPasswordBtn');
-            var fill = document.getElementById('strengthFill');
-            var rqLen = document.getElementById('rq-len'),
+            // ===============================
+            // PASSWORD STRENGTH & CONFIRMATION
+            // ===============================
+            const pw = document.getElementById('newPassword');
+            const cf = document.getElementById('confirmPassword');
+            const cfErr = document.getElementById('confirmErr');
+            const rb = document.getElementById('resetPasswordBtn');
+            const fill = document.getElementById('strengthFill');
+            const rqLen = document.getElementById('rq-len'),
                 rqUp = document.getElementById('rq-up'),
                 rqLow = document.getElementById('rq-low'),
                 rqNum = document.getElementById('rq-num');
 
-            function req(el, ok) {
+            const req = (el, ok) => {
                 if (!el) return;
                 el.classList.toggle('met', ok);
-                var dot = el.querySelector('.ok');
-                if (dot) {
-                    dot.classList.toggle('met', ok);
-                }
-            }
+                const dot = el.querySelector('.ok');
+                if (dot) dot.classList.toggle('met', ok);
+            };
+
             if (pw) {
                 pw.addEventListener('input', function() {
-                    var v = this.value || '',
-                        s = 0;
-                    var L = v.length >= 8;
+                    const v = this.value || '';
+                    let s = 0;
+                    const L = v.length >= 8;
                     req(rqLen, L);
                     if (L) s++;
-                    var U = /[A-Z]/.test(v);
+                    const U = /[A-Z]/.test(v);
                     req(rqUp, U);
                     if (U) s++;
-                    var W = /[a-z]/.test(v);
+                    const W = /[a-z]/.test(v);
                     req(rqLow, W);
                     if (W) s++;
-                    var N = /\d/.test(v);
+                    const N = /\d/.test(v);
                     req(rqNum, N);
                     if (N) s++;
-                    if (fill) {
-                        fill.className = 's-fill ' + (s <= 2 ? 'weak' : s === 3 ? 'medium' : 'strong');
-                    }
+                    if (fill) fill.className = 's-fill ' + (s <= 2 ? 'weak' : s === 3 ? 'medium' : 'strong');
                 });
             }
+
             if (cf && pw) {
                 cf.addEventListener('input', function() {
                     if (cfErr && this.value === pw.value) {
@@ -398,14 +445,13 @@
                     }
                 });
             }
-            var resetForm = document.getElementById('resetPasswordForm');
+
+            const resetForm = document.getElementById('resetPasswordForm');
             if (resetForm && rb) {
                 resetForm.addEventListener('submit', function(e) {
                     if (pw && cf && pw.value !== cf.value) {
                         e.preventDefault();
-                        if (cfErr) {
-                            cfErr.style.display = 'flex';
-                        }
+                        if (cfErr) cfErr.style.display = 'flex';
                         cf.classList.add('error');
                         return;
                     }
@@ -413,8 +459,10 @@
                     rb.disabled = true;
                 });
             }
+
         })();
     </script>
+
 </body>
 
 </html>

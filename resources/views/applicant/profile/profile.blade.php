@@ -68,8 +68,7 @@
 
                     <!-- Cover Photo -->
                     <img src="{{ asset('storage/' . $retrievedDecrytedProfile['work_background']['cover_photo_path']) }}"
-                        alt="" class="cover-image w-100 d-block"
-                        style="max-height: 350px; object-fit: cover;">
+                        alt="" class="cover-image w-100 d-block" style="max-height: 350px; object-fit: cover;">
 
                     <div class="cover-overlay"></div>
                     <div class="cover-pattern"></div>
@@ -161,7 +160,7 @@
                                     ? asset('storage/' . $retrievedProfile->work_background->profileimage_path)
                                     : null;
 
-                            $placeholderImage = asset('images/default-profile.png'); // replace with your placeholder image
+                            $placeholderImage = asset('img/workerdefault.png'); // replace with your placeholder image
                         @endphp
 
                         <!-- Clickable Photo/Icon -->
@@ -170,9 +169,8 @@
                             @if ($profileImage)
                                 <img src="{{ $profileImage }}" alt="Profile Picture" />
                             @else
-                                   {{-- Show initials fallback (from first & last name) --}}
-                               <img src="{{ asset('img/worker default.png') }}" alt="Default Profile Image">
-         
+                                {{-- Show initials fallback (from first & last name) --}}
+                                <img src="{{ asset('img/workerdefault.png') }}" alt="Default Profile Image">
                             @endif
                         </div>
 

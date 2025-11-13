@@ -55,7 +55,7 @@ class ApplicantController extends Controller
 
 
 
-    public function forgotPasswordStore(Request $request)
+ public function forgotPasswordStore(Request $request)
 {
     $request->validate([
         'email' => 'required|email',
@@ -69,7 +69,7 @@ class ApplicantController extends Controller
         ])->withInput()->with('step', 1);
     }
 
-    // Generate a new code and set expiration
+    // Generate a 6-digit verification code
     $newCode = mt_rand(100000, 999999);
     $expiration = Carbon::now()->addMinutes(10);
 
@@ -78,18 +78,19 @@ class ApplicantController extends Controller
         'email_verification_code_expires_at' => $expiration,
     ]);
 
-    // Send verification code to email
+    // Send verification code via email
     Mail::to($user->email)->send(new ResetPasswordMail($newCode));
 
-    // Store email in session for later steps - FIXED: consistent key name
+    // Save email in session for verification step
     session()->put('email', $user->email);
+    session()->put('step', 2);
 
-    // Return with only verification code for debugging (remove in production)
+    // Only for debugging/testing, remove in production
     return back()
         ->with('success', 'A verification code has been sent to your email address.')
-        ->with('step', 2)
-        ->with('code', $newCode); //  show only the code in session (for testing)
+        ->with('code', $newCode);
 }
+
 
 
 //verify the email codes for forgot password
@@ -412,6 +413,45 @@ public function resend(Request $request)
         'debug_code' => config('app.debug') ? $newCode : null
     ]);
 }
+
+public function resendForgot(Request $request)
+{
+    $email = $request->input('email');
+
+    if (!$email) {
+        return response()->json(['message' => 'Email not found in session.'], 400);
+    }
+
+    $user = RegisterModel::where('email', $email)->first();
+
+    if (!$user) {
+        return response()->json(['message' => 'No account found with this email address.'], 404);
+    }
+
+    // Generate new code and expiration
+    $newCode = mt_rand(100000, 999999);
+    $expiration = now()->addMinutes(10);
+
+    $user->update([
+        'verification_code' => $newCode,
+        'email_verification_code_expires_at' => $expiration,
+    ]);
+
+    try {
+        Mail::to($user->email)->send(new ResetPasswordMail($newCode));
+    } catch (\Exception $e) {
+        \Log::error('Mail send failed: ' . $e->getMessage());
+        return response()->json([
+            'message' => 'Failed to send verification email. Please try again.',
+        ], 500);
+    }
+
+    return response()->json([
+        'message' => 'A new verification code has been sent to your email.',
+        'debug_code' => config('app.debug') ? $newCode : null
+    ]);
+}
+
 
 
 
