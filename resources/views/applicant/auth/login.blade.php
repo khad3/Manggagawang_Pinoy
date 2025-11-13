@@ -53,18 +53,25 @@
 
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-3 position-relative">
                         <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control @error('password') is-invalid @enderror"
-                            name="password" id="password" required>
+                        <div class="position-relative">
+                            <input type="password" class="form-control @error('password') is-invalid @enderror"
+                                name="password" id="password" required style="padding-right: 4rem;">
+                            <button type="button" id="togglePassword"
+                                style="position: absolute; top: 50%; right: 0.5rem; transform: translateY(-50%); border: none; background: none; color: #007bff; cursor: pointer; font-weight: 500;">
+                                Show
+                            </button>
+                        </div>
                         @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <!-- Forgot Password Link -->
                         <div class="forgot-password text-end mt-1">
                             <a href="{{ route('applicant.forgotpassword.display') }}">Forgot Password?</a>
                         </div>
                     </div>
+
+
 
                     <button type="submit" class="sign-in-b login-btn w-100">Login</button>
                     <div class="form-text">Don't have an account? <a
@@ -88,6 +95,21 @@
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+
+        togglePassword.addEventListener('click', () => {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                togglePassword.textContent = 'Hide';
+            } else {
+                passwordInput.type = 'password';
+                togglePassword.textContent = 'Show';
+            }
+        });
+    </script>
+
 </body>
 
 </html>
