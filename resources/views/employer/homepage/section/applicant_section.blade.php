@@ -4,7 +4,9 @@
     width: 100%;
     border-collapse: collapse;
 }
-
+.mobile-actions-wrapper{
+    display:none
+}
 /* Mobile styles */
 @media (max-width: 768px) {
     /* Hide table headers */
