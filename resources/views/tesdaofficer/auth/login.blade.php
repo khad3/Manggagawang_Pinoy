@@ -65,9 +65,7 @@
                     </div>
                 </div>
 
-                <div class="form-options">
-                    <a href="#" class="forgot-password" onclick="showForgotPassword()">Forgot Password?</a>
-                </div>
+
 
                 <button type="submit" class="login-btn">
                     <i class="fas fa-sign-in-alt"></i>
