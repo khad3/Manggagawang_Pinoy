@@ -18,7 +18,7 @@
                 <img src="img/logo.png" alt="MP Logo" id="home2" />
             </div>
             <ul class="nav-links" id="navLinks">
-                <li><a href="#">Services</a></li>
+                {{-- <li><a href="#">Services</a></li> --}}
                 <li><a href="{{ route('display.topworker') }}">Top Workers</a></li>
                 <li><a href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
                 <li><a href="{{ route('display.aboutus') }}">About Us</a></li>

@@ -41,7 +41,7 @@ Route::get('/top-worker', [ApplicantController::class, 'topWorkers'])->name('dis
 Route::get('/about-us', [ApplicantController::class, 'aboutUs'])->name('display.aboutus');
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('landingpage.index');
 });
 
 
