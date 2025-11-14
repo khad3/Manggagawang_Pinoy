@@ -7,6 +7,150 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="{{ asset('css/applicant/landingpage/landingpage.css') }}">
     <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}" />
+    <style>
+        /* Mobile menu styles */
+        #m-hamburger {
+            width: 32px;
+            height: 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        #m-hamburger span {
+            height: 3px;
+            background: #000;
+            display: block;
+            transition: 0.3s ease;
+        }
+
+        #m-hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(10px, 10px);
+        }
+
+        #m-hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        #m-hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        /* ===== New mobile-navbar styles (implemented) ===== */
+        .mobile-navbar {
+            position: fixed;
+            top: 0;
+            left: -110%;
+            width: 85%;
+            max-width: 420px;
+            height: 100vh;
+            background: #0023aa;
+            color: #fff;
+            z-index: 1400;
+            transition: left .28s ease;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .mobile-navbar.open {
+            left: 0;
+        }
+
+        .mobile-navbar .nav-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .mobile-navbar .logo {
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            font-size: 0.95rem;
+        }
+
+        .mobile-navbar .close-btn {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: .25rem .5rem;
+        }
+
+        .mobile-navbar .mobile-menu {
+            list-style: none;
+            margin: 1rem 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: .35rem;
+        }
+
+        .mobile-navbar .mobile-menu a,
+        .mobile-navbar .mobile-menu button.dropdown-btn {
+            color: #fff;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: .65rem .5rem;
+            background: transparent;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        .mobile-navbar .mobile-menu a:hover,
+        .mobile-navbar .mobile-menu button.dropdown-btn:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .mobile-navbar .dropdown-content {
+            display: none;
+            margin-top: .25rem;
+            margin-left: .5rem;
+            border-left: 2px solid rgba(255, 255, 255, 0.05);
+            padding-left: .5rem;
+            flex-direction: column;
+            gap: .25rem;
+        }
+
+        .mobile-navbar .dropdown.open .dropdown-content {
+            display: flex;
+        }
+
+        /* small overlay when menu open */
+        .mobile-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 1300;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .28s ease, visibility .28s;
+        }
+
+        .mobile-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* keep previous #mNavLinks styles for safety (if still present) */
+        #mNavLinks {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -18,7 +162,6 @@
                 <img src="img/logo.png" alt="MP Logo" id="home2" />
             </div>
             <ul class="nav-links" id="navLinks">
-                {{-- <li><a href="#">Services</a></li> --}}
                 <li><a href="{{ route('display.topworker') }}">Top Workers</a></li>
                 <li><a href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
                 <li><a href="{{ route('display.aboutus') }}">About Us</a></li>
@@ -29,7 +172,6 @@
                         <li><a href="{{ route('employer.login.display') }}">As Employer</a></li>
                     </ul>
                 </li>
-                <!-- Sign Up Dropdown -->
                 <li class="dropdown">
                     <button class="sign-up-b">Sign up </button>
                     <ul class="dropdown-menu">
@@ -39,25 +181,81 @@
                 </li>
             </ul>
 
+            <!-- Mobile Hamburger -->
+            <button id="m-hamburger" class="m-hamburger" aria-label="Open menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
 
-            <div class="hamburger" id="hamburger">
-                <div></div>
-                <div></div>
-                <div></div>
+            <!-- Replaced old mobile menu with new mobile-navbar -->
+            <div class="mobile-overlay" id="mobileOverlay" aria-hidden="true"></div>
+
+            <div class="mobile-navbar" id="mobileNavbar" role="dialog" aria-modal="true" aria-hidden="true">
+                <div class="nav-top">
+                    <div class="logo">MANGGAGAWANG PINOY</div>
+                    <button id="closeMenu" class="close-btn" aria-label="Close menu">✕</button>
+                </div>
+
+                <ul class="mobile-menu" role="menu" aria-label="Mobile main menu">
+                    <li role="none"><a role="menuitem" href="{{ route('display.topworker') }}">Top Workers</a></li>
+                    <li role="none"><a role="menuitem" href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
+                    <li role="none"><a role="menuitem" href="{{ route('display.aboutus') }}">About Us</a></li>
+
+                    <li class="dropdown" role="none">
+                        <button class="dropdown-btn" aria-expanded="false">Sign in ▼</button>
+                        <ul class="dropdown-content" role="menu" aria-hidden="true">
+                            <li role="none"><a role="menuitem" href="{{ route('applicant.login.display') }}">As Applicant</a>
+                            </li>
+                            <li role="none"><a role="menuitem" href="{{ route('employer.login.display') }}">As Employer</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown" role="none">
+                        <button class="dropdown-btn" aria-expanded="false">Sign up ▼</button>
+                        <ul class="dropdown-content" role="menu" aria-hidden="true">
+                            <li role="none"><a role="menuitem" href="{{ route('applicant.register.display') }}">As Applicant</a>
+                            </li>
+                            <li role="none"><a role="menuitem" href="{{ route('employer.register.display') }}">As Employer</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>
 
+    <!-- Mobile Navigation Menu -->
+    <ul id="mNavLinks" role="menu" aria-hidden="true">
+        <li role="none"><a role="menuitem" href="{{ route('display.topworker') }}">Top Workers</a></li>
+        <li role="none"><a role="menuitem" href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
+        <li role="none"><a role="menuitem" href="{{ route('display.aboutus') }}">About Us</a></li>
 
+        <li class="m-dropdown" role="none">
+            <button class="m-drop-btn" aria-expanded="false">Sign in <span>▼</span></button>
+            <ul class="m-dropdown-menu" role="menu">
+                <li role="none"><a role="menuitem" href="{{ route('applicant.login.display') }}">As Applicant</a></li>
+                <li role="none"><a role="menuitem" href="{{ route('employer.login.display') }}">As Employer</a></li>
+            </ul>
+        </li>
+
+        <li class="m-dropdown" role="none">
+            <button class="m-drop-btn" aria-expanded="false">Sign up <span>▼</span></button>
+            <ul class="m-dropdown-menu" role="menu">
+                <li role="none"><a role="menuitem" href="{{ route('applicant.register.display') }}">As Applicant</a></li>
+                <li role="none"><a role="menuitem" href="{{ route('employer.register.display') }}">As Employer</a></li>
+            </ul>
+        </li>
+    </ul>
+
+    <!-- Rest of page content -->
     <section class="section1" id="slideshow">
         <div class="content">
             <div>
                 <h1>Building the Future <br />One Skill at a Time</h1>
                 <p>Partnership With <span>TESDA</span></p>
                 <button class="sign-up-b" id="wideb">Get Started</button>
-
-                <!-- role modal removed from here to avoid stacking/transform issues -->
-
                 <button class="sign-up-b" id="wideb2">Tutorial</button>
             </div>
             <div>
@@ -74,8 +272,6 @@
                     <div class="flip-card-inner">
                         <div class="front">
                             <div class="feature-icon">
-
-                                <!-- Example Resume SVG -->
                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="black"
                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <rect x="3" y="4" width="18" height="18" rx="2" />
@@ -98,7 +294,6 @@
                     <div class="flip-card-inner">
                         <div class="front">
                             <div class="feature-icon">
-                                <!-- Example Messaging SVG -->
                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="black"
                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <polygon points="22 2 11 13 9 11 2 18 22 2" />
@@ -119,7 +314,6 @@
                     <div class="flip-card-inner">
                         <div class="front">
                             <div class="feature-icon">
-                                <!-- Example AR Portfolio SVG -->
                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="black"
                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="12" cy="12" r="10" />
@@ -141,7 +335,6 @@
                     <div class="flip-card-inner">
                         <div class="front">
                             <div class="feature-icon">
-                                <!-- Example Verification SVG -->
                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
                                     stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <polyline points="20 6 9 17 4 12" />
@@ -161,15 +354,14 @@
             </div>
         </div>
     </section>
+
     <section id="tutorial">
         <h1>Tutorial</h1><br>
         <iframe width="100%" height="550" src="https://www.youtube.com/embed/d9fL7_BP3q8" title="Tutorial Video"
             frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
         </iframe>
-
     </section>
 
-    <!-- HTML ---------------------------------------------------------------------------------------------------------------------->
     <footer class="footer">
         <div class="footer-col about">
             <img src="img/logo.png" class="logo-placeholder">
@@ -208,13 +400,12 @@
                 <li><a href="index">Home</a></li>
                 <li><a href="#features">Features</a></li>
                 <li><a href="#tutorial">Tutorial</a></li>
-                <li><a href="https://www.tesda.gov.ph/">TESDA</a>
-                </li>
+                <li><a href="https://www.tesda.gov.ph/">TESDA</a></li>
             </ul>
         </div>
     </footer>
 
-    <!-- Role modal moved outside .section1 so fixed positioning and z-index work correctly -->
+    <!-- Role modal -->
     <div class="modal" id="roleModal" aria-hidden="true" role="dialog" aria-modal="true">
         <div class="modal-content">
             <h2>SELECT YOUR ROLE</h2>
@@ -238,213 +429,145 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            try {
-                const hamburger = document.getElementById('hamburger');
-                const navLinks = document.getElementById('navLinks');
-                const isMobile = () => window.innerWidth <= 900;
+        (function() {
+            function log(...args) { if (window.console) console.log('[landing-page]', ...args); }
 
-                const closeMobileMenu = () => {
-                    if (!navLinks || !hamburger) return;
-                    navLinks.classList.remove('active');
-                    hamburger.classList.remove('active');
+            document.addEventListener('DOMContentLoaded', () => {
+                try {
+                    // ====== wire new mobile-navbar ======
+                    const hamburger = document.getElementById('m-hamburger');
+                    const mobileNavbar = document.getElementById('mobileNavbar');
+                    const closeMenu = document.getElementById('closeMenu');
+                    const overlay = document.getElementById('mobileOverlay');
 
-                    // collapse open dropdowns
-                    navLinks.querySelectorAll('.dropdown.open').forEach(d => {
-                        d.classList.remove('open');
-                        const m = d.querySelector('.dropdown-menu');
-                        if (m) m.style.maxHeight = null;
-                        const b = d.querySelector('button, .dropdown-toggle, [role="button"]');
-                        if (b) b.setAttribute('aria-expanded', 'false');
-                    });
-                };
+                    function openMenu() {
+                        mobileNavbar.classList.add('open');
+                        overlay.classList.add('show');
+                        hamburger.classList.add('active');
+                        hamburger.setAttribute('aria-expanded', 'true');
+                        mobileNavbar.setAttribute('aria-hidden', 'false');
+                    }
 
-                if (hamburger && navLinks) {
-                    // toggle panel
-                    hamburger.addEventListener('click', e => {
-                        e.stopPropagation();
-                        hamburger.classList.toggle('active');
-                        navLinks.classList.toggle('active');
+                    function closeMenuFn() {
+                        mobileNavbar.classList.remove('open');
+                        overlay.classList.remove('show');
+                        hamburger.classList.remove('active');
+                        hamburger.setAttribute('aria-expanded', 'false');
+                        mobileNavbar.setAttribute('aria-hidden', 'true');
+                    }
 
-                    });
-
-                    // close panel on real link click (mobile)
-                    navLinks.querySelectorAll('a').forEach(a => {
-                        a.addEventListener('click', () => {
-                            if (isMobile() && navLinks.classList.contains('active'))
-                                closeMobileMenu();
+                    if (hamburger && mobileNavbar) {
+                        hamburger.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            if (mobileNavbar.classList.contains('open')) closeMenuFn();
+                            else openMenu();
                         });
-                    });
 
-                    // dropdown toggles
-                    navLinks.querySelectorAll('.dropdown').forEach(drop => {
-                        let trigger = drop.querySelector('button, .dropdown-toggle');
-                        if (!trigger) {
-                            const firstLink = drop.querySelector('a');
-                            if (firstLink) {
-                                firstLink.setAttribute('role', 'button');
-                                trigger = firstLink;
-                            }
-                        }
-                        const menu = drop.querySelector('.dropdown-menu');
-                        if (!trigger || !menu) return;
+                        closeMenu.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            closeMenuFn();
+                        });
 
-                        // init aria
-                        trigger.setAttribute('aria-expanded', 'false');
-                        trigger.setAttribute('aria-haspopup', 'true');
+                        overlay.addEventListener('click', closeMenuFn);
 
-                        trigger.addEventListener('click', function(ev) {
-                            if (!isMobile()) return;
-                            ev.preventDefault();
-                            ev.stopPropagation();
-                            const open = drop.classList.contains('open');
-
-                            // close other dropdowns (accordion behavior)
-                            navLinks.querySelectorAll('.dropdown.open').forEach(other => {
-                                if (other === drop) return;
-                                other.classList.remove('open');
-                                const om = other.querySelector('.dropdown-menu');
-                                if (om) om.style.maxHeight = null;
-                                const ob = other.querySelector(
-                                    'button, .dropdown-toggle, [role="button"]');
-                                if (ob) ob.setAttribute('aria-expanded', 'false');
+                        // dropdown toggles
+                        mobileNavbar.querySelectorAll('.dropdown').forEach(drop => {
+                            const btn = drop.querySelector('.dropdown-btn');
+                            const menu = drop.querySelector('.dropdown-content');
+                            btn.addEventListener('click', (ev) => {
+                                ev.stopPropagation();
+                                const isOpen = drop.classList.toggle('open');
+                                btn.setAttribute('aria-expanded', String(isOpen));
+                                if (menu) menu.setAttribute('aria-hidden', String(!isOpen));
                             });
+                        });
 
-                            if (open) {
-                                drop.classList.remove('open');
-                                menu.style.maxHeight = null;
-                                trigger.setAttribute('aria-expanded', 'false');
-                            } else {
-                                drop.classList.add('open');
-                                // set explicit maxHeight for smooth transition
-                                menu.style.maxHeight = menu.scrollHeight + 'px';
-                                trigger.setAttribute('aria-expanded', 'true');
-                                // ensure panel visible
-                                if (!navLinks.classList.contains('active')) {
-                                    navLinks.classList.add('active');
-                                    hamburger.classList.add('active');
+                        // close when selecting a link
+                        mobileNavbar.querySelectorAll('a').forEach(a => {
+                            a.addEventListener('click', () => closeMenuFn());
+                        });
 
-                                }
+                        // close on ESC
+                        document.addEventListener('keydown', (e) => {
+                            if (e.key === 'Escape') closeMenuFn();
+                        });
+
+                        // click outside closes menu
+                        document.addEventListener('click', (e) => {
+                            if (!mobileNavbar.contains(e.target) && !hamburger.contains(e.target)) {
+                                closeMenuFn();
                             }
                         });
+                    }
 
-                        // submenu links close panel on navigation (mobile)
-                        menu.querySelectorAll('a').forEach(sa => sa.addEventListener('click', () => {
-                            if (isMobile()) closeMobileMenu();
-                        }));
-                    });
+                    // ========== MODAL HANDLERS ==========
+                    const modal = document.getElementById('roleModal');
+                    const getStartedBtn = document.getElementById('wideb');
+                    const closeBtn = document.getElementById('closeModal');
 
-                    // click outside: collapse submenus
-                    document.addEventListener('click', function(e) {
-                        if (!navLinks.contains(e.target) && !hamburger.contains(e.target)) {
-                            navLinks.querySelectorAll('.dropdown.open').forEach(d => {
-                                d.classList.remove('open');
-                                const m = d.querySelector('.dropdown-menu');
-                                if (m) m.style.maxHeight = null;
-                                const b = d.querySelector(
-                                    'button, .dropdown-toggle, [role="button"]');
-                                if (b) b.setAttribute('aria-expanded', 'false');
-                            });
-                        }
-                    });
-                    document.querySelectorAll('.dropdown button').forEach(btn => {
-                        btn.addEventListener('click', e => {
-                            const dropdown = btn.closest('.dropdown');
-                            const isActive = dropdown.classList.contains('active');
-
-                            // close any open popups first
-                            document.querySelectorAll('.dropdown.active').forEach(d => d.classList
-                                .remove('active'));
-
-                            // toggle the current one
-                            if (!isActive) dropdown.classList.add('active');
+                    if (getStartedBtn && modal) {
+                        getStartedBtn.addEventListener('click', () => {
+                            modal.style.display = 'flex';
+                            mNavLinks.classList.remove('active');
+                            hamburger.classList.remove('active');
                         });
-                    });
+                    }
 
-                    // close popup when clicking outside or close button
-                    document.addEventListener('click', e => {
-                        if (e.target.classList.contains('dropdown-menu')) {
-                            e.target.closest('.dropdown').classList.remove('active');
-                        }
-                    });
-
-
-                    // ESC closes panel and submenus
-                    document.addEventListener('keydown', function(e) {
-                        if (e.key === 'Escape') closeMobileMenu();
-                    });
-
-                    // on resize, cleanup mobile-only inline styles
-                    window.addEventListener('resize', function() {
-                        if (!isMobile() && navLinks) {
-                            navLinks.querySelectorAll('.dropdown .dropdown-menu').forEach(m => {
-                                m.style.maxHeight = null;
-                            });
-                            navLinks.querySelectorAll('.dropdown').forEach(d => {
-                                d.classList.remove('open');
-                                const b = d.querySelector(
-                                    'button, .dropdown-toggle, [role="button"]');
-                                if (b) b.setAttribute('aria-expanded', 'false');
-                            });
-
-                            if (hamburger) hamburger.classList.remove('active');
-                            navLinks.classList.remove('active');
-                        }
-                    });
-                }
-
-                // --- existing modal, tutorial, scroll handlers kept as before ---
-                const modal = document.getElementById('roleModal');
-                const getStartedBtn = document.getElementById('wideb');
-                const closeBtn = document.getElementById('closeModal');
-                if (getStartedBtn && modal) {
-                    getStartedBtn.addEventListener('click', () => {
-                        modal.style.display = 'flex';
-                    });
-                }
-                if (closeBtn && modal) {
-                    closeBtn.addEventListener('click', () => {
-                        modal.style.display = 'none';
-                    });
-                    window.addEventListener('click', (event) => {
-                        if (event.target === modal) modal.style.display = 'none';
-                    });
-                }
-
-                const tutorialBtn = document.getElementById('wideb2');
-                if (tutorialBtn) tutorialBtn.addEventListener('click', function() {
-                    const tutorial = document.getElementById('tutorial');
-                    if (tutorial) tutorial.scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                });
-
-                document.addEventListener('scroll', function() {
-                    const section = document.querySelector('.section1');
-                    if (!section) return;
-                    const rect = section.getBoundingClientRect();
-                    const scrolled = Math.min(Math.max(-rect.top, 0), rect.height);
-                    const scale = 1 + (scrolled / rect.height) * 0.20;
-                    section.style.setProperty('--bg-scale', scale);
-                }, {
-                    passive: true
-                });
-
-                ['home', 'home2'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) el.addEventListener('click', function() {
-                        window.scrollTo({
-                            top: 0,
-                            behavior: 'smooth'
+                    if (closeBtn && modal) {
+                        closeBtn.addEventListener('click', () => {
+                            modal.style.display = 'none';
                         });
-                    });
-                });
+                    }
 
-            } catch (err) {
-                console.error('Landing page init error:', err);
-            }
-        });
+                    if (modal) {
+                        window.addEventListener('click', (e) => {
+                            if (e.target === modal) {
+                                modal.style.display = 'none';
+                            }
+                        });
+                    }
+
+                    // ========== TUTORIAL BUTTON ==========
+                    const tutorialBtn = document.getElementById('wideb2');
+                    if (tutorialBtn) {
+                        tutorialBtn.addEventListener('click', () => {
+                            const tutorial = document.getElementById('tutorial');
+                            if (tutorial) {
+                                tutorial.scrollIntoView({ behavior: 'smooth' });
+                            }
+                        });
+                    }
+
+                    // ========== SCROLL ANIMATION ==========
+                    document.addEventListener('scroll', () => {
+                        const section = document.querySelector('.section1');
+                        if (!section) return;
+                        const rect = section.getBoundingClientRect();
+                        const scrolled = Math.min(Math.max(-rect.top, 0), rect.height);
+                        const scale = 1 + (scrolled / rect.height) * 0.20;
+                        section.style.setProperty('--bg-scale', scale);
+                    }, { passive: true });
+
+                    // ========== LOGO CLICK TO SCROLL TOP ==========
+                    ['home', 'home2'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) {
+                            el.style.cursor = 'pointer';
+                            el.addEventListener('click', () => {
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                            });
+                        }
+                    });
+
+                    log('Landing page initialized successfully');
+
+                } catch (err) {
+                    log('Error:', err.message);
+                }
+            });
+        })();
     </script>
+
 </body>
 
 </html>
