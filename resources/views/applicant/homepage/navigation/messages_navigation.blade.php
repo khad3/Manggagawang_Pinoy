@@ -18,14 +18,12 @@
     <div class="dropdown-menu" id="messagesDropdown">
         <div class="dropdown-header">
             <h6>Messages</h6>
-            <button class="mark-all-read" onclick="markAllAsRead('messages')">Mark all as
-                read</button>
+            <button class="mark-all-read" onclick="markAllAsRead('messages')">Mark all as read</button>
         </div>
 
         <div class="dropdown-content">
             <div class="messages-list" id="dropdownMessagesList">
                 @php
-                    // Sort employers by latest message
                     $groupedMessages = $messages
                         ->groupBy('employer_id')
                         ->map(function ($employerMessages) {
@@ -132,7 +130,6 @@
 
                 <div class="employers-list" id="employersList">
                     @php
-                        // Group messages by employer and sort each group by latest message
                         $groupedMessages = $messages
                             ->groupBy('employer_id')
                             ->map(function ($employerMessages) {
@@ -225,7 +222,6 @@
                             <h3 id="currentEmployerName">Select an employer</h3>
                             <p id="currentCompanyName">to start chatting</p>
                             @php
-                                // Check if $employerId is set and not null
                                 $is_online = isset($employerId)
                                     ? \App\Models\Employer\AccountInformationmodel::where('id', $employerId)->value(
                                         'is_online',
@@ -283,10 +279,6 @@
                             </button>
                         </div>
                     </form>
-
-                    <div class="typing-indicator" id="typingIndicator" style="display: none;">
-                        <span>Employer is typing...</span>
-                    </div>
                 </div>
 
 
@@ -295,7 +287,6 @@
         </div>
     </div>
 </div>
-
 
 
 <!---Photo review--->
@@ -340,59 +331,7 @@
 
 <script>
     // ========================================
-    // PROFANITY FILTER SYSTEM - AUTO FILTER
-    // ========================================
-
-    // ========================================
-    // PROFANITY FILTER SYSTEM - AUTO FILTER
-    // ========================================
-
-    // Comprehensive bad words list in multiple languages
-    const profanityList = [
-        // English profanity
-        'fuck', 'shit', 'bitch', 'ass', 'bastard', 'damn', 'crap', 'piss',
-        'dick', 'cock', 'pussy', 'cunt', 'whore', 'slut', 'fag', 'nigger',
-        'retard', 'idiot', 'moron', 'dumbass', 'asshole', 'motherfucker',
-        'bullshit', 'goddamn', 'wtf', 'stfu', 'milf', 'dildo', 'jackass',
-        'piece of shit', 'bitch ass', 'dumb fuck', 'shut up', 'stupid',
-        'hell', 'bloody', 'bugger', 'wanker', 'twat', 'douche',
-
-        // Tagalog/Filipino profanity
-        'putang', 'putangina', 'puta', 'gago', 'tangina', 'tarantado',
-        'ulol', 'bobo', 'tanga', 'tarantada', 'pakyu', 'punyeta',
-        'hayop', 'hindot', 'kantot', 'buwisit', 'leche', 'yawa',
-        'peste', 'hinayupak', 'animal', 'kupal', 'kingina', 'potangina',
-        'taena', 'tanginamo', 'shibal', 'mamatay',
-
-        // Spanish profanity
-        'puta', 'mierda', 'coño', 'joder', 'pendejo', 'idiota',
-        'estúpido', 'carajo', 'puto', 'cabron', 'culo', 'verga',
-
-        // Common variations and leetspeak
-        'fck', 'fuk', 'sh1t', 'b1tch', 'a$', 'fvck', 'phuck',
-        'azz', 'biatch', 'beotch', 'p00sy', 'c0ck', 'sh!t'
-    ];
-
-    /**
-     * Filter profanity from text - automatically replaces with asterisks
-     */
-    function filterProfanity(text) {
-        if (!text) return text;
-
-        let filteredText = text;
-
-        profanityList.forEach(word => {
-            const regex = new RegExp('\\b' + word + '\\b', 'gi');
-            filteredText = filteredText.replace(regex, (match) => {
-                return '*'.repeat(match.length);
-            });
-        });
-
-        return filteredText;
-    }
-
-    // ========================================
-    // VARIABLES & INITIALIZATION
+    // VARIABLES & INITIALIZATION - FIXED WITH LOCALSTORAGE
     // ========================================
     let currentEmployerId = null;
     let allMessages = @json($messages);
@@ -404,7 +343,7 @@
     let isChatModalOpen = false;
     let isActivelyViewingMessages = false;
     let messageReadTimer = null;
-    let hasMarkedAsReadForCurrentEmployer = false; // NEW: Track if we've already marked this conversation as read
+    const markedAsReadEmployers = new Set(); // FIX: Track all marked conversations with a Set
 
     const messagesByEmployer = {};
     allMessages.forEach(msg => {
@@ -413,6 +352,47 @@
         }
         messagesByEmployer[msg.employer_id].push(msg);
     });
+
+    // Initialize which employers have been marked as read
+    Object.keys(messagesByEmployer).forEach(employerId => {
+        const unreadCount = messagesByEmployer[employerId].filter(msg =>
+            msg.sender_type === 'employer' && msg.is_read === 0
+        ).length;
+        if (unreadCount === 0) {
+            markedAsReadEmployers.add(parseInt(employerId));
+        }
+    });
+
+    // FIX: Initialize localStorage with current unread count on page load
+    function initializeUnreadCountStorage() {
+        const currentBadge = document.getElementById('messagesBadge');
+        if (currentBadge && currentBadge.textContent) {
+            const currentCount = parseInt(currentBadge.textContent) || 0;
+            localStorage.setItem('unreadMessagesCount', currentCount.toString());
+        }
+    }
+
+    // FIX: Restore unread count from localStorage on page load
+    function restoreUnreadCountFromStorage() {
+        const storedCount = localStorage.getItem('unreadMessagesCount');
+        if (storedCount !== null) {
+            const badge = document.getElementById('messagesBadge');
+            const count = parseInt(storedCount);
+            if (badge) {
+                if (count > 0) {
+                    badge.textContent = count;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        }
+    }
+
+    // FIX: Update localStorage when unread count changes
+    function updateUnreadCountStorage(newCount) {
+        localStorage.setItem('unreadMessagesCount', newCount.toString());
+    }
 
     // ========================================
     // MODAL & NAVIGATION FUNCTIONS
@@ -436,7 +416,6 @@
         isChatModalOpen = false;
         isActivelyViewingMessages = false;
         currentEmployerId = null;
-        hasMarkedAsReadForCurrentEmployer = false; // Reset flag
 
         if (messageReadTimer) {
             clearTimeout(messageReadTimer);
@@ -466,10 +445,8 @@
             messageReadTimer = null;
         }
 
-        // Reset flags when switching conversations
         currentEmployerId = employerId;
         isActivelyViewingMessages = false;
-        hasMarkedAsReadForCurrentEmployer = false;
 
         const replyEmployerInput = document.getElementById('replyEmployerId');
         replyEmployerInput.value = employerId;
@@ -533,14 +510,15 @@
             document.querySelector('.employers-sidebar').classList.add('hide-mobile');
         }
 
-        // Start timer to mark as read ONLY ONCE after 3 seconds of viewing
-        messageReadTimer = setTimeout(() => {
-            if (isChatModalOpen && currentEmployerId === employerId && isUserAtBottom && isPageVisible && !
-                hasMarkedAsReadForCurrentEmployer) {
-                isActivelyViewingMessages = true;
-                markMessagesAsRead(employerId);
-            }
-        }, 3000);
+        // FIX: Only mark as read if not already marked
+        if (!markedAsReadEmployers.has(employerId)) {
+            messageReadTimer = setTimeout(() => {
+                if (isChatModalOpen && currentEmployerId === employerId && isUserAtBottom && isPageVisible) {
+                    isActivelyViewingMessages = true;
+                    markMessagesAsRead(employerId);
+                }
+            }, 3000);
+        }
     }
 
     function showEmployersList() {
@@ -588,7 +566,7 @@
 
             let messageTextHtml = '';
             if (hasValidText) {
-                messageTextHtml = `<div class="message-text">${msg.message}</div>`;
+                messageTextHtml = `<div class="message-text">${escapeHtml(msg.message)}</div>`;
             }
 
             let attachmentHtml = '';
@@ -653,14 +631,14 @@
         const wasAtBottom = isUserAtBottom;
         isUserAtBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - threshold;
 
-        // Only trigger mark as read if scrolling TO bottom AND haven't marked yet
-        if (!wasAtBottom && isUserAtBottom && currentEmployerId && !isActivelyViewingMessages && !
-            hasMarkedAsReadForCurrentEmployer) {
+        if (!wasAtBottom && isUserAtBottom && currentEmployerId && isActivelyViewingMessages && !markedAsReadEmployers
+            .has(currentEmployerId)) {
             if (messageReadTimer) {
                 clearTimeout(messageReadTimer);
             }
             messageReadTimer = setTimeout(() => {
-                if (isUserAtBottom && isChatModalOpen && isPageVisible && !hasMarkedAsReadForCurrentEmployer) {
+                if (isUserAtBottom && isChatModalOpen && isPageVisible && !markedAsReadEmployers.has(
+                        currentEmployerId)) {
                     isActivelyViewingMessages = true;
                     markMessagesAsRead(currentEmployerId);
                 }
@@ -690,7 +668,6 @@
 
                 const wasAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
 
-                // Get existing message IDs
                 const existingIds = new Set();
                 container.querySelectorAll('[data-message-id]').forEach(el => {
                     const id = el.getAttribute('data-message-id');
@@ -700,35 +677,11 @@
                 });
 
                 let hasNewMessages = false;
-                let hasNewUnreadMessages = false;
 
-                // Update messagesByEmployer with fresh data preserving is_read status
-                data.messages.forEach(msg => {
-                    // Find if this message already exists in our local data
-                    const existingMsg = messagesByEmployer[currentEmployerId]?.find(m => m.id === msg.id);
-
-                    if (existingMsg) {
-                        // Preserve local is_read status if we've already marked it
-                        if (hasMarkedAsReadForCurrentEmployer && msg.sender_type === 'employer') {
-                            msg.is_read = 1; // Keep it marked as read locally
-                        } else {
-                            msg.is_read = existingMsg.is_read; // Preserve existing status
-                        }
-                    } else {
-                        // New message - check if it's unread
-                        if (msg.sender_type === 'employer' && msg.is_read === 0) {
-                            hasNewUnreadMessages = true;
-                        }
-                    }
-                });
-
-                // Update the local message store
-                messagesByEmployer[currentEmployerId] = data.messages;
-
-                // Append only NEW messages to the UI
+                // FIX: Only append truly new messages
                 data.messages.forEach(msg => {
                     if (existingIds.has(msg.id)) {
-                        return; // Skip existing messages
+                        return;
                     }
 
                     const hasValidText = msg.message &&
@@ -763,30 +716,26 @@
                     }
 
                     contentHtml +=
-                        `<div class="message-timestamp ${msg.sender_type}">${escapeHtml(msg.time || 'Just now')}</div>`;
+                        `<div class="message-timestamp ${bubbleClass}">${escapeHtml(msg.time || 'Just now')}</div>`;
 
                     messageDiv.innerHTML = `<div class="message-content">${contentHtml}</div>`;
                     container.appendChild(messageDiv);
                 });
 
+                // FIX: Update local message store only with truly new data
+                messagesByEmployer[currentEmployerId] = data.messages;
+
                 if (data.messages.length > 0) {
                     lastMessageId = data.messages[data.messages.length - 1].id;
                 }
 
-                // Auto-scroll only if user was at bottom
                 if (hasNewMessages && wasAtBottom) {
                     setTimeout(() => {
                         container.scrollTop = container.scrollHeight;
                         isUserAtBottom = true;
                     }, 10);
-
-                    // Only mark new messages as read if actively viewing AND at bottom AND already marked once
-                    if (isActivelyViewingMessages && isPageVisible && hasMarkedAsReadForCurrentEmployer) {
-                        setTimeout(() => markMessagesAsRead(currentEmployerId), 1000);
-                    }
                 }
 
-                // Update UI lists to reflect unread counts (but don't mark as read)
                 updateUnreadCountsInUI();
             })
             .catch(error => {
@@ -808,7 +757,6 @@
     // UPDATE UI FUNCTIONS
     // ========================================
     function updateUnreadCountsInUI() {
-        // Update badge count
         let totalUnread = 0;
         Object.values(messagesByEmployer).forEach(messages => {
             messages.forEach(msg => {
@@ -826,9 +774,10 @@
             } else {
                 badge.style.display = 'none';
             }
+            // FIX: Update localStorage whenever UI updates
+            updateUnreadCountStorage(totalUnread);
         }
 
-        // Update individual employer items
         Object.keys(messagesByEmployer).forEach(employerId => {
             const unreadCount = messagesByEmployer[employerId].filter(msg =>
                 msg.sender_type === 'employer' && msg.is_read === 0
@@ -841,24 +790,10 @@
                 dropdownItem.dataset.unreadCount = unreadCount;
                 if (unreadCount > 0) {
                     dropdownItem.classList.add('unread');
-                    if (!dropdownItem.querySelector('.unread-indicator')) {
-                        const indicator = document.createElement('div');
-                        indicator.className = 'unread-indicator';
-                        dropdownItem.insertBefore(indicator, dropdownItem.firstChild);
-                    }
-                    let countBadge = dropdownItem.querySelector('.unread-count');
-                    if (!countBadge) {
-                        countBadge = document.createElement('span');
-                        countBadge.className = 'unread-count';
-                        dropdownItem.querySelector('.message-meta').appendChild(countBadge);
-                    }
-                    countBadge.textContent = unreadCount;
                 } else {
                     dropdownItem.classList.remove('unread');
                     const indicator = dropdownItem.querySelector('.unread-indicator');
                     if (indicator) indicator.remove();
-                    const countBadge = dropdownItem.querySelector('.unread-count');
-                    if (countBadge) countBadge.remove();
                 }
             }
 
@@ -866,212 +801,21 @@
                 sidebarItem.dataset.unreadCount = unreadCount;
                 if (unreadCount > 0) {
                     sidebarItem.classList.add('has-unread');
-                    if (!sidebarItem.querySelector('.online-status')) {
-                        const status = document.createElement('div');
-                        status.className = 'online-status';
-                        sidebarItem.querySelector('.employer-avatar').appendChild(status);
-                    }
-                    let countBadge = sidebarItem.querySelector('.unread-count');
-                    if (!countBadge) {
-                        countBadge = document.createElement('span');
-                        countBadge.className = 'unread-count';
-                        sidebarItem.appendChild(countBadge);
-                    }
-                    countBadge.textContent = unreadCount;
                 } else {
                     sidebarItem.classList.remove('has-unread');
                     const status = sidebarItem.querySelector('.online-status');
                     if (status) status.remove();
-                    const countBadge = sidebarItem.querySelector('.unread-count');
-                    if (countBadge) countBadge.remove();
                 }
             }
         });
     }
 
-    function updateEmployersList(newMessagesByEmployer) {
-        const employersList = document.getElementById('employersList');
-        if (!employersList) return;
-
-        const employerEntries = Object.entries(newMessagesByEmployer);
-
-        if (employerEntries.length === 0) {
-            employersList.innerHTML = `
-            <div class="no-employers">
-                <i class="bi bi-chat-dots"></i>
-                <p>No conversations yet</p>
-            </div>
-        `;
-            return;
-        }
-
-        employerEntries.sort((a, b) => {
-            const lastA = a[1].reduce((latest, msg) =>
-                new Date(msg.created_at) > new Date(latest.created_at) ? msg : latest
-            );
-            const lastB = b[1].reduce((latest, msg) =>
-                new Date(msg.created_at) > new Date(latest.created_at) ? msg : latest
-            );
-            return new Date(lastB.created_at) - new Date(lastA.created_at);
-        });
-
-        let html = '';
-
-        employerEntries.forEach(([employerId, employerMessages]) => {
-            const employer = employerMessages[0].employer;
-            const unreadCount = employerMessages.filter(msg =>
-                msg.sender_type === 'employer' && msg.is_read === 0
-            ).length;
-            const lastMessage = employerMessages.reduce((latest, msg) =>
-                new Date(msg.created_at) > new Date(latest.created_at) ? msg : latest
-            );
-
-            html += `
-            <div class="employer-list-item ${unreadCount > 0 ? 'has-unread' : ''} ${currentEmployerId == employerId ? 'active' : ''}"
-                data-employer-id="${employerId}" 
-                data-unread-count="${unreadCount}"
-                onclick="loadConversation(${employerId})">
-
-                <div class="employer-avatar">
-                    ${employer.address_company?.company_logo 
-                        ? `<img src="${employer.address_company.company_logo}" alt="${employer.address_company.company_name}">`
-                        : `<div class="avatar-placeholder">${(employer.address_company?.company_name || 'C').charAt(0).toUpperCase()}</div>`
-                    }
-                    ${unreadCount > 0 ? '<div class="online-status"></div>' : ''}
-                </div>
-
-                <div class="employer-info">
-                    <div class="employer-name">
-                        ${employer.personal_info?.first_name || 'N/A'} ${employer.personal_info?.last_name || ''}
-                    </div>
-                    <div class="company-name">
-                        ${employer.address_company?.company_name || 'Company'}
-                    </div>
-                    <div class="last-message-preview">
-                        ${lastMessage.message ? lastMessage.message.substring(0, 30) : 'Attachment'}
-                    </div>
-                    <div class="last-message-time">
-                        ${formatMessageTime(lastMessage.created_at)}
-                    </div>
-                </div>
-
-                ${unreadCount > 0 ? `<span class="unread-count">${unreadCount}</span>` : ''}
-            </div>
-        `;
-        });
-
-        employersList.innerHTML = html;
-    }
-
-    function updateDropdownList(newMessagesByEmployer) {
-        const messagesList = document.getElementById('dropdownMessagesList');
-        if (!messagesList) return;
-
-        const employerEntries = Object.entries(newMessagesByEmployer);
-
-        if (employerEntries.length === 0) {
-            messagesList.innerHTML = `
-            <div class="no-messages">
-                <i class="bi bi-chat-dots"></i>
-                <p>No conversations yet</p>
-            </div>
-        `;
-            return;
-        }
-
-        employerEntries.sort((a, b) => {
-            const lastA = a[1].reduce((latest, msg) =>
-                new Date(msg.created_at) > new Date(latest.created_at) ? msg : latest
-            );
-            const lastB = b[1].reduce((latest, msg) =>
-                new Date(msg.created_at) > new Date(latest.created_at) ? msg : latest
-            );
-            return new Date(lastB.created_at) - new Date(lastA.created_at);
-        });
-
-        let html = '';
-
-        employerEntries.forEach(([employerId, employerMessages]) => {
-            const employer = employerMessages[0].employer;
-            const unreadCount = employerMessages.filter(msg =>
-                msg.sender_type === 'employer' && msg.is_read === 0
-            ).length;
-            const lastMessage = employerMessages.reduce((latest, msg) =>
-                new Date(msg.created_at) > new Date(latest.created_at) ? msg : latest
-            );
-            const totalMessages = employerMessages.length;
-
-            html += `
-            <div class="employer-item ${unreadCount > 0 ? 'unread' : ''}"
-                data-employer-id="${employerId}" data-unread-count="${unreadCount}"
-                onclick="openChatWithEmployer(${employerId}, '${(employer.personal_info?.first_name || 'N/A').replace(/'/g, "\\'")}', '${(employer.personal_info?.last_name || '').replace(/'/g, "\\'")}', '${(employer.address_company?.company_name || 'Company').replace(/'/g, "\\'")}')">
-
-                ${unreadCount > 0 ? '<div class="unread-indicator"></div>' : ''}
-
-                <div class="message-avatar">
-                    ${employer.address_company?.company_logo 
-                        ? `<img src="${employer.address_company.company_logo}" alt="${employer.address_company.company_name}">`
-                        : `<div class="avatar-placeholder">${(employer.address_company?.company_name || 'C').charAt(0).toUpperCase()}</div>`
-                    }
-                </div>
-
-                <div class="message-content">
-                    <div class="message-header">
-                        <span class="sender-name">
-                            ${employer.personal_info?.first_name || 'N/A'} ${employer.personal_info?.last_name || ''}
-                        </span>
-                        <span class="company-name">
-                            ${employer.address_company?.company_name || 'Company'}
-                        </span>
-                        <div class="message-meta">
-                            <span class="message-time">${formatMessageTime(lastMessage.created_at)}</span>
-                            ${unreadCount > 0 ? `<span class="unread-count">${unreadCount}</span>` : ''}
-                        </div>
-                    </div>
-                    <div class="message-preview">
-                        ${totalMessages} message${totalMessages > 1 ? 's' : ''} •
-                        ${lastMessage.message ? lastMessage.message.substring(0, 60) : 'Attachment'}
-                    </div>
-                </div>
-
-                <button class="message-actions"
-                    onclick="event.stopPropagation(); openChatWithEmployer(${employerId}, '${(employer.personal_info?.first_name || 'N/A').replace(/'/g, "\\'")}', '${(employer.personal_info?.last_name || '').replace(/'/g, "\\'")}', '${(employer.address_company?.company_name || 'Company').replace(/'/g, "\\'")}')"
-                    title="Open chat">
-                    <i class="bi bi-chat-square-text"></i>
-                </button>
-            </div>
-        `;
-        });
-
-        messagesList.innerHTML = html;
-    }
-
-    function updateBadgeCount(messages) {
-        const badge = document.getElementById('messagesBadge');
-        if (!badge) return;
-
-        const totalUnread = messages.reduce((count, msg) => {
-            if (msg.sender_type === 'employer' && msg.is_read === 0) {
-                return count + 1;
-            }
-            return count;
-        }, 0);
-
-        if (totalUnread > 0) {
-            badge.textContent = totalUnread;
-            badge.style.display = 'inline-block';
-        } else {
-            badge.style.display = 'none';
-        }
-    }
-
     // ========================================
-    // MARK AS READ FUNCTION - IMPROVED
+    // MARK AS READ FUNCTION - FIXED
     // ========================================
     function markMessagesAsRead(employerId) {
-        // Prevent marking as read if not actively viewing or already marked
-        if (!isActivelyViewingMessages || !isChatModalOpen || !isPageVisible || hasMarkedAsReadForCurrentEmployer) {
-            console.log('⛔ NOT marking as read - Conditions not met');
+        // FIX: Prevent marking as read if already marked
+        if (markedAsReadEmployers.has(employerId)) {
             return;
         }
 
@@ -1081,18 +825,15 @@
         const unreadCount = parseInt(dropdownItem?.dataset.unreadCount || sidebarItem?.dataset.unreadCount || 0);
 
         if (unreadCount === 0) {
+            markedAsReadEmployers.add(employerId);
             return;
         }
 
         const now = Date.now();
         if (now - lastSeenUpdateTime < 5000) {
-            console.log('⏱️ Rate limit - waiting before marking as read');
             return;
         }
         lastSeenUpdateTime = now;
-
-        // Set flag to prevent repeated marking
-        hasMarkedAsReadForCurrentEmployer = true;
 
         console.log('✅ Marking messages as read for employer:', employerId);
 
@@ -1108,7 +849,9 @@
                 if (data.success) {
                     console.log('✅ Messages marked as read successfully');
 
-                    // Update local message store
+                    // FIX: Add to marked set to prevent marking again
+                    markedAsReadEmployers.add(employerId);
+
                     if (messagesByEmployer[employerId]) {
                         messagesByEmployer[employerId].forEach(msg => {
                             if (msg.sender_type === 'employer') {
@@ -1117,51 +860,48 @@
                         });
                     }
 
-                    // Update UI elements
                     if (dropdownItem) {
                         dropdownItem.classList.remove('unread');
                         dropdownItem.dataset.unreadCount = '0';
-
-                        const unreadIndicator = dropdownItem.querySelector('.unread-indicator');
-                        if (unreadIndicator) unreadIndicator.remove();
-
-                        const unreadCountBadge = dropdownItem.querySelector('.unread-count');
-                        if (unreadCountBadge) unreadCountBadge.remove();
+                        const indicator = dropdownItem.querySelector('.unread-indicator');
+                        if (indicator) indicator.remove();
                     }
 
                     if (sidebarItem) {
                         sidebarItem.classList.remove('has-unread');
                         sidebarItem.dataset.unreadCount = '0';
-
                         const onlineStatus = sidebarItem.querySelector('.online-status');
                         if (onlineStatus) onlineStatus.remove();
-
-                        const unreadCountBadge = sidebarItem.querySelector('.unread-count');
-                        if (unreadCountBadge) unreadCountBadge.remove();
                     }
 
                     const badge = document.getElementById('messagesBadge');
-                    if (badge && unreadCount > 0) {
+                    if (badge) {
                         let currentCount = parseInt(badge.textContent) || 0;
                         const newCount = Math.max(currentCount - unreadCount, 0);
                         badge.textContent = newCount;
-
                         if (newCount === 0) {
                             badge.style.display = 'none';
                         }
+                        // FIX: Update localStorage
+                        updateUnreadCountStorage(newCount);
                     }
                 }
             })
             .catch(error => {
                 console.error('❌ Error marking messages as read:', error);
-                hasMarkedAsReadForCurrentEmployer = false; // Reset flag on error
             });
     }
 
     // ========================================
-    // FORM SUBMISSION WITH AUTO PROFANITY FILTER
+    // FORM SUBMISSION
     // ========================================
     document.addEventListener('DOMContentLoaded', function() {
+        // FIX: Restore unread count from localStorage on page load
+        restoreUnreadCountFromStorage();
+
+        // FIX: Initialize localStorage with current count
+        initializeUnreadCountStorage();
+
         const replyForm = document.getElementById('replyForm');
 
         replyForm.addEventListener('submit', async function(e) {
@@ -1174,15 +914,8 @@
                 return;
             }
 
-            // Create FormData and automatically filter profanity from the message
             const formData = new FormData(replyForm);
 
-            if (messageText) {
-                const filteredMessage = filterProfanity(messageText);
-                formData.set('message', filteredMessage);
-            }
-
-            // Clear input and preview
             document.getElementById('replyInput').value = '';
             document.getElementById('attachment').value = '';
             document.getElementById('attachmentPreview').innerHTML = '';
@@ -1207,7 +940,6 @@
             }
         });
 
-        // Add scroll listener
         const container = document.getElementById('messagesContainer');
         if (container) {
             container.addEventListener('scroll', () => {
@@ -1215,48 +947,21 @@
             });
         }
 
-        // Page visibility handling
         document.addEventListener('visibilitychange', function() {
-            const previousVisibility = isPageVisible;
             isPageVisible = !document.hidden;
-
-            if (!isPageVisible) {
-                // Page hidden - stop marking as read
-                isActivelyViewingMessages = false;
-                if (messageReadTimer) {
-                    clearTimeout(messageReadTimer);
-                    messageReadTimer = null;
-                }
-            } else if (previousVisibility === false && isPageVisible) {
-                // Page became visible again - restart timer only if not already marked
-                if (isUserAtBottom && currentEmployerId && isChatModalOpen && !
-                    hasMarkedAsReadForCurrentEmployer) {
-                    messageReadTimer = setTimeout(() => {
-                        if (isUserAtBottom && isChatModalOpen && isPageVisible && !
-                            hasMarkedAsReadForCurrentEmployer) {
-                            isActivelyViewingMessages = true;
-                            markMessagesAsRead(currentEmployerId);
-                        }
-                    }, 3000);
-                }
-            }
         });
 
-        // Initialize message count
         if (currentEmployerId && messagesByEmployer[currentEmployerId]) {
             lastMessageCount = messagesByEmployer[currentEmployerId].length;
         }
 
-        // ========================================
-        // START REAL-TIME POLLING
-        // ========================================
-        console.log('🚀 Starting real-time message system with profanity filter...');
+        console.log('🚀 Starting real-time message system...');
 
         setInterval(() => {
             if (isPageVisible && isChatModalOpen && currentEmployerId) {
                 refreshMessages();
             }
-        }, 2000);
+        }, 3000);
 
         setTimeout(() => {
             if (isChatModalOpen && currentEmployerId) {
@@ -1264,6 +969,6 @@
             }
         }, 1000);
 
-        console.log('✅ Real-time messaging active with auto profanity filter');
+        console.log('✅ Real-time messaging active');
     });
 </script>

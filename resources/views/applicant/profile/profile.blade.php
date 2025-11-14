@@ -206,8 +206,8 @@
                     <div class="col-lg-8">
                         @if ($retrievedDecrytedProfile)
                             <h1 class="profile-name">
-                                {{ $retrievedDecrytedProfile['personal_info']['first_name'] }}
-                                {{ $retrievedDecrytedProfile['personal_info']['last_name'] }}
+                                {{ $retrievedDecrytedProfile['personal_info']['first_name'] ?? '' }}
+                                {{ $retrievedDecrytedProfile['personal_info']['last_name'] ?? '' }}
                             </h1>
                             <p class="profile-title">
                                 @php
@@ -243,8 +243,8 @@
                                 @endphp
 
                                 {{ $displayPosition }}
-                                | {{ $retrievedDecrytedProfile['work_background']['work_duration'] }}
-                                {{ $retrievedDecrytedProfile['work_background']['work_duration_unit'] }}
+                                | {{ $retrievedDecrytedProfile['work_background']['work_duration'] ?? '' }}
+                                {{ $retrievedDecrytedProfile['work_background']['work_duration_unit'] ?? '' }}
                             </p>
                         @endif
 
@@ -252,7 +252,7 @@
                             @if ($certification->status == 'approved')
                                 <div class="certification-badge">
                                     <i class="bi bi-patch-check-fill"></i>
-                                    TESDA Certified - {{ $certification->certification_program }}
+                                    TESDA Certified - {{ $certification->certification_program ?? '' }}
                                 </div>
                             @endif
                         @endforeach
