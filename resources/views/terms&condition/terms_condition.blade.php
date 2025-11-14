@@ -15,9 +15,11 @@
         <h2 class="text-center mb-4">Terms of Use</h2>
         <p> Please read these Terms of Use (“Terms”) carefully before accessing and using the <strong>Mangagawang Pinoy
                 Platform</strong> (“Platform”). </p>
-        <p> The Platform refers to the website, pages, products, and services accessible online at <strong>[insert
-                website URL]</strong>. The Platform is owned and operated by <strong>Mangagawang Pinoy</strong>
-            (“Mangagawang Pinoy”, “we”, “us”, or “our”) and is provided for the sole use of its users and clients. </p>
+        <p> The Platform refers to the website, pages, products, and services accessible online at
+            <strong>https://manggagawangpinoy.com/</strong>. The Platform is owned and operated by <strong>Mangagawang
+                Pinoy</strong>
+            (“Mangagawang Pinoy”, “we”, “us”, or “our”) and is provided for the sole use of its users and clients.
+        </p>
         <p> By accessing or using our Platform, you (“Applicant”, “Employer”, or “User”) agree to be bound by these
             Terms. If you do not agree, please do not use our website or create an account. These Terms apply together
             with our <a href="{{ route('display.privacypolicy') }}">Privacy Policy</a>, and if applicable, our <a
@@ -33,7 +35,7 @@
         <p> - Accounts must be created with a valid email address via the official registration form.<br> - Third-party
             logins (Google, Facebook, etc.) are not supported.<br> - You are responsible for securing your account and
             monitoring its usage.<br> - For account recovery, please contact
-            <strong>manggawangpinoycompany@gmail.com</strong>.
+            <strong>https://manggagawangpinoy.com/</strong>.
         </p>
         <h4>4. Acceptable Behavior</h4>
         <p>Users are expected to:</p>
@@ -53,7 +55,7 @@
             notice. Continued use of the Platform implies acceptance of updates. </p>
         <h4>7. Management of Platform</h4>
         <p> Mangagawang Pinoy reserves the right to maintain, upgrade, or suspend any part of the Platform. For
-            concerns, contact <strong>manggawangpinoycompany@gmail.com</strong>. </p>
+            concerns, contact <strong>https://manggagawangpinoy.com/</strong>. </p>
         <h4>8. Use of Materials</h4>
         <p> All content is protected by intellectual property laws. You may not reproduce, distribute, or modify any
             content without prior written permission. Downloads or screenshots are permitted only for personal,
@@ -84,7 +86,7 @@
         <p> Use of the Platform is at your own risk. Services are provided “as-is” without warranties. We disclaim
             liability for losses or damages from use of the Platform. </p>
         <h4>17. Contact Information</h4>
-        <p> For any concerns, please contact us at <strong>manggawangpinoycompany@gmail.com</strong>. </p>
+        <p> For any concerns, please contact us at <strong>https://manggagawangpinoy.com/</strong>. </p>
         <hr>
         <p class="text-center"><em>Last Updated: {{ date('F j, Y') }}</em></p>
     </div>
