@@ -19,28 +19,108 @@
 </head>
 
 <body>
+       <!-- Responsive Navbar (HTML) -->
     <nav>
         <div class="navbar-container">
-            <div class="nav-logo">
-                <a href="{{ route('display.index') }}"><img src="{{ asset('img/logo.png') }}" alt="MP Logo"
-                        id="home2" /> </a>
+            <div class="nav-logo d-flex align-items-center">
+                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2"
+                    style="text-decoration:none;">
+                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
+                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" />
+                </a>
             </div>
             <ul class="nav-links" id="navLinks">
-                {{-- <li><a href="#">Services</a></li> --}}
                 <li><a href="{{ route('display.topworker') }}">Top Workers</a></li>
                 <li><a href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
                 <li><a href="{{ route('display.aboutus') }}">About Us</a></li>
-                <li><button class="sign-in-b">Sign in</button></li>
-                <li><button class="sign-up-b">Sign up</button></li>
+                <li class="dropdown">
+                    <button class="sign-in-b">Sign in</button>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ route('applicant.login.display') }}">As Applicant</a></li>
+                        <li><a href="{{ route('employer.login.display') }}">As Employer</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <button class="sign-up-b">Sign up </button>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ route('applicant.register.display') }}">As Applicant</a></li>
+                        <li><a href="{{ route('employer.register.display') }}">As Employer</a></li>
+                    </ul>
+                </li>
             </ul>
-            <div class="hamburger" id="hamburger">
-                <div></div>
-                <div></div>
-                <div></div>
+
+            <!-- Mobile Hamburger -->
+            <button id="m-hamburger" class="m-hamburger" aria-label="Open menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <!-- Replaced old mobile menu with new mobile-navbar -->
+            <div class="mobile-overlay" id="mobileOverlay" aria-hidden="true"></div>
+
+            <div class="mobile-navbar" id="mobileNavbar" role="dialog" aria-modal="true" aria-hidden="true">
+                <div class="nav-top">
+            <div class="nav-logo">
+                <img src="img/logotext.png" alt="MP Logo" id="home" />
+                <img src="img/logo.png" alt="MP Logo" id="home2" />
+            </div>
+                    <button id="closeMenu" class="close-btn" aria-label="Close menu"></button>
+                </div>
+
+                <ul class="mobile-menu" role="menu" aria-label="Mobile main menu">
+                    <li role="none"><a role="menuitem" href="{{ route('display.topworker') }}">Top Workers</a></li>
+                    <li role="none"><a role="menuitem" href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
+                    <li role="none"><a role="menuitem" href="{{ route('display.aboutus') }}">About Us</a></li>
+
+                    <li class="dropdown" role="none">
+                        <button class="dropdown-btn" aria-expanded="false">Sign in</button>
+                        <ul class="dropdown-content" role="menu" aria-hidden="true">
+                            <li role="none"><a role="menuitem" href="{{ route('applicant.login.display') }}">As Applicant</a>
+                            </li>
+                            <li role="none"><a role="menuitem" href="{{ route('employer.login.display') }}">As Employer</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown" role="none">
+                        <button class="dropdown-btn" aria-expanded="false">Sign up </button>
+                        <ul class="dropdown-content" role="menu" aria-hidden="true">
+                            <li role="none"><a role="menuitem" href="{{ route('applicant.register.display') }}">As Applicant</a>
+                            </li>
+                            <li role="none"><a role="menuitem" href="{{ route('employer.register.display') }}">As Employer</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>
 
+    <!-- Mobile Navigation Menu -->
+    <ul id="mNavLinks" role="menu" aria-hidden="true">
+        <li role="none"><a role="menuitem" href="{{ route('display.topworker') }}">Top Workers</a></li>
+        <li role="none"><a role="menuitem" href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
+        <li role="none"><a role="menuitem" href="{{ route('display.aboutus') }}">About Us</a></li>
+
+        <li class="m-dropdown" role="none">
+            <button class="m-drop-btn" aria-expanded="false">Sign in <span></span></button>
+            <ul class="m-dropdown-menu" role="menu">
+                <li role="none"><a role="menuitem" href="{{ route('applicant.login.display') }}">As Applicant</a></li>
+                <li role="none"><a role="menuitem" href="{{ route('employer.login.display') }}">As Employer</a></li>
+            </ul>
+        </li>
+
+        <li class="m-dropdown" role="none">
+            <button class="m-drop-btn" aria-expanded="false">Sign up <span></span></button>
+            <ul class="m-dropdown-menu" role="menu">
+                <li role="none"><a role="menuitem" href="{{ route('applicant.register.display') }}">As Applicant</a></li>
+                <li role="none"><a role="menuitem" href="{{ route('employer.register.display') }}">As Employer</a></li>
+            </ul>
+        </li>
+    </ul>
+
+   <!--
     <div class="top-workers-table">
         <div class="tw-header">
             <span class="tw-col name">Name</span>
@@ -49,6 +129,7 @@
             <span class="tw-col industry">Industry</span>
             <span class="tw-col actions"></span>
         </div>
+    -->
 
         @foreach ($topApplicants as $applicant)
             <div class="tw-row">
@@ -165,7 +246,7 @@
     </div>
 
 
-    <footer class="footer">s
+    <footer class="footer" style="margin-top:200px;">
         <div class="footer-col about">
             <img src="img/logo.png" class="logo-placeholder">
             <p>
@@ -265,6 +346,99 @@
             });
         });
     </script>
+
+    <script>
+    (function() {
+        function log(...args) { if (window.console) console.log('[nav]', ...args); }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                // ====== wire new mobile-navbar ======
+                const hamburger = document.getElementById('m-hamburger');
+                const mobileNavbar = document.getElementById('mobileNavbar');
+                const closeMenu = document.getElementById('closeMenu');
+                const overlay = document.getElementById('mobileOverlay');
+
+                function openMenu() {
+                    mobileNavbar.classList.add('open');
+                    overlay.classList.add('show');
+                    hamburger.classList.add('active');
+                    hamburger.setAttribute('aria-expanded', 'true');
+                    mobileNavbar.setAttribute('aria-hidden', 'false');
+                    document.body.style.overflow = 'hidden';
+                }
+
+                function closeMenuFn() {
+                    mobileNavbar.classList.remove('open');
+                    overlay.classList.remove('show');
+                    hamburger.classList.remove('active');
+                    hamburger.setAttribute('aria-expanded', 'false');
+                    mobileNavbar.setAttribute('aria-hidden', 'true');
+                    document.body.style.overflow = 'auto';
+                }
+
+                if (hamburger && mobileNavbar) {
+                    hamburger.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (window.innerWidth <= 768) {
+                            if (mobileNavbar.classList.contains('open')) closeMenuFn();
+                            else openMenu();
+                        }
+                    });
+
+                    closeMenu.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        closeMenuFn();
+                    });
+
+                    overlay.addEventListener('click', closeMenuFn);
+
+                    // dropdown toggles
+                    mobileNavbar.querySelectorAll('.dropdown').forEach(drop => {
+                        const btn = drop.querySelector('.dropdown-btn');
+                        const menu = drop.querySelector('.dropdown-content');
+                        btn.addEventListener('click', (ev) => {
+                            ev.stopPropagation();
+                            const isOpen = drop.classList.toggle('open');
+                            btn.setAttribute('aria-expanded', String(isOpen));
+                            if (menu) menu.setAttribute('aria-hidden', String(!isOpen));
+                        });
+                    });
+
+                    // close when selecting a link
+                    mobileNavbar.querySelectorAll('a').forEach(a => {
+                        a.addEventListener('click', () => closeMenuFn());
+                    });
+
+                    // close on ESC
+                    document.addEventListener('keydown', (e) => {
+                        if (e.key === 'Escape') closeMenuFn();
+                    });
+
+                    // click outside closes menu
+                    document.addEventListener('click', (e) => {
+                        if (!mobileNavbar.contains(e.target) && !hamburger.contains(e.target)) {
+                            closeMenuFn();
+                        }
+                    });
+
+                    log('Mobile navbar initialized');
+                }
+
+                // Hide loader after page load
+                window.addEventListener("load", function() {
+                    setTimeout(function() {
+                        const loader = document.getElementById("loader-wrapper");
+                        if (loader) loader.style.display = "none";
+                    }, 1500);
+                });
+
+            } catch (err) {
+                log('Error:', err.message);
+            }
+        });
+    })();
+</script>
 </body>
 
 </html>

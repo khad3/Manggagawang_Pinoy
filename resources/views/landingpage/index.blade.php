@@ -7,150 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="{{ asset('css/applicant/landingpage/landingpage.css') }}">
     <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}" />
-    <style>
-        /* Mobile menu styles */
-        #m-hamburger {
-            width: 32px;
-            height: 22px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            cursor: pointer;
-            background: none;
-            border: none;
-            padding: 0;
-        }
 
-        #m-hamburger span {
-            height: 3px;
-            background: #000;
-            display: block;
-            transition: 0.3s ease;
-        }
-
-        #m-hamburger.active span:nth-child(1) {
-            transform: rotate(45deg) translate(10px, 10px);
-        }
-
-        #m-hamburger.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        #m-hamburger.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(7px, -7px);
-        }
-
-        /* ===== New mobile-navbar styles (implemented) ===== */
-        .mobile-navbar {
-            position: fixed;
-            top: 0;
-            left: -110%;
-            width: 85%;
-            max-width: 420px;
-            height: 100vh;
-            background: #0023aa;
-            color: #fff;
-            z-index: 1400;
-            transition: left .28s ease;
-            display: flex;
-            flex-direction: column;
-            padding: 1rem;
-            box-sizing: border-box;
-            overflow-y: auto;
-        }
-
-        .mobile-navbar.open {
-            left: 0;
-        }
-
-        .mobile-navbar .nav-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .mobile-navbar .logo {
-            font-weight: 700;
-            letter-spacing: 0.6px;
-            font-size: 0.95rem;
-        }
-
-        .mobile-navbar .close-btn {
-            background: transparent;
-            border: none;
-            color: #fff;
-            font-size: 1.25rem;
-            cursor: pointer;
-            padding: .25rem .5rem;
-        }
-
-        .mobile-navbar .mobile-menu {
-            list-style: none;
-            margin: 1rem 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            gap: .35rem;
-        }
-
-        .mobile-navbar .mobile-menu a,
-        .mobile-navbar .mobile-menu button.dropdown-btn {
-            color: #fff;
-            text-decoration: none;
-            display: block;
-            width: 100%;
-            text-align: left;
-            padding: .65rem .5rem;
-            background: transparent;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 8px;
-        }
-
-        .mobile-navbar .mobile-menu a:hover,
-        .mobile-navbar .mobile-menu button.dropdown-btn:hover {
-            background: rgba(255, 255, 255, 0.06);
-        }
-
-        .mobile-navbar .dropdown-content {
-            display: none;
-            margin-top: .25rem;
-            margin-left: .5rem;
-            border-left: 2px solid rgba(255, 255, 255, 0.05);
-            padding-left: .5rem;
-            flex-direction: column;
-            gap: .25rem;
-        }
-
-        .mobile-navbar .dropdown.open .dropdown-content {
-            display: flex;
-        }
-
-        /* small overlay when menu open */
-        .mobile-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.45);
-            z-index: 1300;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity .28s ease, visibility .28s;
-        }
-
-        .mobile-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        /* keep previous #mNavLinks styles for safety (if still present) */
-        #mNavLinks {
-            display: none;
-        }
-    </style>
 </head>
 
 <body>
@@ -193,8 +50,11 @@
 
             <div class="mobile-navbar" id="mobileNavbar" role="dialog" aria-modal="true" aria-hidden="true">
                 <div class="nav-top">
-                    <div class="logo">MANGGAGAWANG PINOY</div>
-                    <button id="closeMenu" class="close-btn" aria-label="Close menu">✕</button>
+            <div class="nav-logo">
+                <img src="img/logotext.png" alt="MP Logo" id="home" />
+                <img src="img/logo.png" alt="MP Logo" id="home2" />
+            </div>
+                    <button id="closeMenu" class="close-btn" aria-label="Close menu"></button>
                 </div>
 
                 <ul class="mobile-menu" role="menu" aria-label="Mobile main menu">
@@ -203,7 +63,7 @@
                     <li role="none"><a role="menuitem" href="{{ route('display.aboutus') }}">About Us</a></li>
 
                     <li class="dropdown" role="none">
-                        <button class="dropdown-btn" aria-expanded="false">Sign in ▼</button>
+                        <button class="dropdown-btn" aria-expanded="false">Sign in</button>
                         <ul class="dropdown-content" role="menu" aria-hidden="true">
                             <li role="none"><a role="menuitem" href="{{ route('applicant.login.display') }}">As Applicant</a>
                             </li>
@@ -213,7 +73,7 @@
                     </li>
 
                     <li class="dropdown" role="none">
-                        <button class="dropdown-btn" aria-expanded="false">Sign up ▼</button>
+                        <button class="dropdown-btn" aria-expanded="false">Sign up </button>
                         <ul class="dropdown-content" role="menu" aria-hidden="true">
                             <li role="none"><a role="menuitem" href="{{ route('applicant.register.display') }}">As Applicant</a>
                             </li>
@@ -233,7 +93,7 @@
         <li role="none"><a role="menuitem" href="{{ route('display.aboutus') }}">About Us</a></li>
 
         <li class="m-dropdown" role="none">
-            <button class="m-drop-btn" aria-expanded="false">Sign in <span>▼</span></button>
+            <button class="m-drop-btn" aria-expanded="false">Sign in <span></span></button>
             <ul class="m-dropdown-menu" role="menu">
                 <li role="none"><a role="menuitem" href="{{ route('applicant.login.display') }}">As Applicant</a></li>
                 <li role="none"><a role="menuitem" href="{{ route('employer.login.display') }}">As Employer</a></li>
@@ -241,7 +101,7 @@
         </li>
 
         <li class="m-dropdown" role="none">
-            <button class="m-drop-btn" aria-expanded="false">Sign up <span>▼</span></button>
+            <button class="m-drop-btn" aria-expanded="false">Sign up <span></span></button>
             <ul class="m-dropdown-menu" role="menu">
                 <li role="none"><a role="menuitem" href="{{ route('applicant.register.display') }}">As Applicant</a></li>
                 <li role="none"><a role="menuitem" href="{{ route('employer.register.display') }}">As Employer</a></li>
@@ -459,6 +319,7 @@
                     if (hamburger && mobileNavbar) {
                         hamburger.addEventListener('click', (e) => {
                             e.stopPropagation();
+                            if (window.innerWidth > 768) return; // Don't activate on desktop
                             if (mobileNavbar.classList.contains('open')) closeMenuFn();
                             else openMenu();
                         });
@@ -556,6 +417,15 @@
                             el.addEventListener('click', () => {
                                 window.scrollTo({ top: 0, behavior: 'smooth' });
                             });
+                        }
+                    });
+
+                    // Close mobile menu on resize if above 768px
+                    window.addEventListener('resize', () => {
+                        if (window.innerWidth > 768) {
+                            closeMenuFn();
+                            mobileNavbar.classList.remove('open');
+                            overlay.classList.remove('show');
                         }
                     });
 
