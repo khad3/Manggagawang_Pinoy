@@ -289,19 +289,15 @@
                                             <div class="author-avatar">
                                                 @if ($hasProfileImage)
                                                     {{-- Show uploaded profile image --}}
-                                                    <a href="#">
-                                                        <img src="{{ Storage::url($profileImagePath) }}"
-                                                            alt="{{ $firstName }}'s avatar" class="avatar-img"
-                                                            style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
-                                                    </a>
+                                                    <img src="{{ Storage::url($profileImagePath) }}"
+                                                        alt="{{ $firstName }}'s avatar" class="avatar-img"
+                                                        style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
                                                 @else
                                                     {{-- Fallback to initials if no image --}}
-                                                    <a href="#">
-                                                        <div class="avatar-placeholder"
-                                                            style="width: 50px; height: 50px; border-radius: 50%; background: #ccc; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">
-                                                            {{ strtoupper(substr($firstName, 0, 1)) }}{{ strtoupper(substr($lastName, 0, 1)) }}
-                                                        </div>
-                                                    </a>
+                                                    <div class="avatar-placeholder"
+                                                        style="width: 50px; height: 50px; border-radius: 50%; background: #ccc; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">
+                                                        {{ strtoupper(substr($firstName, 0, 1)) }}{{ strtoupper(substr($lastName, 0, 1)) }}
+                                                    </div>
                                                 @endif
                                             </div>
 

@@ -1836,4 +1836,12 @@ public function markAllasread()
 }
 
 
+public function restoreDefaultLogo(Request $request) {
+    $employerId = session('employer_id'); // or auth()->guard('employer')->id()
+
+    CompanyAdressModel::where('employer_id', $employerId)->update(['company_logo' => null]);
+
+    return back()->with('success', 'Company logo restored to default.');
+}
+
 }

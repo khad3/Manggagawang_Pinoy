@@ -80,7 +80,13 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
     Route::delete('delete-account', [SettingController::class, 'deleteAccount'])->name('applicant.deleteaccount.destroy');
     //Read messages of the employer as read
     Route::put('read-message/{id}', [ApplicantController::class, 'ReadMessage'])->name('applicant.readmessage.store');
-    
+    //Check typing indicator ng employer
+    Route::post('start-typing/{employerId}', [SendMessageEmployerController::class, 'startTyping'])->name('applicant.typing.start');
+    Route::post('stop-typing/{employerId}', [SendMessageEmployerController::class, 'stopTyping'])->name('applicant.typing.stop');
+    Route::get('check-typing/{employerId}', [SendMessageEmployerController::class, 'checkTyping'])->name('applicant.check.typing');
+    Route::get('get-unread-counts', [SendMessageEmployerController::class, 'getUnreadCounts'])->name('applicant.get.unread.counts');
+
+
     Route::get('info', [ApplicantController::class, 'ShowPersonalInfoForm'])->name('info.personal');
     Route::post('info', [ApplicantController::class, 'PersonalInfo'])->name('applicant.info.personal.stores');
     Route::get('info/background', [ApplicantController::class, 'ShowWorkBackgroundForm'])->name('applicant.info.workbackground.display');
@@ -141,6 +147,7 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
     Route::put('communityforum/accept-friend-request/{id}', [CommunityForumController::class, 'AcceptFriendRequest'])->name('applicant.forum.friend.accept');
     Route::get('communityforum/view-friend-list', [CommunityForumController::class, 'ViewFriendlistPage'])->name('applicant.forum.viewfriendlist.display');
     // Profile
+    Route::post('restore-default', [ProfileController::class, 'restoreDefault'])->name('applicant.profile.restore');
     Route::get('profile', [ProfileController::class, 'ViewProfilePage'])->name('applicant.profile.display');
     Route::post('add-cover-photo', [ProfileController::class, 'AddCoverPhoto'])->name('applicant.coverphoto.store');
     Route::delete('delete-cover-photo', [ProfileController::class, 'DeleteCoverPhoto'])->name('applicant.coverphoto.delete');
@@ -239,7 +246,7 @@ Route::middleware(['employer.authenticate'])->prefix('employer')->group(function
     Route::post('typing/{applicantId}', [SendMessageController::class, 'setTypingStatus']);
     //insert loho
     route::post('insert-company-logo', [EmployerController::class, 'insertCompanyLogo'])->name('employer.companylogo.store');
-
+    Route::post('restore-company-logo', [EmployerController::class, 'restoreDefaultLogo'])->name('employer.companylogo.restore');
     //Schedule interview
     Route::post('schedule-interview/{id}', [EmployerController::class, 'setScheduleInterviewByEmployer'])->name('employer.scheduleinterview.store');
     // Employer Notifications Routes

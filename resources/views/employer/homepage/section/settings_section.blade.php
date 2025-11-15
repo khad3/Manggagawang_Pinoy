@@ -15,7 +15,7 @@
                    <div class="col-lg-6">
                        <div class="card shadow-sm border-0 rounded-4">
                            <div class="card-header bg-light fw-bold d-flex align-items-center">
-                               
+
                                <span>Company Logo</span>
                            </div>
                            <div class="card-body text-center">
@@ -50,13 +50,40 @@
                                    <button type="submit" class="btn btn-primary w-100" aria-label="Upload Logo">
                                        <i class="fas fa-upload me-1" aria-hidden="true"></i> Upload Logo
                                    </button>
+
+                                   <button type="button" class="btn btn-outline-danger w-100 mt-2"
+                                       onclick="restoreCompanyLogo()">
+                                       <i class="fas fa-undo me-1"></i> Restore Default Logo
+                                   </button>
+
                                </form>
                            </div>
                        </div>
                    </div>
 
+
+
                    <!-- 🪄 Preview Script -->
                    <script>
+                       function restoreCompanyLogo() {
+                           const defaultLogo = "{{ asset('img/employer default.png') }}"; // your default logo
+                           document.getElementById('logoPreview').src = defaultLogo;
+
+                           // Send restore request to backend
+                           fetch("{{ route('employer.companylogo.restore') }}", {
+                                   method: "POST",
+                                   headers: {
+                                       "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                       "Accept": "application/json"
+                                   }
+                               })
+                               .then(response => response.json())
+                               .then(data => {
+                                   alert(data.message);
+                               })
+                               .catch(err => console.error(err));
+                       }
+
                        function previewCompanyLogo(event) {
                            const input = event.target;
                            const reader = new FileReader();
@@ -72,7 +99,7 @@
                    <div class="col-lg-6">
                        <div class="card shadow-sm border-0 rounded-4">
                            <div class="card-header bg-light fw-bold d-flex align-items-center">
-                              
+
                                <span>Edit Company Name</span>
                            </div>
                            <div class="card-body">
@@ -107,7 +134,7 @@
                    <div class="col-lg-6">
                        <div class="card shadow-sm border-0 rounded-4">
                            <div class="card-header bg-light fw-bold d-flex align-items-center">
-                               
+
                                <span>Change Password</span>
                            </div>
                            <div class="card-body">
@@ -149,7 +176,7 @@
                                    </div>
 
                                    <button type="submit" class="btn btn-primary w-100" aria-label="Update Password">
-                                     Update Password
+                                       Update Password
                                    </button>
                                </form>
                            </div>

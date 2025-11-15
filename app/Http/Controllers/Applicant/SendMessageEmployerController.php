@@ -104,6 +104,70 @@ class SendMessageEmployerController extends Controller
         return response()->json(['success' => true]);
     }
 
+public function startTyping(Request $request)
+{
+    $employerID = session('employer_id');
+    
+    if (!$employerID) {
+        return response()->json(['status' => 'error', 'message' => 'Not authenticated'], 401);
+    }
+
+    AccountInformationModel::where('id', $employerID)
+        ->update(['typing_indicator' => true]);
+
+    return response()->json(['status' => 'started']);
+}
+
+public function stopTyping(Request $request)
+{
+    $employerID = session('employer_id');
+
+    if (!$employerID) {
+        return response()->json(['status' => 'error', 'message' => 'Not authenticated'], 401);
+    }
+
+    AccountInformationModel::where('id', $employerID)
+        ->update(['typing_indicator' => false]);
+
+    return response()->json(['status' => 'stopped']);
+}
+
+public function checkTyping($employer_id)
+{
+    $employer = AccountInformationModel::find($employer_id);
+
+    return response()->json([
+        'is_typing' => $employer ? (bool) $employer->typing_indicator : false
+    ]);
+}
+
+public function getUnreadCounts(Request $request)
+{
+    $applicantId = session('applicant_id');
+
+    if (!$applicantId) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Applicant not authenticated'
+        ], 401);
+    }
+
+    // Count unread messages from each employer
+    $unreadCounts = \App\Models\Employer\SendMessageModel::where('applicant_id', $applicantId)
+        ->where('sender_type', 'employer')   // employer sent it
+        ->where('is_read', false)
+        ->select('employer_id', DB::raw('COUNT(*) as count'))
+        ->groupBy('employer_id')
+        ->pluck('count', 'employer_id')      // key = employer_id
+        ->toArray();
+
+    return response()->json([
+        'unread_counts' => $unreadCounts
+    ]);
+}
+
+
+
     private function safeDecrypt($value)
     {
         if (empty($value)) return null;

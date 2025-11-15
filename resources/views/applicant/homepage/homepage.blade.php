@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ asset('css/applicant/homepage.css') }}">
     <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}" />
+    <style></style>
 </head>
 
 <body>
@@ -256,28 +257,27 @@
                                                 'employer_id',
                                                 $jobDetail->employer_id,
                                             );
-                                            $initials =
-                                                $company && !$company->company_logo
-                                                    ? strtoupper(Str::limit($company->company_name ?? 'BC', 2, ''))
-                                                    : '';
                                         @endphp
 
                                         <div class="company-avatar-wrapper">
                                             @if ($company && $company->company_logo)
+                                                {{-- Use employer's uploaded logo --}}
                                                 <img src="{{ asset('storage/' . $company->company_logo) }}"
                                                     alt="{{ $company->company_name ?? 'Company Logo' }}"
                                                     class="company-avatar-img">
-                                            @elseif ($company)
-                                                <div class="company-avatar-initials">{{ $initials }}</div>
                                             @else
-                                                <div class="company-avatar-initials">MP</div> <!-- default fallback -->
+                                                {{-- Use your default employer image --}}
+                                                <img src="{{ asset('img/employer default.png') }}"
+                                                    alt="Default Employer Logo" class="company-avatar-img">
                                             @endif
                                         </div>
+
                                         <div class="company-details">
                                             <h3>{{ $jobDetail->title }}</h3>
                                             <div class="company-industry">
                                                 {{ $jobDetail->department }} • {{ $jobDetail->job_type }}
                                             </div>
+
                                             <div class="company-name" style="color:gold;">
                                                 @if (!empty($jobDetail->employer->addressCompany->company_name))
                                                     {{ $jobDetail->employer->addressCompany->company_name }}
@@ -285,9 +285,9 @@
                                                     Individual
                                                 @endif
                                             </div>
-
                                         </div>
                                     </div>
+
                                     <div class="company-badges">
                                         <span class="status-badge status-active">
                                             <i class="bi bi-lightning"></i> Hiring
@@ -565,7 +565,7 @@ $hasActiveApplication =
         </div>
         </section>
     </div>
-    </div>
+
 
 
 

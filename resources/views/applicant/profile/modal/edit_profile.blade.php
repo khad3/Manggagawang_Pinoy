@@ -29,10 +29,34 @@
                              <input type="file" class="form-control" name="profile_picture" id="profileInput"
                                  accept="image/*">
                          </div>
+
+                         <!-- Restore Default Button -->
+                         <button type="button" class="btn btn-outline-danger w-100 mt-2"
+                             onclick="restoreProfileImage()">
+                             <i class="fas fa-undo me-1"></i> Restore Default Photo
+                         </button>
+
                      </div>
 
                      <!-- Live Preview Script -->
                      <script>
+                         function restoreProfileImage() {
+                             const defaultImg = "{{ asset('img/workerdefault.png') }}"; // <-- your default image here
+                             document.getElementById('profilePreview').src = defaultImg;
+
+                             fetch("{{ route('applicant.profile.restore') }}", {
+                                     method: "POST",
+                                     headers: {
+                                         "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                         "Accept": "application/json",
+                                     }
+                                 })
+                                 .then(res => res.json())
+                                 .then(data => {
+                                     alert(data.message);
+                                 })
+                                 .catch(err => console.error(err));
+                         }
                          document.getElementById('profileInput').addEventListener('change', function(event) {
                              const file = event.target.files[0];
                              if (file) {

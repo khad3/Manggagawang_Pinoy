@@ -16,6 +16,7 @@ use App\Models\Applicant\ApplicantPostLikeModel as PostLike;
 use App\Models\Applicant\ApplicantPostCommentModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {   
@@ -566,6 +567,25 @@ foreach ($retrievedPosts as $post) {
     }
 
 
+public function restoreDefault(Request $request)
+{
+    $applicantId = session('applicant_id');
+
+    $profile = WorkBackground::where('applicant_id', $applicantId)->first();
+
+    if ($profile && $profile->profileimage_path) {
+        // delete current image
+        Storage::disk('public')->delete($profile->profileimage_path);
+
+        // remove stored file path
+        $profile->profileimage_path = null;
+        $profile->save();
+    }
+
+    return response()->json([
+        'message' => 'Profile photo restored to default successfully.'
+    ]);
+}
 
 
 
