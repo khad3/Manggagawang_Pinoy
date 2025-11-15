@@ -13,15 +13,16 @@
 </head>
 
 <body>
+    <!-- REPLACED NAV (updated unified nav + mobile sidebar) -->
     <nav>
         <div class="navbar-container">
             <div class="nav-logo d-flex align-items-center">
-                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2"
-                    style="text-decoration:none;">
+                <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2" style="text-decoration:none;">
                     <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
                     <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" />
                 </a>
             </div>
+
             <ul class="nav-links" id="navLinks">
                 <li><a href="#">Services</a></li>
                 <li><a href="{{ route('display.topworker') }}">Top Workers</a></li>
@@ -39,10 +40,50 @@
                 </li>
             </ul>
 
-            <div class="hamburger" id="hamburger">
-                <div></div>
-                <div></div>
-                <div></div>
+            <!-- Mobile Hamburger -->
+            <button id="m-hamburger" class="m-hamburger" aria-label="Open menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <!-- Mobile overlay and sidebar -->
+            <div class="mobile-overlay" id="mobileOverlay" aria-hidden="true"></div>
+
+            <div class="mobile-navbar" id="mobileNavbar" role="dialog" aria-modal="true" aria-hidden="true">
+                <div class="nav-top nav-logo">
+                  
+                        <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
+                        <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" />
+                    
+                    <button id="closeMenu" class="close-btn" aria-label="Close menu"></button>
+                </div>
+
+                <ul class="mobile-menu" role="menu" aria-label="Mobile main menu">
+                    <li role="none"><a role="menuitem" href="{{ route('display.topworker') }}">Top Workers</a></li>
+                    <li role="none"><a role="menuitem" href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
+                    <li role="none"><a role="menuitem" href="{{ route('display.aboutus') }}">About Us</a></li>
+
+                    <li class="dropdown" role="none">
+                        <button class="dropdown-btn" aria-expanded="false">Sign in</button>
+                        <ul class="dropdown-content" role="menu" aria-hidden="true">
+                            <li role="none"><a role="menuitem" href="{{ route('applicant.login.display') }}">As Applicant</a>
+                            </li>
+                            <li role="none"><a role="menuitem" href="{{ route('employer.login.display') }}">As Employer</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown" role="none">
+                        <button class="dropdown-btn" aria-expanded="false">Sign up</button>
+                        <ul class="dropdown-content" role="menu" aria-hidden="true">
+                            <li role="none"><a role="menuitem" href="{{ route('applicant.register.display') }}">As Applicant</a>
+                            </li>
+                            <li role="none"><a role="menuitem" href="{{ route('employer.register.display') }}">As Employer</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>
@@ -349,6 +390,99 @@
             function previousStep() {
                 window.location.href = "{{ route('employer.contact.display') }}";
             }
+        </script>
+
+        <!-- NAVIGATION SCRIPT (inserted) -->
+        <script>
+            (function() {
+                function log(...args) { if (window.console) console.log('[nav]', ...args); }
+
+                document.addEventListener('DOMContentLoaded', () => {
+                    try {
+                        const hamburger = document.getElementById('m-hamburger');
+                        const mobileNavbar = document.getElementById('mobileNavbar');
+                        const closeMenu = document.getElementById('closeMenu');
+                        const overlay = document.getElementById('mobileOverlay');
+
+                        function openMenu() {
+                            mobileNavbar.classList.add('open');
+                            overlay.classList.add('show');
+                            hamburger.classList.add('active');
+                            hamburger.setAttribute('aria-expanded', 'true');
+                            mobileNavbar.setAttribute('aria-hidden', 'false');
+                            document.body.style.overflow = 'hidden';
+                        }
+
+                        function closeMenuFn() {
+                            mobileNavbar.classList.remove('open');
+                            overlay.classList.remove('show');
+                            hamburger.classList.remove('active');
+                            hamburger.setAttribute('aria-expanded', 'false');
+                            mobileNavbar.setAttribute('aria-hidden', 'true');
+                            document.body.style.overflow = 'auto';
+                            // close any open dropdowns
+                            mobileNavbar.querySelectorAll('.dropdown.open').forEach(d => d.classList.remove('open'));
+                            mobileNavbar.querySelectorAll('.dropdown-btn').forEach(b => b.setAttribute('aria-expanded', 'false'));
+                            mobileNavbar.querySelectorAll('.dropdown-content').forEach(m => m.setAttribute('aria-hidden', 'true'));
+                        }
+
+                        if (hamburger && mobileNavbar) {
+                            hamburger.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                if (window.innerWidth <= 768) {
+                                    if (mobileNavbar.classList.contains('open')) closeMenuFn();
+                                    else openMenu();
+                                }
+                            });
+
+                            if (closeMenu) closeMenu.addEventListener('click', (e) => { e.stopPropagation(); closeMenuFn(); });
+                            if (overlay) overlay.addEventListener('click', closeMenuFn);
+
+                            mobileNavbar.querySelectorAll('.dropdown').forEach(drop => {
+                                const btn = drop.querySelector('.dropdown-btn');
+                                const menu = drop.querySelector('.dropdown-content');
+                                if (!btn) return;
+                                btn.addEventListener('click', (ev) => {
+                                    ev.stopPropagation();
+                                    const isOpen = drop.classList.toggle('open');
+                                    btn.setAttribute('aria-expanded', String(isOpen));
+                                    if (menu) menu.setAttribute('aria-hidden', String(!isOpen));
+                                });
+                            });
+
+                            // close when selecting a link inside mobile menu
+                            mobileNavbar.querySelectorAll('a').forEach(a => a.addEventListener('click', () => closeMenuFn()));
+
+                            // close on ESC
+                            document.addEventListener('keydown', (e) => {
+                                if (e.key === 'Escape') closeMenuFn();
+                            });
+
+                            // optionally avoid closing when clicking arbitrary page elements:
+                            // only close on overlay click or explicit outside click when overlay is not present
+                            document.addEventListener('click', (e) => {
+                                const overlayVisible = overlay && overlay.classList.contains('show');
+                                if (overlayVisible) {
+                                    // overlay click already handled; ignore other clicks to avoid accidental closes
+                                    return;
+                                }
+                                if (!mobileNavbar.contains(e.target) && !hamburger.contains(e.target)) {
+                                    closeMenuFn();
+                                }
+                            });
+
+                            // close menu on window resize to desktop
+                            window.addEventListener('resize', () => {
+                                if (window.innerWidth > 768) closeMenuFn();
+                            });
+
+                            log('Mobile navbar initialized');
+                        }
+                    } catch (err) {
+                        log('Error:', err.message);
+                    }
+                });
+            })();
         </script>
 </body>
 

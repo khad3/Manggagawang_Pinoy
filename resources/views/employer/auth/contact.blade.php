@@ -24,7 +24,6 @@
             </div>
 
             <ul class="nav-links" id="navLinks">
-                <li><a href="#">Services</a></li>
                 <li><a href="{{ route('display.topworker') }}">Top Workers</a></li>
                 <li><a href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
                 <li><a href="{{ route('display.aboutus') }}">About Us</a></li>
@@ -35,8 +34,6 @@
                         <li><a href="{{ route('employer.login.display') }}">As Employer</a></li>
                     </ul>
                 </li>
-
-                <!-- Sign Up Dropdown -->
                 <li class="dropdown">
                     <button class="sign-up-b">Sign up</button>
                     <ul class="dropdown-menu">
@@ -46,11 +43,49 @@
                 </li>
             </ul>
 
+            <!-- Mobile Hamburger -->
+            <button id="m-hamburger" class="m-hamburger" aria-label="Open menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
 
-            <div class="hamburger" id="hamburger">
-                <div></div>
-                <div></div>
-                <div></div>
+            <!-- Mobile navbar -->
+            <div class="mobile-overlay" id="mobileOverlay" aria-hidden="true"></div>
+
+            <div class="mobile-navbar" id="mobileNavbar" role="dialog" aria-modal="true" aria-hidden="true">
+                <div class="nav-top nav-logo">
+                      <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
+                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" />
+             
+                    <button id="closeMenu" class="close-btn" aria-label="Close menu"></button>
+                </div>
+
+                <ul class="mobile-menu" role="menu" aria-label="Mobile main menu">
+                    <li role="none"><a role="menuitem" href="{{ route('display.topworker') }}">Top Workers</a></li>
+                    <li role="none"><a role="menuitem" href="https://www.tesda.gov.ph/">Visit TESDA</a></li>
+                    <li role="none"><a role="menuitem" href="{{ route('display.aboutus') }}">About Us</a></li>
+
+                    <li class="dropdown" role="none">
+                        <button class="dropdown-btn" aria-expanded="false">Sign in</button>
+                        <ul class="dropdown-content" role="menu" aria-hidden="true">
+                            <li role="none"><a role="menuitem" href="{{ route('applicant.login.display') }}">As Applicant</a>
+                            </li>
+                            <li role="none"><a role="menuitem" href="{{ route('employer.login.display') }}">As Employer</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown" role="none">
+                        <button class="dropdown-btn" aria-expanded="false">Sign up</button>
+                        <ul class="dropdown-content" role="menu" aria-hidden="true">
+                            <li role="none"><a role="menuitem" href="{{ route('applicant.register.display') }}">As Applicant</a>
+                            </li>
+                            <li role="none"><a role="menuitem" href="{{ route('employer.register.display') }}">As Employer</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>
@@ -642,67 +677,87 @@
             });
         });
 
-        function checkPasswordStrength(password) {
-            const strengthBar = document.getElementById('passwordStrengthBar');
-            const feedback = document.getElementById('passwordFeedback');
+        (function() {
+            function log(...args) { if (window.console) console.log('[nav]', ...args); }
 
-            let strength = 0;
-            if (password.length >= 8) strength += 1;
-            if (/[a-z]/.test(password)) strength += 1;
-            if (/[A-Z]/.test(password)) strength += 1;
-            if (/\d/.test(password)) strength += 1;
-            if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+            document.addEventListener('DOMContentLoaded', () => {
+                try {
+                    // ====== wire new mobile-navbar ======
+                    const hamburger = document.getElementById('m-hamburger');
+                    const mobileNavbar = document.getElementById('mobileNavbar');
+                    const closeMenu = document.getElementById('closeMenu');
+                    const overlay = document.getElementById('mobileOverlay');
 
-            let width = strength * 20;
-            strengthBar.style.width = width + '%';
+                    function openMenu() {
+                        mobileNavbar.classList.add('open');
+                        overlay.classList.add('show');
+                        hamburger.classList.add('active');
+                        hamburger.setAttribute('aria-expanded', 'true');
+                        mobileNavbar.setAttribute('aria-hidden', 'false');
+                        document.body.style.overflow = 'hidden';
+                    }
 
-            if (strength <= 2) {
-                strengthBar.className = 'progress-bar bg-danger';
-                feedback.textContent = 'Weak password. Try adding numbers, symbols, or uppercase letters.';
-                feedback.className = 'form-text text-danger';
-            } else if (strength === 3 || strength === 4) {
-                strengthBar.className = 'progress-bar bg-warning';
-                feedback.textContent = 'Moderate password. Consider making it stronger.';
-                feedback.className = 'form-text text-warning';
-            } else if (strength === 5) {
-                strengthBar.className = 'progress-bar bg-success';
-                feedback.textContent = 'Strong password.';
-                feedback.className = 'form-text text-success';
-            }
-        }
+                    function closeMenuFn() {
+                        mobileNavbar.classList.remove('open');
+                        overlay.classList.remove('show');
+                        hamburger.classList.remove('active');
+                        hamburger.setAttribute('aria-expanded', 'false');
+                        mobileNavbar.setAttribute('aria-hidden', 'true');
+                        document.body.style.overflow = 'auto';
+                    }
 
-        function checkPasswordMatch() {
-            const pass = document.getElementById('password').value;
-            const confirm = document.getElementById('password_confirmation').value;
-            const matchFeedback = document.getElementById('matchFeedback');
+                    if (hamburger && mobileNavbar) {
+                        hamburger.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            if (window.innerWidth <= 768) {
+                                if (mobileNavbar.classList.contains('open')) closeMenuFn();
+                                else openMenu();
+                            }
+                        });
 
-            if (!confirm) {
-                matchFeedback.textContent = '';
-                return;
-            }
+                        closeMenu.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            closeMenuFn();
+                        });
 
-            if (pass === confirm) {
-                matchFeedback.textContent = 'Passwords match.';
-                matchFeedback.className = 'form-text text-success';
-            } else {
-                matchFeedback.textContent = 'Passwords do not match.';
-                matchFeedback.className = 'form-text text-danger';
-            }
-        }
+                        overlay.addEventListener('click', closeMenuFn);
 
-        function togglePassword(id) {
-            const input = document.getElementById(id);
-            const icon = input.nextElementSibling.querySelector('i');
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                input.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        }
+                        // dropdown toggles
+                        mobileNavbar.querySelectorAll('.dropdown').forEach(drop => {
+                            const btn = drop.querySelector('.dropdown-btn');
+                            const menu = drop.querySelector('.dropdown-content');
+                            btn.addEventListener('click', (ev) => {
+                                ev.stopPropagation();
+                                const isOpen = drop.classList.toggle('open');
+                                btn.setAttribute('aria-expanded', String(isOpen));
+                                if (menu) menu.setAttribute('aria-hidden', String(!isOpen));
+                            });
+                        });
+
+                        // close when selecting a link
+                        mobileNavbar.querySelectorAll('a').forEach(a => {
+                            a.addEventListener('click', () => closeMenuFn());
+                        });
+
+                        // close on ESC
+                        document.addEventListener('keydown', (e) => {
+                            if (e.key === 'Escape') closeMenuFn();
+                        });
+
+                        // click outside closes menu
+                        document.addEventListener('click', (e) => {
+                            if (!mobileNavbar.contains(e.target) && !hamburger.contains(e.target)) {
+                                closeMenuFn();
+                            }
+                        });
+
+                        log('Mobile navbar initialized');
+                    }
+                } catch (err) {
+                    log('Error:', err.message);
+                }
+            });
+        })();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
