@@ -120,16 +120,9 @@
         </li>
     </ul>
 
-   <!--
+   
     <div class="top-workers-table">
-        <div class="tw-header">
-            <span class="tw-col name">Name</span>
-            <span class="tw-col hire-rate">Rating</span>
-            <span class="tw-col location">Location</span>
-            <span class="tw-col industry">Industry</span>
-            <span class="tw-col actions"></span>
-        </div>
-    -->
+
 
         @foreach ($topApplicants as $applicant)
             <div class="tw-row">
@@ -246,7 +239,7 @@
     </div>
 
 
-    <footer class="footer" style="margin-top:200px;">
+    <footer class="footer" style="margin-bottom:-900px;">
         <div class="footer-col about">
             <img src="img/logo.png" class="logo-placeholder">
             <p>
