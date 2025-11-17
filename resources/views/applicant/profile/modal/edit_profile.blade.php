@@ -86,59 +86,139 @@
                      <!-- Work Info -->
                      <div class="mb-3">
                          <label class="form-label">Position</label>
-
-                         @php
-                             $positions = [
-                                 'Automotive Servicing',
-                                 'Bartender',
-                                 'Barista',
-                                 'Beauty Care Specialist',
-                                 'Carpenter',
-                                 'Cook',
-                                 'Customer Service Representative',
-                                 'Dressmaker/Tailor',
-                                 'Electrician',
-                                 'Food and Beverage Server',
-                                 'Hairdresser',
-                                 'Heavy Equipment Operator',
-                                 'Housekeeping',
-                                 'Mason',
-                                 'Massage Therapist',
-                                 'Mechanic',
-                                 'Plumber',
-                                 'Security Guard',
-                                 'SMAW Welder',
-                                 'Tile Setter',
-                                 'Tourism Services Staff',
-                                 'Waiter/Waitress',
-                             ];
-
-                             $currentPosition = $retrievedDecrytedProfile['work_background']['position'] ?? '';
-                             $otherPosition = $retrievedDecrytedProfile['work_background']['other_position'] ?? '';
-                             $isOtherSelected = !in_array($currentPosition, $positions) || $currentPosition === 'Other';
-                         @endphp
-
                          <select class="form-select" id="position" name="position" required
                              onchange="toggleOtherPosition()">
-                             <option value="" disabled {{ empty($currentPosition) ? 'selected' : '' }}>Select job
-                                 position</option>
-
-                             @foreach ($positions as $pos)
-                                 <option value="{{ $pos }}" {{ $currentPosition === $pos ? 'selected' : '' }}>
-                                     {{ $pos }}
-                                 </option>
-                             @endforeach
-
-                             <option value="Other" {{ $isOtherSelected ? 'selected' : '' }}>Other (Please specify)
+                             <option value="" disabled
+                                 {{ empty($retrievedProfile->work_background->position) ? 'selected' : '' }}>
+                                 Select job position
+                             </option>
+                             <option value="Automotive Servicing"
+                                 {{ $retrievedProfile->work_background->position == 'Automotive Servicing' ? 'selected' : '' }}>
+                                 Automotive Servicing</option>
+                             <option value="Bartender"
+                                 {{ $retrievedProfile->work_background->position == 'Bartender' ? 'selected' : '' }}>
+                                 Bartender</option>
+                             <option value="Barista"
+                                 {{ $retrievedProfile->work_background->position == 'Barista' ? 'selected' : '' }}>
+                                 Barista</option>
+                             <option value="Beauty Care Specialist"
+                                 {{ $retrievedProfile->work_background->position == 'Beauty Care Specialist' ? 'selected' : '' }}>
+                                 Beauty Care Specialist</option>
+                             <option value="Carpenter"
+                                 {{ $retrievedProfile->work_background->position == 'Carpenter' ? 'selected' : '' }}>
+                                 Carpenter</option>
+                             <option value="Cook"
+                                 {{ $retrievedProfile->work_background->position == 'Cook' ? 'selected' : '' }}>
+                                 Cook</option>
+                             <option value="Customer Service Representative"
+                                 {{ $retrievedProfile->work_background->position == 'Customer Service Representative' ? 'selected' : '' }}>
+                                 Customer Service Representative</option>
+                             <option value="Dressmaker/Tailor"
+                                 {{ $retrievedProfile->work_background->position == 'Dressmaker/Tailor' ? 'selected' : '' }}>
+                                 Dressmaker/Tailor</option>
+                             <option value="Electrician"
+                                 {{ $retrievedProfile->work_background->position == 'Electrician' ? 'selected' : '' }}>
+                                 Electrician</option>
+                             <option value="Food and Beverage Server"
+                                 {{ $retrievedProfile->work_background->position == 'Food and Beverage Server' ? 'selected' : '' }}>
+                                 Food and Beverage Server</option>
+                             <option value="Hairdresser"
+                                 {{ $retrievedProfile->work_background->position == 'Hairdresser' ? 'selected' : '' }}>
+                                 Hairdresser</option>
+                             <option value="Heavy Equipment Operator"
+                                 {{ $retrievedProfile->work_background->position == 'Heavy Equipment Operator' ? 'selected' : '' }}>
+                                 Heavy Equipment Operator</option>
+                             <option value="Housekeeping"
+                                 {{ $retrievedProfile->work_background->position == 'Housekeeping' ? 'selected' : '' }}>
+                                 Housekeeping</option>
+                             <option value="Mason"
+                                 {{ $retrievedProfile->work_background->position == 'Mason' ? 'selected' : '' }}>
+                                 Mason</option>
+                             <option value="Massage Therapist"
+                                 {{ $retrievedProfile->work_background->position == 'Massage Therapist' ? 'selected' : '' }}>
+                                 Massage Therapist</option>
+                             <option value="Mechanic"
+                                 {{ $retrievedProfile->work_background->position == 'Mechanic' ? 'selected' : '' }}>
+                                 Mechanic</option>
+                             <option value="Plumber"
+                                 {{ $retrievedProfile->work_background->position == 'Plumber' ? 'selected' : '' }}>
+                                 Plumber</option>
+                             <option value="Security Guard"
+                                 {{ $retrievedProfile->work_background->position == 'Security Guard' ? 'selected' : '' }}>
+                                 Security Guard</option>
+                             <option value="SMAW Welder"
+                                 {{ $retrievedProfile->work_background->position == 'SMAW Welder' ? 'selected' : '' }}>
+                                 SMAW Welder</option>
+                             <option value="Tile Setter"
+                                 {{ $retrievedProfile->work_background->position == 'Tile Setter' ? 'selected' : '' }}>
+                                 Tile Setter</option>
+                             <option value="Tourism Services Staff"
+                                 {{ $retrievedProfile->work_background->position == 'Tourism Services Staff' ? 'selected' : '' }}>
+                                 Tourism Services Staff</option>
+                             <option value="Waiter/Waitress"
+                                 {{ $retrievedProfile->work_background->position == 'Waiter/Waitress' ? 'selected' : '' }}>
+                                 Waiter/Waitress</option>
+                             <option value="Other"
+                                 {{ !in_array($retrievedProfile->work_background->position, [
+                                     'Automotive Servicing',
+                                     'Bartender',
+                                     'Barista',
+                                     'Beauty Care Specialist',
+                                     'Carpenter',
+                                     'Cook',
+                                     'Customer Service Representative',
+                                     'Dressmaker/Tailor',
+                                     'Electrician',
+                                     'Food and Beverage Server',
+                                     'Hairdresser',
+                                     'Heavy Equipment Operator',
+                                     'Housekeeping',
+                                     'Mason',
+                                     'Massage Therapist',
+                                     'Mechanic',
+                                     'Plumber',
+                                     'Security Guard',
+                                     'SMAW Welder',
+                                     'Tile Setter',
+                                     'Tourism Services Staff',
+                                     'Waiter/Waitress',
+                                 ]) && $retrievedProfile->work_background->position
+                                     ? 'selected'
+                                     : '' }}>
+                                 Other (Please specify)
                              </option>
                          </select>
 
                          <!-- Other Position Input -->
-                         <div class="mt-2" id="otherPositionContainer"
-                             style="{{ $isOtherSelected ? 'display:block;' : 'display:none;' }}">
+                         <div class="mt-2" id="otherPositionContainer" style="display: none;">
                              <input type="text" class="form-control" id="other_position" name="other_position"
                                  placeholder="Please specify your position"
-                                 value="{{ $isOtherSelected ? $otherPosition : '' }}">
+                                 value="{{ !in_array($retrievedProfile->work_background->position, [
+                                     'Automotive Servicing',
+                                     'Bartender',
+                                     'Barista',
+                                     'Beauty Care Specialist',
+                                     'Carpenter',
+                                     'Cook',
+                                     'Customer Service Representative',
+                                     'Dressmaker/Tailor',
+                                     'Electrician',
+                                     'Food and Beverage Server',
+                                     'Hairdresser',
+                                     'Heavy Equipment Operator',
+                                     'Housekeeping',
+                                     'Mason',
+                                     'Massage Therapist',
+                                     'Mechanic',
+                                     'Plumber',
+                                     'Security Guard',
+                                     'SMAW Welder',
+                                     'Tile Setter',
+                                     'Tourism Services Staff',
+                                     'Waiter/Waitress',
+                                 ])
+                                     ? $retrievedProfile->work_background->position
+                                     : '' }}">
                          </div>
                      </div>
 
@@ -146,21 +226,15 @@
                          function toggleOtherPosition() {
                              const select = document.getElementById('position');
                              const otherContainer = document.getElementById('otherPositionContainer');
-                             const otherInput = document.getElementById('other_position');
-
                              if (select.value === 'Other') {
                                  otherContainer.style.display = 'block';
-                                 // Keep the value if it exists
-                                 if (!otherInput.value) {
-                                     otherInput.value = '';
-                                 }
                              } else {
                                  otherContainer.style.display = 'none';
-                                 otherInput.value = '';
+                                 document.getElementById('other_position').value = '';
                              }
                          }
 
-                         // Show Other input on page load if selected or has a value
+                         // Run on page load (to show Other if already selected)
                          document.addEventListener('DOMContentLoaded', toggleOtherPosition);
                      </script>
 

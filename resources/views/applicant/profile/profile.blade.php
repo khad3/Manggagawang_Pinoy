@@ -210,8 +210,7 @@
                                 {{ $retrievedDecrytedProfile['personal_info']['last_name'] ?? '' }}
                             </h1>
                             <p class="profile-title">
-                                @php
-                                    $positions = [
+                                @if (in_array($retrievedProfile->work_background->position, [
                                         'Automotive Servicing',
                                         'Bartender',
                                         'Barista',
@@ -234,21 +233,13 @@
                                         'Tile Setter',
                                         'Tourism Services Staff',
                                         'Waiter/Waitress',
-                                    ];
-
-                                    $currentPosition = $retrievedDecrytedProfile['work_background']['position'] ?? '';
-                                    $otherPosition =
-                                        $retrievedDecrytedProfile['work_background']['other_position'] ?? '';
-
-                                    // ✅ positional arguments only
-                                    $displayPosition = in_array($currentPosition, $positions)
-                                        ? $currentPosition
-                                        : $otherPosition;
-                                @endphp
-
-                                {{ $displayPosition }}
-                                | {{ $retrievedDecrytedProfile['work_background']['work_duration'] ?? '' }}
-                                {{ $retrievedDecrytedProfile['work_background']['work_duration_unit'] ?? '' }}
+                                    ]))
+                                    {{ $retrievedProfile->work_background->position }}
+                                @else
+                                    {{ $retrievedProfile->work_background->position }}
+                                @endif
+                                | {{ $retrievedProfile->work_background->work_duration }}
+                                {{ $retrievedProfile->work_background->work_duration_unit }}
                             </p>
                         @endif
 
