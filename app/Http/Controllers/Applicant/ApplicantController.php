@@ -586,26 +586,30 @@ public function WorkBackground(Request $request)
 /**
  * Helper to safely decrypt a value
  */
-private function safeDecrypt($value)
+public function safeDecrypt($value)
 {
     if (empty($value)) {
         return null;
     }
 
-    // First, check if it looks like a valid encrypted string
-    // Laravel encrypted strings always start with "eyJ" after base64 encoding
+    // If it looks like a Laravel encrypted string
     if (is_string($value) && preg_match('/^eyJ/', $value)) {
         try {
-            return Crypt::decryptString($value);
+            $value = Crypt::decryptString($value);
         } catch (\Exception $e) {
-            // If decryption fails, fallback to original
-            return $value;
+            // Fallback to original if decrypt fails
         }
     }
 
-    // If it’s not an encrypted string, just return it
+    // Remove serialized fragments like s:10:"Xanderfors";
+    $value = preg_replace('/s:\d+:"([^"]+)";/', '$1', $value);
+
+    // Clean up extra symbols just in case
+    $value = trim(preg_replace('/[^A-Za-z0-9\s,.@-]/', '', $value));
+
     return $value;
 }
+
 
 //Final step to register 
 public function ShowTemplateFormForm()
