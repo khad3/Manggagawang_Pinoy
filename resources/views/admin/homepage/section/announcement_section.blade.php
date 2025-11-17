@@ -77,7 +77,7 @@
                                    </div>
                                    <div class="announcement-actions">
                                        <button class="action-btn btn-view" title="View Details" data-bs-toggle="modal"
-                                           data-bs-target="#viewAnnouncementModal">
+                                           data-bs-target="#viewAnnouncementModal-{{ $announcement->id }}">
                                            <i class="fas fa-eye"></i>
                                        </button>
                                        <button class="action-btn btn-edit" title="Edit" data-bs-toggle="modal"
@@ -159,6 +159,73 @@
                        @endforeach
                    @endif
                </div>
+               <!-- View Announcement Modal -->
+               @foreach ($retrieveAnnouncements as $announcement)
+                   <div class="modal fade" id="viewAnnouncementModal-{{ $announcement->id }}" tabindex="-1"
+                       aria-labelledby="viewAnnouncementLabel-{{ $announcement->id }}" aria-hidden="true">
+                       <div class="modal-dialog modal-lg modal-dialog-centered">
+                           <div class="modal-content">
+
+                               <div class="modal-header">
+                                   <h5 class="modal-title" id="viewAnnouncementLabel-{{ $announcement->id }}">
+                                       {{ $announcement->title }}
+                                   </h5>
+                                   <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                               </div>
+
+                               <div class="modal-body">
+
+                                   <!-- Priority & Status -->
+                                   <div class="mb-2">
+                                       <span class="badge bg-primary">{{ ucfirst($announcement->priority) }}</span>
+                                       <span class="badge bg-success">{{ ucfirst($announcement->status) }}</span>
+                                   </div>
+
+                                   <!-- Content -->
+                                   <p class="mb-3">
+                                       {{ $announcement->content }}
+                                   </p>
+
+                                   <!-- Show Image -->
+                                   @if ($announcement->image)
+                                       <img src="{{ asset('storage/' . $announcement->image) }}"
+                                           class="img-fluid rounded mb-3" alt="Announcement Image">
+                                   @endif
+
+                                   <!-- Tags -->
+                                   @if ($announcement->tag)
+                                       <div class="mb-3">
+                                           @foreach (explode(',', $announcement->tag) as $tag)
+                                               <span class="badge bg-secondary">#{{ trim($tag) }}</span>
+                                           @endforeach
+                                       </div>
+                                   @endif
+
+                                   <!-- Meta -->
+                                   <div class="text-muted small">
+                                       <p><i class="fas fa-calendar-plus"></i> Created:
+                                           {{ $announcement->created_at->format('F j, Y g:i A') }}</p>
+
+                                       @if ($announcement->publication_date)
+                                           <p><i class="fas fa-calendar-check"></i> Published:
+                                               {{ \Carbon\Carbon::parse($announcement->publication_date)->format('F j, Y g:i A') }}
+                                           </p>
+                                       @endif
+
+                                       <p><i class="fas fa-users"></i> Audience:
+                                           {{ ucfirst($announcement->target_audience) }}</p>
+                                   </div>
+                               </div>
+
+                               <div class="modal-footer">
+                                   <button type="button" class="btn btn-secondary"
+                                       data-bs-dismiss="modal">Close</button>
+                               </div>
+
+                           </div>
+                       </div>
+                   </div>
+               @endforeach
 
 
                @foreach ($retrieveAnnouncements as $announcement)
@@ -173,7 +240,8 @@
                                    @method('PUT')
 
                                    <div class="modal-header">
-                                       <h5 class="modal-title" id="editAnnouncementModalLabel-{{ $announcement->id }}">
+                                       <h5 class="modal-title"
+                                           id="editAnnouncementModalLabel-{{ $announcement->id }}">
                                            <i class="fas fa-edit me-2"></i>Edit Announcement
                                        </h5>
                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
@@ -237,9 +305,9 @@
                                                    <option value="employers"
                                                        {{ $announcement->target_audience == 'employers' ? 'selected' : '' }}>
                                                        Employers</option>
-                                                   <option value="tesda_officers"
+                                                   {{-- <option value="tesda_officers"
                                                        {{ $announcement->target_audience == 'tesda_officers' ? 'selected' : '' }}>
-                                                       TESDA Officers</option>
+                                                       TESDA Officers</option> --}}
                                                </select>
                                            </div>
                                        </div>
@@ -259,12 +327,12 @@
                                                <option value="published"
                                                    {{ $announcement->status == 'published' ? 'selected' : '' }}>
                                                    Published</option>
-                                               <option value="scheduled"
+                                               {{-- <option value="scheduled"
                                                    {{ $announcement->status == 'scheduled' ? 'selected' : '' }}>
                                                    Scheduled</option>
                                                <option value="archived"
                                                    {{ $announcement->status == 'archived' ? 'selected' : '' }}>
-                                                   Archived</option>
+                                                   Archived</option> --}}
                                            </select>
                                        </div>
 

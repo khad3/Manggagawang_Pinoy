@@ -45,7 +45,7 @@
                                <option value="all">All Users</option>
                                <option value="applicants">Job Applicants Only</option>
                                <option value="employers">Employers Only</option>
-                               <option value="tesda_officers">TESDA Officers Only</option>
+                               {{-- <option value="tesda_officers">TESDA Officers Only</option> --}}
                            </select>
                        </div>
                        <div class="form-group">
@@ -59,8 +59,8 @@
                                <option value="">Select Status</option>
                                <option value="draft">Save as Draft</option>
                                <option value="published">Publish Immediately</option>
-                               <option value="scheduled">Schedule for Later</option>
-                               <option value="archived">archived</option>
+                               {{-- <option value="scheduled">Schedule for Later</option>
+                               <option value="archived">archived</option> --}}
                            </select>
                        </div>
                    </div>

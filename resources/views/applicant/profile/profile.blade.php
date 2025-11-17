@@ -236,10 +236,14 @@
                                         'Waiter/Waitress',
                                     ];
 
-                                    $currentPosition = $retrievedDecrytedProfile['work_background']['position'];
+                                    $currentPosition = $retrievedDecrytedProfile['work_background']['position'] ?? '';
+                                    $otherPosition =
+                                        $retrievedDecrytedProfile['work_background']['other_position'] ?? '';
+
+                                    // ✅ positional arguments only
                                     $displayPosition = in_array($currentPosition, $positions)
                                         ? $currentPosition
-                                        : decrypt($retrievedProfile->work_background->other_position);
+                                        : $otherPosition;
                                 @endphp
 
                                 {{ $displayPosition }}

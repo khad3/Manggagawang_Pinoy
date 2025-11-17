@@ -588,11 +588,23 @@ public function WorkBackground(Request $request)
  */
 private function safeDecrypt($value)
 {
-    try {
-        return $value ? Crypt::decrypt($value) : null;
-    } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
-        return $value; // return original if decryption fails
+    if (empty($value)) {
+        return null;
     }
+
+    // First, check if it looks like a valid encrypted string
+    // Laravel encrypted strings always start with "eyJ" after base64 encoding
+    if (is_string($value) && preg_match('/^eyJ/', $value)) {
+        try {
+            return Crypt::decryptString($value);
+        } catch (\Exception $e) {
+            // If decryption fails, fallback to original
+            return $value;
+        }
+    }
+
+    // If it’s not an encrypted string, just return it
+    return $value;
 }
 
 //Final step to register 

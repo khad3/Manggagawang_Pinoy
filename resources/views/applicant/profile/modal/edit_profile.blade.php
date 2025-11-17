@@ -86,56 +86,59 @@
                      <!-- Work Info -->
                      <div class="mb-3">
                          <label class="form-label">Position</label>
+
+                         @php
+                             $positions = [
+                                 'Automotive Servicing',
+                                 'Bartender',
+                                 'Barista',
+                                 'Beauty Care Specialist',
+                                 'Carpenter',
+                                 'Cook',
+                                 'Customer Service Representative',
+                                 'Dressmaker/Tailor',
+                                 'Electrician',
+                                 'Food and Beverage Server',
+                                 'Hairdresser',
+                                 'Heavy Equipment Operator',
+                                 'Housekeeping',
+                                 'Mason',
+                                 'Massage Therapist',
+                                 'Mechanic',
+                                 'Plumber',
+                                 'Security Guard',
+                                 'SMAW Welder',
+                                 'Tile Setter',
+                                 'Tourism Services Staff',
+                                 'Waiter/Waitress',
+                             ];
+
+                             $currentPosition = $retrievedDecrytedProfile['work_background']['position'] ?? '';
+                             $otherPosition = $retrievedDecrytedProfile['work_background']['other_position'] ?? '';
+                             $isOtherSelected = !in_array($currentPosition, $positions) || $currentPosition === 'Other';
+                         @endphp
+
                          <select class="form-select" id="position" name="position" required
                              onchange="toggleOtherPosition()">
-                             <option value="" disabled
-                                 {{ empty($retrievedDecrytedProfile['work_background']['position']) ? 'selected' : '' }}>
-                                 Select job position
-                             </option>
-                             @php
-                                 $positions = [
-                                     'Automotive Servicing',
-                                     'Bartender',
-                                     'Barista',
-                                     'Beauty Care Specialist',
-                                     'Carpenter',
-                                     'Cook',
-                                     'Customer Service Representative',
-                                     'Dressmaker/Tailor',
-                                     'Electrician',
-                                     'Food and Beverage Server',
-                                     'Hairdresser',
-                                     'Heavy Equipment Operator',
-                                     'Housekeeping',
-                                     'Mason',
-                                     'Massage Therapist',
-                                     'Mechanic',
-                                     'Plumber',
-                                     'Security Guard',
-                                     'SMAW Welder',
-                                     'Tile Setter',
-                                     'Tourism Services Staff',
-                                     'Waiter/Waitress',
-                                 ];
-                                 $currentPosition = $retrievedDecrytedProfile['work_background']['position'] ?? '';
-                             @endphp
+                             <option value="" disabled {{ empty($currentPosition) ? 'selected' : '' }}>Select job
+                                 position</option>
 
                              @foreach ($positions as $pos)
                                  <option value="{{ $pos }}" {{ $currentPosition === $pos ? 'selected' : '' }}>
-                                     {{ $pos }}</option>
+                                     {{ $pos }}
+                                 </option>
                              @endforeach
 
-                             <option value="Other" {{ !in_array($currentPosition, $positions) ? 'selected' : '' }}>
-                                 Other (Please specify)
+                             <option value="Other" {{ $isOtherSelected ? 'selected' : '' }}>Other (Please specify)
                              </option>
                          </select>
 
                          <!-- Other Position Input -->
                          <div class="mt-2" id="otherPositionContainer"
-                             style="{{ !in_array($currentPosition, $positions) ? 'display:block;' : 'display:none;' }}">
+                             style="{{ $isOtherSelected ? 'display:block;' : 'display:none;' }}">
                              <input type="text" class="form-control" id="other_position" name="other_position"
                                  placeholder="Please specify your position"
-                                 value="{{ !in_array($currentPosition, $positions) ? decrypt($retrievedProfile->work_background->other_position) : '' }}">
+                                 value="{{ $isOtherSelected ? $otherPosition : '' }}">
                          </div>
                      </div>
 
@@ -143,15 +146,21 @@
                          function toggleOtherPosition() {
                              const select = document.getElementById('position');
                              const otherContainer = document.getElementById('otherPositionContainer');
+                             const otherInput = document.getElementById('other_position');
+
                              if (select.value === 'Other') {
                                  otherContainer.style.display = 'block';
+                                 // Keep the value if it exists
+                                 if (!otherInput.value) {
+                                     otherInput.value = '';
+                                 }
                              } else {
                                  otherContainer.style.display = 'none';
-                                 document.getElementById('other_position').value = '';
+                                 otherInput.value = '';
                              }
                          }
 
-                         // Run on page load (to show Other if already selected)
+                         // Show Other input on page load if selected or has a value
                          document.addEventListener('DOMContentLoaded', toggleOtherPosition);
                      </script>
 
