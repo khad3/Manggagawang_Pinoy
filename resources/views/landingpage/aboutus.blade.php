@@ -148,7 +148,7 @@
                         accuracy. Expert in analyzing data, identifying issues,
                         and validating solutions to support informed decisions and high-quality outcomes.</p>
                     <div class="member-skills">
-                        <span class="skill-tag">ChatGPT</span>
+                        <span class="skill-tag">Artificial Intelligence</span>
                         <span class="skill-tag">Microsoft Workspace</span>
                         <span class="skill-tag">Test automation</span>
                         <span class="skill-tag">Perfomance Testing</span>

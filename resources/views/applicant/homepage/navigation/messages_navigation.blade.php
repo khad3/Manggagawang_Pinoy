@@ -1,4 +1,408 @@
-<!-- Messages Dropdown -->
+<!-- Messages Dropdown (friendlist UI replica) -->
+<style>
+    
+.messages-container {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+    background: #f8f9fa;
+    position: relative;
+}
+
+.messages-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.messages-container::-webkit-scrollbar-thumb {
+    background: #aaa;
+    border-radius: 3px;
+}
+
+.message {
+    margin-bottom: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message.sent {
+    align-items: flex-end;
+}
+
+.message.received {
+    align-items: flex-start;
+}
+
+.message-bubble {
+    max-width: 75%;
+    padding: 0.75rem 1rem;
+    border-radius: 20px;
+    word-wrap: break-word;
+    transition: all 0.2s ease;
+}
+
+.message.sent .message-bubble {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+.message.received .message-bubble {
+    background: white;
+    color: #333;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.message-time {
+    font-size: 0.75rem;
+    color: #999;
+    margin-top: 0.25rem;
+}
+
+.message img {
+    max-width: 250px;
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+}
+
+.message-input {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #eee;
+    background: white;
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.message-field {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.message-field:focus {
+    border-color: #764ba2;
+}
+
+.send-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    color: white;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.send-btn:hover {
+    transform: scale(1.1);
+}
+
+.btn-light {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    color: #666;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome-screen,
+.no-messages {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    color: #666;
+    opacity: 0.8;
+}
+
+.welcome-screen i,
+.no-messages i {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.preview-image-wrapper {
+    margin-top: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .chat-card {
+        flex-direction: column;
+    }
+
+    .friends-section {
+        position: absolute;
+        width: 100%;
+        z-index: 99;
+        background: #f0f2f5;
+        left: -100%;
+        transition: left 0.3s ease;
+        height: 100%;
+    }
+
+    .friends-section.show {
+        left: 0;
+    }
+
+    .friends-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .chat-header {
+        flex-wrap: wrap;
+        padding: 1rem;
+        gap: 10px;
+    }
+
+    .chat-section {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .message-input {
+        flex-direction: column;
+    }
+
+    .input-container {
+        flex-wrap: wrap;
+    }
+
+    .message-field {
+        width: 100%;
+    }
+
+    .send-btn {
+        width: 100%;
+        margin-top: 8px;
+    }
+
+    .back-to-friends {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: none;
+        border: none;
+        font-weight: bold;
+        font-size: 1rem;
+        cursor: pointer;
+        color: #764ba2;
+        margin-bottom: 1rem;
+    }
+}
+
+.chat-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    margin: 12px 0;
+    padding: 0 15px;
+}
+
+.chat-wrapper.sent {
+    justify-content: flex-end;
+}
+
+.bubble-container {
+    max-width: 75%;
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 12px 14px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.07);
+    position: relative;
+    overflow: hidden;
+    transition: 0.3s;
+}
+
+.chat-wrapper.sent .bubble-container {
+    background-color: #d1f5d3;
+    border-bottom-right-radius: 4px;
+}
+
+.chat-wrapper.received .bubble-container {
+    background-color: #f0f0f0;
+    border-bottom-left-radius: 4px;
+}
+
+.message-image img {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+}
+
+.message-text p {
+    margin: 0;
+    font-size: 15px;
+    color: #333;
+    word-break: break-word;
+}
+
+.timestamp {
+    font-size: 11px;
+    text-align: right;
+    color: #999;
+    margin-top: 6px;
+}
+
+/* Typing Indicator Styles */
+.typing-indicator {
+    display: none;
+    padding: 12px 16px;
+    margin: 8px 16px;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 20px;
+    border-left: 4px solid #007bff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.3s ease-out;
+}
+
+.typing-indicator .typing-text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.typing-dots {
+    display: flex;
+    gap: 3px;
+}
+
+.typing-dot {
+    width: 6px;
+    height: 6px;
+    background: #007bff;
+    border-radius: 50%;
+    animation: typingBounce 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(1) {
+    animation-delay: -0.32s;
+}
+.typing-dot:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes typingBounce {
+    0%,
+    80%,
+    100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Auto-refresh indicator */
+.refresh-indicator {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 123, 255, 0.9);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    z-index: 1000;
+    display: none;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.7;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.7;
+    }
+}
+
+/* Message container improvements */
+.messages-container {
+    position: relative;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    padding-bottom: 10px;
+}
+
+/* New message notification */
+.new-message-alert {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 10px 16px;
+    border-radius: 25px;
+    font-size: 14px;
+    cursor: pointer;
+    z-index: 1000;
+    display: none;
+    animation: slideInRight 0.3s ease-out;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+</style>
 <div class="nav-dropdown">
     <button class="nav-icon" onclick="toggleDropdown('messagesDropdown')" title="messages">
         <i class="bi bi-chat-dots"></i>
@@ -14,103 +418,98 @@
         @endif
     </button>
 
-
     <div class="dropdown-menu" id="messagesDropdown">
         <div class="dropdown-header">
             <h6>Messages</h6>
-            <button class="mark-all-read" onclick="markAllAsRead('messages')">Mark all as
-                read</button>
+            <button class="mark-all-read" onclick="markAllAsRead('messages')">Mark all as read</button>
         </div>
 
-        <div class="dropdown-content">
-            <div class="messages-list" id="dropdownMessagesList">
+        <div class="messages-list" id="dropdownMessagesList" style="max-height: 450px; overflow-y: auto;">
+            @php
+                $groupedMessages = $messages
+                    ->groupBy('employer_id')
+                    ->map(function ($employerMessages) {
+                        return $employerMessages->sortByDesc('created_at');
+                    })
+                    ->sortByDesc(function ($employerMessages) {
+                        return $employerMessages->first()->created_at;
+                    });
+            @endphp
+
+            @forelse($groupedMessages as $employerId => $employerMessages)
                 @php
-                    // Sort employers by latest message
-                    $groupedMessages = $messages
-                        ->groupBy('employer_id')
-                        ->map(function ($employerMessages) {
-                            return $employerMessages->sortByDesc('created_at');
-                        })
-                        ->sortByDesc(function ($employerMessages) {
-                            return $employerMessages->first()->created_at;
-                        });
+                    $lastMessage = $employerMessages->first();
+                    $employer = $lastMessage->employer;
+                    $company = $employer->addressCompany ?? null;
+                    $unreadCount = $employerMessages
+                        ->where('sender_type', 'employer')
+                        ->where('is_read', 0)
+                        ->count();
+                    $initials =
+                        $company && !$company->company_logo
+                            ? strtoupper(substr($company->company_name ?? 'C', 0, 2))
+                            : '';
                 @endphp
 
-                @forelse($groupedMessages as $employerId => $employerMessages)
-                    @php
-                        $lastMessage = $employerMessages->first();
-                        $employer = $lastMessage->employer;
-                        $company = $employer->addressCompany ?? null;
-                        $unreadCount = $employerMessages
-                            ->where('sender_type', 'employer')
-                            ->where('is_read', 0)
-                            ->count();
-                        $initials =
-                            $company && !$company->company_logo
-                                ? strtoupper(substr($company->company_name ?? 'C', 0, 2))
-                                : '';
-                    @endphp
+                <div class="employer-item {{ $unreadCount > 0 ? 'unread' : '' }}"
+                    data-employer-id="{{ $employerId }}" data-unread-count="{{ $unreadCount }}"
+                    onclick="openChatWithEmployer({{ $employerId }}, '{{ addslashes($employer->personal_info->first_name ?? 'N/A') }}', '{{ addslashes($employer->personal_info->last_name ?? 'N/A') }}', '{{ addslashes($company->company_name ?? 'Company') }}')">
 
-                    <div class="employer-item {{ $unreadCount > 0 ? 'unread' : '' }}"
-                        data-employer-id="{{ $employerId }}" data-unread-count="{{ $unreadCount }}"
-                        onclick="openChatWithEmployer({{ $employerId }}, '{{ addslashes($employer->personal_info->first_name ?? 'N/A') }}', '{{ addslashes($employer->personal_info->last_name ?? 'N/A') }}', '{{ addslashes($company->company_name ?? 'Company') }}')">
+                    @if ($unreadCount > 0)
+                        <div class="unread-indicator"></div>
+                    @endif
 
-                        {{-- Unread indicator --}}
-                        @if ($unreadCount > 0)
-                            <div class="unread-indicator"></div>
+                    <div class="message-avatar-wrapper">
+                        @if ($company && $company->company_logo)
+                            <img src="{{ asset('storage/' . $company->company_logo) }}"
+                                alt="{{ $company->company_name ?? 'Company Logo' }}" class="message-avatar-img">
+                        @else
+                            <div class="message-avatar-initials">{{ $initials ?: 'C' }}</div>
                         @endif
+                    </div>
 
-                        {{-- Avatar --}}
-                        <div class="message-avatar-wrapper">
-                            @if ($company && $company->company_logo)
-                                <img src="{{ asset('storage/' . $company->company_logo) }}"
-                                    alt="{{ $company->company_name ?? 'Company Logo' }}" class="message-avatar-img">
-                            @else
-                                <div class="message-avatar-initials">{{ $initials ?: 'C' }}</div>
-                            @endif
-                        </div>
-
-                        {{-- Message content --}}
-                        <div class="message-content">
-                            <div class="message-header">
+                    <div class="message-content">
+                        <div class="message-header">
                                 <span class="sender-name">{{ $employer->personal_info->first_name ?? 'N/A' }} - </span>
                                 <span class="company-name">{{ $company->company_name ?? 'Company' }}</span>
-                                <span class="message-time">{{ $lastMessage->created_at->diffForHumans() }}</span>
+                            <span class="message-time">{{ $lastMessage->created_at->diffForHumans() }}</span>
                                 @if ($unreadCount > 0)
                                     <span class="unread-count">{{ $unreadCount }}</span>
                                 @endif
-                            </div>
-
-                            <div class="message-preview">
-                                {{ Str::limit($lastMessage->message, 50) }}
-                            </div>
                         </div>
-                    </div>
-                @empty
-                    <div class="no-messages text-center">
-                        <i class="bi bi-chat-dots fs-2 mb-2"></i>
-                        <p class="mb-0">No conversations yet</p>
-                    </div>
-                @endforelse
-            </div>
 
-            <div class="dropdown-footer text-center">
-                <a href="#" class="view-all-link" onclick="openAllChats()">
-                    <i class="bi bi-arrow-right"></i> Open Chat System
-                </a>
-            </div>
+                        <div class="company-name">{{ $company->company_name ?? 'Company' }}</div>
+
+                        <div class="message-preview">
+                            {{ Str::limit($lastMessage->message, 50) }}
+                        </div>
+
+                        @if ($unreadCount > 0)
+                            <span class="unread-count">{{ $unreadCount }}</span>
+                        @endif
+                    </div>
+                </div>
+            @empty
+                <div class="no-messages text-center p-4">
+                    <i class="bi bi-chat-dots fs-2 mb-2"></i>
+                    <p class="mb-0">No conversations yet</p>
+                </div>
+            @endforelse
         </div>
 
-
+        <div class="dropdown-footer text-center">
+            <a href="#" class="view-all-link" onclick="openAllChats()">
+                <i class="bi bi-arrow-right"></i> Open Chat System
+            </a>
+        </div>
     </div>
 </div>
 
-<!-- Professional Chat Modal/System -->
+<!-- Chat Modal (friendlist replica) -->
 <div id="chatModal" class="chat-modal" style="display: none;">
     <div class="chat-modal-overlay" onclick="closeChatModal()"></div>
     <div class="chat-modal-content">
         <div class="chat-container">
-            <!-- Enhanced Employers Sidebar -->
             <div class="employers-sidebar">
                 <div class="sidebar-header">
                     <div class="header-content">
@@ -125,14 +524,12 @@
                 <div class="search-container">
                     <div class="search-input-wrapper">
                         <i class="bi bi-search"></i>
-                        <input type="text" placeholder="Search conversations..." class="search-input"
-                            id="searchInput">
+                        <input type="text" placeholder="Search conversations..." class="search-input" id="searchInput">
                     </div>
                 </div>
 
                 <div class="employers-list" id="employersList">
                     @php
-                        // Group messages by employer and sort each group by latest message
                         $groupedMessages = $messages
                             ->groupBy('employer_id')
                             ->map(function ($employerMessages) {
@@ -162,7 +559,6 @@
                             data-employer-id="{{ $employerId }}" data-unread-count="{{ $unreadCount }}"
                             onclick="loadConversation({{ $employerId }})">
 
-                            {{-- Avatar --}}
                             <div class="employer-avatar-wrapper">
                                 @if ($company && $company->company_logo)
                                     <img src="{{ asset('storage/' . $company->company_logo) }}"
@@ -179,7 +575,6 @@
                                 @endif
                             </div>
 
-                            {{-- Employer Info --}}
                             <div class="employer-info">
                                 <div class="employer-name">
                                     {{ $employer->personal_info->first_name ?? 'N/A' }}
@@ -201,18 +596,15 @@
                             @endif
                         </div>
                     @empty
-                        <div class="no-employers text-center">
+                        <div class="no-employers text-center p-4">
                             <i class="bi bi-chat-dots fs-2 mb-2"></i>
                             <p>No conversations yet</p>
                         </div>
                     @endforelse
                 </div>
-
             </div>
 
-            <!-- Enhanced Chat Area -->
             <div class="chat-area">
-                <!-- Professional Chat Header -->
                 <div class="chat-header" id="chatHeader" style="display: none;">
                     <button class="back-to-list-btn" id="backToListBtn" onclick="showEmployersList()">
                         <i class="bi bi-arrow-left"></i>
@@ -225,7 +617,6 @@
                             <h3 id="currentEmployerName">Select an employer</h3>
                             <p id="currentCompanyName">to start chatting</p>
                             @php
-                                // Check if $employerId is set and not null
                                 $is_online = isset($employerId)
                                     ? \App\Models\Employer\AccountInformationmodel::where('id', $employerId)->value(
                                         'is_online',
@@ -240,61 +631,70 @@
                             @else
                                 <span class="offline-status-text">No Employer</span>
                             @endif
-
-
                         </div>
                     </div>
                 </div>
 
-                <!-- Messages Container -->
-                <div class="messages-container" id="messagesContainer">
-                    <div class="no-conversation">
-                        <div class="no-conversation-icon">
-                            <i class="bi bi-chat-square-dots"></i>
+                <!-- Messages Container - FRIENDLIST REPLICA with Backend Integration -->
+                <div class="messages-container" id="messagesContainer" style="display: none;">
+                    <button id="scrollUpBtn" class="btn btn-light position-absolute"
+                        style="top: 1rem; right: 1rem; z-index: 10;" onclick="scrollToTop()" title="Scroll to top">
+                        <i class="fas fa-arrow-up"></i>
+                    </button>
+
+                    <div id="messagesWrapper">
+                        <!-- Messages will be injected here by JavaScript -->
+                    </div>
+
+                    <!-- Typing Indicator -->
+                    <div id="typingIndicator" class="typing-indicator" style="display:none;">
+                        <div class="typing-text">
+                            <span id="typingUsername">Employer</span> is typing
+                            <div class="typing-dots">
+                                <div class="typing-dot"></div>
+                                <div class="typing-dot"></div>
+                                <div class="typing-dot"></div>
+                            </div>
                         </div>
-                        <h3>Select a conversation</h3>
-                        <p>Choose an employer from the list to view your messages</p>
                     </div>
                 </div>
-
 
                 <div class="reply-area" id="replyArea" style="display: none;">
                     <form id="replyForm" class="reply-container">
                         @csrf
                         <input type="hidden" name="employer_id" id="replyEmployerId">
 
-                        <!-- Attachment Preview Container -->
                         <div id="attachmentPreview" class="attachment-preview"></div>
 
-                        <div class="message-input-wrapper">
-                            <!-- File Upload -->
-                            <label class="attachment-btn" for="attachment" title="Attach file">
-                                <i class="bi bi-paperclip"></i>
-                            </label>
-                            <input type="file" name="attachment" id="attachment" class="d-none"
-                                accept="image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+                        <div class="message-input">
+                            <div class="input-container">
+                                <!-- File Input (Hidden) -->
+                                <input type="file" id="photoInput" accept="image/*" name="photo" style="display: none;">
 
-                            <!-- Message -->
-                            <textarea class="reply-input" id="replyInput" name="message" placeholder="Type your message..." rows="2"></textarea>
+                                <!-- Upload Button -->
+                                <button type="button" class="btn btn-light" onclick="document.getElementById('photoInput').click()" title="Attach Photo">
+                                    <i class="fas fa-paperclip"></i>
+                                </button>
 
-                            <!-- Send Button -->
-                            <button type="submit" class="send-btn" title="Send message">
-                                <i class="bi bi-send"></i>
-                            </button>
+                                <!-- Message Text Field -->
+                                <input type="text" class="message-field" placeholder="Type your message..." name="message" id="messageInput">
+
+                                <!-- Send Button -->
+                                <button type="submit" class="send-btn">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+
+                            <!-- Preview Area -->
+                            <div id="photoPreview" class="mt-2"></div>
                         </div>
                     </form>
-
-                    <div class="typing-indicator" id="typingIndicator" style="display: none;">
-                        <span>Employer is typing...</span>
-                    </div>
                 </div>
-
-
-
             </div>
         </div>
     </div>
 </div>
+
 
 
 
@@ -432,11 +832,12 @@
 
     function closeChatModal() {
         document.getElementById('chatModal').style.display = 'none';
+        document.getElementById('messagesContainer').style.display = 'none'; // Hide container
         document.body.style.overflow = 'auto';
         isChatModalOpen = false;
         isActivelyViewingMessages = false;
         currentEmployerId = null;
-        hasMarkedAsReadForCurrentEmployer = false; // Reset flag
+        hasMarkedAsReadForCurrentEmployer = false;
 
         if (messageReadTimer) {
             clearTimeout(messageReadTimer);
@@ -445,15 +846,6 @@
 
         document.getElementById('chatHeader').style.display = 'none';
         document.getElementById('replyArea').style.display = 'none';
-        document.getElementById('messagesContainer').innerHTML = `
-        <div class="no-conversation">
-            <div class="no-conversation-icon">
-                <i class="bi bi-chat-square-dots"></i>
-            </div>
-            <h3>Select a conversation</h3>
-            <p>Choose an employer from the list to view your messages</p>
-        </div>
-    `;
 
         document.querySelectorAll('.employer-list-item').forEach(item => {
             item.classList.remove('active');
@@ -466,7 +858,6 @@
             messageReadTimer = null;
         }
 
-        // Reset flags when switching conversations
         currentEmployerId = employerId;
         isActivelyViewingMessages = false;
         hasMarkedAsReadForCurrentEmployer = false;
@@ -474,6 +865,7 @@
         const replyEmployerInput = document.getElementById('replyEmployerId');
         replyEmployerInput.value = employerId;
 
+        // Highlight active employer
         document.querySelectorAll('.employer-list-item').forEach(item => {
             item.classList.remove('active');
         });
@@ -518,8 +910,8 @@
 
         if (employer.address_company?.company_logo) {
             avatarElement.innerHTML = `<img src="/storage/${employer.address_company.company_logo}" 
-    alt="${employer.address_company.company_name}" 
-    style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+                alt="${employer.address_company.company_name}" 
+                style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
         } else {
             avatarElement.textContent = (employer.address_company?.company_name || 'C').charAt(0).toUpperCase();
         }
@@ -554,25 +946,29 @@
     // ========================================
     function displayMessages(messages) {
         const container = document.getElementById('messagesContainer');
+        const wrapper = document.getElementById('messagesWrapper');
+
+        // Show the container when displaying messages
+        container.style.display = 'block';
 
         if (messages.length === 0) {
-            container.innerHTML = `
-            <div class="no-conversation">
-                <div class="no-conversation-icon">
-                    <i class="bi bi-chat-square"></i>
+            wrapper.innerHTML = `
+                <div class="no-conversation">
+                    <div class="no-conversation-icon">
+                        <i class="bi bi-chat-square"></i>
+                    </div>
+                    <h3>No messages yet</h3>
+                    <p>Start the conversation by sending a message</p>
                 </div>
-                <h3>No messages yet</h3>
-                <p>Start the conversation by sending a message</p>
-            </div>
-        `;
+            `;
             return;
         }
 
         messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
-        container.innerHTML = messages.map(msg => {
+        wrapper.innerHTML = messages.map(msg => {
             const isFromEmployer = msg.sender_type === 'employer';
-            const bubbleClass = isFromEmployer ? 'from-employer' : 'from-applicant';
+            const bubbleClass = isFromEmployer ? 'received' : 'sent';
 
             const hasValidText = msg.message &&
                 msg.message.trim() !== '' &&
@@ -588,34 +984,47 @@
 
             let messageTextHtml = '';
             if (hasValidText) {
-                messageTextHtml = `<div class="message-text">${msg.message}</div>`;
+                messageTextHtml = `<div class="message-text"><p>${escapeHtml(msg.message)}</p></div>`;
             }
 
             let attachmentHtml = '';
             if (hasAttachment) {
                 attachmentHtml = `
-                <div class="message-attachment mt-2">
-                    <img src="/storage/${msg.attachment}" 
-                         alt="Attachment" 
-                         class="img-fluid rounded-2 shadow-sm">
-                </div>
-            `;
+                    <div class="message-image">
+                        <img src="/storage/${encodeURI(msg.attachment)}" 
+                             alt="Attachment"
+                             class="img-fluid rounded"
+                             style="max-width: 200px; cursor: pointer;"
+                             onclick="previewImage('/storage/${encodeURI(msg.attachment)}')">
+                    </div>
+                `;
             }
 
             const timestamp = formatMessageTime(msg.created_at);
             const fullDate = new Date(msg.created_at).toLocaleString();
 
+            let statusHtml = '';
+            if (!isFromEmployer) {
+                // Only show for sent messages
+                if (msg.is_read === 1 || msg.is_read === true) {
+                    statusHtml = `<span class="text-success ms-2"><i class="fas fa-check-double"></i> Seen</span>`;
+                } else {
+                    statusHtml = `<span class="text-muted ms-2"><i class="fas fa-check"></i> Delivered</span>`;
+                }
+            }
+
             return `
-            <div class="message-bubble ${bubbleClass}" data-message-id="${msg.id}">
-                <div class="message-content">
-                    ${messageTextHtml}
-                    ${attachmentHtml}
-                    <div class="message-timestamp ${bubbleClass}" title="${fullDate}">
-                        ${timestamp}
+                <div class="chat-wrapper ${bubbleClass}" data-message-id="${msg.id}">
+                    <div class="bubble-container">
+                        ${messageTextHtml}
+                        ${attachmentHtml}
+                        <div class="timestamp">
+                            ${timestamp}
+                            ${statusHtml}
+                        </div>
                     </div>
                 </div>
-            </div>
-        `;
+            `;
         }).join('');
 
         if (isUserAtBottom) {
@@ -951,7 +1360,7 @@
                         ${lastMessage.message ? lastMessage.message.substring(0, 30) : 'Attachment'}
                     </div>
                     <div class="last-message-time">
-                        ${formatMessageTime(lastMessage.created_at)}
+                        ${lastMessage.created_at}
                     </div>
                 </div>
 
@@ -1163,47 +1572,137 @@
     // ========================================
     document.addEventListener('DOMContentLoaded', function() {
         const replyForm = document.getElementById('replyForm');
+        const messageInput = document.getElementById('messageInput');
+        const photoInput = document.getElementById('photoInput');
+        const photoPreview = document.getElementById('photoPreview');
 
+        if (!replyForm) {
+            console.error('Reply form not found');
+            return;
+        }
+
+        // Handle photo preview
+        if (photoInput) {
+            photoInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                photoPreview.innerHTML = '';
+
+                if (!file) return;
+
+                const fileType = file.type;
+                const previewItem = document.createElement('div');
+                previewItem.classList.add('preview-item');
+                previewItem.style.position = 'relative';
+                previewItem.style.display = 'inline-block';
+                previewItem.style.marginBottom = '10px';
+
+                const removeBtn = document.createElement('button');
+                removeBtn.innerHTML = '&times;';
+                removeBtn.classList.add('remove-btn');
+                removeBtn.type = 'button';
+                removeBtn.style.position = 'absolute';
+                removeBtn.style.top = '5px';
+                removeBtn.style.right = '5px';
+                removeBtn.style.background = '#ff6b6b';
+                removeBtn.style.color = 'white';
+                removeBtn.style.border = 'none';
+                removeBtn.style.borderRadius = '50%';
+                removeBtn.style.width = '25px';
+                removeBtn.style.height = '25px';
+                removeBtn.style.cursor = 'pointer';
+                removeBtn.style.fontSize = '16px';
+                removeBtn.style.padding = '0';
+
+                removeBtn.onclick = () => {
+                    photoPreview.innerHTML = '';
+                    photoInput.value = '';
+                };
+
+                previewItem.appendChild(removeBtn);
+
+                if (fileType.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    img.style.maxWidth = '150px';
+                    img.style.maxHeight = '150px';
+                    img.style.borderRadius = '8px';
+                    img.style.objectFit = 'cover';
+                    previewItem.appendChild(img);
+                } else {
+                    const fileName = document.createElement('div');
+                    fileName.classList.add('file-name');
+                    fileName.textContent = file.name;
+                    fileName.style.padding = '10px';
+                    fileName.style.background = '#f0f0f0';
+                    fileName.style.borderRadius = '8px';
+                    previewItem.appendChild(fileName);
+                }
+
+                photoPreview.appendChild(previewItem);
+            });
+        }
+
+        // Handle form submission
         replyForm.addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            let messageText = document.getElementById('replyInput').value.trim();
-            const attachmentFile = document.getElementById('attachment').files[0];
+            const employerId = document.getElementById('replyEmployerId').value;
+            let messageText = messageInput.value.trim();
+            const attachmentFile = photoInput.files[0];
 
             if (!messageText && !attachmentFile) {
+                console.warn('⚠️ No message or attachment to send');
                 return;
             }
 
-            // Create FormData and automatically filter profanity from the message
-            const formData = new FormData(replyForm);
-
+            // Create FormData
+            const formData = new FormData();
+            formData.append('employer_id', employerId);
+            
+            // Auto-filter profanity from message
             if (messageText) {
                 const filteredMessage = filterProfanity(messageText);
-                formData.set('message', filteredMessage);
+                formData.append('message', filteredMessage);
+            }
+
+            // Add attachment if exists
+            if (attachmentFile) {
+                formData.append('attachment', attachmentFile);
+            }
+
+            // Add CSRF token
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (csrfToken) {
+                formData.append('_token', csrfToken);
             }
 
             // Clear input and preview
-            document.getElementById('replyInput').value = '';
-            document.getElementById('attachment').value = '';
-            document.getElementById('attachmentPreview').innerHTML = '';
+            messageInput.value = '';
+            photoInput.value = '';
+            photoPreview.innerHTML = '';
 
             try {
-                const response = await fetch(
-                    '{{ route('applicant.sendmessageemployer.store') }}', {
-                        method: 'POST',
-                        body: formData
-                    });
+                const response = await fetch('{{ route('applicant.sendmessageemployer.store') }}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken
+                    }
+                });
 
                 const result = await response.json();
 
                 if (result.success) {
                     console.log('✅ Message sent successfully');
-                    setTimeout(() => refreshMessages(), 200);
+                    // Refresh messages after a short delay
+                    setTimeout(() => refreshMessages(), 300);
                 } else {
-                    console.error('❌ Failed to send message');
+                    console.error('❌ Failed to send message:', result.message);
+                    messageInput.value = messageText; // Restore message on error
                 }
             } catch (error) {
-                console.error('❌ Error:', error);
+                console.error('❌ Error sending message:', error);
+                messageInput.value = messageText; // Restore message on error
             }
         });
 
@@ -1221,19 +1720,15 @@
             isPageVisible = !document.hidden;
 
             if (!isPageVisible) {
-                // Page hidden - stop marking as read
                 isActivelyViewingMessages = false;
                 if (messageReadTimer) {
                     clearTimeout(messageReadTimer);
                     messageReadTimer = null;
                 }
             } else if (previousVisibility === false && isPageVisible) {
-                // Page became visible again - restart timer only if not already marked
-                if (isUserAtBottom && currentEmployerId && isChatModalOpen && !
-                    hasMarkedAsReadForCurrentEmployer) {
+                if (isUserAtBottom && currentEmployerId && isChatModalOpen && !hasMarkedAsReadForCurrentEmployer) {
                     messageReadTimer = setTimeout(() => {
-                        if (isUserAtBottom && isChatModalOpen && isPageVisible && !
-                            hasMarkedAsReadForCurrentEmployer) {
+                        if (isUserAtBottom && isChatModalOpen && isPageVisible && !hasMarkedAsReadForCurrentEmployer) {
                             isActivelyViewingMessages = true;
                             markMessagesAsRead(currentEmployerId);
                         }
