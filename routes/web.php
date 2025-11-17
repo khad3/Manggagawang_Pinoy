@@ -81,10 +81,10 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
     //Read messages of the employer as read
     Route::put('read-message/{id}', [ApplicantController::class, 'ReadMessage'])->name('applicant.readmessage.store');
     //Check typing indicator ng employer
-    Route::post('start-typing/{employerId}', [SendMessageEmployerController::class, 'startTyping'])->name('applicant.typing.start');
-    Route::post('stop-typing/{employerId}', [SendMessageEmployerController::class, 'stopTyping'])->name('applicant.typing.stop');
-    Route::get('check-typing/{employerId}', [SendMessageEmployerController::class, 'checkTyping'])->name('applicant.check.typing');
-    Route::get('get-unread-counts', [SendMessageEmployerController::class, 'getUnreadCounts'])->name('applicant.get.unread.counts');
+    Route::post('start-typing-employer/{employerId}', [SendMessageEmployerController::class, 'startTyping'])->name('applicant.typing.start');
+    Route::post('stop-typing-employer/{employerId}', [SendMessageEmployerController::class, 'stopTyping'])->name('applicant.typing.stop');
+    Route::get('check-typing-employer/{employerId}', [SendMessageEmployerController::class, 'checkTyping'])->name('applicant.check.typing');
+    Route::get('get-unread-counts-employer', [SendMessageEmployerController::class, 'getUnreadCounts'])->name('applicant.get.unread.counts');
 
 
     Route::get('info', [ApplicantController::class, 'ShowPersonalInfoForm'])->name('info.personal');
