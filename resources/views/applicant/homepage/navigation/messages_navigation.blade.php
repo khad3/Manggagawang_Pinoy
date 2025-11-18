@@ -147,6 +147,45 @@
         font-size: 2.5rem;
         margin-bottom: 1rem;
     }
+<<<<<<< HEAD
+    /* Slide-in messages container */
+#messagesContainer {
+    position: fixed;
+    top: 0;
+    right: -100%; /* Start hidden off-screen */
+    width: 400px; /* Adjust width */
+    height: 100%;
+    background: #fff;
+    box-shadow: -3px 0 10px rgba(0,0,0,0.2);
+    z-index: 9999;
+    overflow-y: auto;
+    transition: right 0.3s ease-in-out; /* Smooth slide */
+}
+
+/* When active, slide in */
+#messagesContainer.active {
+    right: 0;
+}
+
+/* Overlay behind messages panel */
+#chatOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.3);
+    z-index: 9998;
+}
+
+#chatOverlay.active {
+    display: block;
+}
+
+}
+=======
+>>>>>>> ecf8f826ac0160db88ea2666f94371c3e4294335
 
     .preview-image-wrapper {
         margin-top: 0.5rem;
@@ -804,6 +843,8 @@
     // ========================================
     let currentEmployerId = null;
     let allMessages = @json($messages);
+    // ensure we have the applicant id available to JS to determine sender/receiver
+    const applicantId = @json($applicantID ?? auth()->guard('applicant')->id() ?? auth()->id() ?? null);
     let lastMessageCount = 0;
     let isUserAtBottom = true;
     let isPageVisible = true;
@@ -959,7 +1000,7 @@
         // Show the container when displaying messages
         container.style.display = 'block';
 
-        if (messages.length === 0) {
+        if (!messages || messages.length === 0) {
             wrapper.innerHTML = `
                 <div class="no-conversation">
                     <div class="no-conversation-icon">
@@ -975,8 +1016,12 @@
         messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
         wrapper.innerHTML = messages.map(msg => {
-            const isFromEmployer = msg.sender_type === 'employer';
-            const bubbleClass = isFromEmployer ? 'received' : 'sent';
+            // determine sent/received using sender_id primarily (falls back to sender_type)
+            const isSent = (msg.sender_id !== undefined && msg.sender_id !== null)
+                ? (String(msg.sender_id) === String(applicantId))
+                : (msg.sender_type === 'applicant');
+
+            const bubbleClass = isSent ? 'sent' : 'received';
 
             const hasValidText = msg.message &&
                 msg.message.trim() !== '' &&
@@ -1009,11 +1054,10 @@
             }
 
             const timestamp = formatMessageTime(msg.created_at);
-            const fullDate = new Date(msg.created_at).toLocaleString();
 
             let statusHtml = '';
-            if (!isFromEmployer) {
-                // Only show for sent messages
+            if (isSent) {
+                // Only show delivery/seen for messages sent by current applicant
                 if (msg.is_read === 1 || msg.is_read === true) {
                     statusHtml =
                         `<span class="text-success ms-2"><i class="fas fa-check-double"></i> Seen</span>`;
@@ -1163,9 +1207,14 @@
                     hasNewMessages = true;
 
                     const messageDiv = document.createElement('div');
-                    const bubbleClass = msg.sender_type === 'applicant' ? 'from-applicant' :
-                        'from-employer';
-                    messageDiv.className = `message-bubble ${bubbleClass}`;
+
+                    // determine sent/received by comparing sender_id to applicantId (fallback to sender_type)
+                    const isSent = (msg.sender_id !== undefined && msg.sender_id !== null)
+                        ? (String(msg.sender_id) === String(applicantId))
+                        : (msg.sender_type === 'applicant');
+
+                    // use friendlist class names 'sent' / 'received' for positioning
+                    messageDiv.className = `chat-wrapper ${isSent ? 'sent' : 'received'}`;
                     messageDiv.setAttribute('data-message-id', msg.id);
 
                     let contentHtml = '';
@@ -1175,15 +1224,24 @@
                     }
 
                     if (hasAttachment) {
-                        contentHtml += `<div class="message-attachment mt-2">
-                       <img src="/storage/${encodeURI(msg.attachment)}" class="img-fluid rounded-2 shadow-sm" alt="attachment">
-                   </div>`;
+                        contentHtml += `<div class="message-image mt-2">
+                               <img src="/storage/${encodeURI(msg.attachment)}" class="img-fluid rounded shadow-sm" alt="attachment">
+                           </div>`;
                     }
 
-                    contentHtml +=
-                        `<div class="message-timestamp ${msg.sender_type}">${escapeHtml(msg.time || 'Just now')}</div>`;
+                    // show timestamp and seen/delivered only for sent messages
+                    let statusHtml = '';
+                    if (isSent) {
+                        if (msg.is_read === 1 || msg.is_read === true) {
+                            statusHtml = `<span class="text-success ms-2"><i class="fas fa-check-double"></i> Seen</span>`;
+                        } else {
+                            statusHtml = `<span class="text-muted ms-2"><i class="fas fa-check"></i> Delivered</span>`;
+                        }
+                    }
 
-                    messageDiv.innerHTML = `<div class="message-content">${contentHtml}</div>`;
+                    contentHtml += `<div class="timestamp">${escapeHtml(msg.time || formatMessageTime(msg.created_at))} ${statusHtml}</div>`;
+
+                    messageDiv.innerHTML = `<div class="bubble-container">${contentHtml}</div>`;
                     container.appendChild(messageDiv);
                 });
 
@@ -1221,6 +1279,44 @@
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#039;');
     }
+function loadConversation(employerId) {
+    currentEmployerId = employerId;
+
+    // Highlight active employer
+    document.querySelectorAll('.employer-list-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    const activeItem = document.querySelector(`.employer-list-item[data-employer-id="${employerId}"]`);
+    if (activeItem) activeItem.classList.add('active');
+
+    // Load messages normally
+    const employerMessages = messagesByEmployer[employerId] || [];
+    displayMessages(employerMessages);
+
+    // Slide in messages container
+    const messagesContainer = document.getElementById('messagesContainer');
+    const overlay = document.getElementById('chatOverlay');
+    messagesContainer.classList.add('active');
+    overlay.classList.add('active');
+
+    // Show reply area
+    document.getElementById('replyArea').style.display = 'block';
+
+    // Scroll to bottom
+    setTimeout(() => scrollToBottom(), 100);
+}
+
+function closeChatPanel() {
+    const messagesContainer = document.getElementById('messagesContainer');
+    const overlay = document.getElementById('chatOverlay');
+
+    messagesContainer.classList.remove('active');
+    overlay.classList.remove('active');
+
+    // Optionally reset state
+    currentEmployerId = null;
+    isActivelyViewingMessages = false;
+}
 
     // ========================================
     // UPDATE UI FUNCTIONS
