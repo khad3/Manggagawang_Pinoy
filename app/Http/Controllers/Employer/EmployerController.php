@@ -1875,7 +1875,6 @@ public function ViewArDetails($id)
     }
 
     //retrieve certifications approved
-    $retrievedcertifications =\App\Models\Applicant\TesdaUploadCertificationModel::where('applicant_id', $id)->where('status', 'approved')->get();
 
     // Load applicant portfolio and decrypt only text fields
     $retrievedPortfolio = ApplicantPortfolioModel::with(['personalInfo', 'workExperience'])
@@ -1890,8 +1889,7 @@ public function ViewArDetails($id)
     return view('applicant.callingcard.arcallingcard', compact(
         'retrievedProfile',
         'retrievedPortfolio',
-        'retrievedYoutube',
-        'retrievedcertifications'
+        'retrievedYoutube'
     ));
 }
 

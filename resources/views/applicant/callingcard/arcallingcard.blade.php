@@ -117,12 +117,12 @@
                 </a-text>
 
                 <!-- Work -->
-                <a-text value="{{ strtoupper($retrievedProfile->work_background->position) }}" width="2.8"
+                <a-text value="{{ strtoupper($retrievedProfile->work_background->position ?? '') }}" width="2.8"
                     color="#ffffff" align="left" position="0 -0.5 -0.5"font="mozillavr"></a-text>
 
-                <!--- tesda certification -->
+                {{-- <!--- tesda certification -->
                 <a-text value="{{ strtoupper($retrievedcertification->certifications->certification_program) }}"
-                    width="2.8" color="#ffffff" align="left" position="0 -0.5 -0.5"font="mozillavr"></a-text>
+                    width="2.8" color="#ffffff" align="left" position="0 -0.5 -0.5"font="mozillavr"></a-text> --}}
 
                 <!-- Portfolio -->
                 <a-entity position="0.7 -1.1 -0.55">
