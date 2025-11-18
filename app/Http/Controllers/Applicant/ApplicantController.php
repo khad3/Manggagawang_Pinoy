@@ -1168,10 +1168,15 @@ private function safe_decrypt($value)
 {
     try {
         return $value ? Crypt::decrypt($value) : null;
-    } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
-        return $value; // return original if decryption fails
+    } catch (\Exception $e) {
+        try {
+            return $value ? Crypt::decryptString($value) : null;
+        } catch (\Exception $e) {
+            return $value; // return original if still fails
+        }
     }
 }
+
 
 //View the calling carrd
 public function ViewCallingCard() {

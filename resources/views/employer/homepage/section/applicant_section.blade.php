@@ -312,7 +312,7 @@
                                         @if ($applicant->personal_info)
                                             <a href="{{ route('employer.applicantsprofile.display', $applicant->id) }}"
                                                 class="action-btn mobile-action" title="View Profile">
-                                                <i class="fas fa-eye"></i> <span class="ms-2">View</span>
+                                                <i class="fas fa-eye"></i>
                                             </a>
 
                                             <a href="{{ route('employer.viewapplicantardetails.display', $applicant->id) }}"
@@ -331,7 +331,7 @@
                                             data-applicant-id="{{ $applicant->id }}"
                                             data-applicant-name="{{ $applicant->personal_info->first_name ?? '' }} {{ $applicant->personal_info->last_name ?? '' }}"
                                             data-applicant-email="{{ $applicant->email ?? '' }}">
-                                            <i class="fas fa-envelope"></i> <span class="ms-2">Message</span>
+                                            <i class="fas fa-envelope"></i>
                                         </button>
 
                                         <button class="action-btn mobile-action report-applicant-btn" title="Report"
@@ -339,7 +339,7 @@
                                             data-applicant-name="{{ $applicant->personal_info->first_name ?? '' }} {{ $applicant->personal_info->last_name ?? '' }}"
                                             data-applicant-email="{{ $applicant->email ?? '' }}"
                                             data-bs-toggle="modal" data-bs-target="#reportApplicantModal">
-                                            <i class="bi bi-flag-fill"></i> <span class="ms-2">Report</span>
+                                            <i class="bi bi-flag-fill"></i>
                                         </button>
                                     </div>
 

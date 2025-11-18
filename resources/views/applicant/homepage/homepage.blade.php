@@ -137,10 +137,10 @@
                                     <i class="bi bi-person-badge"></i>
                                     Generate Calling Card
                                 </a>
-                                <a href="{{ route('applicant.callingcard.display') }}" class="dropdown-item">
+                                {{-- <a href="{{ route('applicant.callingcard.display') }}" class="dropdown-item">
                                     <i class="bi bi-person-badge"></i>
                                     Ar calling card
-                                </a>
+                                </a> --}}
                                 <a href="{{ route('applicant.resume.display') }}" class="dropdown-item">
                                     <i class="bi bi-file-text"></i>
                                     Resume Builder

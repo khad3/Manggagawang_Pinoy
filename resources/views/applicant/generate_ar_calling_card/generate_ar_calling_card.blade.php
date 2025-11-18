@@ -726,27 +726,27 @@
                 <div class="form-group">
                     <label for="name">👤 Full Name</label>
                     <input type="text" id="name" placeholder="e.g., John Doe"
-                        value="{{ $personalInfo->personal_info->first_name }} {{ $personalInfo->personal_info->last_name }}">
+                        value="{{ $personalInfo->personal_info->first_name ?? '' }} {{ $personalInfo->personal_info->last_name ?? '' }}">
                 </div>
                 <div class="form-group">
                     <label for="job">💼 Job Title</label>
                     <input type="text" id="job" placeholder="e.g., Senior Software Engineer"
-                        value="{{ $personalInfo->work_background->position }}">
+                        value="{{ $personalInfo->work_background->position ?? '' }}">
                 </div>
                 <div class="form-group">
                     <label for="email">📧 Email Address</label>
                     <input type="email" id="email" placeholder="e.g., john.doe@example.com"
-                        value="{{ $personalInfo->email }}">
+                        value="{{ $personalInfo->email ?? '' }}">
                 </div>
                 <div class="form-group">
                     <label for="number">📱 Phone Number</label>
                     <input type="tel" id="number" placeholder="e.g., +63 917 123 4567"
-                        value="{{ $personalInfo->appliedJobs->first()->cellphone_number }}">
+                        value="{{ $personalInfo->appliedJobs->first()->cellphone_number ?? '' }}">
                 </div>
                 <div class="form-group full-width">
                     <label for="location">📍 Location</label>
                     <input type="text" id="location" placeholder="e.g., 123 Main St, Barangay, City, Province, 1234"
-                        value="{{ $personalInfo->personal_info->house_street }} {{ $personalInfo->personal_info->barangay }} {{ $personalInfo->personal_info->city }} {{ $personalInfo->personal_info->province }} {{ $personalInfo->personal_info->zipcode }}">
+                        value="{{ $personalInfo->personal_info->house_street ?? '' }} {{ $personalInfo->personal_info->barangay ?? '' }} {{ $personalInfo->personal_info->city ?? '' }} {{ $personalInfo->personal_info->province ?? '' }} {{ $personalInfo->personal_info->zipcode ?? '' }}">
                 </div>
             </div>
             <div class="button-group">

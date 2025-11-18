@@ -42,9 +42,8 @@
                 <div class="company-avatar">
                     @if ($retrievelogo && $retrievelogo->company_logo)
                         <img src="{{ asset('storage/' . $retrievelogo->company_logo) }}" alt="Company Logo">
-               
                     @else
-                        <span>  <img src="{{ asset('img/employer default.png') }}" alt="Employer Default" /></span>
+                        <span> <img src="{{ asset('img/employer default.png') }}" alt="Employer Default" /></span>
                     @endif
                 </div>
 
