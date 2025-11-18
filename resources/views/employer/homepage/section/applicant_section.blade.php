@@ -1,77 +1,82 @@
 <style>
-/* Desktop (default) - table style remains */
-#applicantsTable {
-    width: 100%;
-    border-collapse: collapse;
-}
-.mobile-actions-wrapper{
-    display:none
-}
-/* Mobile styles */
-@media (max-width: 768px) {
-    /* Hide table headers */
-    #applicantsTable thead {
-        display: none;
-    }
-.action-buttons-wrapper.actions-desktop {
-    display: none;
-}
-
-.mobile-actions-wrapper {
-    display: flex; /* okay */
-}
-
-    /* Make each row a card */
-    #applicantsTable tbody tr {
-        display: block;
-        margin-bottom: 1rem;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 1rem;
-        background: #fff;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    /* Desktop (default) - table style remains */
+    #applicantsTable {
+        width: 100%;
+        border-collapse: collapse;
     }
 
-    /* Each cell becomes a block with label */
-    #applicantsTable tbody tr td {
-        display: flex;
-        justify-content: space-between;
-        padding: 0.5rem 0;
-        border: none;
-    }
-
-    /* Add data-label as pseudo-content for mobile */
-
-
-    /* Adjust action buttons for mobile */
-    .action-buttons-wrapper.actions-desktop {
-        display: none;
-    }
-
-@media (max-width: 768px) {
     .mobile-actions-wrapper {
-        display: flex !important;
-        gap: 2rem;
-        flex-wrap: nowrap;
-        margin-top: 0.5rem;
+        display: none
     }
-}
 
-}
+    /* Mobile styles */
+    @media (max-width: 768px) {
+
+        /* Hide table headers */
+        #applicantsTable thead {
+            display: none;
+        }
+
+        .action-buttons-wrapper.actions-desktop {
+            display: none;
+        }
+
+        .mobile-actions-wrapper {
+            display: flex;
+            /* okay */
+        }
+
+        /* Make each row a card */
+        #applicantsTable tbody tr {
+            display: block;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            background: #fff;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Each cell becomes a block with label */
+        #applicantsTable tbody tr td {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border: none;
+        }
+
+        /* Add data-label as pseudo-content for mobile */
+
+
+        /* Adjust action buttons for mobile */
+        .action-buttons-wrapper.actions-desktop {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-actions-wrapper {
+                display: flex !important;
+                gap: 2rem;
+                flex-wrap: nowrap;
+                margin-top: 0.5rem;
+            }
+        }
+
+    }
 </style>
 
 <script>
-// Optional: toggle expanded view for mobile cards
-document.addEventListener("DOMContentLoaded", function () {
-    const rows = document.querySelectorAll("#applicantsTable tbody tr");
-    rows.forEach(row => {
-        row.addEventListener("click", function (e) {
-            // Ignore clicks on buttons or links
-            if (e.target.closest("a") || e.target.closest("button")) return;
-            this.classList.toggle("expanded");
+    // Optional: toggle expanded view for mobile cards
+    document.addEventListener("DOMContentLoaded", function() {
+        const rows = document.querySelectorAll("#applicantsTable tbody tr");
+        rows.forEach(row => {
+            row.addEventListener("click", function(e) {
+                // Ignore clicks on buttons or links
+                if (e.target.closest("a") || e.target.closest("button")) return;
+                this.classList.toggle("expanded");
+            });
         });
     });
-});
 </script>
 
 
@@ -267,6 +272,11 @@ document.addEventListener("DOMContentLoaded", function () {
                                                 class="action-btn primary" title="View Profile">
                                                 <i class="fas fa-eye"></i>
                                             </a>
+
+                                            <a href="{{ route('employer.viewapplicantardetails.display', $applicant->id) }}"
+                                                class="action-btn primary" title="View Ar details">
+                                                <i class="fa-solid fa-file-lines"></i>
+                                            </a>
                                         @else
                                             <a href="{{ route('display.notfound') }}" class="action-btn secondary"
                                                 title="Profile Not Found">
@@ -276,12 +286,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
                                         <button class="action-btn success message-btn" title="Message"
                                             data-applicant-id="{{ $applicant->id }}"
-
                                             data-applicant-name="{{ $applicant->personal_info->first_name ?? '' }} {{ $applicant->personal_info->last_name ?? '' }}"
-
                                             data-applicant-email="{{ $applicant->email ?? '' }}">
                                             <i class="fas fa-envelope"></i>
                                         </button>
+
 
                                         @php
                                             $alreadyReported = in_array($applicant->id, $reportedApplicantIds ?? []);
@@ -289,9 +298,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                                         <button class="action-btn danger report-applicant-btn"
                                             data-applicant-id="{{ $applicant->id }}"
-
                                             data-applicant-name="{{ $applicant->personal_info->first_name ?? '' }} {{ $applicant->personal_info->last_name ?? '' }}"
-
                                             data-applicant-email="{{ $applicant->email ?? '' }}" data-bs-toggle="modal"
                                             data-bs-target="#reportApplicantModal"
                                             title="{{ $alreadyReported ? 'Already reported' : 'Report this applicant' }}"
@@ -301,66 +308,73 @@ document.addEventListener("DOMContentLoaded", function () {
                                     </div>
 
                                     <!-- Mobile: single toggle + hidden menu (uses same actions) -->
-                               <div class="mobile-actions-wrapper" id="mobileActions-{{ $applicant->id }}">
-    @if ($applicant->personal_info)
-        <a href="{{ route('employer.applicantsprofile.display', $applicant->id) }}" class="action-btn mobile-action" title="View Profile">
-            <i class="fas fa-eye"></i> <span class="ms-2">View</span>
-        </a>
-    @else
-        <a href="{{ route('display.notfound') }}" class="action-btn mobile-action" title="Profile Not Found">
-            <i class="fa-solid fa-triangle-exclamation text-danger"></i>
-            <span class="ms-2">Profile</span>
-        </a>
-    @endif
+                                    <div class="mobile-actions-wrapper" id="mobileActions-{{ $applicant->id }}">
+                                        @if ($applicant->personal_info)
+                                            <a href="{{ route('employer.applicantsprofile.display', $applicant->id) }}"
+                                                class="action-btn mobile-action" title="View Profile">
+                                                <i class="fas fa-eye"></i> <span class="ms-2">View</span>
+                                            </a>
 
-    <button class="action-btn mobile-action message-btn" title="Message"
-        data-applicant-id="{{ $applicant->id }}"
-        data-applicant-name="{{ $applicant->personal_info->first_name ?? '' }} {{ $applicant->personal_info->last_name ?? '' }}"
-        data-applicant-email="{{ $applicant->email ?? '' }}">
-        <i class="fas fa-envelope"></i> <span class="ms-2">Message</span>
-    </button>
+                                            <a href="{{ route('employer.viewapplicantardetails.display', $applicant->id) }}"
+                                                class="action-btn primary" title="View Ar details">
+                                                <i class="fa-solid fa-file-lines"></i>
+                                            </a>
+                                        @else
+                                            <a href="{{ route('display.notfound') }}"
+                                                class="action-btn mobile-action" title="Profile Not Found">
+                                                <i class="fa-solid fa-triangle-exclamation text-danger"></i>
+                                                <span class="ms-2">Profile</span>
+                                            </a>
+                                        @endif
 
-    <button class="action-btn mobile-action report-applicant-btn" title="Report"
-        data-applicant-id="{{ $applicant->id }}"
-        data-applicant-name="{{ $applicant->personal_info->first_name ?? '' }} {{ $applicant->personal_info->last_name ?? '' }}"
-        data-applicant-email="{{ $applicant->email ?? '' }}" data-bs-toggle="modal"
-        data-bs-target="#reportApplicantModal">
-        <i class="bi bi-flag-fill"></i> <span class="ms-2">Report</span>
-    </button>
-</div>
+                                        <button class="action-btn mobile-action message-btn" title="Message"
+                                            data-applicant-id="{{ $applicant->id }}"
+                                            data-applicant-name="{{ $applicant->personal_info->first_name ?? '' }} {{ $applicant->personal_info->last_name ?? '' }}"
+                                            data-applicant-email="{{ $applicant->email ?? '' }}">
+                                            <i class="fas fa-envelope"></i> <span class="ms-2">Message</span>
+                                        </button>
 
+                                        <button class="action-btn mobile-action report-applicant-btn" title="Report"
+                                            data-applicant-id="{{ $applicant->id }}"
+                                            data-applicant-name="{{ $applicant->personal_info->first_name ?? '' }} {{ $applicant->personal_info->last_name ?? '' }}"
+                                            data-applicant-email="{{ $applicant->email ?? '' }}"
+                                            data-bs-toggle="modal" data-bs-target="#reportApplicantModal">
+                                            <i class="bi bi-flag-fill"></i> <span class="ms-2">Report</span>
+                                        </button>
                                     </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    @else
-                        <tr>
-                            <td colspan="5" class="text-center py-4 empty-state-row">
-                                <div class="empty-state-content">
-                                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
-                                    <p class="text-muted">No applicants found</p>
-                                </div>
-                            </td>
-                        </tr>
-                    @endif
-                </tbody>
-            </table>
+
         </div>
-
-
-        <!-- Pagination -->
-        @if (isset($retrievedApplicants) && method_exists($retrievedApplicants, 'links'))
-            <div class="d-flex justify-content-between align-items-center p-3 pagination-wrapper">
-                <div class="text-muted pagination-info">
-                    Showing {{ $retrievedApplicants->firstItem() }} to {{ $retrievedApplicants->lastItem() }}
-                    out of {{ $retrievedApplicants->total() }} applicants
+        </td>
+        </tr>
+        @endforeach
+    @else
+        <tr>
+            <td colspan="5" class="text-center py-4 empty-state-row">
+                <div class="empty-state-content">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No applicants found</p>
                 </div>
-                <div>
-                    {{ $retrievedApplicants->links('pagination::bootstrap-5') }}
-                </div>
-            </div>
+            </td>
+        </tr>
         @endif
+        </tbody>
+        </table>
     </div>
+
+
+    <!-- Pagination -->
+    @if (isset($retrievedApplicants) && method_exists($retrievedApplicants, 'links'))
+        <div class="d-flex justify-content-between align-items-center p-3 pagination-wrapper">
+            <div class="text-muted pagination-info">
+                Showing {{ $retrievedApplicants->firstItem() }} to {{ $retrievedApplicants->lastItem() }}
+                out of {{ $retrievedApplicants->total() }} applicants
+            </div>
+            <div>
+                {{ $retrievedApplicants->links('pagination::bootstrap-5') }}
+            </div>
+        </div>
+    @endif
+</div>
 </div>
 
 <!-- Report Applicant Modal -->
@@ -823,7 +837,7 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 <script>
     // Mobile actions toggle (only affects responsive mode)
-    document.addEventListener('click', function (e) {
+    document.addEventListener('click', function(e) {
         // toggle button
         const toggle = e.target.closest('.action-mobile-toggle');
         if (toggle) {
@@ -847,14 +861,12 @@ document.addEventListener("DOMContentLoaded", function () {
         // click outside => close all mobile menus
         document.querySelectorAll('.mobile-actions-menu.show').forEach(m => m.classList.remove('show'));
     });
-const menu = document.getElementById('mobileActions-' + applicantId);
+    const menu = document.getElementById('mobileActions-' + applicantId);
 
     // Optional: close menus on ESC
-    document.addEventListener('keydown', function (e) {
+    document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             document.querySelectorAll('.mobile-actions-menu.show').forEach(m => m.classList.remove('show'));
         }
     });
 </script>
-
-

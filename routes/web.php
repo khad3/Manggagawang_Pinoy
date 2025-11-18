@@ -67,6 +67,9 @@ Route::prefix('applicant')->group(function () {
 
 //  Protected routes 
 Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(function () {
+    //View generate calling card
+    Route::get('generate-calling-card', [ApplicantController::class, 'generateCallingCard'])->name('applicant.generatecallingcard.display');
+
     //Report display file
     Route::get('messages/fetch/{employerId}', [SendMessageEmployerController::class, 'fetchMessages'])->name('applicant.messages.fetch');
     
@@ -199,6 +202,9 @@ Route::middleware(['applicant.authenticate'])->prefix('applicant')->group(functi
 
 //Public routes for employer
 Route::group(['prefix' => 'employer'], function () {
+
+    //View ar details ng applicant
+    Route::get('view-applicant-details/{id}', [EmployerController::class, 'ViewArDetails'])->name('employer.viewapplicantardetails.display');
     
     //View registration form step 1 
     Route::get('register', [EmployerController::class, 'ShowRegistrationForm'])->name('employer.register.display');

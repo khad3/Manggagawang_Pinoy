@@ -1682,4 +1682,36 @@ public function markAllasread()
 }
 
 
+public function generateCallingCard()
+{
+    $applicantId = session('applicant_id');
+
+    $personalInfo = \App\Models\Applicant\RegisterModel::with('personal_info', 'work_background', 'appliedJobs')
+        ->where('id', $applicantId)
+        ->first();
+
+    if ($personalInfo) {
+        // 🔓 Decrypt only allowed fields (Exclude email & cellphone_number)
+        if ($personalInfo->personal_info) {
+            $personalInfo->personal_info->first_name = $this->safe_decrypt($personalInfo->personal_info->first_name);
+            $personalInfo->personal_info->last_name = $this->safe_decrypt($personalInfo->personal_info->last_name);
+            $personalInfo->personal_info->house_street = $this->safe_decrypt($personalInfo->personal_info->house_street);
+            $personalInfo->personal_info->city = $this->safe_decrypt($personalInfo->personal_info->city);
+            $personalInfo->personal_info->province = $this->safe_decrypt($personalInfo->personal_info->province);
+            $personalInfo->personal_info->zipcode = $this->safe_decrypt($personalInfo->personal_info->zipcode);
+            $personalInfo->personal_info->barangay = $this->safe_decrypt($personalInfo->personal_info->barangay);
+
+            // DO NOT decrypt email
+            // DO NOT decrypt phone_number
+        }
+
+        if ($personalInfo->work_background) {
+            $personalInfo->work_background->position = $this->safe_decrypt($personalInfo->work_background->position);
+        }
+    }
+
+    return view('applicant.generate_ar_calling_card.generate_ar_calling_card', compact('personalInfo'));
+}
+
+
 }

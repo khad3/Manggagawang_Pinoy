@@ -133,6 +133,10 @@
                                     <i class="bi bi-person"></i>
                                     My Profile
                                 </a>
+                                <a href="{{ route('applicant.generatecallingcard.display') }}" class="dropdown-item">
+                                    <i class="bi bi-person-badge"></i>
+                                    Generate Calling Card
+                                </a>
                                 <a href="{{ route('applicant.callingcard.display') }}" class="dropdown-item">
                                     <i class="bi bi-person-badge"></i>
                                     Ar calling card

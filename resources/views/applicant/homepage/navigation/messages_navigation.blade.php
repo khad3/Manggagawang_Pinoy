@@ -1,407 +1,414 @@
 <!-- Messages Dropdown (friendlist UI replica) -->
 <style>
-    
-.messages-container {
-    flex: 1;
-    padding: 1.5rem;
-    overflow-y: auto;
-    background: #f8f9fa;
-    position: relative;
-}
-
-.messages-container::-webkit-scrollbar {
-    width: 6px;
-}
-
-.messages-container::-webkit-scrollbar-thumb {
-    background: #aaa;
-    border-radius: 3px;
-}
-
-.message {
-    margin-bottom: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.message.sent {
-    align-items: flex-end;
-}
-
-.message.received {
-    align-items: flex-start;
-}
-
-.message-bubble {
-    max-width: 75%;
-    padding: 0.75rem 1rem;
-    border-radius: 20px;
-    word-wrap: break-word;
-    transition: all 0.2s ease;
-}
-
-.message.sent .message-bubble {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-}
-
-.message.received .message-bubble {
-    background: white;
-    color: #333;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-}
-
-.message-time {
-    font-size: 0.75rem;
-    color: #999;
-    margin-top: 0.25rem;
-}
-
-.message img {
-    max-width: 250px;
-    border-radius: 10px;
-    margin-bottom: 0.5rem;
-}
-
-.message-input {
-    padding: 1rem 1.5rem;
-    border-top: 1px solid #eee;
-    background: white;
-}
-
-.input-container {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.message-field {
-    flex: 1;
-    padding: 0.75rem 1rem;
-    border: 1px solid #ddd;
-    border-radius: 25px;
-    outline: none;
-    transition: border-color 0.2s ease;
-}
-
-.message-field:focus {
-    border-color: #764ba2;
-}
-
-.send-btn {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    border: none;
-    color: white;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: transform 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.send-btn:hover {
-    transform: scale(1.1);
-}
-
-.btn-light {
-    background: #f8f9fa;
-    border: 1px solid #ddd;
-    color: #666;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.welcome-screen,
-.no-messages {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    text-align: center;
-    color: #666;
-    opacity: 0.8;
-}
-
-.welcome-screen i,
-.no-messages i {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-}
-
-.preview-image-wrapper {
-    margin-top: 0.5rem;
-}
-
-@media (max-width: 768px) {
-    .chat-card {
-        flex-direction: column;
-    }
-
-    .friends-section {
-        position: absolute;
-        width: 100%;
-        z-index: 99;
-        background: #f0f2f5;
-        left: -100%;
-        transition: left 0.3s ease;
-        height: 100%;
-    }
-
-    .friends-section.show {
-        left: 0;
-    }
-
-    .friends-header {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .chat-header {
-        flex-wrap: wrap;
-        padding: 1rem;
-        gap: 10px;
-    }
-
-    .chat-section {
+    .messages-container {
         flex: 1;
+        padding: 1.5rem;
+        overflow-y: auto;
+        background: #f8f9fa;
+        position: relative;
+    }
+
+    .messages-container::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .messages-container::-webkit-scrollbar-thumb {
+        background: #aaa;
+        border-radius: 3px;
+    }
+
+    .message {
+        margin-bottom: 1.25rem;
         display: flex;
         flex-direction: column;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .message.sent {
+        align-items: flex-end;
+    }
+
+    .message.received {
+        align-items: flex-start;
+    }
+
+    .message-bubble {
+        max-width: 75%;
+        padding: 0.75rem 1rem;
+        border-radius: 20px;
+        word-wrap: break-word;
+        transition: all 0.2s ease;
+    }
+
+    .message.sent .message-bubble {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+    }
+
+    .message.received .message-bubble {
+        background: white;
+        color: #333;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .message-time {
+        font-size: 0.75rem;
+        color: #999;
+        margin-top: 0.25rem;
+    }
+
+    .message img {
+        max-width: 250px;
+        border-radius: 10px;
+        margin-bottom: 0.5rem;
     }
 
     .message-input {
-        flex-direction: column;
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #eee;
+        background: white;
     }
 
     .input-container {
-        flex-wrap: wrap;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 
     .message-field {
-        width: 100%;
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 1px solid #ddd;
+        border-radius: 25px;
+        outline: none;
+        transition: border-color 0.2s ease;
+    }
+
+    .message-field:focus {
+        border-color: #764ba2;
     }
 
     .send-btn {
-        width: 100%;
-        margin-top: 8px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        color: white;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: transform 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    .back-to-friends {
-        display: inline-flex;
+    .send-btn:hover {
+        transform: scale(1.1);
+    }
+
+    .btn-light {
+        background: #f8f9fa;
+        border: 1px solid #ddd;
+        color: #666;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
         align-items: center;
-        gap: 0.5rem;
-        background: none;
-        border: none;
-        font-weight: bold;
-        font-size: 1rem;
-        cursor: pointer;
-        color: #764ba2;
+        justify-content: center;
+    }
+
+    .welcome-screen,
+    .no-messages {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        text-align: center;
+        color: #666;
+        opacity: 0.8;
+    }
+
+    .welcome-screen i,
+    .no-messages i {
+        font-size: 2.5rem;
         margin-bottom: 1rem;
     }
-}
 
-.chat-wrapper {
-    display: flex;
-    justify-content: flex-start;
-    margin: 12px 0;
-    padding: 0 15px;
-}
-
-.chat-wrapper.sent {
-    justify-content: flex-end;
-}
-
-.bubble-container {
-    max-width: 75%;
-    background-color: #ffffff;
-    border-radius: 16px;
-    padding: 12px 14px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.07);
-    position: relative;
-    overflow: hidden;
-    transition: 0.3s;
-}
-
-.chat-wrapper.sent .bubble-container {
-    background-color: #d1f5d3;
-    border-bottom-right-radius: 4px;
-}
-
-.chat-wrapper.received .bubble-container {
-    background-color: #f0f0f0;
-    border-bottom-left-radius: 4px;
-}
-
-.message-image img {
-    width: 100%;
-    max-height: 200px;
-    object-fit: cover;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-}
-
-.message-text p {
-    margin: 0;
-    font-size: 15px;
-    color: #333;
-    word-break: break-word;
-}
-
-.timestamp {
-    font-size: 11px;
-    text-align: right;
-    color: #999;
-    margin-top: 6px;
-}
-
-/* Typing Indicator Styles */
-.typing-indicator {
-    display: none;
-    padding: 12px 16px;
-    margin: 8px 16px;
-    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-    border-radius: 20px;
-    border-left: 4px solid #007bff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    animation: slideIn 0.3s ease-out;
-}
-
-.typing-indicator .typing-text {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    color: #6c757d;
-    font-weight: 500;
-}
-
-.typing-dots {
-    display: flex;
-    gap: 3px;
-}
-
-.typing-dot {
-    width: 6px;
-    height: 6px;
-    background: #007bff;
-    border-radius: 50%;
-    animation: typingBounce 1.4s infinite ease-in-out;
-}
-
-.typing-dot:nth-child(1) {
-    animation-delay: -0.32s;
-}
-.typing-dot:nth-child(2) {
-    animation-delay: -0.16s;
-}
-
-@keyframes typingBounce {
-    0%,
-    80%,
-    100% {
-        transform: scale(0.8);
-        opacity: 0.5;
+    .preview-image-wrapper {
+        margin-top: 0.5rem;
     }
-    40% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
 
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+    @media (max-width: 768px) {
+        .chat-card {
+            flex-direction: column;
+        }
 
-/* Auto-refresh indicator */
-.refresh-indicator {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: rgba(0, 123, 255, 0.9);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    z-index: 1000;
-    display: none;
-    animation: pulse 1s infinite;
-}
+        .friends-section {
+            position: absolute;
+            width: 100%;
+            z-index: 99;
+            background: #f0f2f5;
+            left: -100%;
+            transition: left 0.3s ease;
+            height: 100%;
+        }
 
-@keyframes pulse {
-    0% {
-        opacity: 0.7;
-    }
-    50% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 0.7;
-    }
-}
+        .friends-section.show {
+            left: 0;
+        }
 
-/* Message container improvements */
-.messages-container {
-    position: relative;
-    max-height: calc(100vh - 200px);
-    overflow-y: auto;
-    padding-bottom: 10px;
-}
+        .friends-header {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-/* New message notification */
-.new-message-alert {
-    position: fixed;
-    bottom: 100px;
-    right: 20px;
-    background: linear-gradient(135deg, #28a745, #20c997);
-    color: white;
-    padding: 10px 16px;
-    border-radius: 25px;
-    font-size: 14px;
-    cursor: pointer;
-    z-index: 1000;
-    display: none;
-    animation: slideInRight 0.3s ease-out;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
+        .chat-header {
+            flex-wrap: wrap;
+            padding: 1rem;
+            gap: 10px;
+        }
 
-@keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(100px);
+        .chat-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message-input {
+            flex-direction: column;
+        }
+
+        .input-container {
+            flex-wrap: wrap;
+        }
+
+        .message-field {
+            width: 100%;
+        }
+
+        .send-btn {
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .back-to-friends {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: none;
+            border: none;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            color: #764ba2;
+            margin-bottom: 1rem;
+        }
     }
-    to {
-        opacity: 1;
-        transform: translateX(0);
+
+    .chat-wrapper {
+        display: flex;
+        justify-content: flex-start;
+        margin: 12px 0;
+        padding: 0 15px;
     }
-}
+
+    .chat-wrapper.sent {
+        justify-content: flex-end;
+    }
+
+    .bubble-container {
+        max-width: 75%;
+        background-color: #ffffff;
+        border-radius: 16px;
+        padding: 12px 14px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.07);
+        position: relative;
+        overflow: hidden;
+        transition: 0.3s;
+    }
+
+    .chat-wrapper.sent .bubble-container {
+        background-color: #d1f5d3;
+        border-bottom-right-radius: 4px;
+    }
+
+    .chat-wrapper.received .bubble-container {
+        background-color: #f0f0f0;
+        border-bottom-left-radius: 4px;
+    }
+
+    .message-image img {
+        width: 100%;
+        max-height: 200px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+    }
+
+    .message-text p {
+        margin: 0;
+        font-size: 15px;
+        color: #333;
+        word-break: break-word;
+    }
+
+    .timestamp {
+        font-size: 11px;
+        text-align: right;
+        color: #999;
+        margin-top: 6px;
+    }
+
+    /* Typing Indicator Styles */
+    .typing-indicator {
+        display: none;
+        padding: 12px 16px;
+        margin: 8px 16px;
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 20px;
+        border-left: 4px solid #007bff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        animation: slideIn 0.3s ease-out;
+    }
+
+    .typing-indicator .typing-text {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: #6c757d;
+        font-weight: 500;
+    }
+
+    .typing-dots {
+        display: flex;
+        gap: 3px;
+    }
+
+    .typing-dot {
+        width: 6px;
+        height: 6px;
+        background: #007bff;
+        border-radius: 50%;
+        animation: typingBounce 1.4s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(1) {
+        animation-delay: -0.32s;
+    }
+
+    .typing-dot:nth-child(2) {
+        animation-delay: -0.16s;
+    }
+
+    @keyframes typingBounce {
+
+        0%,
+        80%,
+        100% {
+            transform: scale(0.8);
+            opacity: 0.5;
+        }
+
+        40% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Auto-refresh indicator */
+    .refresh-indicator {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(0, 123, 255, 0.9);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        z-index: 1000;
+        display: none;
+        animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            opacity: 0.7;
+        }
+
+        50% {
+            opacity: 1;
+        }
+
+        100% {
+            opacity: 0.7;
+        }
+    }
+
+    /* Message container improvements */
+    .messages-container {
+        position: relative;
+        max-height: calc(100vh - 200px);
+        overflow-y: auto;
+        padding-bottom: 10px;
+    }
+
+    /* New message notification */
+    .new-message-alert {
+        position: fixed;
+        bottom: 100px;
+        right: 20px;
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 10px 16px;
+        border-radius: 25px;
+        font-size: 14px;
+        cursor: pointer;
+        z-index: 1000;
+        display: none;
+        animation: slideInRight 0.3s ease-out;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(100px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
 </style>
 <div class="nav-dropdown">
     <button class="nav-icon" onclick="toggleDropdown('messagesDropdown')" title="messages">
@@ -441,18 +448,15 @@
                     $lastMessage = $employerMessages->first();
                     $employer = $lastMessage->employer;
                     $company = $employer->addressCompany ?? null;
-                    $unreadCount = $employerMessages
-                        ->where('sender_type', 'employer')
-                        ->where('is_read', 0)
-                        ->count();
+                    $unreadCount = $employerMessages->where('sender_type', 'employer')->where('is_read', 0)->count();
                     $initials =
                         $company && !$company->company_logo
                             ? strtoupper(substr($company->company_name ?? 'C', 0, 2))
                             : '';
                 @endphp
 
-                <div class="employer-item {{ $unreadCount > 0 ? 'unread' : '' }}"
-                    data-employer-id="{{ $employerId }}" data-unread-count="{{ $unreadCount }}"
+                <div class="employer-item {{ $unreadCount > 0 ? 'unread' : '' }}" data-employer-id="{{ $employerId }}"
+                    data-unread-count="{{ $unreadCount }}"
                     onclick="openChatWithEmployer({{ $employerId }}, '{{ addslashes($employer->personal_info->first_name ?? 'N/A') }}', '{{ addslashes($employer->personal_info->last_name ?? 'N/A') }}', '{{ addslashes($company->company_name ?? 'Company') }}')">
 
                     @if ($unreadCount > 0)
@@ -470,12 +474,12 @@
 
                     <div class="message-content">
                         <div class="message-header">
-                                <span class="sender-name">{{ $employer->personal_info->first_name ?? 'N/A' }} - </span>
-                                <span class="company-name">{{ $company->company_name ?? 'Company' }}</span>
+                            <span class="sender-name">{{ $employer->personal_info->first_name ?? 'N/A' }} - </span>
+                            <span class="company-name">{{ $company->company_name ?? 'Company' }}</span>
                             <span class="message-time">{{ $lastMessage->created_at->diffForHumans() }}</span>
-                                @if ($unreadCount > 0)
-                                    <span class="unread-count">{{ $unreadCount }}</span>
-                                @endif
+                            @if ($unreadCount > 0)
+                                <span class="unread-count">{{ $unreadCount }}</span>
+                            @endif
                         </div>
 
                         <div class="company-name">{{ $company->company_name ?? 'Company' }}</div>
@@ -524,7 +528,8 @@
                 <div class="search-container">
                     <div class="search-input-wrapper">
                         <i class="bi bi-search"></i>
-                        <input type="text" placeholder="Search conversations..." class="search-input" id="searchInput">
+                        <input type="text" placeholder="Search conversations..." class="search-input"
+                            id="searchInput">
                     </div>
                 </div>
 
@@ -669,15 +674,18 @@
                         <div class="message-input">
                             <div class="input-container">
                                 <!-- File Input (Hidden) -->
-                                <input type="file" id="photoInput" accept="image/*" name="photo" style="display: none;">
+                                <input type="file" id="photoInput" accept="image/*" name="photo"
+                                    style="display: none;">
 
                                 <!-- Upload Button -->
-                                <button type="button" class="btn btn-light" onclick="document.getElementById('photoInput').click()" title="Attach Photo">
+                                <button type="button" class="btn btn-light"
+                                    onclick="document.getElementById('photoInput').click()" title="Attach Photo">
                                     <i class="fas fa-paperclip"></i>
                                 </button>
 
                                 <!-- Message Text Field -->
-                                <input type="text" class="message-field" placeholder="Type your message..." name="message" id="messageInput">
+                                <input type="text" class="message-field" placeholder="Type your message..."
+                                    name="message" id="messageInput">
 
                                 <!-- Send Button -->
                                 <button type="submit" class="send-btn">
@@ -1007,7 +1015,8 @@
             if (!isFromEmployer) {
                 // Only show for sent messages
                 if (msg.is_read === 1 || msg.is_read === true) {
-                    statusHtml = `<span class="text-success ms-2"><i class="fas fa-check-double"></i> Seen</span>`;
+                    statusHtml =
+                        `<span class="text-success ms-2"><i class="fas fa-check-double"></i> Seen</span>`;
                 } else {
                     statusHtml = `<span class="text-muted ms-2"><i class="fas fa-check"></i> Delivered</span>`;
                 }
@@ -1658,7 +1667,7 @@
             // Create FormData
             const formData = new FormData();
             formData.append('employer_id', employerId);
-            
+
             // Auto-filter profanity from message
             if (messageText) {
                 const filteredMessage = filterProfanity(messageText);
@@ -1671,7 +1680,8 @@
             }
 
             // Add CSRF token
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute(
+                'content');
             if (csrfToken) {
                 formData.append('_token', csrfToken);
             }
@@ -1682,13 +1692,14 @@
             photoPreview.innerHTML = '';
 
             try {
-                const response = await fetch('{{ route('applicant.sendmessageemployer.store') }}', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken
-                    }
-                });
+                const response = await fetch(
+                    '{{ route('applicant.sendmessageemployer.store') }}', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken
+                        }
+                    });
 
                 const result = await response.json();
 
@@ -1726,9 +1737,11 @@
                     messageReadTimer = null;
                 }
             } else if (previousVisibility === false && isPageVisible) {
-                if (isUserAtBottom && currentEmployerId && isChatModalOpen && !hasMarkedAsReadForCurrentEmployer) {
+                if (isUserAtBottom && currentEmployerId && isChatModalOpen && !
+                    hasMarkedAsReadForCurrentEmployer) {
                     messageReadTimer = setTimeout(() => {
-                        if (isUserAtBottom && isChatModalOpen && isPageVisible && !hasMarkedAsReadForCurrentEmployer) {
+                        if (isUserAtBottom && isChatModalOpen && isPageVisible && !
+                            hasMarkedAsReadForCurrentEmployer) {
                             isActivelyViewingMessages = true;
                             markMessagesAsRead(currentEmployerId);
                         }

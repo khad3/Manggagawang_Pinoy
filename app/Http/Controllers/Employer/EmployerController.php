@@ -1844,4 +1844,65 @@ public function restoreDefaultLogo(Request $request) {
     return back()->with('success', 'Company logo restored to default.');
 }
 
+
+public function ViewArDetails($id)
+{
+
+    $applicantID = $id;
+     $retrievedProfile = RegisterModel::with('personal_info', 'work_background', 'template' , 'appliedJobs')
+        ->where('id', $applicantID)
+        ->first();
+ 
+    if (!$retrievedProfile) {
+        return back()->withErrors('No profile found');
+    }
+ 
+    // Fetch portfolio (latest)
+    $retrievedPortfolio = ApplicantPortfolioModel::with('personalInfo', 'workExperience')
+        ->where('applicant_id', $applicantID)
+        ->get();
+
+    // Decrypt personal info
+    if ($retrievedProfile->personal_info) {
+        $retrievedProfile->personal_info->first_name   = $this->safe_decrypt($retrievedProfile->personal_info->first_name);
+        $retrievedProfile->personal_info->last_name    = $this->safe_decrypt($retrievedProfile->personal_info->last_name);
+        $retrievedProfile->personal_info->house_street = $this->safe_decrypt($retrievedProfile->personal_info->house_street);
+        $retrievedProfile->personal_info->city         = $this->safe_decrypt($retrievedProfile->personal_info->city);
+        $retrievedProfile->personal_info->province     = $this->safe_decrypt($retrievedProfile->personal_info->province);
+        $retrievedProfile->personal_info->zipcode      = $this->safe_decrypt($retrievedProfile->personal_info->zipcode);
+        $retrievedProfile->personal_info->barangay     = $this->safe_decrypt($retrievedProfile->personal_info->barangay);
+    }
+
+    // Decrypt work background
+    if ($retrievedProfile->work_background) {
+        $retrievedProfile->work_background->position       = $this->safe_decrypt($retrievedProfile->work_background->position);
+        $retrievedProfile->work_background->other_position = $this->safe_decrypt($retrievedProfile->work_background->other_position);
+    }
+ 
+    // Fetch youtube/video link
+    $retrievedYoutube = ApplicantUrlModel::with('personalInfo', 'workExperience')
+        ->where('applicant_id', $applicantID)
+        ->get();
+ 
+    return view('applicant.callingcard.arcallingcard', compact(
+        'retrievedProfile',
+        'retrievedPortfolio',
+        'retrievedYoutube'
+    ));
+}
+
+private function safe_decrypt($value)
+{
+    // Skip null, empty, or short values (not valid encrypted strings)
+    if (!$value || strlen($value) < 20) {
+        return $value;
+    }
+
+    try {
+        return Crypt::decryptString($value);
+    } catch (\Exception $e) {
+        return $value; // Return original if decryption fails
+    }
+}
+
 }
