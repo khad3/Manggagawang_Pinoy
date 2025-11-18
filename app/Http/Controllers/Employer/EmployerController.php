@@ -1847,62 +1847,83 @@ public function restoreDefaultLogo(Request $request) {
 
 public function ViewArDetails($id)
 {
+    $retrievedProfile = RegisterModel::with([
+        'personal_info',
+        'work_background',
+        'template',
+        'appliedJobs'
+    ])->find($id);
 
-    $applicantID = $id;
-     $retrievedProfile = RegisterModel::with('personal_info', 'work_background', 'template' , 'appliedJobs')
-        ->where('id', $applicantID)
-        ->first();
- 
     if (!$retrievedProfile) {
         return back()->withErrors('No profile found');
     }
- 
-    // Fetch portfolio (latest)
-    $retrievedPortfolio = ApplicantPortfolioModel::with('personalInfo', 'workExperience')
-        ->where('applicant_id', $applicantID)
-        ->get();
 
-    // Decrypt personal info
+    // Safely decrypt personal info fields
     if ($retrievedProfile->personal_info) {
-        $retrievedProfile->personal_info->first_name   = $this->safe_decrypt($retrievedProfile->personal_info->first_name);
-        $retrievedProfile->personal_info->last_name    = $this->safe_decrypt($retrievedProfile->personal_info->last_name);
-        $retrievedProfile->personal_info->house_street = $this->safe_decrypt($retrievedProfile->personal_info->house_street);
-        $retrievedProfile->personal_info->city         = $this->safe_decrypt($retrievedProfile->personal_info->city);
-        $retrievedProfile->personal_info->province     = $this->safe_decrypt($retrievedProfile->personal_info->province);
-        $retrievedProfile->personal_info->zipcode      = $this->safe_decrypt($retrievedProfile->personal_info->zipcode);
-        $retrievedProfile->personal_info->barangay     = $this->safe_decrypt($retrievedProfile->personal_info->barangay);
+        foreach (['first_name', 'last_name', 'house_street', 'city', 'province', 'zipcode', 'barangay'] as $field) {
+            $retrievedProfile->personal_info->{$field} =
+                $this->safe_decrypt($retrievedProfile->personal_info->{$field} ?? null);
+        }
     }
 
-    // Decrypt work background
+    // Safely decrypt work background fields
     if ($retrievedProfile->work_background) {
-        $retrievedProfile->work_background->position       = $this->safe_decrypt($retrievedProfile->work_background->position);
-        $retrievedProfile->work_background->other_position = $this->safe_decrypt($retrievedProfile->work_background->other_position);
+        foreach (['position', 'other_position'] as $field) {
+            $retrievedProfile->work_background->{$field} =
+                $this->safe_decrypt($retrievedProfile->work_background->{$field} ?? null);
+        }
     }
- 
-    // Fetch youtube/video link
-    $retrievedYoutube = ApplicantUrlModel::with('personalInfo', 'workExperience')
-        ->where('applicant_id', $applicantID)
+
+    //retrieve certifications approved
+    $retrievedcertifications =\App\Models\Applicant\TesdaUploadCertificationModel::where('applicant_id', $id)->where('status', 'approved')->get();
+
+    // Load applicant portfolio and decrypt only text fields
+    $retrievedPortfolio = ApplicantPortfolioModel::with(['personalInfo', 'workExperience'])
+        ->where('applicant_id', $id)
         ->get();
- 
+
+    // Load YouTube / video links (no decryption needed)
+    $retrievedYoutube = ApplicantUrlModel::with(['personalInfo', 'workExperience'])
+        ->where('applicant_id', $id)
+        ->get();
+
     return view('applicant.callingcard.arcallingcard', compact(
         'retrievedProfile',
         'retrievedPortfolio',
-        'retrievedYoutube'
+        'retrievedYoutube',
+        'retrievedcertifications'
     ));
 }
 
+
 private function safe_decrypt($value)
 {
-    // Skip null, empty, or short values (not valid encrypted strings)
-    if (!$value || strlen($value) < 20) {
-        return $value;
+    if (!$value) {
+        return null;
     }
 
     try {
-        return Crypt::decryptString($value);
+        return Crypt::decrypt($value);
     } catch (\Exception $e) {
-        return $value; // Return original if decryption fails
+        try {
+            return Crypt::decryptString($value);
+        } catch (\Exception $e) {
+
+            // If failed, check if it's a serialized string like s:7:"Rogelio";
+            if ($this->is_serialized($value)) {
+                return unserialize($value);
+            }
+
+            return $value; // return original if still fails
+        }
     }
 }
+
+// Detect if value is serialized format
+private function is_serialized($value)
+{
+    return (@unserialize($value) !== false || $value === 'b:0;');
+}
+
 
 }

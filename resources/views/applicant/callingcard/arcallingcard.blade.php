@@ -48,11 +48,16 @@
 
     <a-scene embedded arjs="sourceType: webcam;" vr-mode-ui="enabled: false">
         <a-assets>
-            <!-- Profile Image -->
-            @if ($retrievedProfile && $retrievedProfile->work_background && $retrievedProfile->work_background->profileimage_path)
-                <img id="profilePic" src="{{ asset('storage/' . $retrievedProfile->work_background->profileimage_path) }}"
-                    crossorigin="anonymous">
+            @php
+                $profileImage = $retrievedProfile?->work_background?->profileimage_path ?? null;
+            @endphp
+
+            @if ($profileImage && Storage::exists('public/' . $profileImage))
+                <img id="profilePic" src="{{ asset('storage/' . $profileImage) }}" crossorigin="anonymous">
+            @else
+                <img id="profilePic" src="{{ asset('img/workerdefault.png') }}" crossorigin="anonymous">
             @endif
+
 
             <!-- Portfolio -->
             @foreach ($retrievedPortfolio as $key => $portfolio)
@@ -73,7 +78,7 @@
        <rect x='500' y='0' width='500' height='600' fill='%23ffffff'/>
      </svg>">
 
-            <img id="workerLogo" src="{{ asset('storage/mpinoylogo.png') }}" crossorigin="anonymous">
+            <img id="workerLogo" src="{{ asset('img/logo.png') }}" crossorigin="anonymous">
 
         </a-assets>
 
@@ -115,6 +120,10 @@
                 <a-text value="{{ strtoupper($retrievedProfile->work_background->position) }}" width="2.8"
                     color="#ffffff" align="left" position="0 -0.5 -0.5"font="mozillavr"></a-text>
 
+                <!--- tesda certification -->
+                <a-text value="{{ strtoupper($retrievedcertification->certifications->certification_program) }}"
+                    width="2.8" color="#ffffff" align="left" position="0 -0.5 -0.5"font="mozillavr"></a-text>
+
                 <!-- Portfolio -->
                 <a-entity position="0.7 -1.1 -0.55">
                     @foreach ($retrievedPortfolio as $key => $portfolio)
@@ -124,7 +133,8 @@
                             $imageUrl = asset('storage/' . ($portfolio->sample_work_image ?? ''));
                         @endphp
                         <a-image src="#portfolio{{ $key }}" width="1.0" height="0.75"
-                            position="{{ $x }} {{ $y }} 0" open-link="url: {{ $imageUrl }}">
+                            position="{{ $x }} {{ $y }} 0"
+                            open-link="url: {{ $imageUrl }}">
                         </a-image>
                     @endforeach
                 </a-entity>

@@ -273,8 +273,8 @@
                                                 <i class="fas fa-eye"></i>
                                             </a>
 
-                                            <a href="{{ route('employer.viewapplicantardetails.display', $applicant->id) }}"
-                                                class="action-btn primary" title="View Ar details">
+                                            <a href="{{ route('employer.viewapplicantardetails.display', ['id' => $applicant->id]) }}"
+                                                class="action-btn primary" title="View AR Details">
                                                 <i class="fa-solid fa-file-lines"></i>
                                             </a>
                                         @else
