@@ -193,7 +193,7 @@
     }
 
     .message-input {
-        flex-direction: column;
+        flex-direction: flex-start;
     }
 
     .input-container {
@@ -205,7 +205,7 @@
     }
 
     .send-btn {
-        width: 100%;
+       
         margin-top: 8px;
     }
 
@@ -405,6 +405,67 @@
         transform: translateX(0);
     }
 }
+/* Responsive behavior for Messenger-like layout */
+
+/* MOBILE ONLY */
+@media (max-width: 768px) {
+
+    /* Hide chat area by default on mobile */
+    .chat-area {
+        display: none !important;
+        width: 100% !important;
+    }
+
+    /* Show employers sidebar full screen */
+    .employers-sidebar {
+        width: 100% !important;
+        display: block !important;
+    }
+
+    /* When chat is active, hide sidebar */
+    .chat-area.active {
+        display: flex !important;
+        flex-direction: column;
+        width: 100% !important;
+    }
+
+    .employers-sidebar.hidden {
+        display: none !important;
+    }
+
+    /* Make list items more touch-friendly */
+    .employer-list-item {
+        padding: 14px 12px !important;
+    }
+
+    /* Back button visible on mobile */
+    #backToListBtn {
+        display: inline-flex !important;
+    }
+}
+
+/* DESKTOP */
+@media (min-width: 769px) {
+    /* Desktop always shows both */
+    .employers-sidebar {
+        display: block !important;
+        width: 35% !important;
+    }
+
+    .chat-area {
+        display: flex !important;
+        width: 65% !important;
+    }
+
+    #backToListBtn {
+        display: none !important;
+    }
+}
+
+/* For JS triggers */
+.hidden { display: none !important; }
+.active { display: flex !important; }
+
 </style>
 <div class="nav-dropdown">
     <button class="nav-icon" onclick="toggleDropdown('messagesDropdown')" title="messages">
@@ -1722,4 +1783,89 @@ function renderMessageHtml(msg) {
 
         console.log('✅ Real-time messaging active with auto profanity filter');
     });
+    // -------------------------------
+// MOBILE MESSENGER-LIKE UI TOGGLE
+// -------------------------------
+
+// Make sure the toggle only applies on mobile width
+function isMobile() {
+    return window.innerWidth <= 768;
+}
+
+// Hide sidebar, show chat
+function showChatMobile() {
+    if (!isMobile()) return;
+
+    const sidebar = document.querySelector(".employers-sidebar");
+    const chat = document.querySelector(".chat-area");
+
+    if (sidebar) sidebar.classList.add("hidden");
+    if (chat) chat.classList.add("active");
+}
+
+// Show sidebar, hide chat
+function showSidebarMobile() {
+    if (!isMobile()) return;
+
+    const sidebar = document.querySelector(".employers-sidebar");
+    const chat = document.querySelector(".chat-area");
+
+    if (sidebar) sidebar.classList.remove("hidden");
+    if (chat) chat.classList.remove("active");
+}
+
+// Attach back button listener (triggered on mobile)
+document.addEventListener("DOMContentLoaded", () => {
+    const backBtn = document.getElementById("backToListBtn");
+
+    if (backBtn) {
+        backBtn.addEventListener("click", showSidebarMobile);
+    }
+});
+
+// Preserve the original loadConversation() function
+if (typeof window.loadConversation === "function") {
+    window._originalLoadConversation = window.loadConversation;
+}
+
+// Override loadConversation() with mobile-aware version
+window.loadConversation = function (employerId) {
+    // Call your original message loading logic
+    if (typeof window._originalLoadConversation === "function") {
+        window._originalLoadConversation(employerId);
+    }
+
+    // Activate mobile chat toggle
+    showChatMobile();
+};
+
+// Handle resizing (for dev tools testing)
+window.addEventListener("resize", () => {
+    if (!isMobile()) {
+        // Desktop reset
+        document.querySelector(".employers-sidebar")?.classList.remove("hidden");
+        document.querySelector(".chat-area")?.classList.remove("active");
+    }
+});
+function scrollChatToBottom() {
+    const container = document.getElementById("employerMessagesContainer");
+    if (!container) return;
+
+    // Wait for DOM to update then scroll
+    setTimeout(() => {
+        container.scrollTop = container.scrollHeight;
+    }, 50);
+}
+window.loadConversation = function (employerId) {
+    if (typeof window._originalLoadConversation === "function") {
+        window._originalLoadConversation(employerId);
+    }
+
+    // Force auto-scroll when switching to a conversation
+    scrollChatToBottom();
+
+    // Mobile toggle
+    showChatMobile();
+};
+
 </script>
