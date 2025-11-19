@@ -281,9 +281,8 @@
         }
 
         .calling-card {
-            max-width: 750px;
+            max-width: 885px;
             margin: 0 auto 35px;
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
             border-radius: 25px;
             padding: 50px;
             color: white;
@@ -292,6 +291,37 @@
                 0 0 0 1px rgba(255, 255, 255, 0.1);
             position: relative;
             overflow: hidden;
+        }
+
+        .front-card {
+            background: #020180;
+            color: white;
+        }
+
+        .back-card {
+            display: flex;
+        }
+
+        /* Left half: white background */
+        .back-card-left {
+            flex: 1;
+            color: #020180;
+            color: white;
+
+        }
+
+        /* Right half: dark blue background with logo centered */
+        .back-card-right {
+            flex: 1;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .back-card-right img {
+            max-width: 200px;
+            height: auto;
         }
 
         .calling-card::before {
@@ -352,6 +382,55 @@
             font-weight: 700;
             letter-spacing: 1.5px;
             border: 1px solid rgba(255, 255, 255, 0.2);
+
+        }
+
+        .front-badge {
+            min-width: 250px;
+            backdrop-filter: blur(10px);
+            padding: 4px 20;
+            border-radius: 20px;
+            font-size: 38px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: white;
+            text-align: left;
+            font-family: monospace;
+            line-height: 1.4;
+            /* ensures spacing between lines */
+            white-space: nowrap;
+            margin-right: 20px;
+
+
+        }
+
+        .front-badge small {
+            display: block;
+            font-size: 20px;
+            margin-top: 4px;
+            text-align: left;
+            margin-left: 30px;
+
+        }
+
+        .workerlogo {
+            padding-right: 60px;
+        }
+
+        .back-card {
+            max-width: 885px;
+            height: 4in;
+            margin: 0 auto 35px;
+            border-radius: 25px;
+            padding: 50px;
+
+            box-shadow: 0 25px 70px rgba(30, 58, 138, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+
+            /* Split background: left white, right dark blue */
+            background: linear-gradient(to left, white 45%, #020180 0%);
         }
 
         .card-content {
@@ -363,8 +442,31 @@
             gap: 40px;
         }
 
-        .card-info {
-            flex: 1;
+        .calling-card .back-card {
+            height: 5in;
+            width: 5in;
+        }
+
+        .back-info {
+
+            margin-left: -50px;
+            font-size: 18px;
+            font-family: monospace;
+            text-align: left;
+            /* ensures text hugs left */
+
+            line-height: 1.4;
+        }
+
+        .back-info .qr-section {
+
+            margin-left: 60px;
+            font-size: 18px;
+            font-family: monospace;
+            text-align: left;
+            /* ensures text hugs left */
+
+            line-height: 1.4;
         }
 
         .card-name {
@@ -377,9 +479,10 @@
 
         .card-job {
             font-size: 20px;
-            margin-bottom: 30px;
+
             opacity: 0.95;
             font-weight: 600;
+            margin-bottom: 60px;
         }
 
         .card-details {
@@ -388,14 +491,21 @@
         }
 
         .card-details div {
-            margin-bottom: 12px;
+
             display: flex;
             align-items: center;
             gap: 14px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px 16px;
+
+
             border-radius: 10px;
             backdrop-filter: blur(5px);
+        }
+
+        .card-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 30px;
         }
 
         .icon {
@@ -407,29 +517,31 @@
         }
 
         .qr-section {
-            background: white;
             padding: 22px;
-            border-radius: 18px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+
             min-width: 200px;
+            display: inline-flex;
             flex-shrink: 0;
+            flex-direction: column;
+            align-items: center;
         }
 
         .qr-code {
-            width: 180px;
-            height: 180px;
+            width: 240px;
+            height: 240px;
             background: url('https://blog.logrocket.com/wp-content/uploads/2023/01/hiro-image.png') center/cover no-repeat;
             border-radius: 12px;
             border: 4px solid #e0e7ff;
         }
 
         .qr-label {
-            text-align: center;
-            color: #1e40af;
-            font-size: 14px;
+            text-align: left;
+            color: #ffffff;
+            font-size: 18px;
             margin-top: 12px;
             font-weight: 800;
             letter-spacing: 2px;
+            font-family: monospace;
         }
 
         .download-btn {
@@ -454,254 +566,219 @@
             box-shadow: 0 15px 40px rgba(37, 99, 235, 0.4);
         }
 
-        /* Mobile Responsive Styles */
+        /* Tablet and below */
         @media (max-width: 768px) {
-            body {
-                padding: 15px;
-            }
-
-            .header {
-                margin-bottom: 30px;
-            }
-
-            .logo {
-                width: 100px;
-                height: 100px;
-                border-radius: 20px;
-                padding: 15px;
-            }
-
-            h1 {
-                font-size: 2em;
-                margin-bottom: 10px;
-            }
-
-            .subtitle {
-                font-size: 1em;
-            }
-
-            .form-section {
-                padding: 25px 20px;
-                border-radius: 20px;
-                margin-bottom: 25px;
-            }
-
-            .form-section h2 {
-                font-size: 1.5em;
-                margin-bottom: 20px;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-
-            label {
-                font-size: 14px;
-                margin-bottom: 8px;
-            }
-
-            input {
-                padding: 14px;
-                font-size: 15px;
-            }
-
-            .button-group {
-                gap: 12px;
-                margin-top: 25px;
-            }
-
-            button {
-                min-width: 100%;
-                padding: 16px 25px;
-                font-size: 16px;
-            }
-
-            .card-section {
-                padding: 25px 15px;
-                border-radius: 20px;
-            }
-
-            .card-section h2 {
-                font-size: 1.5em;
-                margin-bottom: 25px;
-            }
-
             .calling-card {
-                padding: 25px 20px;
-                border-radius: 20px;
-                margin-bottom: 25px;
+                width: 90%;
+                aspect-ratio: 3 / 2;
+                margin-left: 0;
+                /* align left */
+                margin-right: auto;
+                padding: 40px;
             }
 
-            .card-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-                margin-bottom: 20px;
-                padding-bottom: 20px;
-            }
-
-            .card-logo {
-                width: 60px;
-                height: 60px;
-                border-radius: 12px;
-                padding: 10px;
-            }
-
-            .card-badge {
-                padding: 6px 16px;
-                font-size: 11px;
-                letter-spacing: 1px;
-            }
-
-            .card-content {
-                flex-direction: column;
-                gap: 25px;
-                align-items: center;
-            }
-
-            .card-info {
-                width: 100%;
-            }
-
-            .card-name {
-                font-size: 24px;
-                margin-bottom: 10px;
-            }
-
-            .card-job {
-                font-size: 16px;
-                margin-bottom: 20px;
-            }
-
-            .card-details {
-                font-size: 13px;
-                line-height: 1.8;
-            }
-
-            .card-details div {
-                margin-bottom: 10px;
-                padding: 10px 12px;
-                gap: 10px;
-                flex-wrap: wrap;
-            }
-
-            .icon {
-                font-size: 18px;
-                width: 20px;
-            }
-
+            /* Front card adjustments */
             .qr-section {
-                padding: 18px;
-                min-width: auto;
-                width: 100%;
-                max-width: 220px;
+                text-align: left;
             }
 
             .qr-code {
-                width: 150px;
-                height: 150px;
-                margin: 0 auto;
+                width: 90px;
+                height: 90px;
+                margin-top: 75px;
+
+
             }
 
             .qr-label {
                 font-size: 12px;
                 margin-top: 10px;
+                text-align: left;
+            }
+
+
+
+            .front-badge {
+                font-size: 16px;
+                line-height: 1.4;
+                margin-top: 20px;
+                text-align: left;
+            }
+
+            .front-badge small {
+                font-size: 16px;
+            }
+
+            /* Back card layout */
+            .back-card {
+                flex-direction: row;
+                /* keep side-by-side on tablet */
+                height: auto;
+            }
+
+            .back-card-left,
+            .back-card-right {
+                width: 50%;
+                padding: 30px;
+            }
+
+            .back-card-left {
+                background: #020180;
+                color: white;
+                text-align: left;
+            }
+
+            .back-card-right {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .back-card-right img {
+                max-width: 180px;
+                height: auto;
+            }
+
+            /* Text scaling */
+            .card-name {
+                font-size: 16px;
+            }
+
+            .card-job {
+                font-size: 13px;
+
+            }
+
+            .front-info {
+                font-size: 13px;
+                line-height: 1.6;
             }
 
             .download-btn {
-                max-width: 100%;
+                max-width: 80%;
                 padding: 18px;
                 font-size: 16px;
+                margin-top: 20px;
+            }
+
+            .back-info {
+                margin-left: -50px;
+                font-size: 12px;
+                font-family: monospace;
+                text-align: left;
+                line-height: 1.4;
             }
         }
 
-        /* Extra small devices (phones, 480px and down) */
         @media (max-width: 480px) {
-            body {
-                padding: 10px;
+            .calling-card {
+                width: 100%;
+                aspect-ratio: 3 / 2;
+                /* keep rectangle shape */
+                padding: 20px;
+                border-radius: 18px;
             }
 
-            .logo {
+            /* Front card adjustments */
+            .qr-section {
+                align-items: flex-start;
+                /* push QR left */
+                text-align: left;
+            }
+
+            .qr-code {
                 width: 80px;
                 height: 80px;
+                margin: 0;
+                /* remove auto-centering */
             }
 
-            h1 {
-                font-size: 1.6em;
+            .qr-label {
+                font-size: 8px;
+                margin-top: 6px;
+                text-align: left;
             }
 
-            .subtitle {
-                font-size: 0.9em;
+            .front-badge {
+                font-size: 18px;
+                line-height: 1.3;
+                margin-top: 15px;
+                text-align: left;
             }
 
-            .form-section {
-                padding: 20px 15px;
+            .front-badge small {
+                font-size: 12px;
             }
 
-            .form-section h2 {
-                font-size: 1.3em;
+            /* Back card stacks vertically */
+            .back-card {
+                flex-direction: column;
+                height: auto;
             }
 
-            .calling-card {
-                padding: 20px 15px;
+            .back-card-left,
+            .back-card-right {
+                width: 100%;
+                padding: 20px;
+                text-align: center;
             }
 
+            .back-card-left {
+                background: #020180;
+                color: white;
+            }
+
+            .back-card-right {
+                background: white;
+            }
+
+            .back-card-right img {
+                max-width: 120px;
+                height: auto;
+            }
+
+            /* Text scaling */
             .card-name {
                 font-size: 20px;
-                word-break: break-word;
             }
 
             .card-job {
                 font-size: 14px;
             }
 
-            .card-details {
+            .back-info {
                 font-size: 12px;
-            }
-
-            .card-details div {
-                padding: 8px 10px;
-            }
-
-            .qr-code {
-                width: 130px;
-                height: 130px;
+                line-height: 1.4;
             }
         }
 
-        /* Landscape orientation on mobile */
         @media (max-width: 768px) and (orientation: landscape) {
-            .calling-card {
-                padding: 30px 25px;
-            }
-
-            .card-content {
+            .back-card {
                 flex-direction: row;
                 gap: 20px;
             }
 
-            .card-name {
-                font-size: 20px;
-            }
-
-            .card-job {
-                font-size: 14px;
-                margin-bottom: 15px;
-            }
-
-            .card-details div {
-                margin-bottom: 8px;
-                padding: 8px 12px;
-            }
-
-            .qr-section {
-                max-width: 160px;
+            .back-card-left,
+            .back-card-right {
+                width: 50%;
+                padding: 25px;
             }
 
             .qr-code {
                 width: 120px;
                 height: 120px;
+            }
+
+            .qr-label {
+                font-size: 11px;
+            }
+
+            .card-name {
+                font-size: 20px;
+            }
+
+            .card-job {
+                font-size: 14px;
             }
         }
     </style>
@@ -734,19 +811,19 @@
                         value="{{ $personalInfo->work_background->position ?? '' }}">
                 </div>
                 <div class="form-group">
-                    <label for="email">📧 Email Address</label>
+                    <label for="email"> Email Address</label>
                     <input type="email" id="email" placeholder="e.g., john.doe@example.com"
                         value="{{ $personalInfo->email ?? '' }}">
                 </div>
                 <div class="form-group">
-                    <label for="number">📱 Phone Number</label>
+                    <label for="number"> Phone Number</label>
                     <input type="tel" id="number" placeholder="e.g., +63 917 123 4567"
                         value="{{ $personalInfo->appliedJobs->first()->cellphone_number ?? '' }}">
                 </div>
                 <div class="form-group full-width">
-                    <label for="location">📍 Location</label>
-                    <input type="text" id="location" placeholder="e.g., 123 Main St, Barangay, City, Province, 1234"
-                        value="{{ $personalInfo->personal_info->house_street ?? '' }} {{ $personalInfo->personal_info->barangay ?? '' }} {{ $personalInfo->personal_info->city ?? '' }} {{ $personalInfo->personal_info->province ?? '' }} {{ $personalInfo->personal_info->zipcode ?? '' }}">
+                    <label for="location"> Location</label>
+                    <input type="text" id="location" placeholder="e.g., 123 Main St, Barangay, City, Province"
+                        value="{{ $personalInfo->personal_info->house_street ?? '' }} {{ $personalInfo->personal_info->barangay ?? '' }} {{ $personalInfo->personal_info->city ?? '' }} {{ $personalInfo->personal_info->province ?? '' }} ">
                 </div>
             </div>
             <div class="button-group">
@@ -758,40 +835,58 @@
         <!-- Card Section -->
         <div class="card-section" id="cardSection">
             <h2>🎯 Your Professional Calling Card</h2>
-            <div class="calling-card" id="callingCard">
-                <div class="card-header">
-                    <div class="card-logo">
-                        <img src="{{ asset('img/logo.png') }}" alt="Logo">
-                    </div>
-                    <div class="card-badge">BUSINESS CARD</div>
-                </div>
-                <div class="card-content">
-                    <div class="card-info">
-                        <div class="card-name" id="cardName">Rogelio Cerenao</div>
-                        <div class="card-job" id="cardJob">Sanitary Engineer</div>
-                        <div class="card-details">
-                            <div>
-                                <span class="icon">📧</span>
-                                <span id="cardEmail">rogelio.doe@example.com</span>
-                            </div>
-                            <div>
-                                <span class="icon">📱</span>
-                                <span id="cardNumber">0*******21</span>
-                            </div>
-                            <div>
-                                <span class="icon">📍</span>
-                                <span id="cardLocation">123 Main St, Barangay, City, Province</span>
+            <div class="flip-card" id="callingCard">
+                <div class="flip-card-inner">
+                    <!-- Front Side -->
+                    <div class="flip-card-front">
+                        <div class="calling-card front-card">
+                            <div class="card-info front-info">
+                                <div class="card-row">
+                                    <!-- Left: QR code + AR label -->
+                                    <div class="qr-section">
+                                        <div class="qr-code"></div>
+                                        <div class="qr-label">Augmented Reality Portfolio</div>
+                                    </div>
+
+                                    <!-- Right: Mangagawang Pinoy + TESDA -->
+                                    <div class="front-badge">
+                                        <span class="badge-title">Mangagawang Pinoy</span><br>
+                                        <small class="badge-sub">in partnership with TESDA</small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="qr-section">
-                        <div class="qr-code"></div>
-                        <div class="qr-label">SCAN ME</div>
+
+                    <!-- Back Side -->
+                    <div class="flip-card-back">
+                        <div class="calling-card back-card">
+                            <div class="back-card-left">
+                                <div class="card-details">
+                                    <div class="card-name" id="cardName">Rogelio Cerenao</div>
+                                    <div class="card-job" id="cardJob">Sanitary Engineer</div>
+                                </div>
+                                <div class="card-info back-info">
+                                    <div><span class="icon"></span><span id="cardNumber">0*******21</span></div>
+                                    <div><span class="icon"></span><span id="cardEmail">rogelio.doe@example.com</span>
+                                    </div>
+                                    <div><span class="icon"></span><span id="cardLocation">123 Main St, Barangay,
+                                            City, Province</span></div>
+                                </div>
+                            </div>
+
+                            <!-- Right side: Logo only -->
+                            <div class="back-card-right">
+                                <img id="workerLogo" src="{{ asset('img/logo2.png') }}" crossorigin="anonymous">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <button class="download-btn" onclick="downloadCard()">⬇️ Download Calling Card</button>
         </div>
+    </div>
+    <button class="download-btn" onclick="downloadCard()">⬇️ Download Calling Card</button>
+    </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -830,7 +925,7 @@
             document.getElementById('email').value = 'rogelio@company.com';
             document.getElementById('number').value = '09*****0';
             document.getElementById('location').value =
-                '123 Main Street, Barangay San Juan, Pasig City, Metro Manila, 1600';
+                '123 Main Street, Barangay San Juan, Pasig City, Metro Manila';
         }
 
         function downloadCard() {
