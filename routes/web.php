@@ -25,6 +25,17 @@ use Illuminate\Support\Facades\App;
 
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Profiler\Profile;
+use Illuminate\Support\Facades\Artisan;
+
+
+Route::get('storage-link', function () {
+    if (app()->environment('local')) {
+        Artisan::call('storage:link');
+        return 'Storage link created!';
+    }
+    abort(403);
+});
+
 
 //Terms and Condition and Privacy Policy and Data sharing
 Route::get('terms-and-conditions', [TermAnfConditionController::class, 'termsandconditions'])->name('display.termsandconditions');

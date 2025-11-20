@@ -50,10 +50,10 @@
 
             <div class="mobile-navbar" id="mobileNavbar" role="dialog" aria-modal="true" aria-hidden="true">
                 <div class="nav-top">
-            <div class="nav-logo">
-                <img src="img/logotext.png" alt="MP Logo" id="home" />
-                <img src="img/logo.png" alt="MP Logo" id="home2" />
-            </div>
+                    <div class="nav-logo">
+                        <img src="img/logotext.png" alt="MP Logo" id="home" />
+                        <img src="img/logo.png" alt="MP Logo" id="home2" />
+                    </div>
                     <button id="closeMenu" class="close-btn" aria-label="Close menu"></button>
                 </div>
 
@@ -65,9 +65,11 @@
                     <li class="dropdown" role="none">
                         <button class="dropdown-btn" aria-expanded="false">Sign in</button>
                         <ul class="dropdown-content" role="menu" aria-hidden="true">
-                            <li role="none"><a role="menuitem" href="{{ route('applicant.login.display') }}">As Applicant</a>
+                            <li role="none"><a role="menuitem" href="{{ route('applicant.login.display') }}">As
+                                    Applicant</a>
                             </li>
-                            <li role="none"><a role="menuitem" href="{{ route('employer.login.display') }}">As Employer</a>
+                            <li role="none"><a role="menuitem" href="{{ route('employer.login.display') }}">As
+                                    Employer</a>
                             </li>
                         </ul>
                     </li>
@@ -75,9 +77,11 @@
                     <li class="dropdown" role="none">
                         <button class="dropdown-btn" aria-expanded="false">Sign up </button>
                         <ul class="dropdown-content" role="menu" aria-hidden="true">
-                            <li role="none"><a role="menuitem" href="{{ route('applicant.register.display') }}">As Applicant</a>
+                            <li role="none"><a role="menuitem" href="{{ route('applicant.register.display') }}">As
+                                    Applicant</a>
                             </li>
-                            <li role="none"><a role="menuitem" href="{{ route('employer.register.display') }}">As Employer</a>
+                            <li role="none"><a role="menuitem" href="{{ route('employer.register.display') }}">As
+                                    Employer</a>
                             </li>
                         </ul>
                     </li>
@@ -95,16 +99,20 @@
         <li class="m-dropdown" role="none">
             <button class="m-drop-btn" aria-expanded="false">Sign in <span></span></button>
             <ul class="m-dropdown-menu" role="menu">
-                <li role="none"><a role="menuitem" href="{{ route('applicant.login.display') }}">As Applicant</a></li>
-                <li role="none"><a role="menuitem" href="{{ route('employer.login.display') }}">As Employer</a></li>
+                <li role="none"><a role="menuitem" href="{{ route('applicant.login.display') }}">As Applicant</a>
+                </li>
+                <li role="none"><a role="menuitem" href="{{ route('employer.login.display') }}">As Employer</a>
+                </li>
             </ul>
         </li>
 
         <li class="m-dropdown" role="none">
             <button class="m-drop-btn" aria-expanded="false">Sign up <span></span></button>
             <ul class="m-dropdown-menu" role="menu">
-                <li role="none"><a role="menuitem" href="{{ route('applicant.register.display') }}">As Applicant</a></li>
-                <li role="none"><a role="menuitem" href="{{ route('employer.register.display') }}">As Employer</a></li>
+                <li role="none"><a role="menuitem" href="{{ route('applicant.register.display') }}">As
+                        Applicant</a></li>
+                <li role="none"><a role="menuitem" href="{{ route('employer.register.display') }}">As
+                        Employer</a></li>
             </ul>
         </li>
     </ul>
@@ -132,8 +140,8 @@
                     <div class="flip-card-inner">
                         <div class="front">
                             <div class="feature-icon">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="black"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
+                                    stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <rect x="3" y="4" width="18" height="18" rx="2" />
                                     <line x1="16" y1="2" x2="16" y2="6" />
                                     <line x1="8" y1="2" x2="8" y2="6" />
@@ -146,7 +154,7 @@
                             </div>
                         </div>
                         <div class="back">
-                            <img src="img/resumebuilder.png" alt="Feature image" />
+                            <img src="{{ asset('img/resumenuilder.png') }}" alt="Feature image" />
                         </div>
                     </div>
                 </div>
@@ -154,8 +162,8 @@
                     <div class="flip-card-inner">
                         <div class="front">
                             <div class="feature-icon">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="black"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
+                                    stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <polygon points="22 2 11 13 9 11 2 18 22 2" />
                                 </svg>
                             </div>
@@ -166,7 +174,7 @@
                             </div>
                         </div>
                         <div class="back">
-                            <img src="img/realmessage.png" alt="Feature image" />
+                            <img src="{{ asset('img/realtime.png') }}" alt="Feature image" />
                         </div>
                     </div>
                 </div>
@@ -174,8 +182,8 @@
                     <div class="flip-card-inner">
                         <div class="front">
                             <div class="feature-icon">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="black"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
+                                    stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="12" cy="12" r="10" />
                                     <polygon points="12,6 16,18 8,18" />
                                 </svg>
@@ -187,7 +195,7 @@
                             </div>
                         </div>
                         <div class="back">
-                            <img src="img/arcard.png" alt="Feature image" />
+                            <img src="{{ asset('img/arrr.png') }}" alt="Feature image" />
                         </div>
                     </div>
                 </div>
@@ -207,7 +215,7 @@
                             </div>
                         </div>
                         <div class="back">
-                            <img src="img/verification.png" alt="Feature image" />
+                            <img src="{{ asset('img/tesda.png') }}" alt="Feature image" />
                         </div>
                     </div>
                 </div>
@@ -290,7 +298,9 @@
 
     <script>
         (function() {
-            function log(...args) { if (window.console) console.log('[landing-page]', ...args); }
+            function log(...args) {
+                if (window.console) console.log('[landing-page]', ...args);
+            }
 
             document.addEventListener('DOMContentLoaded', () => {
                 try {
@@ -394,7 +404,9 @@
                         tutorialBtn.addEventListener('click', () => {
                             const tutorial = document.getElementById('tutorial');
                             if (tutorial) {
-                                tutorial.scrollIntoView({ behavior: 'smooth' });
+                                tutorial.scrollIntoView({
+                                    behavior: 'smooth'
+                                });
                             }
                         });
                     }
@@ -407,7 +419,9 @@
                         const scrolled = Math.min(Math.max(-rect.top, 0), rect.height);
                         const scale = 1 + (scrolled / rect.height) * 0.20;
                         section.style.setProperty('--bg-scale', scale);
-                    }, { passive: true });
+                    }, {
+                        passive: true
+                    });
 
                     // ========== LOGO CLICK TO SCROLL TOP ==========
                     ['home', 'home2'].forEach(id => {
@@ -415,7 +429,10 @@
                         if (el) {
                             el.style.cursor = 'pointer';
                             el.addEventListener('click', () => {
-                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                                window.scrollTo({
+                                    top: 0,
+                                    behavior: 'smooth'
+                                });
                             });
                         }
                     });

@@ -86,7 +86,7 @@ private function safeDecrypt($value)
 
             'work_background' => [
                 'position' => $this->safeDecrypt($retrievedProfile->work_background->position),
-                'other_position' => $this->safeDecrypt($retrievedProfile->work_background->other_position),
+                'other_position' => $this->safeDecrypt( $retrievedProfile->work_background->other_position ),
                 'work_duration' => $retrievedProfile->work_background->work_duration,
                 'work_duration_unit' => $retrievedProfile->work_background->work_duration_unit,
                 'profileimage_path' => $retrievedProfile->work_background->profileimage_path,
@@ -160,40 +160,49 @@ return view('applicant.profile.profile', compact(
     }
 
     //Add the edit profile page 
-    public function EditProfile(Request $request, $id){
-        $request->validate([
-            'first_name'         => 'required|string',
-            'last_name'          => 'required|string',
-            'position'           => 'required|string',
-            'other_position'     => 'nullable|string',
-            'work_duration'      => 'required|numeric',
-            'work_duration_unit' => 'required|string',
-            'profile_picture'    => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+   public function EditProfile(Request $request, $id){
+    $request->validate([
+        'first_name'         => 'required|string',
+        'last_name'          => 'required|string',
+        'position'           => 'required|string',
+        'other_position'     => 'nullable|string',
+        'work_duration'      => 'required|numeric',
+        'work_duration_unit' => 'required|string',
+        'profile_picture'    => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
 
-        //Update Personal Info
-        $applicant = PersonalInfo::findOrFail($id);
-        $applicant->first_name = $request->first_name;
-        $applicant->last_name  = $request->last_name;
-        $applicant->save();
+    // Update Personal Info
+    $applicant = PersonalInfo::findOrFail($id);
+    $applicant->first_name = $request->first_name;
+    $applicant->last_name  = $request->last_name;
+    $applicant->save();
 
-        //Update or Create Work Background
-        $workBackground = WorkBackground::firstOrNew(['applicant_id' => $id]);
+    // Update or Create Work Background
+    $workBackground = WorkBackground::firstOrNew(['applicant_id' => $id]);
 
-        //If "Other" is selected, use the custom input
-        $workBackground->position = $request->position === 'Other' ? $request->other_position : $request->position;
-
-        $workBackground->work_duration       = $request->work_duration;
-        $workBackground->work_duration_unit  = $request->work_duration_unit;
-
-        // Handle Profile Picture
-        if ($request->hasFile('profile_picture')) {
-            $imagePath = $request->file('profile_picture')->store('profile_picture', 'public');
-            $workBackground->profileimage_path = $imagePath;
-        }
-        $workBackground->save();
-        return redirect()->back()->with('success', 'Profile updated successfully.');
+    // ⭐ Correct handling of position & other_position
+    if ($request->position === 'Other') {
+        $workBackground->position = null;
+        $workBackground->other_position = $request->other_position;
+    } else {
+        $workBackground->position = $request->position;
+        $workBackground->other_position = null;
     }
+
+    $workBackground->work_duration       = $request->work_duration;
+    $workBackground->work_duration_unit  = $request->work_duration_unit;
+
+    // Handle Profile Picture
+    if ($request->hasFile('profile_picture')) {
+        $imagePath = $request->file('profile_picture')->store('profile_picture', 'public');
+        $workBackground->profileimage_path = $imagePath;
+    }
+
+    $workBackground->save();
+
+    return redirect()->back()->with('success', 'Profile updated successfully.');
+}
+
 
     //add applicant post 
     public function ApplicantPost(Request $request) {

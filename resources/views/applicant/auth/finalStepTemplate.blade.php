@@ -232,7 +232,7 @@
 
 
                         <div class="profile-position">
-                            @if ($workBackgroundDecrypted['position'] == 'Other')
+                            @if ($workBackgroundDecrypted['position'] == null)
                                 {{ $workBackgroundDecrypted['other_position'] ?? 'other position' }}
                             @else
                                 {{ $workBackgroundDecrypted['position'] ?? 'Position' }}

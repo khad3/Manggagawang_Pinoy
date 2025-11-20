@@ -57,127 +57,134 @@ body {
 
 /* Content styles */
 
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+}
 
-  .modal {
-      display: none; 
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.6);
-      justify-content: center;
-      align-items: center;
+/* Modal Card */
+.modal-content {
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    text-align: center;
+    width: 600px;
+    max-width: 90%;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
     }
-
-    /* Modal Card */
-    .modal-content {
-      background: white;
-      padding: 40px;
-      border-radius: 16px;
-      text-align: center;
-      width: 600px;
-      max-width: 90%;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
-      animation: fadeIn 0.3s ease-in-out;
+    to {
+        transform: scale(1);
+        opacity: 1;
     }
+}
 
-    @keyframes fadeIn {
-      from { transform: scale(0.9); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
+.modal-content h2 {
+    margin-bottom: 30px;
+    font-size: 24px;
+    font-weight: 700;
+    color: #222;
+}
 
-    .modal-content h2 {
-      margin-bottom: 30px;
-      font-size: 24px;
-      font-weight: 700;
-      color: #222;
-    }
+/* Role Options */
+.role-container {
+    display: flex;
+    justify-content: space-around;
+    gap: 30px;
+}
 
-    /* Role Options */
-    .role-container {
-      display: flex;
-      justify-content: space-around;
-      gap: 30px;
-    }
+.role-card {
+    background: #f8f9fc;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    width: 220px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+}
 
-    .role-card {
-      background: #f8f9fc;
-      padding: 20px;
-      border-radius: 12px;
-      text-align: center;
-      width: 220px;
-      transition: transform 0.3s, box-shadow 0.3s;
-      cursor: pointer;
-    }
+.role-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
 
-    .role-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    }
+.role-card img {
+    width: 80px;
+    margin-bottom: 15px;
+}
 
-    .role-card img {
-      width: 80px;
-      margin-bottom: 15px;
-    }
+.role-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #0a2d82;
+}
 
-    .role-card h3 {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 12px;
-      color: #0a2d82;
-    }
-
-    /* Add this to your CSS file or inside <style> in <head> */
+/* Add this to your CSS file or inside <style> in <head> */
 #roleModal {
-  display: none; /* Hidden by default */
-  position: fixed;
-  z-index: 9999;
-  left: 0; top: 0;
-  width: 100vw; height: 100vh;
-  background: rgba(0,0,0,0.5);
-  justify-content: center;
-  align-items: center;
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
 }
 #roleModal .modal-content {
-  background: #fff;
-  padding: 2rem;
-  border-radius: 10px;
-  max-width: 90vw;
-  max-height: 90vh;
-  overflow: auto;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow: auto;
 }
 
-   .select-btn {
-      background: #0a2d82;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.3s;
-    }
+.select-btn {
+    background: #0a2d82;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
 
-    .select-btn:hover {
-      background: #071f5a;
-    }
+.select-btn:hover {
+    background: #071f5a;
+}
 
-    /* Close Button */
-    .close-btn {
-      margin-top: 25px;
-      background: transparent;
-      border: none;
-      color: #666;
-      font-size: 14px;
-      cursor: pointer;
-    }
+/* Close Button */
+.close-btn {
+    margin-top: 25px;
+    background: transparent;
+    border: none;
+    color: #666;
+    font-size: 14px;
+    cursor: pointer;
+}
 
-    .close-btn:hover {
-      text-decoration: underline;
-    }
+.close-btn:hover {
+    text-decoration: underline;
+}
 
 /* First background */
 .section1::before {
@@ -573,8 +580,8 @@ nav {
 }
 
 .back img {
-    width: 90%;
-    height: 90%;
+    width: 114%;
+    height: 71%;
     object-fit: cover;
 }
 
@@ -991,7 +998,7 @@ nav {
         background-color: #fff;
         width: 80%;
         height: 80%;
-        left:10%;
+        left: 10%;
     }
 }
 
@@ -1039,78 +1046,84 @@ nav {
    Mobile Popup Version (fixed to viewport)
 ========================================= */
 @media (max-width: 992px) {
-  .dropdown {
-    position: static !important;
-  }
+    .dropdown {
+        position: static !important;
+    }
 
-  .dropdown-menu {
-    display: none;
-  }
+    .dropdown-menu {
+        display: none;
+    }
 
-  /* Active popup covers full screen */
-  .dropdown.active .dropdown-menu {
-    display: contents !important;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 3000;
-    background: rgba(0, 0, 0, 0.6);
-    padding: 20px;
-    overflow-y: auto;
-  }
+    /* Active popup covers full screen */
+    .dropdown.active .dropdown-menu {
+        display: contents !important;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 3000;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 20px;
+        overflow-y: auto;
+    }
 
-  /* Card layout */
-  .dropdown.active .dropdown-menu > li {
-    list-style: none;
-    width: 100%;
-    max-width: 380px;
-    background: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
-    overflow: hidden;
-    animation: popupFade 0.25s ease-out;
-  }
+    /* Card layout */
+    .dropdown.active .dropdown-menu > li {
+        list-style: none;
+        width: 100%;
+        max-width: 380px;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+        overflow: hidden;
+        animation: popupFade 0.25s ease-out;
+    }
 
-  .dropdown.active .dropdown-menu li a {
-    display: block;
-    padding: 16px;
-    text-align: center;
-    font-weight: 600;
-    color: #020180;
-    border-bottom: 1px solid #eee;
-    text-decoration: none;
-    transition: background 0.25s ease;
-  }
+    .dropdown.active .dropdown-menu li a {
+        display: block;
+        padding: 16px;
+        text-align: center;
+        font-weight: 600;
+        color: #020180;
+        border-bottom: 1px solid #eee;
+        text-decoration: none;
+        transition: background 0.25s ease;
+    }
 
-  .dropdown.active .dropdown-menu li:last-child a {
-    border-bottom: none;
-  }
+    .dropdown.active .dropdown-menu li:last-child a {
+        border-bottom: none;
+    }
 
-  .dropdown.active .dropdown-menu li a:hover {
-    background: #f3f3ff;
-  }
+    .dropdown.active .dropdown-menu li a:hover {
+        background: #f3f3ff;
+    }
 
-  /* Optional Close Button */
-  .popup-close {
-    display: block;
-    background: #020180;
-    color: white;
-    text-align: center;
-    padding: 12px;
-    font-weight: bold;
-    border-top: 1px solid #ccc;
-    cursor: pointer;
-  }
+    /* Optional Close Button */
+    .popup-close {
+        display: block;
+        background: #020180;
+        color: white;
+        text-align: center;
+        padding: 12px;
+        font-weight: bold;
+        border-top: 1px solid #ccc;
+        cursor: pointer;
+    }
 
-  @keyframes popupFade {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+    @keyframes popupFade {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 }
-
 
 /* Make footer about img match nav logo img */
 .footer-col.about img {
@@ -1126,178 +1139,273 @@ nav {
 
 /* Responsive role selection modal */
 #roleModal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  z-index: 130000;
-  justify-content: center;
-  align-items: center;
-  padding: 1rem;
-  overflow: auto;
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 130000;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    overflow: auto;
 }
 
 #roleModal .modal-content {
-  width: min(920px, 96%);
-  max-width: 920px;
-  max-height: 90vh;
-  background: #fff;
-  border-radius: 14px;
-  padding: 1.25rem;
-  box-shadow: 0 14px 40px rgba(0,0,0,0.28);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  overflow: hidden;
+    width: min(920px, 96%);
+    max-width: 920px;
+    max-height: 90vh;
+    background: #fff;
+    border-radius: 14px;
+    padding: 1.25rem;
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.28);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow: hidden;
 }
 
 /* Header */
 #roleModal .modal-content h2 {
-  margin: 0;
-  font-size: 1.125rem;
-  text-align: center;
+    margin: 0;
+    font-size: 1.125rem;
+    text-align: center;
 }
 
 /* Grid -> responsive stack */
 .role-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  align-items: stretch;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    align-items: stretch;
 }
 
 /* Role card */
 .role-card {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px;
-  background: #f7f8fb;
-  border-radius: 10px;
-  min-height: 120px;
-  width: 100%;
-  box-shadow: 0 6px 18px rgba(12,18,30,0.06);
-  cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px;
+    background: #f7f8fb;
+    border-radius: 10px;
+    min-height: 120px;
+    width: 100%;
+    box-shadow: 0 6px 18px rgba(12, 18, 30, 0.06);
+    cursor: pointer;
 }
 
 /* Image and text */
 .role-card img,
 .role-card #workeroremployer {
-  width: 72px;
-  height: 72px;
-  object-fit: contain;
-  flex: 0 0 auto;
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    flex: 0 0 auto;
 }
 
 /* Title */
 .role-card h3 {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #0a2d82;
-  text-align: center;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #0a2d82;
+    text-align: center;
 }
 
 /* Buttons */
 .select-btn {
-  background: #0a2d82;
-  color: #fff;
-  padding: 10px 14px;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  width: 100%;
-  max-width: 220px;
-  align-self: center;
+    background: #0a2d82;
+    color: #fff;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    max-width: 220px;
+    align-self: center;
 }
 .close-btn {
-  background: transparent;
-  border: none;
-  color: #444;
-  font-size: 0.95rem;
-  cursor: pointer;
-  padding: 10px;
-  align-self: center;
+    background: transparent;
+    border: none;
+    color: #444;
+    font-size: 0.95rem;
+    cursor: pointer;
+    padding: 10px;
+    align-self: center;
 }
 
 /* Mobile adjustments */
 @media (max-width: 720px) {
-  #roleModal .modal-content {
-    padding: 0.75rem;
-    max-height: 94vh;
-  }
-  .role-container {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-  .role-card {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px;
-    min-height: 72px;
-    gap: 12px;
-  }
-  .role-card img,
-  .role-card #workeroremployer { width: 56px; height: 56px; flex: 0 0 56px; }
-  .role-card h3 { text-align: left; margin-left: 8px; font-size: 1rem; flex: 1; }
-  .select-btn { width: 120px; padding: 8px 10px; max-width: none; flex: 0 0 auto; }
-  .close-btn { width: 100%; margin-top: 8px; text-align: center; padding: 12px; border-radius: 8px; background: transparent; }
+    #roleModal .modal-content {
+        padding: 0.75rem;
+        max-height: 94vh;
+    }
+    .role-container {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    .role-card {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px;
+        min-height: 72px;
+        gap: 12px;
+    }
+    .role-card img,
+    .role-card #workeroremployer {
+        width: 56px;
+        height: 56px;
+        flex: 0 0 56px;
+    }
+    .role-card h3 {
+        text-align: left;
+        margin-left: 8px;
+        font-size: 1rem;
+        flex: 1;
+    }
+    .select-btn {
+        width: 120px;
+        padding: 8px 10px;
+        max-width: none;
+        flex: 0 0 auto;
+    }
+    .close-btn {
+        width: 100%;
+        margin-top: 8px;
+        text-align: center;
+        padding: 12px;
+        border-radius: 8px;
+        background: transparent;
+    }
 }
 
 /* Ensure modal content scrolls internally when too tall */
 #roleModal .modal-content > .role-container,
 #roleModal .modal-content > .modal-body {
-  overflow: auto;
+    overflow: auto;
 }
 
 /* Small visual tweak for very small screens */
 @media (max-width: 360px) {
-  .role-card h3 { font-size: 0.95rem; }
-  .select-btn { padding: 8px; font-size: 0.95rem; }
+    .role-card h3 {
+        font-size: 0.95rem;
+    }
+    .select-btn {
+        padding: 8px;
+        font-size: 0.95rem;
+    }
 }
 
 @media (max-width: 900px) {
-  .mobile-nav { position: relative; z-index: 10000; display: none;}
+    .mobile-nav {
+        position: relative;
+        z-index: 10000;
+        display: none;
+    }
 
-  .m-nav-header { display:flex; justify-content:space-between; align-items:center; padding:1rem; }
+    .m-nav-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+    }
 
-  .m-logo { width:140px; max-width:60%; }
+    .m-logo {
+        width: 140px;
+        max-width: 60%;
+    }
 
-  .m-hamburger {
-    background:transparent; border:0; padding:6px; display:inline-flex; flex-direction:column;
-    justify-content:space-between; width:34px; height:24px; cursor:pointer; z-index:1202;
-  }
-  .m-hamburger span { display:block; height:3px; border-radius:3px; background:#fff; transition:transform .25s, opacity .25s; }
+    .m-hamburger {
+        background: transparent;
+        border: 0;
+        padding: 6px;
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 34px;
+        height: 24px;
+        cursor: pointer;
+        z-index: 1202;
+    }
+    .m-hamburger span {
+        display: block;
+        height: 3px;
+        border-radius: 3px;
+        background: #fff;
+        transition: transform 0.25s, opacity 0.25s;
+    }
 
-  .m-hamburger.active span:nth-child(1){ transform: translateY(9px) rotate(45deg); }
-  .m-hamburger.active span:nth-child(2){ opacity:0; }
-  .m-hamburger.active span:nth-child(3){ transform: translateY(-9px) rotate(-45deg); }
+    .m-hamburger.active span:nth-child(1) {
+        transform: translateY(9px) rotate(45deg);
+    }
+    .m-hamburger.active span:nth-child(2) {
+        opacity: 0;
+    }
+    .m-hamburger.active span:nth-child(3) {
+        transform: translateY(-9px) rotate(-45deg);
+    }
 
-  .m-nav-links {
-    position: fixed; top:0; left:-100%;
-    width:80vw; max-width:340px; height:100vh; padding-top:5.5rem;
-    background: linear-gradient(135deg, rgba(1,1,110,0.96), rgba(1,1,160,0.88));
-    backdrop-filter: blur(6px); box-shadow:3px 0 18px rgba(0,0,0,0.35);
-    display:flex; flex-direction:column; gap:1rem; transition:left .35s ease; z-index:1200;
-    touch-action: manipulation;
-  }
-  .m-nav-links.active { left:0; }
+    .m-nav-links {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 80vw;
+        max-width: 340px;
+        height: 100vh;
+        padding-top: 5.5rem;
+        background: linear-gradient(
+            135deg,
+            rgba(1, 1, 110, 0.96),
+            rgba(1, 1, 160, 0.88)
+        );
+        backdrop-filter: blur(6px);
+        box-shadow: 3px 0 18px rgba(0, 0, 0, 0.35);
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        transition: left 0.35s ease;
+        z-index: 1200;
+        touch-action: manipulation;
+    }
+    .m-nav-links.active {
+        left: 0;
+    }
 
-  .m-nav-links li { list-style:none; margin-left:1.2rem; }
-  .m-nav-links a, .m-drop-btn {
-    display:block; text-decoration:none; color:#fff; font-weight:600; font-size:1.2rem; padding:0.4rem 0;
-    background:none; border:0; text-align:left;
-  }
+    .m-nav-links li {
+        list-style: none;
+        margin-left: 1.2rem;
+    }
+    .m-nav-links a,
+    .m-drop-btn {
+        display: block;
+        text-decoration: none;
+        color: #fff;
+        font-weight: 600;
+        font-size: 1.2rem;
+        padding: 0.4rem 0;
+        background: none;
+        border: 0;
+        text-align: left;
+    }
 
-  .m-dropdown-menu { max-height:0; overflow:hidden; margin-left:1rem; border-left:2px solid rgba(255,255,255,0.12); transition:max-height .28s ease; }
-  .m-dropdown.open .m-dropdown-menu { max-height:220px; }
+    .m-dropdown-menu {
+        max-height: 0;
+        overflow: hidden;
+        margin-left: 1rem;
+        border-left: 2px solid rgba(255, 255, 255, 0.12);
+        transition: max-height 0.28s ease;
+    }
+    .m-dropdown.open .m-dropdown-menu {
+        max-height: 220px;
+    }
 
-  /* ensure hamburger is above the panel when closed */
-  .m-nav-header .m-hamburger { position: relative; }
+    /* ensure hamburger is above the panel when closed */
+    .m-nav-header .m-hamburger {
+        position: relative;
+    }
 }
 /* ===== MOBILE NAVBAR (Matches Your HTML) ===== */
 
@@ -1315,21 +1423,20 @@ nav {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    box-shadow: 0 6px 32px rgba(20,30,120,0.17);
+    box-shadow: 0 6px 32px rgba(20, 30, 120, 0.17);
     border-radius: 0 18px 18px 0;
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: "Segoe UI", Arial, sans-serif;
     padding-bottom: 21px;
 }
 
 /* Sidebar open */
-#mobileNavbar.open { 
-    left: 0; 
+#mobileNavbar.open {
+    left: 0;
 }
 
 /* ===== HEADER INSIDE NAV-TOP ===== */
 
 #mobileNavbar .nav-top {
-    
     display: flex;
     align-items: center;
     gap: 12px;
@@ -1368,7 +1475,7 @@ nav {
     text-align: left;
     font-size: 1.07rem;
     font-weight: 600;
-    color:var(--primary-orange);
+    color: var(--primary-orange);
     cursor: pointer;
     border-radius: 7px;
     transition: background 0.14s, color 0.15s;
@@ -1379,7 +1486,6 @@ nav {
 #mobileNavbar .mobile-menu a:hover,
 #mobileNavbar .mobile-menu .dropdown-btn:hover,
 #mobileNavbar .mobile-menu .active {
-    
     color: var(--primary-orange);
 }
 
@@ -1387,10 +1493,10 @@ nav {
 
 .dropdown-btn::after {
     content: "▼";
-    font-size: .85rem;
-    color:var(--primary-orange);
+    font-size: 0.85rem;
+    color: var(--primary-orange);
     margin-left: 8px;
-    opacity: .7;
+    opacity: 0.7;
     transition: transform 0.25s;
 }
 
@@ -1436,11 +1542,11 @@ nav {
 #mobileOverlay {
     position: fixed;
     inset: 0;
-    background: rgba(14,19,70,0.18);
+    background: rgba(14, 19, 70, 0.18);
     z-index: 1300;
     opacity: 0;
     visibility: hidden;
-    transition: opacity .25s, visibility .25s;
+    transition: opacity 0.25s, visibility 0.25s;
 }
 
 #mobileOverlay.show {
@@ -1466,7 +1572,7 @@ nav {
     height: 3.5px;
     background: var(--primary-orange);
     border-radius: 2px;
-    transition: .25s;
+    transition: 0.25s;
 }
 
 #m-hamburger.active span:nth-child(1) {
@@ -1484,19 +1590,19 @@ nav {
 @media (min-width: 769px) {
     #mobileNavbar,
     #mobileOverlay,
-    #m-hamburger { 
-        display: none !important; 
+    #m-hamburger {
+        display: none !important;
     }
 }
 
 /* ===== SMALL SCREENS ===== */
 
 @media (max-width: 480px) {
-    #mobileNavbar { 
-        width: 98%; 
-        min-width: 140px; 
+    #mobileNavbar {
+        width: 98%;
+        min-width: 140px;
     }
 }
-        #mNavLinks {
-            display: none;
-        }
+#mNavLinks {
+    display: none;
+}

@@ -557,31 +557,39 @@ public function WorkBackground(Request $request)
 
     $applicant = RegisterModel::findOrFail($applicantId);
 
-    // Check if profile picture exists before storing
+    // Handle profile picture: store in storage/app/public/profile_picture
     $imagePath = null;
     if ($request->hasFile('profile_picture')) {
         $imagePath = $request->file('profile_picture')->store('profile_picture', 'public');
     }
 
-    // ✅ Encrypt sensitive fields before saving
+    // Determine what to save for position and other_position
+    if ($request->position === 'Other') {
+        $position = null; // predefined position is null
+        $otherPosition = $request->other_position ? Crypt::encrypt($request->other_position) : null;
+    } else {
+        $position = Crypt::encrypt($request->position);
+        $otherPosition = null; // custom input is null
+    }
+
+    // Save Work Background
     $work_background = new WorkBackground([
-        'position'           => Crypt::encrypt($request->position),
-        'other_position'     => $request->other_position
-            ? Crypt::encrypt($request->other_position)
-            : null,
-        'work_duration'      => $request->work_duration, // keep numeric
+        'position'           => $position,
+        'other_position'     => $otherPosition,
+        'work_duration'      => $request->work_duration,
         'work_duration_unit' => $request->work_duration_unit,
         'employed'           => $request->employed,
-        'profileimage_path'  => $imagePath, // may be null if no image uploaded
+        'profileimage_path'  => $imagePath, // stored in storage/app/public
     ]);
 
-    // ✅ Save via relation
+    // Save via relation
     $applicant->work_background()->save($work_background);
 
     return redirect()
         ->route('applicant.info.template.display')
         ->with('success', 'Work background saved successfully.');
 }
+
 
 /**
  * Helper to safely decrypt a value
