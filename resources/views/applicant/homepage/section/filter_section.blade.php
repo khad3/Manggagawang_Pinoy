@@ -34,6 +34,13 @@
               </select>
           </div>
           <button class="clear-filters" onclick="clearAllFilters()">Clear All</button>
+
+
+
+          <button class="matching-job" onclick="matchJobFilters()">Show Matching Jobs</button>
+          <div id="jobMatchMessage" class="hidden"></div>
+
+
       </div>
 
   </section>

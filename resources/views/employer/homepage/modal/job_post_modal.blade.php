@@ -19,25 +19,25 @@
                              <label for="jobCategory" class="form-label">Category</label>
                              <select class="form-select" id="jobCategory" name="job_department">
                                  <option selected disabled>Choose category...</option>
-                                 <option value="Construction">Construction</option>
-                                 <option value="Electrical">Electrical</option>
-                                 <option value="Plumbing">Plumbing</option>
-                                 <option value="Culinary">Culinary</option>
-                                 <option value="Maintenance">Maintenance</option>
-                                 <option value="Housekeeping">Housekeeping</option>
-                                 <option value="Caregiving">Caregiving</option>
-                                 <option value="IT / Tech Support">IT / Tech Support</option>
-                                 <option value="Customer Service">Customer Service</option>
-                                 <option value="Teaching / Tutoring">Teaching / Tutoring</option>
-                                 <option value="Driving / Delivery">Driving / Delivery</option>
-                                 <option value="Laundry Services">Laundry Services</option>
-                                 <option value="Beauty / Wellness">Beauty / Wellness</option>
                                  <option value="Administrative / Office Work">Administrative / Office Work</option>
+                                 <option value="Beauty / Wellness">Beauty / Wellness</option>
+                                 <option value="Caregiving">Caregiving</option>
                                  <option value="Carpentry">Carpentry</option>
-                                 <option value="Welding">Welding</option>
+                                 <option value="Construction">Construction</option>
+                                 <option value="Customer Service">Customer Service</option>
+                                 <option value="Culinary">Culinary</option>
+                                 <option value="Driving / Delivery">Driving / Delivery</option>
+                                 <option value="Electrical">Electrical</option>
                                  <option value="Gardening / Landscaping">Gardening / Landscaping</option>
+                                 <option value="Housekeeping">Housekeeping</option>
+                                 <option value="IT / Tech Support">IT / Tech Support</option>
+                                 <option value="Laundry Services">Laundry Services</option>
+                                 <option value="Maintenance">Maintenance</option>
+                                 <option value="Plumbing">Plumbing</option>
                                  <option value="Repair Services">Repair Services</option>
                                  <option value="Security Services">Security Services</option>
+                                 <option value="Teaching / Tutoring">Teaching / Tutoring</option>
+                                 <option value="Welding">Welding</option>
                                  <option value="Other">Others</option>
                              </select>
 
@@ -52,10 +52,10 @@
                              <label for="jobType" class="form-label">Job Type</label>
                              <select class="form-select" id="jobType" name="job_type">
                                  <option selected>Choose type...</option>
-                                 <option>Full-time</option>
-                                 <option>Part-time</option>
-                                 <option>Contract</option>
-                                 <option>Temporary</option>
+                                 <option value="Full-time">Full-time</option>
+                                 <option value="Part-time">Part-time</option>
+                                 <option value="Contract">Contract</option>
+                                 <option value="Temporary">Temporary</option>
 
                              </select>
                          </div>

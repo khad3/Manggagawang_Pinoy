@@ -59,7 +59,7 @@
 
             <div class="mobile-navbar" id="mobileNavbar" role="dialog" aria-modal="true" aria-hidden="true">
                 <div class="nav-top nav-logo">
-                     <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
+                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
                     <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" />
                     <button id="closeMenu" class="close-btn" aria-label="Close menu"></button>
                 </div>
@@ -72,9 +72,11 @@
                     <li class="dropdown" role="none">
                         <button class="dropdown-btn" aria-expanded="false">Sign in</button>
                         <ul class="dropdown-content" role="menu" aria-hidden="true">
-                            <li role="none"><a role="menuitem" href="{{ route('applicant.login.display') }}">As Applicant</a>
+                            <li role="none"><a role="menuitem" href="{{ route('applicant.login.display') }}">As
+                                    Applicant</a>
                             </li>
-                            <li role="none"><a role="menuitem" href="{{ route('employer.login.display') }}">As Employer</a>
+                            <li role="none"><a role="menuitem" href="{{ route('employer.login.display') }}">As
+                                    Employer</a>
                             </li>
                         </ul>
                     </li>
@@ -82,9 +84,11 @@
                     <li class="dropdown" role="none">
                         <button class="dropdown-btn" aria-expanded="false">Sign up</button>
                         <ul class="dropdown-content" role="menu" aria-hidden="true">
-                            <li role="none"><a role="menuitem" href="{{ route('applicant.register.display') }}">As Applicant</a>
+                            <li role="none"><a role="menuitem" href="{{ route('applicant.register.display') }}">As
+                                    Applicant</a>
                             </li>
-                            <li role="none"><a role="menuitem" href="{{ route('employer.register.display') }}">As Employer</a>
+                            <li role="none"><a role="menuitem" href="{{ route('employer.register.display') }}">As
+                                    Employer</a>
                             </li>
                         </ul>
                     </li>
@@ -325,8 +329,9 @@
                                     <i class="bi bi-map me-1"></i>Province
                                 </label>
                                 <input type="text" class="form-input" id="province" name="province"
-                                    value="Cavite">
+                                    value="Cavite" readonly>
                             </div>
+
                         </div>
 
                         <div class="form-row">
@@ -377,7 +382,9 @@
 
             <script>
                 (function() {
-                    function log(...args) { if (window.console) console.log('[nav]', ...args); }
+                    function log(...args) {
+                        if (window.console) console.log('[nav]', ...args);
+                    }
 
                     document.addEventListener('DOMContentLoaded', () => {
                         try {

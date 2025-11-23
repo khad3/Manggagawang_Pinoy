@@ -384,6 +384,8 @@ public function resetPassword(Request $request)
     $validated = $request->validate([
         'job_title' => 'required|string',
         'job_department' => 'required|string',
+        'other_department' => 'nullable|string',
+        'job_type' => 'required|string',
         'job_location' => 'required|string',
         'job_work_type' => 'required|string',
         'job_experience' => 'required|string',
@@ -400,13 +402,20 @@ public function resetPassword(Request $request)
         'job_non_tesda_certification' => 'nullable|array',
         'job_non_tesda_certification.*' => 'nullable|string',
 
-        'job_benefits' => 'nullable|array', // ✅ Accept array
+        'job_benefits' => 'nullable|array',
         'job_benefits.*' => 'nullable|string',
     ]);
 
     $job = new JobDetails();
     $job->title = $validated['job_title'];
-    $job->department = $validated['job_department'];
+
+    // 🔹 SAVE OTHER DEPARTMENT IF SELECTED
+    if ($validated['job_department'] === 'Other' && !empty($validated['other_department'])) {
+        $job->department = $validated['other_department'];
+    } else {
+        $job->department = $validated['job_department'];
+    }
+    $job->job_type = $validated['job_type'];
     $job->location = $validated['job_location'];
     $job->work_type = $validated['job_work_type'];
     $job->job_salary = $validated['job_salary_range'];
@@ -414,7 +423,7 @@ public function resetPassword(Request $request)
     $job->job_description = $validated['job_description'];
     $job->additional_requirements = $validated['job_additional_requirements'] ?? null;
 
-    // Certifications
+    // 🔹 Certifications
     $isNoneCert = $request->has('none_certifications');
     $job->none_certifications = $isNoneCert ? 1 : 0;
 
@@ -436,7 +445,7 @@ public function resetPassword(Request $request)
 
     $job->other_certifications = $validated['other_certification'] ?? null;
 
-    // ✅ Save benefits
+    // 🔹 Save benefits
     $job->benefits = !empty($validated['job_benefits'])
         ? implode(',', $validated['job_benefits'])
         : null;
@@ -446,7 +455,8 @@ public function resetPassword(Request $request)
     session(['job_id' => $job->id]);
 
     return redirect()->route('employer.contact.display');
-    }
+}
+
 
 
     //View the contact form
@@ -737,7 +747,6 @@ public function login(Request $request)
         ])->withInput($request->only('email'));
     }
 
-    
     if (strtolower($employer->status ?? '') === 'banned') {
         return back()->withErrors([
             'email' => 'Your account has been banned. Please contact support for assistance at <u>mangagawangpinoycompany@gmail.com</u>.',

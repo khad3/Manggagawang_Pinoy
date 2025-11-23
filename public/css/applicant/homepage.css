@@ -2991,4 +2991,106 @@ body {
     }
      
 
-                                       
+              .matching-job {
+                  background-color: #1d4ed8;
+                  /* blue */
+                  color: white;
+                  font-weight: 600;
+                  padding: 10px 20px;
+                  border-radius: 8px;
+                  border: none;
+                  cursor: pointer;
+                  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                  transition: all 0.3s ease-in-out;
+              }
+
+              .matching-job:hover {
+                  background-color: #1e40af;
+                  /* darker blue */
+                  transform: translateY(-2px);
+                  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+              }
+
+              #jobMatchMessage {
+                  margin-top: 10px;
+                  font-weight: 600;
+                  color: #16a34a;
+                  /* green */
+              }
+
+              #jobMatchMessage.hidden {
+                  display: none;
+              }
+
+            
+        .highlight-match {
+            background-color: #fff9c4;
+            /* light yellow */
+            border: 2px solid #fbc02d;
+            transition: background-color 0.3s ease;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+       
+        /* Style for matched cards */
+        .highlight-match {
+            border: 2px solid #22c55e !important;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2) !important;
+        }
+
+        /* Hide non-matching cards */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Match message animation */
+        #jobMatchMessage {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+ 
+        /* Style for matched cards */
+        .highlight-match {
+            border: 2px solid #22c55e !important;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2) !important;
+        }
+
+        /* Hide non-matching cards */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Match message animation */
+        #jobMatchMessage {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+   
+
+                           

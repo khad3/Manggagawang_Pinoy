@@ -55,9 +55,9 @@
 
             <div class="mobile-navbar" id="mobileNavbar" role="dialog" aria-modal="true" aria-hidden="true">
                 <div class="nav-top nav-logo">
-                      <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
+                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
                     <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" />
-             
+
                     <button id="closeMenu" class="close-btn" aria-label="Close menu"></button>
                 </div>
 
@@ -69,9 +69,11 @@
                     <li class="dropdown" role="none">
                         <button class="dropdown-btn" aria-expanded="false">Sign in</button>
                         <ul class="dropdown-content" role="menu" aria-hidden="true">
-                            <li role="none"><a role="menuitem" href="{{ route('applicant.login.display') }}">As Applicant</a>
+                            <li role="none"><a role="menuitem" href="{{ route('applicant.login.display') }}">As
+                                    Applicant</a>
                             </li>
-                            <li role="none"><a role="menuitem" href="{{ route('employer.login.display') }}">As Employer</a>
+                            <li role="none"><a role="menuitem" href="{{ route('employer.login.display') }}">As
+                                    Employer</a>
                             </li>
                         </ul>
                     </li>
@@ -79,9 +81,11 @@
                     <li class="dropdown" role="none">
                         <button class="dropdown-btn" aria-expanded="false">Sign up</button>
                         <ul class="dropdown-content" role="menu" aria-hidden="true">
-                            <li role="none"><a role="menuitem" href="{{ route('applicant.register.display') }}">As Applicant</a>
+                            <li role="none"><a role="menuitem" href="{{ route('applicant.register.display') }}">As
+                                    Applicant</a>
                             </li>
-                            <li role="none"><a role="menuitem" href="{{ route('employer.register.display') }}">As Employer</a>
+                            <li role="none"><a role="menuitem" href="{{ route('employer.register.display') }}">As
+                                    Employer</a>
                             </li>
                         </ul>
                     </li>
@@ -140,7 +144,8 @@
                                         <div class="step-indicator step-inactive" id="step3">3</div>
                                         <div class="mt-2">
                                             <small class="fw-semibold text-muted">Preferences</small>
-                                            <br /><small class="text-muted d-none d-sm-block">Hiring preferences</small>
+                                            <br /><small class="text-muted d-none d-sm-block">Hiring
+                                                preferences</small>
                                         </div>
                                     </div>
                                     <div class="step-line" id="line3"></div>
@@ -336,12 +341,12 @@
                                                     class="required-star" style="color: red;">*</span></label>
                                             <select class="form-select" id="department" name="employer_department">
                                                 <option value="">Select department</option>
-                                                <option value="Management">Management</option>
+                                                <option value="Administration">Administration</option>
                                                 <option value="Human-resource">Human Resources</option>
+                                                <option value="Management">Management</option>
                                                 <option value="Operations">Operations</option>
                                                 <option value="Project-management">Project Management</option>
                                                 <option value="Safety-compliance">Safety & Compliance</option>
-                                                <option value="Administration">Administration</option>
                                                 <option value="Other">Other</option>
                                             </select>
                                         </div>
@@ -678,7 +683,9 @@
         });
 
         (function() {
-            function log(...args) { if (window.console) console.log('[nav]', ...args); }
+            function log(...args) {
+                if (window.console) console.log('[nav]', ...args);
+            }
 
             document.addEventListener('DOMContentLoaded', () => {
                 try {

@@ -59,9 +59,9 @@
 
             <div class="mobile-navbar" id="mobileNavbar" role="dialog" aria-modal="true" aria-hidden="true">
                 <div class="nav-top nav-logo">
-                     <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
+                    <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
                     <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" />
-                
+
                     <button id="closeMenu" class="close-btn" aria-label="Close menu">✕</button>
                 </div>
 
@@ -73,9 +73,11 @@
                     <li class="dropdown" role="none">
                         <button class="dropdown-btn" aria-expanded="false">Sign in</button>
                         <ul class="dropdown-content" role="menu" aria-hidden="true">
-                            <li role="none"><a role="menuitem" href="{{ route('applicant.login.display') }}">As Applicant</a>
+                            <li role="none"><a role="menuitem" href="{{ route('applicant.login.display') }}">As
+                                    Applicant</a>
                             </li>
-                            <li role="none"><a role="menuitem" href="{{ route('employer.login.display') }}">As Employer</a>
+                            <li role="none"><a role="menuitem" href="{{ route('employer.login.display') }}">As
+                                    Employer</a>
                             </li>
                         </ul>
                     </li>
@@ -83,9 +85,11 @@
                     <li class="dropdown" role="none">
                         <button class="dropdown-btn" aria-expanded="false">Sign up</button>
                         <ul class="dropdown-content" role="menu" aria-hidden="true">
-                            <li role="none"><a role="menuitem" href="{{ route('applicant.register.display') }}">As Applicant</a>
+                            <li role="none"><a role="menuitem" href="{{ route('applicant.register.display') }}">As
+                                    Applicant</a>
                             </li>
-                            <li role="none"><a role="menuitem" href="{{ route('employer.register.display') }}">As Employer</a>
+                            <li role="none"><a role="menuitem" href="{{ route('employer.register.display') }}">As
+                                    Employer</a>
                             </li>
                         </ul>
                     </li>
@@ -242,7 +246,9 @@
                             </label>
                             <div class="duration-group">
                                 <input type="number" class="form-input" id="work_duration" name="work_duration"
-                                    min="0" placeholder="Enter duration" required>
+                                    min="0" max="99" placeholder="Enter duration " required
+                                    oninput="if(this.value.length > 2) this.value = this.value.slice(0,2);">
+
                                 <select class="form-select" id="work_duration_unit" name="work_duration_unit"
                                     required>
                                     <option value="years" selected>Years</option>
@@ -308,97 +314,99 @@
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
             <script>
-    (function() {
-        function log(...args) { if (window.console) console.log('[nav]', ...args); }
+                (function() {
+                    function log(...args) {
+                        if (window.console) console.log('[nav]', ...args);
+                    }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            try {
-                // ====== wire new mobile-navbar ======
-                const hamburger = document.getElementById('m-hamburger');
-                const mobileNavbar = document.getElementById('mobileNavbar');
-                const closeMenu = document.getElementById('closeMenu');
-                const overlay = document.getElementById('mobileOverlay');
+                    document.addEventListener('DOMContentLoaded', () => {
+                        try {
+                            // ====== wire new mobile-navbar ======
+                            const hamburger = document.getElementById('m-hamburger');
+                            const mobileNavbar = document.getElementById('mobileNavbar');
+                            const closeMenu = document.getElementById('closeMenu');
+                            const overlay = document.getElementById('mobileOverlay');
 
-                function openMenu() {
-                    mobileNavbar.classList.add('open');
-                    overlay.classList.add('show');
-                    hamburger.classList.add('active');
-                    hamburger.setAttribute('aria-expanded', 'true');
-                    mobileNavbar.setAttribute('aria-hidden', 'false');
-                    document.body.style.overflow = 'hidden';
-                }
+                            function openMenu() {
+                                mobileNavbar.classList.add('open');
+                                overlay.classList.add('show');
+                                hamburger.classList.add('active');
+                                hamburger.setAttribute('aria-expanded', 'true');
+                                mobileNavbar.setAttribute('aria-hidden', 'false');
+                                document.body.style.overflow = 'hidden';
+                            }
 
-                function closeMenuFn() {
-                    mobileNavbar.classList.remove('open');
-                    overlay.classList.remove('show');
-                    hamburger.classList.remove('active');
-                    hamburger.setAttribute('aria-expanded', 'false');
-                    mobileNavbar.setAttribute('aria-hidden', 'true');
-                    document.body.style.overflow = 'auto';
-                }
+                            function closeMenuFn() {
+                                mobileNavbar.classList.remove('open');
+                                overlay.classList.remove('show');
+                                hamburger.classList.remove('active');
+                                hamburger.setAttribute('aria-expanded', 'false');
+                                mobileNavbar.setAttribute('aria-hidden', 'true');
+                                document.body.style.overflow = 'auto';
+                            }
 
-                if (hamburger && mobileNavbar) {
-                    hamburger.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        if (window.innerWidth <= 768) {
-                            if (mobileNavbar.classList.contains('open')) closeMenuFn();
-                            else openMenu();
+                            if (hamburger && mobileNavbar) {
+                                hamburger.addEventListener('click', (e) => {
+                                    e.stopPropagation();
+                                    if (window.innerWidth <= 768) {
+                                        if (mobileNavbar.classList.contains('open')) closeMenuFn();
+                                        else openMenu();
+                                    }
+                                });
+
+                                closeMenu.addEventListener('click', (e) => {
+                                    e.stopPropagation();
+                                    closeMenuFn();
+                                });
+
+                                overlay.addEventListener('click', closeMenuFn);
+
+                                // dropdown toggles
+                                mobileNavbar.querySelectorAll('.dropdown').forEach(drop => {
+                                    const btn = drop.querySelector('.dropdown-btn');
+                                    const menu = drop.querySelector('.dropdown-content');
+                                    btn.addEventListener('click', (ev) => {
+                                        ev.stopPropagation();
+                                        const isOpen = drop.classList.toggle('open');
+                                        btn.setAttribute('aria-expanded', String(isOpen));
+                                        if (menu) menu.setAttribute('aria-hidden', String(!isOpen));
+                                    });
+                                });
+
+                                // close when selecting a link
+                                mobileNavbar.querySelectorAll('a').forEach(a => {
+                                    a.addEventListener('click', () => closeMenuFn());
+                                });
+
+                                // close on ESC
+                                document.addEventListener('keydown', (e) => {
+                                    if (e.key === 'Escape') closeMenuFn();
+                                });
+
+                                // click outside closes menu
+                                document.addEventListener('click', (e) => {
+                                    if (!mobileNavbar.contains(e.target) && !hamburger.contains(e.target)) {
+                                        closeMenuFn();
+                                    }
+                                });
+
+                                log('Mobile navbar initialized');
+                            }
+
+                            // Hide loader after page load
+                            window.addEventListener("load", function() {
+                                setTimeout(function() {
+                                    const loader = document.getElementById("loader-wrapper");
+                                    if (loader) loader.style.display = "none";
+                                }, 1500);
+                            });
+
+                        } catch (err) {
+                            log('Error:', err.message);
                         }
                     });
-
-                    closeMenu.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        closeMenuFn();
-                    });
-
-                    overlay.addEventListener('click', closeMenuFn);
-
-                    // dropdown toggles
-                    mobileNavbar.querySelectorAll('.dropdown').forEach(drop => {
-                        const btn = drop.querySelector('.dropdown-btn');
-                        const menu = drop.querySelector('.dropdown-content');
-                        btn.addEventListener('click', (ev) => {
-                            ev.stopPropagation();
-                            const isOpen = drop.classList.toggle('open');
-                            btn.setAttribute('aria-expanded', String(isOpen));
-                            if (menu) menu.setAttribute('aria-hidden', String(!isOpen));
-                        });
-                    });
-
-                    // close when selecting a link
-                    mobileNavbar.querySelectorAll('a').forEach(a => {
-                        a.addEventListener('click', () => closeMenuFn());
-                    });
-
-                    // close on ESC
-                    document.addEventListener('keydown', (e) => {
-                        if (e.key === 'Escape') closeMenuFn();
-                    });
-
-                    // click outside closes menu
-                    document.addEventListener('click', (e) => {
-                        if (!mobileNavbar.contains(e.target) && !hamburger.contains(e.target)) {
-                            closeMenuFn();
-                        }
-                    });
-
-                    log('Mobile navbar initialized');
-                }
-
-                // Hide loader after page load
-                window.addEventListener("load", function() {
-                    setTimeout(function() {
-                        const loader = document.getElementById("loader-wrapper");
-                        if (loader) loader.style.display = "none";
-                    }, 1500);
-                });
-
-            } catch (err) {
-                log('Error:', err.message);
-            }
-        });
-    })();
-</script>
+                })();
+            </script>
 
             <script>
                 // Toggle other position field

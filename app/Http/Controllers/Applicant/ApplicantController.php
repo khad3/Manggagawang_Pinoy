@@ -591,6 +591,7 @@ public function WorkBackground(Request $request)
 }
 
 
+
 /**
  * Helper to safely decrypt a value
  */
@@ -781,9 +782,24 @@ public function login(Request $request)
     $applicant->save();
 
     
-    session([
-        'applicant_id' => $applicant->id,
-    ]);
+   session([
+    'applicant_id' => $applicant->id,
+    'position' => $applicant->work_background && $applicant->work_background->position
+        ? $this->safeDecrypt($applicant->work_background->position)
+        : null,
+
+    'other_position' => $applicant->work_background && $applicant->work_background->other_position
+        ? $this->safeDecrypt($applicant->work_background->other_position)
+        : null,
+
+    // Final desired position (primary)
+    'desired_position' => $applicant->work_background && $applicant->work_background->position
+        ? $this->safeDecrypt($applicant->work_background->position)
+        : ($applicant->work_background && $applicant->work_background->other_position
+            ? $this->safeDecrypt($applicant->work_background->other_position)
+            : null),
+]);
+
 
     
     
@@ -1553,7 +1569,7 @@ public function applyJob(Request $request)
     $request->validate([
         'job_id' => 'required|exists:job_details_employer,id',
         'phone_number' => 'required|string',
-        'cover_letter' => 'nullable|string',
+        'cover_letter' => 'required|string',
         'additional_info' => 'nullable|string',
         'resume' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
         'tesda_certificate' => 'nullable|file|mimes:pdf,doc,docx|max:5120',

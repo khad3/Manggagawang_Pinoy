@@ -1258,7 +1258,7 @@ public function deleteApplicantOrEmployer(Request $request, $id)
             InterviewScreeningModel::where('employer_id', $id)->delete();
             \App\Models\Employer\JobDetailModel::where('employer_id', $id)->delete();
             PersonalInformationModel::where('employer_id', $id)->delete();
-            SendNotificationToApplicantModel::where('employer_id', $id)->delete();
+            SendNotificationToApplicantModel::where('sender_id', $id)->orWhere('receiver_id', $id)->delete(); 
             SendRatingModel::where('employer_id', $id)->delete();
             \App\Models\Employer\SpecialRequirementModel::where('employer_id', $id)->delete();
             \App\Models\Employer\WorkerRequirementModel::where('employer_id', $id)->delete();

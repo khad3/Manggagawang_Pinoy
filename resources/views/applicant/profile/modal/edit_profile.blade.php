@@ -10,6 +10,7 @@
 
              <!-- Body -->
 
+
              <form
                  action="{{ route('applicant.profile.info.update', ['id' => $retrievedProfile->id ?? session('applicant_id')]) }}"
                  method="POST" enctype="multipart/form-data">

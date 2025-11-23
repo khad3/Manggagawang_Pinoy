@@ -49,6 +49,10 @@
                     <span>Reports & Analytics</span>
                     <i class="fas fa-chevron-right chevron"></i>
                 </button>
+                <button class="menu-item" onclick="showSection('recent-activity', this)">
+                    <i class="fas fa-history"></i>
+                    <span>activity logs</span>
+                </button>
                 @php
                     use App\Models\Report\ReportModel;
 
@@ -142,6 +146,8 @@
             @include('admin.homepage.section.announcement_section')
             <!-- Reports & Analytics Section -->
             @include('admin.homepage.section.report_analytics')
+            <!-- Recent Activity Log -->
+            @include('admin.homepage.section.activity_logs_section')
             <!-- User Management Section -->
             @include('admin.homepage.section.user_management')
 
@@ -196,23 +202,57 @@
         function showSection(sectionId, element) {
             // Hide all sections
             const sections = document.querySelectorAll('.content-section');
-            sections.forEach(section => section.classList.remove('active'));
+            sections.forEach(section => {
+                section.classList.remove('active');
+                section.style.display = 'none'; // ✅ Actually hide it
+            });
 
             // Show selected section
-            document.getElementById(sectionId).classList.add('active');
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                targetSection.style.display = 'block'; // ✅ Actually show it
+            }
 
             // Update menu items
             const menuItems = document.querySelectorAll('.menu-item');
             menuItems.forEach(item => item.classList.remove('active'));
-            element.classList.add('active');
+            if (element) {
+                element.classList.add('active');
+            }
 
             // Load section-specific data
             if (sectionId === 'officers') {
                 renderOfficers();
             } else if (sectionId === 'announcements') {
                 renderAnnouncements();
+            } else if (sectionId === 'recent-activity') {
+                // Initialize activity log filters if needed
+                console.log('Activity log section loaded');
             }
         }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide all sections first
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Show dashboard by default (or first section)
+            const defaultSection = document.getElementById('dashboard') || document.querySelector(
+                '.content-section');
+            if (defaultSection) {
+                defaultSection.style.display = 'block';
+                defaultSection.classList.add('active');
+            }
+
+            // Set first menu item as active
+            const firstMenuItem = document.querySelector('.menu-item');
+            if (firstMenuItem) {
+                firstMenuItem.classList.add('active');
+            }
+        });
 
         // Modal Functions
         function openModal(modalId) {
@@ -487,6 +527,10 @@
                     case '4':
                         e.preventDefault();
                         document.querySelector('[onclick*="reports"]').click();
+                        break;
+                    case '5':
+                        e.preventDefault();
+                        document.querySelector('[onclick*="recent-activity"]').click();
                         break;
                 }
             }

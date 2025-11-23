@@ -32,16 +32,19 @@
                        <div class="row">
                            <div class="col-md-6">
                                <div class="mb-3">
-                                   <label class="form-label fw-semibold">Phone Number *</label>
+                                   <label class="form-label fw-semibold">Phone Number <span
+                                           style="color: red;">*</span></label>
                                    <input type="tel" class="form-control" name="phone_number"
-                                       placeholder="09********0" required>
+                                       placeholder="09********0" required minlength="11" maxlength="11"
+                                       pattern="[0-9]{11}" inputmode="numeric"
+                                       oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                </div>
                            </div>
                        </div>
 
                        <!-- Resume -->
                        <div class="mb-3">
-                           <label class="form-label fw-semibold">Resume/CV *</label>
+                           <label class="form-label fw-semibold">Resume/CV <span style="color: red;">*</span></label>
                            <input type="file" class="form-control" name="resume" accept=".pdf,.doc,.docx" required>
                            <div class="form-text">Accepted formats: PDF, DOC, DOCX (Max 5MB)</div>
                        </div>
@@ -62,9 +65,9 @@
 
                        <!-- Cover Letter -->
                        <div class="mb-3">
-                           <label class="form-label fw-semibold">Cover Letter</label>
+                           <label class="form-label fw-semibold">Cover Letter<span style="color: red;">*</span></label>
                            <textarea class="form-control" name="cover_letter" rows="4"
-                               placeholder="Tell us why you're interested in this position..."></textarea>
+                               placeholder="Tell us why you're interested in this position..." required></textarea>
                        </div>
 
                        <!-- Additional Info -->

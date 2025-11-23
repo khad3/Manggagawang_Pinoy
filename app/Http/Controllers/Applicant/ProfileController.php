@@ -160,7 +160,7 @@ return view('applicant.profile.profile', compact(
     }
 
     //Add the edit profile page 
-   public function EditProfile(Request $request, $id){
+  public function EditProfile(Request $request, $id){
     $request->validate([
         'first_name'         => 'required|string',
         'last_name'          => 'required|string',

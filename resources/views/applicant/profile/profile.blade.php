@@ -179,6 +179,7 @@
                     </div>
                 </div>
 
+
                 <!-- Modal to View Profile -->
                 <div class="modal fade" id="viewProfileModal" tabindex="-1" aria-labelledby="viewProfileModalLabel"
                     aria-hidden="true" data-bs-backdrop="false">

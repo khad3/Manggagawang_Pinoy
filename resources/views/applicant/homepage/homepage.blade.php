@@ -17,7 +17,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ asset('css/applicant/homepage.css') }}">
     <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}" />
-    <style></style>
 </head>
 
 <body>
@@ -264,17 +263,28 @@
                                         @endphp
 
                                         <div class="company-avatar-wrapper">
-                                            @if ($company && $company->company_logo)
-                                                {{-- Use employer's uploaded logo --}}
-                                                <img src="{{ asset('storage/' . $company->company_logo) }}"
-                                                    alt="{{ $company->company_name ?? 'Company Logo' }}"
-                                                    class="company-avatar-img">
+                                            @if (
+                                                !empty(
+                                                    $jobDetail->employer->addressCompany->company_nam || !empty($jobDetail->employer->addressCompany->company_name)
+                                                ))
+                                                {{-- If company has logo --}}
+                                                @if (!empty($company) && !empty($company->company_logo))
+                                                    <img src="{{ asset('storage/' . $company->company_logo) }}"
+                                                        alt="{{ $company->company_name ?? 'Company Logo' }}"
+                                                        class="company-avatar-img">
+                                                @else
+                                                    {{-- Company with no logo – show company default --}}
+                                                    <img src="{{ asset('img/companydefault.png') }}"
+                                                        alt="Default Company Logo" class="company-avatar-img"
+                                                        style="background-color:#020180 ;">
+                                                @endif
                                             @else
-                                                {{-- Use your default employer image --}}
+                                                {{-- Individual Employer --}}
                                                 <img src="{{ asset('img/employer default.png') }}"
                                                     alt="Default Employer Logo" class="company-avatar-img">
                                             @endif
                                         </div>
+
 
                                         <div class="company-details">
                                             <h3>{{ $jobDetail->title }}</h3>
@@ -638,6 +648,163 @@ $hasActiveApplication =
             </div>
         </div>
     </section>
+
+    <script>
+        function matchJobFilters() {
+            const applicantPosition =
+                "{{ strtolower($retrieveDataDecrypted['position'] ?? ($retrieveDataDecrypted['other_position'] ?? (session('desired_position') ?? ''))) }}"
+                .trim();
+
+            // If no position is set, show all cards
+            if (!applicantPosition) {
+                return;
+            }
+
+            const jobCards = document.querySelectorAll('.employer-card');
+            let matchCount = 0;
+
+            jobCards.forEach(card => {
+                // Remove any existing highlights first
+                removeHighlights(card);
+
+                const jobTitle = (card.dataset.name || '').toLowerCase();
+                const jobDepartment = (card.dataset.industry || '').toLowerCase();
+
+                // **Get all job description elements and combine text**
+                const descriptionElements = card.querySelectorAll('.company-description');
+                let jobDescription = '';
+                descriptionElements.forEach(el => {
+                    jobDescription += ' ' + el.textContent.toLowerCase();
+                });
+
+                // Split position into words for better matching
+                const positionWords = applicantPosition.split(/\s+/).filter(word => word.length > 0);
+
+                // Check if ANY word from position matches title, department, or combined description
+                const hasMatch = positionWords.some(word =>
+                    jobTitle.includes(word) ||
+                    jobDepartment.includes(word) ||
+                    jobDescription.includes(word)
+                );
+
+                if (hasMatch) {
+                    card.classList.remove('hidden');
+                    card.classList.add('highlight-match');
+
+                    // Highlight each matching word (only once)
+                    positionWords.forEach(word => {
+                        highlightTextInCard(card, word);
+                    });
+
+                    matchCount++;
+                } else {
+                    card.classList.add('hidden');
+                    card.classList.remove('highlight-match');
+                }
+            });
+
+
+            updateMatchMessage(matchCount, applicantPosition);
+        }
+
+        // Remove all existing highlights from a card
+        function removeHighlights(card) {
+            const marks = card.querySelectorAll('mark');
+            marks.forEach(mark => {
+                const parent = mark.parentNode;
+                parent.replaceChild(document.createTextNode(mark.textContent), mark);
+                parent.normalize(); // Merge adjacent text nodes
+            });
+        }
+
+        // Show message based on number of matches
+        function updateMatchMessage(count, position) {
+            let messageDiv = document.getElementById('jobMatchMessage');
+
+            // Create message div if it doesn't exist
+            if (!messageDiv) {
+                messageDiv = document.createElement('div');
+                messageDiv.id = 'jobMatchMessage';
+                messageDiv.style.padding = '16px';
+                messageDiv.style.marginBottom = '20px';
+                messageDiv.style.borderRadius = '8px';
+                messageDiv.style.textAlign = 'center';
+                messageDiv.style.fontSize = '18px';
+                messageDiv.style.fontWeight = '500';
+
+                const employerGrid = document.getElementById('employerGrid');
+                if (employerGrid) {
+                    employerGrid.parentNode.insertBefore(messageDiv, employerGrid);
+                }
+            }
+
+            if (count > 0) {
+                messageDiv.innerHTML =
+                    `<b>${count}</b> job post${count > 1 ? 's' : ''} matched your position: <b style="color: #16a34a;">"${position}"</b>`;
+                messageDiv.style.backgroundColor = '#f0fdf4';
+                messageDiv.style.border = '1px solid #86efac';
+                messageDiv.style.color = '#15803d';
+            } else {
+                messageDiv.innerHTML =
+                    `No job posts match your desired position "<b>${position}</b>" right now. Please check back later when new jobs are posted.`;
+                messageDiv.style.backgroundColor = '#fef2f2';
+                messageDiv.style.border = '1px solid #fca5a5';
+                messageDiv.style.color = '#dc2626';
+            }
+
+            messageDiv.classList.remove('hidden');
+            messageDiv.style.display = 'block';
+        }
+
+        // Highlight only the matched text in the card
+        function highlightTextInCard(card, searchText) {
+            const elementsToSearch = card.querySelectorAll('h3, .company-industry, .company-description');
+
+            elementsToSearch.forEach(element => {
+                highlightInElement(element, searchText);
+            });
+        }
+
+        // Recursively highlight text in text nodes only
+        function highlightInElement(element, searchText) {
+            const regex = new RegExp(`(${escapeRegex(searchText)})`, 'gi');
+
+            // Process text nodes
+            const walker = document.createTreeWalker(
+                element,
+                NodeFilter.SHOW_TEXT,
+                null,
+                false
+            );
+
+            const nodesToReplace = [];
+            let node;
+
+            while (node = walker.nextNode()) {
+                if (node.textContent.trim() !== '' && regex.test(node.textContent)) {
+                    nodesToReplace.push(node);
+                }
+            }
+
+            nodesToReplace.forEach(node => {
+                const text = node.textContent;
+                const span = document.createElement('span');
+                span.innerHTML = text.replace(regex,
+                    '<mark style="background-color: #fef08a; font-weight: 600; padding: 2px 4px; border-radius: 2px;">$1</mark>'
+                );
+                node.parentNode.replaceChild(span, node);
+            });
+        }
+
+        // Escape special regex characters
+        function escapeRegex(text) {
+            return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+    </script>
+
+
+
+
 
     <script>
         const applyJobModal = document.getElementById('applyJobModal');
@@ -1038,6 +1205,9 @@ $hasActiveApplication =
             updateResultsCount();
             toggleNoResults(false);
         }
+
+
+
 
         // Sort employers
         function sortEmployers() {

@@ -22,7 +22,8 @@
 
                      <div class="form-group form-grid-full">
                          <label class="form-label">Email Address</label>
-                         <input type="email" class="form-input" name="email" id="officerEmail" required>
+                         <input type="email" class="form-input" name="email" id="officerEmail"
+                             placeholder="john.doe@tesda.gov.ph" required>
                      </div>
 
                      <div class="form-group">
