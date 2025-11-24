@@ -120,11 +120,24 @@
         </li>
     </ul>
 
-   
+   <div class="top-workers-header text-center mb-4">
+    <h1>Top Workers</h1>
+    <p class="text-muted">Explore highly-rated workers and their expertise to find the perfect match for your needs.</p>
+</div>
+
+
     <div class="top-workers-table">
 
-
+        <div class="tw-row tw-header">
+    <span class="tw-col name"><strong>Name</strong></span>
+    <span class="tw-col hire-rate"><strong>Rating</strong></span>
+    <span class="tw-col location"><strong>Location</strong></span>
+    <span class="tw-col industry"><strong>Expertise</strong></span>
+ 
+</div>
         @foreach ($topApplicants as $applicant)
+
+
             <div class="tw-row">
                 <span class="tw-col name">
                     {{ $applicant->personal_info->first_name ?? '' }}
@@ -295,49 +308,47 @@
             });
             modal.show();
         }
+// Dropdown toggle for each row
+document.querySelectorAll('.tw-row').forEach(row => {
+    const btn = row.querySelector('.tw-dropdown-btn');
+    const dropdown = row.nextElementSibling;
 
-        // Dropdown logic for multiple rows
-        document.querySelectorAll('.tw-row').forEach(function(row, idx) {
-            row.addEventListener('click', function(e) {
-                // Prevent toggling when clicking the button or view profile button
-                if (e.target.classList.contains('tw-dropdown-btn') ||
-                    e.target.classList.contains('tw-view-profile') ||
-                    e.target.closest('.tw-view-profile')) {
-                    return;
-                }
+    if (!dropdown || !dropdown.classList.contains('tw-dropdown')) return;
 
-                // Toggle dropdown for this row
-                const dropdowns = document.querySelectorAll('.tw-dropdown');
-                const btns = document.querySelectorAll('.tw-dropdown-btn');
-                dropdowns.forEach((d, i) => {
-                    if (i === idx) {
-                        d.style.display = d.style.display === 'block' ? 'none' : 'block';
-                        btns[i].classList.toggle('open');
-                    } else {
-                        d.style.display = 'none';
-                        btns[i].classList.remove('open');
-                    }
-                });
-            });
-        });
+    row.addEventListener('click', e => {
+        // Ignore clicks on button or "View Profile" button
+        if (e.target === btn || e.target.closest('.tw-view-profile')) return;
 
-        // Also toggle when clicking the dropdown button directly
-        document.querySelectorAll('.tw-dropdown-btn').forEach(function(btn, idx) {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const dropdowns = document.querySelectorAll('.tw-dropdown');
-                const btns = document.querySelectorAll('.tw-dropdown-btn');
-                dropdowns.forEach((d, i) => {
-                    if (i === idx) {
-                        d.style.display = d.style.display === 'block' ? 'none' : 'block';
-                        btns[i].classList.toggle('open');
-                    } else {
-                        d.style.display = 'none';
-                        btns[i].classList.remove('open');
-                    }
-                });
-            });
-        });
+        const isOpen = dropdown.style.display === 'block';
+        dropdown.style.display = isOpen ? 'none' : 'block';
+        btn.classList.toggle('open', !isOpen);
+    });
+
+    btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const isOpen = dropdown.style.display === 'block';
+        dropdown.style.display = isOpen ? 'none' : 'block';
+        btn.classList.toggle('open', !isOpen);
+    });
+});
+
+// Bootstrap modal open function
+function openModal(modalId) {
+    const modal = new bootstrap.Modal(document.getElementById(modalId), { backdrop: false });
+    modal.show();
+}
+
+// Optional: Animate view more button on scroll
+const viewMoreBtn = document.querySelector('.tw-view-more');
+if (viewMoreBtn) {
+    viewMoreBtn.addEventListener('mouseenter', () => {
+        viewMoreBtn.style.transform = 'scale(1.05)';
+    });
+    viewMoreBtn.addEventListener('mouseleave', () => {
+        viewMoreBtn.style.transform = 'scale(1)';
+    });
+}
+
     </script>
 
     <script>

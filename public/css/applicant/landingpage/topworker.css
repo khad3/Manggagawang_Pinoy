@@ -6,7 +6,17 @@
     margin: 40px auto 0 auto;
     padding: 0 0 24px 0;
     font-size: 1rem;
-    margin-top: 300px;
+}
+.top-workers-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    margin-top: 100px;
+}
+
+.top-workers-header p {
+    font-size: 1.1rem;
+    padding: 2%;
 }
 
 .tw-header,
@@ -184,6 +194,7 @@
     .tw-profile-img {
         margin-top: 0;
     }
+    
 }
 
 /* Worker Row Stars */
@@ -261,7 +272,7 @@
 .tw-btn.tw-view-profile {
     padding: 6px 12px;
     font-size: 13px;
-    background-color: #007bff;
+    background-color: var(--primary-orange);
     color: #fff;
     border-radius: 4px;
     text-decoration: none;
@@ -315,7 +326,7 @@
 }
 
 .modal-header {
-    background-color: #007bff;
+    background-color: var(--primary-orange);
     color: white;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
@@ -340,13 +351,13 @@
 .review-item {
     padding: 12px 15px;
     margin-bottom: 12px;
-    border-left: 4px solid #007bff;
+    border-left: 4px solid var(--primary-orange);
     background-color: #f8f9fa;
     border-radius: 5px;
 }
 
 .review-item strong {
-    color: #007bff;
+    color: var(--primary-orange);
     font-size: 15px;
     display: block;
     margin-bottom: 6px;
@@ -376,203 +387,192 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .tw-row {
-        flex-wrap: wrap;
-        font-size: 13px;
-        padding: 12px 8px;
-    }
-
-    .tw-col {
-        flex: 1 1 48%;
-        min-width: 100px;
-        margin-bottom: 8px;
-    }
-
-    .tw-col.actions {
-        flex: 0 0 100%;
-        text-align: center;
-        margin-top: 8px;
-    }
-
-    .tw-dropdown {
-        padding: 15px;
-        margin: 10px 0;
-    }
-
-    .tw-dropdown-content {
-        flex-direction: row;
-        align-items: flex-start;
-        text-align: left;
-        gap: 12px;
-    }
-
-    .tw-profile-img {
-        width: 70px;
-        height: 70px;
-        flex-shrink: 0;
-    }
-
-    .tw-profile-info strong {
-        font-size: 15px;
-        margin-bottom: 6px;
-    }
-
-    .tw-profile-info p {
-        font-size: 13px;
-        line-height: 1.4;
-        margin-bottom: 8px;
-    }
-
-    .tw-btn.tw-view-profile {
-        padding: 6px 14px;
-        font-size: 12px;
-    }
-
-    .stars {
-        font-size: 12px;
-    }
-
-    .stars small {
-        font-size: 11px;
-    }
-
-    /* Modal responsive */
-    .modal-dialog {
-        width: 95%;
-        max-width: 500px;
-        margin: 10px auto;
-    }
-
-    .modal-body {
-        max-height: 50vh;
-        padding: 15px;
-    }
-
-    .modal-title {
-        font-size: 16px;
-    }
-
-    .review-item {
-        padding: 10px 12px;
-        margin-bottom: 10px;
-    }
-
-    .review-item strong {
-        font-size: 14px;
-    }
-
-    .review-item p {
-        font-size: 13px;
-    }
-
-    .review-stars i {
-        font-size: 12px;
-    }
+  /* Top Workers Table - Card Style for all screens */
+.top-workers-table {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(2, 1, 128, 0.04);
+    max-width: 950px;
+    margin: 40px auto 0 auto;
+    padding: 16px;
+    font-size: 1rem;
 }
 
-@media (max-width: 480px) {
-    .tw-row {
-        font-size: 12px;
-        padding: 10px 5px;
-    }
+/* Worker Cards */
+.tw-row {
+    display: flex;
+    flex-direction: column; /* stacked vertically like mobile */
+    padding: 12px;
+    margin-bottom: 16px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    transition: background 0.2s, box-shadow 0.2s;
+}
 
-    .tw-col {
-        flex: 1 1 100%;
-        margin-bottom: 6px;
-    }
+.tw-row:hover {
+    background: #f8f9fa;
+    box-shadow: 0 4px 12px rgba(2, 1, 128, 0.08);
+}
 
-    .tw-dropdown {
-        padding: 12px 8px;
-    }
+/* Worker Info Columns */
+.tw-col {
+    flex: 1 1 100%;
+    margin-bottom: 6px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal; /* allow wrapping */
+}
 
-    .tw-dropdown-content {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        gap: 10px;
-    }
+.tw-col.name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #020180;
+}
 
-    .tw-profile-img {
-        width: 80px;
-        height: 80px;
-    }
+.tw-col.hire-rate {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
 
-    .tw-profile-info {
-        width: 100%;
-    }
+.stars i {
+    color: #ffc107;
+}
 
-    .tw-profile-info strong {
-        font-size: 14px;
-    }
+.stars small {
+    font-size: 12px;
+    color: #888;
+}
 
-    .tw-profile-info p {
-        font-size: 12px;
-    }
+/* Location & Industry */
+.tw-col.location,
+.tw-col.industry {
+    font-size: 0.95rem;
+    color: #555;
+}
 
-    .tw-btn.tw-view-profile {
-        padding: 8px 16px;
-        font-size: 12px;
-        width: 100%;
-        max-width: 200px;
-    }
+/* Dropdown Button */
+.tw-dropdown-btn {
+    align-self: flex-start;
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: #666;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
 
-    /* Modal mobile optimized */
-    .modal-dialog {
-        width: 96%;
-        max-width: 400px;
-        margin: 5px auto;
-    }
+.tw-dropdown-btn.open {
+    transform: rotate(180deg);
+}
 
-    .modal-content {
-        border-radius: 8px;
-    }
+/* Dropdown Details */
+.tw-dropdown {
+    display: none;
+    flex-direction: column;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+}
 
-    .modal-header {
-        padding: 12px 15px;
-    }
+.tw-dropdown-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+}
 
-    .modal-title {
-        font-size: 14px;
-        line-height: 1.3;
-    }
+.tw-profile-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    object-fit: cover;
+    background: #e5e7eb;
+}
 
-    .modal-body {
-        max-height: 65vh;
-        padding: 12px;
-    }
+.tw-profile-info strong {
+    font-size: 1rem;
+    color: #020180;
+}
 
-    .modal-footer {
-        padding: 10px 15px;
-    }
+.tw-profile-info p {
+    font-size: 0.95rem;
+    color: #333;
+    margin: 6px 0;
+}
 
-    .review-item {
-        padding: 8px 10px;
-        margin-bottom: 8px;
-    }
+.tw-profile-actions .tw-btn {
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    border-radius: 6px;
+}
 
-    .review-item strong {
-        font-size: 13px;
-        margin-bottom: 4px;
-    }
+/* View More Button */
+.tw-view-more {
+    display: block;
+    width: 100%;
+    max-width: 200px;
+    margin: 16px auto 0 auto;
+    padding: 10px 20px;
+    font-size: 1rem;
+    background: #020180;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
 
-    .review-item p {
-        font-size: 12px;
-        line-height: 1.4;
-        margin: 6px 0;
-    }
+.tw-view-more:hover {
+    background: #678fff;
+}
 
-    .review-stars i {
-        font-size: 11px;
-    }
+/* Modal Styling (kept mobile-friendly) */
+.modal-dialog {
+    width: 95%;
+    max-width: 500px;
+}
 
-    .review-date {
-        font-size: 10px;
-    }
+.modal-body {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 15px;
+}
 
-    .btn-secondary {
-        font-size: 13px;
-        padding: 6px 12px;
-    }
+/* Reviews */
+.review-item {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-left: 4px solid #020180;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+}
+
+.review-item strong {
+    color: #020180;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.review-item p {
+    font-size: 0.9rem;
+    margin: 4px 0;
+}
+
+.review-stars i {
+    font-size: 12px;
+    color: #ffc107;
+}
+
+/* Remove table layout on desktop - card layout applied universally */
+.tw-header {
+    display: none; /* Hide header for card-style layout */
+}
+
 }
 
 @media (max-width: 360px) {
@@ -602,3 +602,5 @@
         font-size: 11px;
     }
 }
+
+
