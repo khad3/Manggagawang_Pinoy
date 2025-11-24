@@ -178,9 +178,17 @@
                                         @endauth
 
                                         <td>
-                                            {{ $application->personal_info && $application->personal_info->first_name ? $application->personal_info->first_name : 'N/A' }}
-                                            {{ $application->personal_info && $application->personal_info->last_name ? $application->personal_info->last_name : '' }}
+                                            {{ $application->applicant->personal_info?->first_name || $application->applicant->personal_info?->last_name
+                                                ? trim(
+                                                    ($application->applicant->personal_info->first_name ?? '') .
+                                                        ' ' .
+                                                        ($application->applicant->personal_info->last_name ?? ''),
+                                                )
+                                                : 'N/A' }}
                                         </td>
+
+
+
 
 
                                         <td>{{ $application->certification_program ?? 'N/A' }}</td>

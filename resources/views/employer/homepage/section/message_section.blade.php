@@ -1,58 +1,3 @@
-<style>
-/* Hide elements on mobile using this class */
-.hidden-mobile {
-    display: none !important;
-}
-
-/* Mobile-specific layout behavior */
-@media (max-width: 768px) {
-    .mobile-header {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 15px;
-        background: #fff;
-        border-bottom: 1px solid #ddd;
-    }
-
-    .back-btn {
-        background: none;
-        border: none;
-        padding: 5px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-    }
-
-    .back-btn svg {
-        width: 24px;
-        height: 24px;
-        stroke-width: 2;
-    }
-
-    .chat-container {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-    }
-
-    .conversations-panel {
-        width: 100%;
-    }
-
-    .chat-panel {
-        width: 100%;
-    }
-}
-
-/* On desktop, hide the mobile header and back button */
-@media (min-width: 769px) {
-    .mobile-header {
-        display: none !important;
-    }
-}
-</style>
-
 <div class="page-section" id="messages-section">
     <div class="content-section messages-wrapper">
         <!-- Header -->
@@ -579,15 +524,15 @@
 
                 receiverInput.value = currentApplicantId;
                 chatComposer.style.display = 'flex';
-if (isMobile()) {
-    // Switch to chat view
-    conversationsPanel.classList.add('hidden-mobile');
-    chatPanel.classList.remove('hidden-mobile');
-    document.querySelector('.mobile-header').style.display = 'flex';
-}
+                if (isMobile()) {
+                    // Switch to chat view
+                    conversationsPanel.classList.add('hidden-mobile');
+                    chatPanel.classList.remove('hidden-mobile');
+                    document.querySelector('.mobile-header').style.display = 'flex';
+                }
 
-// Always show the chat composer when a chat is opened
-chatComposer.style.display = 'flex';
+                // Always show the chat composer when a chat is opened
+                chatComposer.style.display = 'flex';
 
 
                 const msgs = retrieveMessages.filter(m => m.applicant_id ==
@@ -683,27 +628,27 @@ chatComposer.style.display = 'flex';
         });
 
         // ---------- Back Button ----------
-backBtn.addEventListener('click', () => {
-    if (isMobile()) {
-        // Show conversation list again
-        conversationsPanel.classList.remove('hidden-mobile');
-        chatPanel.classList.add('hidden-mobile');
-        document.querySelector('.mobile-header').style.display = 'none';
+        backBtn.addEventListener('click', () => {
+            if (isMobile()) {
+                // Show conversation list again
+                conversationsPanel.classList.remove('hidden-mobile');
+                chatPanel.classList.add('hidden-mobile');
+                document.querySelector('.mobile-header').style.display = 'none';
 
-        // Hide composer and reset header when going back
-        chatComposer.style.display = 'none';
-        chatHeader.style.display = 'none';
+                // Hide composer and reset header when going back
+                chatComposer.style.display = 'none';
+                chatHeader.style.display = 'none';
 
-        // Optional: clear chat content for clean UI
-        chatMessages.innerHTML = `
+                // Optional: clear chat content for clean UI
+                chatMessages.innerHTML = `
             <div class="chat-placeholder">
                 <div class="placeholder-icon">💬</div>
                 <h4>Welcome to Messages</h4>
                 <p>Select an applicant to start a conversation</p>
             </div>
         `;
-    }
-});
+            }
+        });
 
 
 

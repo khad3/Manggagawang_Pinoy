@@ -4,93 +4,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terms & Conditions</title>
-    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}" />
-
+    <title>Terms and Conditions - Manggagawang Pinoy</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ asset('css/applicant/term_condition/term_condition.css') }}">
 </head>
 
 <body>
-    <!-- Terms of Use -->
-    <div class="terms-container" style="max-width: 900px; margin: 0 auto; padding: 20px; line-height: 1.6;">
-        <h2 class="text-center mb-4">Terms of Use</h2>
-        <p> Please read these Terms of Use (“Terms”) carefully before accessing and using the <strong>Mangagawang Pinoy
-                Platform</strong> (“Platform”). </p>
-        <p> The Platform refers to the website, pages, products, and services accessible online at
-            <strong>https://manggagawangpinoy.com/</strong>. The Platform is owned and operated by <strong>Mangagawang
-                Pinoy</strong>
-            (“Mangagawang Pinoy”, “we”, “us”, or “our”) and is provided for the sole use of its users and clients.
-        </p>
-        <p> By accessing or using our Platform, you (“Applicant”, “Employer”, or “User”) agree to be bound by these
-            Terms. If you do not agree, please do not use our website or create an account. These Terms apply together
-            with our <a href="{{ route('display.privacypolicy') }}">Privacy Policy</a>, and if applicable, our <a
-                href="{{ route('display.datasharing') }}">Data Sharing Policy</a>. </p>
-        <hr>
-        <h4>1. Eligibility</h4>
-        <p> - You must be at least <strong>18 years old</strong> to use the Platform.<br> - By creating an account, you
-            confirm that you are 18 years or older.<br> - Users under 18 are strictly prohibited from accessing or using
-            the Platform. </p>
-        <h4>2. Condition of Use</h4>
-        <p> By using our Platform, you agree to comply with all applicable laws, rules, and policies at all times. </p>
-        <h4>3. Accountability</h4>
-        <p> - Accounts must be created with a valid email address via the official registration form.<br> - Third-party
-            logins (Google, Facebook, etc.) are not supported.<br> - You are responsible for securing your account and
-            monitoring its usage.<br> - For account recovery, please contact
-            <strong>https://manggagawangpinoy.com/</strong>.
-        </p>
-        <h4>4. Acceptable Behavior</h4>
-        <p>Users are expected to:</p>
-        <ul>
-            <li>Uphold professionalism and ethical conduct at all times.</li>
-            <li>Comply with all Philippine laws, including the <strong>Data Privacy Act of 2012</strong> and DOLE
-                regulations.</li>
-            <li>Avoid posting content that is offensive, defamatory, obscene, or illegal.</li>
-            <li>Refrain from fraud, phishing, hacking, or other cybercrimes.</li>
-        </ul>
-        <h4>5. Fair Use</h4>
-        <p> The Platform may only be used for legitimate job-seeking or recruitment purposes. Any misuse (e.g., hacking,
-            scraping, unauthorized access) may result in account suspension and legal action. You agree to indemnify
-            Mangagawang Pinoy for damages caused by your misuse. </p>
-        <h4>6. Policies</h4>
-        <p> Users must regularly review the Platform’s policies and guidelines. Policies may be updated without prior
-            notice. Continued use of the Platform implies acceptance of updates. </p>
-        <h4>7. Management of Platform</h4>
-        <p> Mangagawang Pinoy reserves the right to maintain, upgrade, or suspend any part of the Platform. For
-            concerns, contact <strong>https://manggagawangpinoy.com/</strong>. </p>
-        <h4>8. Use of Materials</h4>
-        <p> All content is protected by intellectual property laws. You may not reproduce, distribute, or modify any
-            content without prior written permission. Downloads or screenshots are permitted only for personal,
-            non-commercial use. </p>
-        <h4>9. Privacy Policy</h4>
-        <p> Please review our <a href="{{ route('display.privacypolicy') }}">Privacy Policy</a> to understand how we
-            collect,
-            use, and protect your data. </p>
-        <h4>10. Access</h4>
-        <p> Limited access is granted for lawful job-seeking and recruitment purposes only. Report suspicious activity
-            to <strong>manggawangpinoycompany@gmail.com</strong>. </p>
-        <h4>11. User Accounts</h4>
-        <p> You are responsible for maintaining the confidentiality of your login credentials. Unauthorized account
-            sharing is strictly prohibited. Accounts violating these Terms may be suspended or terminated. </p>
-        <h4>12. Confidentiality of Communication</h4>
-        <p> Feedback, suggestions, or inquiries submitted to us may be used to improve services. Unless specified,
-            communications are treated as non-confidential. </p>
-        <h4>13. Third-Party Services</h4>
-        <p> We are not responsible for the accuracy, legality, or reliability of third-party links or content. Use of
-            such services is at your own risk. </p>
-        <h4>14. Term and Termination</h4>
-        <p> These Terms remain in effect unless terminated. Mangagawang Pinoy reserves the right to revoke access for
-            violations without prior notice. </p>
-        <h4>15. Amendments</h4>
-        <p> We may revise these Terms at any time. Continued use of the Platform implies acceptance of the updated
-            Terms. </p>
-        <h4>16. Limited Liability & Disclaimer</h4>
-        <p> Use of the Platform is at your own risk. Services are provided “as-is” without warranties. We disclaim
-            liability for losses or damages from use of the Platform. </p>
-        <h4>17. Contact Information</h4>
-        <p> For any concerns, please contact us at <strong>https://manggagawangpinoy.com/</strong>. </p>
-        <hr>
-        <p class="text-center"><em>Last Updated: {{ date('F j, Y') }}</em></p>
-    </div>
+    <div class="container">
+        <div class="header">
+            <h1>Manggagawang Pinoy</h1>
+            <div class="subtitle">Terms and Conditions</div>
+        </div>
 
+        <div class="content">
+            <div class="last-updated">
+                <strong>Last Updated:</strong> November, 2025
+            </div>
+
+            <div class="intro">
+                <p>These Terms and Conditions <span class="highlight">("Terms")</span> govern your access to and use of
+                    the <span class="highlight">Manggagawang Pinoy platform</span> <span
+                        class="highlight">("Service")</span>. By creating an account, accessing, or using the Service,
+                    you acknowledge that you have read, understood, and agreed to be bound by these Terms. <strong>If
+                        you do not agree, you must discontinue use of the Service immediately.</strong></p>
+            </div>
+
+            <div class="section">
+                <h2>1. Purpose of the Service</h2>
+                <p>The <span class="highlight">Manggagawang Pinoy platform</span> is developed to provide Filipino
+                    workers with digital tools, employment-related information, and system functionalities intended to
+                    improve access to labor services and opportunities.</p>
+            </div>
+
+            <div class="section">
+                <h2>2. Eligibility and Account Registration</h2>
+                <h3>2.1. Account Information</h3>
+                <p>Users must provide <span class="highlight">complete, accurate, and verifiable information</span> when
+                    creating an account.</p>
+
+                <h3>2.2. Account Security</h3>
+                <p>Users are responsible for <span class="highlight">maintaining the confidentiality</span> of their
+                    login credentials.</p>
+
+                <h3>2.3. Account Responsibility</h3>
+                <p>Any activity performed under the user's account shall be deemed as <span class="highlight">the user's
+                        responsibility</span>.</p>
+
+                <h3>2.4. Account Termination</h3>
+                <p>The Service reserves the right to <span class="highlight">suspend or terminate accounts</span> found
+                    to be fraudulent, inaccurate, or engaged in unauthorized activities.</p>
+            </div>
+
+            <div class="section">
+                <h2>3. Acceptable Use</h2>
+                <h3>3.1. Lawful Use</h3>
+                <p>The user agrees to use the platform solely for <span class="highlight">lawful and legitimate
+                        purposes</span>.</p>
+
+                <h3>3.2. Prohibited Activities</h3>
+                <p>The user shall not engage in activities that may:</p>
+                <ul>
+                    <li>Harm, disrupt, or compromise the security of the Service</li>
+                    <li>Violate the rights, privacy, or intellectual property of others</li>
+                    <li>Introduce malicious code or unauthorized system interference</li>
+                </ul>
+
+                <h3>3.3. Consequences of Misuse</h3>
+                <p>Misuse or abuse of the platform will result in <span class="highlight">suspension or permanent
+                        removal of access</span>.</p>
+            </div>
+
+            <div class="section">
+                <h2>4. Intellectual Property Rights</h2>
+                <h3>4.1. Ownership</h3>
+                <p>All system components including <span class="highlight">trademarks, logos, interface designs, text
+                        content, graphics, and system architecture</span> are the exclusive property of Manggagawang
+                    Pinoy.</p>
+
+                <h3>4.2. Usage Restrictions</h3>
+                <p>Users are <span class="highlight">prohibited from copying, distributing, modifying, or
+                        reproducing</span> any material from the platform without prior written authorization.</p>
+
+                <h3>4.3. Legal Action</h3>
+                <p>Unauthorized use of intellectual property constitutes a <span class="highlight">violation of
+                        applicable laws</span> and will be subject to legal action.</p>
+            </div>
+
+            <div class="section">
+                <h2>5. Platform Availability and Maintenance</h2>
+                <h3>5.1. Service Interruptions</h3>
+                <p>The Service may be temporarily unavailable due to <span class="highlight">maintenance, upgrades, or
+                        technical issues</span>.</p>
+
+                <h3>5.2. No Guarantee</h3>
+                <p>The platform does not guarantee <span class="highlight">uninterrupted operation or absolute
+                        error-free performance</span>.</p>
+
+                <h3>5.3. System Liability</h3>
+                <p>The developers shall not be liable for any loss resulting from system downtime, data unavailability,
+                    or technical malfunction.</p>
+            </div>
+
+            <div class="section">
+                <h2>6. Limitation of Liability</h2>
+
+                <div class="important-box">
+                    <h3>6.1. Right to Access</h3>
+                    <p>Users may formally <strong>request a copy of the personal information</strong> that the platform
+                        maintains about them. Requests will be processed in accordance with applicable data protection
+                        regulations and within a reasonable time frame.</p>
+                </div>
+
+                <h3>6.2. Liability Exclusions</h3>
+                <p>Manggagawang Pinoy shall not be held liable for:</p>
+                <ul>
+                    <li>Inaccurate user-provided information</li>
+                    <li>Employment outcomes or third-party actions</li>
+                    <li>Loss of data due to user negligence or system interruption</li>
+                    <li>Damages arising from unauthorized access to user accounts</li>
+                </ul>
+
+                <div class="important-box">
+                    <h3>6.3. Right to Deletion of Data</h3>
+                    <p>Users may <strong>request the removal of their personal information</strong> from the platform's
+                        records. Such requests will be granted unless retention is required to comply with legal
+                        obligations, resolve disputes, or support legitimate operational purposes.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>7. Amendments</h2>
+                <h3>7.1. Right to Modify</h3>
+                <p>The Service reserves the right to <span class="highlight">amend, modify, or update these Terms</span>
+                    at any time.</p>
+
+                <h3>7.2. Acceptance of Changes</h3>
+                <p>Continued use of the platform following such changes constitutes <span class="highlight">acceptance
+                        of the revised Terms</span>.</p>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <span class="tag">Employment Platform</span>
+                <span class="tag">Filipino Workers</span>
+                <span class="tag">Digital Services</span>
+            </div>
+        </div>
+
+        <div class="footer">
+            <h3 style="margin-bottom: 20px;">Important Links</h3>
+            <a href="{{ route('display.privacypolicy') }}">Data Privacy Policy</a>
+            <a href="{{ route('display.datasharing') }}">Data Sharing Agreement</a>
+            <div class="rights">
+                <p>&copy; 2025 Manggagawang Pinoy. All Rights Reserved.</p>
+                <p>Empowering Filipino Workers Through Digital Innovation</p>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

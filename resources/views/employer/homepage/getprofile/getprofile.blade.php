@@ -117,24 +117,42 @@
                     </div>
                     <div class="col">
                         <div class="candidate-basic-info">
-                            <h4 class="candidate-name">{{ $retrievedProfile->personal_info->first_name }}
-                                {{ $retrievedProfile->personal_info->last_name }}</h4>
+                            <h4 class="candidate-name">
+                                {{ $retrievedProfile->personal_info->first_name }}
+                                {{ $retrievedProfile->personal_info->last_name }}
+                            </h4>
+
                             <div class="candidate-role">
-                                {{ strtolower($retrievedProfile->work_background->position) === 'other'
-                                    ? $retrievedProfile->work_background->other_position
-                                    : $retrievedProfile->work_background->position }}
+                                @php
+                                    $position = trim($retrievedProfile->work_background->position ?? '');
+                                    $otherPosition = trim($retrievedProfile->work_background->other_position ?? '');
+                                @endphp
+
+                                @if (!empty($position) && strtolower($position) === 'other')
+                                    {{ $otherPosition ?: 'N/A' }}
+                                @elseif (!empty($position))
+                                    {{ $position }}
+                                @elseif (!empty($otherPosition))
+                                    {{ $otherPosition }}
+                                @else
+                                    N/A
+                                @endif
+
                                 <span class="experience-badge">
                                     {{ $retrievedProfile->work_background->work_duration }}
                                     {{ $retrievedProfile->work_background->work_duration_unit }} experience
                                 </span>
                             </div>
 
-                            <div class="candidate-location"><i class="fas fa-map-marker-alt"></i>
+                            <div class="candidate-location">
+                                <i class="fas fa-map-marker-alt"></i>
                                 {{ $retrievedProfile->personal_info->house_street }}
                                 {{ $retrievedProfile->personal_info->city }}
                                 {{ $retrievedProfile->personal_info->province }}
-                                {{ $retrievedProfile->personal_info->zipcode }}</div>
+                                {{ $retrievedProfile->personal_info->zipcode }}
+                            </div>
                         </div>
+
                     </div>
                     <div class="col-auto">
                         <div class="candidate-score-card">

@@ -11,14 +11,14 @@
 </head>
 
 <body>
-       <!-- Responsive Navbar (HTML) -->
+    <!-- Responsive Navbar (HTML) -->
     <nav>
         <div class="navbar-container">
             <div class="nav-logo d-flex align-items-center">
                 <a href="{{ route('display.index') }}" class="d-flex align-items-center gap-2"
                     style="text-decoration:none;">
                     <img src="{{ asset('img/logotext.png') }}" alt="MP Logo" id="home" />
-                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" style="margin-bottom:35px;"/>
+                    <img src="{{ asset('img/logo.png') }}" alt="MP Logo" id="home2" style="margin-bottom:35px;" />
                 </a>
             </div>
             <ul class="nav-links" id="navLinks">
@@ -53,10 +53,10 @@
 
             <div class="mobile-navbar" id="mobileNavbar" role="dialog" aria-modal="true" aria-hidden="true">
                 <div class="nav-top">
-            <div class="nav-logo">
-                <img src="img/logotext.png" alt="MP Logo" id="home" />
-                <img src="img/logo.png" alt="MP Logo" id="home2" />
-            </div>
+                    <div class="nav-logo">
+                        <img src="img/logotext.png" alt="MP Logo" id="home" />
+                        <img src="img/logo.png" alt="MP Logo" id="home2" />
+                    </div>
                     <button id="closeMenu" class="close-btn" aria-label="Close menu"></button>
                 </div>
 
@@ -68,9 +68,11 @@
                     <li class="dropdown" role="none">
                         <button class="dropdown-btn" aria-expanded="false">Sign in</button>
                         <ul class="dropdown-content" role="menu" aria-hidden="true">
-                            <li role="none"><a role="menuitem" href="{{ route('applicant.login.display') }}">As Applicant</a>
+                            <li role="none"><a role="menuitem" href="{{ route('applicant.login.display') }}">As
+                                    Applicant</a>
                             </li>
-                            <li role="none"><a role="menuitem" href="{{ route('employer.login.display') }}">As Employer</a>
+                            <li role="none"><a role="menuitem" href="{{ route('employer.login.display') }}">As
+                                    Employer</a>
                             </li>
                         </ul>
                     </li>
@@ -78,9 +80,11 @@
                     <li class="dropdown" role="none">
                         <button class="dropdown-btn" aria-expanded="false">Sign up </button>
                         <ul class="dropdown-content" role="menu" aria-hidden="true">
-                            <li role="none"><a role="menuitem" href="{{ route('applicant.register.display') }}">As Applicant</a>
+                            <li role="none"><a role="menuitem" href="{{ route('applicant.register.display') }}">As
+                                    Applicant</a>
                             </li>
-                            <li role="none"><a role="menuitem" href="{{ route('employer.register.display') }}">As Employer</a>
+                            <li role="none"><a role="menuitem" href="{{ route('employer.register.display') }}">As
+                                    Employer</a>
                             </li>
                         </ul>
                     </li>
@@ -98,16 +102,20 @@
         <li class="m-dropdown" role="none">
             <button class="m-drop-btn" aria-expanded="false">Sign in <span></span></button>
             <ul class="m-dropdown-menu" role="menu">
-                <li role="none"><a role="menuitem" href="{{ route('applicant.login.display') }}">As Applicant</a></li>
-                <li role="none"><a role="menuitem" href="{{ route('employer.login.display') }}">As Employer</a></li>
+                <li role="none"><a role="menuitem" href="{{ route('applicant.login.display') }}">As Applicant</a>
+                </li>
+                <li role="none"><a role="menuitem" href="{{ route('employer.login.display') }}">As Employer</a>
+                </li>
             </ul>
         </li>
 
         <li class="m-dropdown" role="none">
             <button class="m-drop-btn" aria-expanded="false">Sign up <span></span></button>
             <ul class="m-dropdown-menu" role="menu">
-                <li role="none"><a role="menuitem" href="{{ route('applicant.register.display') }}">As Applicant</a></li>
-                <li role="none"><a role="menuitem" href="{{ route('employer.register.display') }}">As Employer</a></li>
+                <li role="none"><a role="menuitem" href="{{ route('applicant.register.display') }}">As
+                        Applicant</a></li>
+                <li role="none"><a role="menuitem" href="{{ route('employer.register.display') }}">As
+                        Employer</a></li>
             </ul>
         </li>
     </ul>
@@ -165,14 +173,15 @@
                     </div>
                     <h3 class="member-name">Alexander Bataller</h3>
                     <p class="member-role">Quality Assurance & Testing Lead</p>
-                    <p class="member-description">Quality Assurance Lead specializing in web app testing and automation.
+                    <p class="member-description">Quality Assurance Lead specializing in web app testing and
+                        automation.
                         I ensure seamless user experiences by delivering reliable, bug-free applications through
                         expert test strategies.
 
                     </p>
                     <div class="member-skills">
                         <span class="skill-tag">Augmented Reality</span>
-                        <span class="skill-tag">Performance Testing</span>
+                        <span class="skill-tag">Support Specialist</span>
                         <span class="skill-tag">Quality Assurance</span>
                     </div>
                 </div>
@@ -385,9 +394,11 @@
 </body>
 
 </html>
-    <script>
+<script>
     (function() {
-        function log(...args) { if (window.console) console.log('[nav]', ...args); }
+        function log(...args) {
+            if (window.console) console.log('[nav]', ...args);
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             try {

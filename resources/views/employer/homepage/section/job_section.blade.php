@@ -357,21 +357,23 @@
                                            <i class="fas fa-list me-2 text-accent-blue"></i>
                                            Applications
                                        </h6>
-                                       <select
+                                       <select id="statusFilter"
                                            class="form-select form-select-sm bg-balanced-card text-balanced-dark border-balanced-light"
                                            style="max-width: 200px;">
-                                           <option>All Status</option>
-                                           <option>Pending</option>
-                                           <option>Reviewed</option>
-                                           <option>Approved</option>
-                                           <option>Rejected</option>
+                                           <option value="all">All Status</option>
+                                           <option value="pending">Pending</option>
+
+                                           <option value="approved">Approved</option>
+                                           <option value="rejected">Rejected</option>
+                                           <option value="interview">Interview</option>
                                        </select>
                                    </div>
 
                                    <div class="applications-list">
                                        @forelse ($jobDetail->applications as $application)
                                            <div class="application-item mb-3 bg-balanced-card rounded shadow-sm border border-balanced-light"
-                                               id="application-{{ $application->id }}">
+                                               id="application-{{ $application->id }}"
+                                               data-status="{{ $application->status ?? 'pending' }}">
                                                <!-- Candidate Info Header -->
                                                <div class="p-3 border-bottom border-balanced">
                                                    <div class="row align-items-center g-2">
@@ -410,10 +412,10 @@
                                                                class="d-flex flex-column align-items-start align-items-sm-end gap-1">
                                                                <span
                                                                    class="badge fw-medium px-3 py-1 rounded-pill shadow-sm
-                            @if ($application->status == 'approved') bg-success-balanced text-white
-                            @elseif($application->status == 'rejected') bg-danger-balanced text-white
-                            @elseif($application->status == 'interview') bg-info-balanced text-white
-                            @else bg-warning-balanced text-dark @endif">
+                                    @if ($application->status == 'approved') bg-success-balanced text-white
+                                    @elseif($application->status == 'rejected') bg-danger-balanced text-white
+                                    @elseif($application->status == 'interview') bg-info-balanced text-white
+                                    @else bg-warning-balanced text-dark @endif">
                                                                    <i class="fas fa-circle me-1"
                                                                        style="font-size: 6px;"></i>
                                                                    {{ ucfirst($application->status ?? 'Pending') }}
@@ -548,6 +550,43 @@
                                        @endforelse
 
                                        <script>
+                                           // Filter functionality
+                                           document.getElementById('statusFilter').addEventListener('change', function() {
+                                               const selectedStatus = this.value.toLowerCase();
+                                               const applications = document.querySelectorAll('.application-item');
+                                               let visibleCount = 0;
+
+                                               applications.forEach(app => {
+                                                   const appStatus = app.dataset.status.toLowerCase();
+
+                                                   if (selectedStatus === 'all' || appStatus === selectedStatus) {
+                                                       app.style.display = '';
+                                                       visibleCount++;
+                                                   } else {
+                                                       app.style.display = 'none';
+                                                   }
+                                               });
+
+                                               // Show/hide empty state
+                                               const noApplicationsMsg = document.getElementById('no-applications');
+                                               if (visibleCount === 0 && !noApplicationsMsg) {
+                                                   const emptyState = document.createElement('div');
+                                                   emptyState.id = 'no-applications-filtered';
+                                                   emptyState.className = 'text-center py-5';
+                                                   emptyState.innerHTML = `
+                        <i class="fas fa-filter fa-3x text-balanced-muted opacity-50 mb-3"></i>
+                        <h6 class="text-balanced-muted mb-2">No Applications Found</h6>
+                        <p class="text-balanced-muted small">No applications match the selected filter.</p>
+                    `;
+                                                   document.querySelector('.applications-list').appendChild(emptyState);
+                                               } else if (visibleCount > 0) {
+                                                   const filteredMsg = document.getElementById('no-applications-filtered');
+                                                   if (filteredMsg) {
+                                                       filteredMsg.remove();
+                                                   }
+                                               }
+                                           });
+
                                            document.querySelectorAll('.status-btn').forEach(btn => {
                                                btn.addEventListener('click', function() {
                                                    const newStatus = this.dataset.status;
@@ -587,9 +626,9 @@
                                                        form.method = 'POST';
                                                        form.action = action;
                                                        form.innerHTML = `
-                    @csrf
-                    @method('PUT')
-                `;
+                            @csrf
+                            @method('PUT')
+                        `;
                                                        document.body.appendChild(form);
                                                        form.submit();
                                                    };
@@ -599,103 +638,102 @@
                                            });
                                        </script>
 
-                                   </div>
+                                       <script>
+                                           document.addEventListener('DOMContentLoaded', function() {
+                                               // Handle reject button clicks
+                                               document.querySelectorAll('.reject-form').forEach(form => {
+                                                   form.addEventListener('submit', function(e) {
+                                                       e.preventDefault(); // Prevent default form submission
 
-                                   <script>
-                                       document.addEventListener('DOMContentLoaded', function() {
-                                           // Handle reject button clicks
-                                           document.querySelectorAll('.reject-form').forEach(form => {
-                                               form.addEventListener('submit', function(e) {
-                                                   e.preventDefault(); // Prevent default form submission
+                                                       const applicationId = this.querySelector('.reject-btn').dataset.applicationId;
+                                                       const applicationElement = document.getElementById(
+                                                           `application-${applicationId}`);
 
-                                                   const applicationId = this.querySelector('.reject-btn').dataset.applicationId;
-                                                   const applicationElement = document.getElementById(
-                                                       `application-${applicationId}`);
+                                                       // Show confirmation dialog
+                                                       if (confirm('Are you sure you want to reject this application?')) {
+                                                           // Add fade out animation
+                                                           applicationElement.style.transition =
+                                                               'opacity 0.5s ease-out, transform 0.5s ease-out';
+                                                           applicationElement.style.opacity = '0';
+                                                           applicationElement.style.transform = 'translateX(-20px)';
 
-                                                   // Show confirmation dialog
-                                                   if (confirm('Are you sure you want to reject this application?')) {
-                                                       // Add fade out animation
-                                                       applicationElement.style.transition =
-                                                           'opacity 0.5s ease-out, transform 0.5s ease-out';
-                                                       applicationElement.style.opacity = '0';
-                                                       applicationElement.style.transform = 'translateX(-20px)';
+                                                           // Submit the form via AJAX
+                                                           const formData = new FormData(this);
 
-                                                       // Submit the form via AJAX
-                                                       const formData = new FormData(this);
+                                                           fetch(this.action, {
+                                                                   method: 'POST',
+                                                                   body: formData,
+                                                                   headers: {
+                                                                       'X-Requested-With': 'XMLHttpRequest'
+                                                                   }
+                                                               })
+                                                               .then(response => {
+                                                                   if (response.ok) {
+                                                                       // Remove element after animation completes
+                                                                       setTimeout(() => {
+                                                                           applicationElement.remove();
 
-                                                       fetch(this.action, {
-                                                               method: 'POST',
-                                                               body: formData,
-                                                               headers: {
-                                                                   'X-Requested-With': 'XMLHttpRequest'
-                                                               }
-                                                           })
-                                                           .then(response => {
-                                                               if (response.ok) {
-                                                                   // Remove element after animation completes
-                                                                   setTimeout(() => {
-                                                                       applicationElement.remove();
+                                                                           // Check if no applications left, show empty state
+                                                                           const remainingApplications = document
+                                                                               .querySelectorAll('.application-item');
+                                                                           if (remainingApplications.length === 0) {
+                                                                               document.querySelector('.applications-list')
+                                                                                   .innerHTML = `
+                                                    <div class="text-center py-5" id="no-applications">
+                                                        <div class="mb-3">
+                                                            <i class="fas fa-inbox fa-3x text-balanced-muted opacity-50"></i>
+                                                        </div>
+                                                        <h6 class="text-balanced-muted mb-2">No Applications Yet</h6>
+                                                        <p class="text-balanced-muted small">Applications will appear here when candidates apply.</p>
+                                                    </div>
+                                                `;
+                                                                           }
+                                                                       }, 500);
 
-                                                                       // Check if no applications left, show empty state
-                                                                       const remainingApplications = document
-                                                                           .querySelectorAll('.application-item');
-                                                                       if (remainingApplications.length === 0) {
-                                                                           document.querySelector('.applications-list')
-                                                                               .innerHTML = `
-                                    <div class="text-center py-5" id="no-applications">
-                                        <div class="mb-3">
-                                            <i class="fas fa-inbox fa-3x text-balanced-muted opacity-50"></i>
-                                        </div>
-                                        <h6 class="text-balanced-muted mb-2">No Applications Yet</h6>
-                                        <p class="text-balanced-muted small">Applications will appear here when candidates apply.</p>
-                                    </div>
-                                `;
-                                                                       }
-                                                                   }, 500);
-
-                                                                   // Show success message (optional)
-                                                                   showNotification('Application rejected successfully',
-                                                                       'success');
-                                                               } else {
+                                                                       // Show success message (optional)
+                                                                       showNotification('Application rejected successfully',
+                                                                           'success');
+                                                                   } else {
+                                                                       // Revert animation if request failed
+                                                                       applicationElement.style.opacity = '1';
+                                                                       applicationElement.style.transform = 'translateX(0)';
+                                                                       showNotification('Failed to reject application', 'error');
+                                                                   }
+                                                               })
+                                                               .catch(error => {
                                                                    // Revert animation if request failed
                                                                    applicationElement.style.opacity = '1';
                                                                    applicationElement.style.transform = 'translateX(0)';
-                                                                   showNotification('Failed to reject application', 'error');
-                                                               }
-                                                           })
-                                                           .catch(error => {
-                                                               // Revert animation if request failed
-                                                               applicationElement.style.opacity = '1';
-                                                               applicationElement.style.transform = 'translateX(0)';
-                                                               showNotification('An error occurred', 'error');
-                                                           });
-                                                   }
+                                                                   showNotification('An error occurred', 'error');
+                                                               });
+                                                       }
+                                                   });
                                                });
                                            });
-                                       });
 
-                                       // Optional: Simple notification function
-                                       function showNotification(message, type = 'info') {
-                                           // Create notification element
-                                           const notification = document.createElement('div');
-                                           notification.className =
-                                               `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
-                                           notification.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
-                                           notification.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
+                                           // Optional: Simple notification function
+                                           function showNotification(message, type = 'info') {
+                                               // Create notification element
+                                               const notification = document.createElement('div');
+                                               notification.className =
+                                                   `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+                                               notification.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
+                                               notification.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
 
-                                           document.body.appendChild(notification);
+                                               document.body.appendChild(notification);
 
-                                           // Auto remove after 3 seconds
-                                           setTimeout(() => {
-                                               if (notification.parentNode) {
-                                                   notification.remove();
-                                               }
-                                           }, 3000);
-                                       }
-                                   </script>
+                                               // Auto remove after 3 seconds
+                                               setTimeout(() => {
+                                                   if (notification.parentNode) {
+                                                       notification.remove();
+                                                   }
+                                               }, 3000);
+                                           }
+                                       </script>
+                                   </div>
                                </div>
                            </div>
 

@@ -19,31 +19,52 @@ use Illuminate\Support\Facades\Log;
 class TesdaOfficerController extends Controller
 {
 
-   private function safety_decrypt($value) {
+   private function safety_decrypt($value)
+{
     try {
+        // If value is null or empty, return as is
+        if (empty($value)) {
+            return $value;
+        }
+
+        // If value is already decrypted (not encrypted format), return it
+        // Example: Laravel encrypted values usually start with 'eyJ' or similar format
+        if (!is_string($value) || strpos($value, 'eyJ') !== 0) {
+            return $value;
+        }
+
+        // Try decrypting
         return decrypt($value);
+
     } catch (\Exception $e) {
         Log::error('Decryption error: ' . $e->getMessage());
-        return null; // fallback if decryption fails
+        return $value; // return original value if decryption fails
     }
 }
+
 
     
     public function homepage()
 {
     $tesdaOfficerId = auth()->guard('tesda_officer')->id();
 
-    // Retrieve all applicant certificates
-    $applicantCertificates = TesdaUploadCertificationModel::with('personal_info')->get();
+// Retrieve all applicant certificates with personal info
+$applicantCertificates = TesdaUploadCertificationModel::with('applicant.personal_info')->get();
 
-    //decrypt applicant names
-   foreach ($applicantCertificates as $certificate) {
-    $info = $certificate->personal_info;
+// Decrypt names
+foreach ($applicantCertificates as $certificate) {
+    $info = $certificate->applicant->personal_info ?? null;
+
     if ($info) {
-        $info->first_name = $info->first_name ? $this->safety_decrypt($info->first_name) : 'N/A';
-        $info->last_name  = $info->last_name ? $this->safety_decrypt($info->last_name) : '';
+        $firstName = !empty($info->first_name) ? $this->safety_decrypt($info->first_name) : null;
+        $lastName  = !empty($info->last_name)  ? $this->safety_decrypt($info->last_name)  : null;
+
+        // Save decrypted values so Blade can use them
+        $info->first_name = $firstName ?: 'N/A';
+        $info->last_name = $lastName ?: '';
     }
 }
+
 
 
     

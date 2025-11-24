@@ -260,7 +260,7 @@ body {
     background-color: var(--light-orange);
     color: white;
 }
-.fas{
+.fas {
     color: var(--primary-orange);
 }
 
@@ -389,7 +389,7 @@ body {
         flex-direction: row;
         align-items: center;
     }
-    .image-viewer-modal{
+    .image-viewer-modal {
         display: none;
     }
 }
@@ -1532,8 +1532,6 @@ body {
     }
 }
 
-
-
 .title {
     display: flex;
     align-items: center;
@@ -1727,9 +1725,9 @@ tr.selected {
     .details.open {
         right: 0;
     }
-.welcome-logo{
-    display:none;
-}
+    .welcome-logo {
+        display: none;
+    }
     /* mobile menu toggle appearance + position override for small screens */
     .mobile-menu-toggle {
         display: flex;
@@ -1941,7 +1939,6 @@ tr.selected {
         font-size: 1.1rem;
     }
 }
-
 
 .title {
     display: flex;
@@ -2697,7 +2694,7 @@ tr.selected {
 }
 
 .send-button {
-    background:var(--primary-orange);
+    background: var(--primary-orange);
     border: none;
     color: white;
     width: 44px;
@@ -2786,7 +2783,6 @@ tr.selected {
     /* Let text take remaining space without affecting avatar */
 }
 
-
 /* Avatar initials inside the circle */
 .avatar-initials {
     z-index: 1;
@@ -2802,4 +2798,119 @@ tr.selected {
     background-color: #00ff00;
     border: 2px solid #fff;
     border-radius: 50%;
+}
+
+/* Desktop (default) - table style remains */
+#applicantsTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.mobile-actions-wrapper {
+    display: none;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    /* Hide table headers */
+    #applicantsTable thead {
+        display: none;
+    }
+
+    .action-buttons-wrapper.actions-desktop {
+        display: none;
+    }
+
+    .mobile-actions-wrapper {
+        display: flex;
+        /* okay */
+    }
+
+    /* Make each row a card */
+    #applicantsTable tbody tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 1rem;
+        background: #fff;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Each cell becomes a block with label */
+    #applicantsTable tbody tr td {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border: none;
+    }
+
+    /* Add data-label as pseudo-content for mobile */
+
+    /* Adjust action buttons for mobile */
+    .action-buttons-wrapper.actions-desktop {
+        display: none;
+    }
+
+    @media (max-width: 768px) {
+        .mobile-actions-wrapper {
+            display: flex !important;
+            gap: 2rem;
+            flex-wrap: nowrap;
+            margin-top: 0.5rem;
+        }
+    }
+}
+
+/* Hide elements on mobile using this class */
+.hidden-mobile {
+    display: none !important;
+}
+
+/* Mobile-specific layout behavior */
+@media (max-width: 768px) {
+    .mobile-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 15px;
+        background: #fff;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .back-btn {
+        background: none;
+        border: none;
+        padding: 5px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+    }
+
+    .back-btn svg {
+        width: 24px;
+        height: 24px;
+        stroke-width: 2;
+    }
+
+    .chat-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .conversations-panel {
+        width: 100%;
+    }
+
+    .chat-panel {
+        width: 100%;
+    }
+}
+
+/* On desktop, hide the mobile header and back button */
+@media (min-width: 769px) {
+    .mobile-header {
+        display: none !important;
+    }
 }

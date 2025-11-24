@@ -11,6 +11,7 @@
         rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('css/applicant/profile.css') }}" />
     <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}" />
+
 </head>
 
 <body>
@@ -160,20 +161,19 @@
                                     ? asset('storage/' . $retrievedProfile->work_background->profileimage_path)
                                     : null;
 
-                            $placeholderImage = asset('img/workerdefault.png'); // replace with your placeholder image
+                            $placeholderImage = asset('img/workerdefault.png');
                         @endphp
 
                         <!-- Clickable Photo/Icon -->
                         <div data-bs-toggle="modal" data-bs-target="#viewProfileModal"
                             style="cursor: pointer; display: inline-block;">
                             @if ($profileImage)
-                                <img src="{{ $profileImage }}" alt="Profile Picture" />
+                                <img src="{{ $profileImage }}" alt="Profile Picture" class="profile-img-circle" />
                             @else
-                                {{-- Show initials fallback (from first & last name) --}}
-                                <img src="{{ asset('img/workerdefault.png') }}" alt="Default Profile Image">
+                                <img src="{{ $placeholderImage }}" alt="Default Profile Image"
+                                    class="profile-img-circle" />
                             @endif
                         </div>
-
 
                         <div class="online-indicator"></div>
                     </div>

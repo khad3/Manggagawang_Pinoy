@@ -1,70 +1,3 @@
-<style>
-    /* Desktop (default) - table style remains */
-    #applicantsTable {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .mobile-actions-wrapper {
-        display: none
-    }
-
-    /* Mobile styles */
-    @media (max-width: 768px) {
-
-        /* Hide table headers */
-        #applicantsTable thead {
-            display: none;
-        }
-
-        .action-buttons-wrapper.actions-desktop {
-            display: none;
-        }
-
-        .mobile-actions-wrapper {
-            display: flex;
-            /* okay */
-        }
-
-        /* Make each row a card */
-        #applicantsTable tbody tr {
-            display: block;
-            margin-bottom: 1rem;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 1rem;
-            background: #fff;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Each cell becomes a block with label */
-        #applicantsTable tbody tr td {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.5rem 0;
-            border: none;
-        }
-
-        /* Add data-label as pseudo-content for mobile */
-
-
-        /* Adjust action buttons for mobile */
-        .action-buttons-wrapper.actions-desktop {
-            display: none;
-        }
-
-        @media (max-width: 768px) {
-            .mobile-actions-wrapper {
-                display: flex !important;
-                gap: 2rem;
-                flex-wrap: nowrap;
-                margin-top: 0.5rem;
-            }
-        }
-
-    }
-</style>
-
 <script>
     // Optional: toggle expanded view for mobile cards
     document.addEventListener("DOMContentLoaded", function() {
@@ -218,14 +151,15 @@
                                 <td class="position-col" data-label="Position">
                                     <div class="position-info">
                                         <strong class="position-title">
-                                            @if (isset($applicant->work_background->position) && strtolower($applicant->work_background->position) === 'other')
-                                                {{ $applicant->work_background->other_position ?? 'N/A' }}
-                                            @elseif (!empty($applicant->work_background->position))
+                                            @if (!empty($applicant->work_background->position))
                                                 {{ $applicant->work_background->position }}
+                                            @elseif (!empty($applicant->work_background->other_position))
+                                                {{ $applicant->work_background->other_position }}
                                             @else
                                                 N/A
                                             @endif
                                         </strong>
+
                                         <small class="text-muted position-meta">
                                             @php
                                                 $employedStatus = isset($applicant->work_background->employed)

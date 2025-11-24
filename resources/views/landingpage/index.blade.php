@@ -225,7 +225,7 @@
 
     <section id="tutorial">
         <h1>Tutorial</h1><br>
-        <iframe width="100%" height="550" src="https://www.youtube.com/embed/d9fL7_BP3q8" title="Tutorial Video"
+        <iframe width="100%" height="550" src="https://www.youtube.com/embed/oVdQiS86oJM" title="Tutorial Video"
             frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
         </iframe>
     </section>

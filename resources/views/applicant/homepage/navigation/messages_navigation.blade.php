@@ -1,472 +1,3 @@
-<!-- Messages Dropdown (friendlist UI replica) -->
-<style>
-    
-.messages-container {
-    flex: 1;
-    padding: 1.5rem;
-    overflow-y: auto;
-    background: #f8f9fa;
-    position: relative;
-}
-
-.messages-container::-webkit-scrollbar {
-    width: 6px;
-}
-
-.messages-container::-webkit-scrollbar-thumb {
-    background: #aaa;
-    border-radius: 3px;
-}
-
-.message {
-    margin-bottom: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.message.sent {
-    align-items: flex-end;
-}
-
-.message.received {
-    align-items: flex-start;
-}
-
-.message-bubble {
-    max-width: 75%;
-    padding: 0.75rem 1rem;
-    border-radius: 20px;
-    word-wrap: break-word;
-    transition: all 0.2s ease;
-}
-
-.message.sent .message-bubble {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-}
-
-.message.received .message-bubble {
-    background: white;
-    color: #333;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-}
-
-.message-time {
-    font-size: 0.75rem;
-    color: #999;
-    margin-top: 0.25rem;
-}
-
-.message img {
-    max-width: 250px;
-    border-radius: 10px;
-    margin-bottom: 0.5rem;
-}
-
-.message-input {
-    padding: 1rem 1.5rem;
-    border-top: 1px solid #eee;
-    background: white;
-}
-
-.input-container {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.message-field {
-    flex: 1;
-    padding: 0.75rem 1rem;
-    border: 1px solid #ddd;
-    border-radius: 25px;
-    outline: none;
-    transition: border-color 0.2s ease;
-}
-
-.message-field:focus {
-    border-color: #764ba2;
-}
-
-.send-btn {
-    background:var(--primary-orange);
-    border: none;
-    color: white;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: transform 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.send-btn svg{
-    height:20px;
-    width:20px;
-}
-.send-btn:hover {
-    transform: scale(1.1);
-}
-
-.btn-light {
-    background: #f8f9fa;
-    border: 1px solid #ddd;
-    color: #666;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.welcome-screen,
-.no-messages {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    text-align: center;
-    color: #666;
-    opacity: 0.8;
-}
-
-.welcome-screen i,
-.no-messages i {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-}
-
-.preview-image-wrapper {
-    margin-top: 0.5rem;
-}
-
-@media (max-width: 768px) {
-    .chat-card {
-        flex-direction: column;
-    }
-
-    .friends-section {
-        position: absolute;
-        width: 100%;
-        z-index: 99;
-        background: #f0f2f5;
-        left: -100%;
-        transition: left 0.3s ease;
-        height: 100%;
-    }
-
-    .friends-section.show {
-        left: 0;
-    }
-
-    .friends-header {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .chat-header {
-        flex-wrap: wrap;
-        padding: 1rem;
-        gap: 10px;
-    }
-
-    .chat-section {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .message-input {
-        flex-direction: flex-start;
-    }
-
-    .input-container {
-        flex-wrap: wrap;
-    }
-
-    .message-field {
-        width: 100%;
-    }
-
-    .send-btn {
-       
-        margin-top: 8px;
-    }
-
-    .back-to-friends {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        background: none;
-        border: none;
-        font-weight: bold;
-        font-size: 1rem;
-        cursor: pointer;
-        color: #764ba2;
-        margin-bottom: 1rem;
-    }
-}
-
-.chat-wrapper {
-    display: flex;
-    justify-content: flex-start;
-    margin: 12px 0;
-    padding: 0 15px;
-}
-
-.chat-wrapper.sent {
-    justify-content: flex-end;
-}
-
-.bubble-container {
-    max-width: 75%;
-    background-color: #ffffff;
-    border-radius: 16px;
-    padding: 12px 14px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.07);
-    position: relative;
-    overflow: hidden;
-    transition: 0.3s;
-}
-
-.chat-wrapper.sent .bubble-container {
-    background-color: #d1f5d3;
-    border-bottom-right-radius: 4px;
-}
-
-.chat-wrapper.received .bubble-container {
-    background-color: #f0f0f0;
-    border-bottom-left-radius: 4px;
-}
-
-.message-image img {
-    width: 100%;
-    max-height: 200px;
-    object-fit: cover;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-}
-
-.message-text p {
-    margin: 0;
-    font-size: 15px;
-    color: #333;
-    word-break: break-word;
-}
-
-.timestamp {
-    font-size: 11px;
-    text-align: right;
-    color: #999;
-    margin-top: 6px;
-}
-
-/* Typing Indicator Styles */
-.typing-indicator {
-    display: none;
-    padding: 12px 16px;
-    margin: 8px 16px;
-    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-    border-radius: 20px;
-    border-left: 4px solid #007bff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    animation: slideIn 0.3s ease-out;
-}
-
-.typing-indicator .typing-text {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    color: #6c757d;
-    font-weight: 500;
-}
-
-.typing-dots {
-    display: flex;
-    gap: 3px;
-}
-
-.typing-dot {
-    width: 6px;
-    height: 6px;
-    background: #007bff;
-    border-radius: 50%;
-    animation: typingBounce 1.4s infinite ease-in-out;
-}
-
-.typing-dot:nth-child(1) {
-    animation-delay: -0.32s;
-}
-.typing-dot:nth-child(2) {
-    animation-delay: -0.16s;
-}
-
-@keyframes typingBounce {
-    0%,
-    80%,
-    100% {
-        transform: scale(0.8);
-        opacity: 0.5;
-    }
-    40% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Auto-refresh indicator */
-.refresh-indicator {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: rgba(0, 123, 255, 0.9);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    z-index: 1000;
-    display: none;
-    animation: pulse 1s infinite;
-}
-
-@keyframes pulse {
-    0% {
-        opacity: 0.7;
-    }
-    50% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 0.7;
-    }
-}
-
-/* Message container improvements */
-.messages-container {
-    position: relative;
-    max-height: calc(100vh - 200px);
-    overflow-y: auto;
-    padding-bottom: 10px;
-}
-
-/* New message notification */
-.new-message-alert {
-    position: fixed;
-    bottom: 100px;
-    right: 20px;
-    background: linear-gradient(135deg, #28a745, #20c997);
-    color: white;
-    padding: 10px 16px;
-    border-radius: 25px;
-    font-size: 14px;
-    cursor: pointer;
-    z-index: 1000;
-    display: none;
-    animation: slideInRight 0.3s ease-out;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-@keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(100px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-/* Responsive behavior for Messenger-like layout */
-
-/* MOBILE ONLY */
-@media (max-width: 768px) {
-
-    /* Hide chat area by default on mobile */
-    .chat-area {
-        display: none !important;
-        width: 100% !important;
-    }
-
-    /* Show employers sidebar full screen */
-    .employers-sidebar {
-        width: 100% !important;
-        display: block !important;
-    }
-
-    /* When chat is active, hide sidebar */
-    .chat-area.active {
-        display: flex !important;
-        flex-direction: column;
-        width: 100% !important;
-    }
-
-    .employers-sidebar.hidden {
-        display: none !important;
-    }
-
-    /* Make list items more touch-friendly */
-    .employer-list-item {
-        padding: 14px 12px !important;
-    }
-
-    /* Back button visible on mobile */
-    #backToListBtn {
-        display: inline-flex !important;
-    }
-}
-
-/* DESKTOP */
-@media (min-width: 769px) {
-    /* Desktop always shows both */
-    .employers-sidebar {
-        display: block !important;
-        width: 35% !important;
-    }
-
-    .chat-area {
-        display: flex !important;
-        width: 65% !important;
-    }
-
-    #backToListBtn {
-        display: none !important;
-    }
-}
-
-/* For JS triggers */
-.hidden { display: none !important; }
-.active { display: flex !important; }
-
-</style>
 <div class="nav-dropdown">
     <button class="nav-icon" onclick="toggleDropdown('messagesDropdown')" title="messages">
         <i class="bi bi-chat-dots"></i>
@@ -505,18 +36,15 @@
                     $lastMessage = $employerMessages->first();
                     $employer = $lastMessage->employer;
                     $company = $employer->addressCompany ?? null;
-                    $unreadCount = $employerMessages
-                        ->where('sender_type', 'employer')
-                        ->where('is_read', 0)
-                        ->count();
+                    $unreadCount = $employerMessages->where('sender_type', 'employer')->where('is_read', 0)->count();
                     $initials =
                         $company && !$company->company_logo
                             ? strtoupper(substr($company->company_name ?? 'C', 0, 2))
                             : '';
                 @endphp
 
-                <div class="employer-item {{ $unreadCount > 0 ? 'unread' : '' }}"
-                    data-employer-id="{{ $employerId }}" data-unread-count="{{ $unreadCount }}"
+                <div class="employer-item {{ $unreadCount > 0 ? 'unread' : '' }}" data-employer-id="{{ $employerId }}"
+                    data-unread-count="{{ $unreadCount }}"
                     onclick="openChatWithEmployer({{ $employerId }}, '{{ addslashes($employer->personal_info->first_name ?? 'N/A') }}', '{{ addslashes($employer->personal_info->last_name ?? 'N/A') }}', '{{ addslashes($company->company_name ?? 'Company') }}')">
 
                     @if ($unreadCount > 0)
@@ -534,12 +62,12 @@
 
                     <div class="message-content">
                         <div class="message-header">
-                                <span class="sender-name">{{ $employer->personal_info->first_name ?? 'N/A' }} - </span>
-                                <span class="company-name">{{ $company->company_name ?? 'Company' }}</span>
+                            <span class="sender-name">{{ $employer->personal_info->first_name ?? 'N/A' }} - </span>
+                            <span class="company-name">{{ $company->company_name ?? 'Company' }}</span>
                             <span class="message-time">{{ $lastMessage->created_at->diffForHumans() }}</span>
-                                @if ($unreadCount > 0)
-                                    <span class="unread-count">{{ $unreadCount }}</span>
-                                @endif
+                            @if ($unreadCount > 0)
+                                <span class="unread-count">{{ $unreadCount }}</span>
+                            @endif
                         </div>
 
                         <div class="company-name">{{ $company->company_name ?? 'Company' }}</div>
@@ -588,7 +116,8 @@
                 <div class="search-container">
                     <div class="search-input-wrapper">
                         <i class="bi bi-search"></i>
-                        <input type="text" placeholder="Search conversations..." class="search-input" id="searchInput">
+                        <input type="text" placeholder="Search conversations..." class="search-input"
+                            id="searchInput">
                     </div>
                 </div>
 
@@ -733,25 +262,29 @@
                         <div class="message-input">
                             <div class="input-container">
                                 <!-- File Input (Hidden) -->
-                                <input type="file" id="photoInput" accept="image/*" name="photo" style="display: none;">
+                                <input type="file" id="photoInput" accept="image/*" name="photo"
+                                    style="display: none;">
 
                                 <!-- Upload Button -->
-                                <button type="button" class="btn btn-light" onclick="document.getElementById('photoInput').click()" title="Attach Photo">
-                                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66L9.64 16.2a2 2 0 0 1-2.83-2.83l8.49-8.49">
-                                </path>
-                            </svg>
+                                <button type="button" class="btn btn-light"
+                                    onclick="document.getElementById('photoInput').click()" title="Attach Photo">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path
+                                            d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66L9.64 16.2a2 2 0 0 1-2.83-2.83l8.49-8.49">
+                                        </path>
+                                    </svg>
                                 </button>
 
                                 <!-- Message Text Field -->
-                                <input type="text" class="message-field" placeholder="Type your message..." name="message" id="messageInput">
+                                <input type="text" class="message-field" placeholder="Type your message..."
+                                    name="message" id="messageInput">
 
                                 <!-- Send Button -->
                                 <button type="submit" class="send-btn">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <line x1="22" y1="2" x2="11" y2="13"></line>
-                            <polygon points="22,2 15,22 11,13 2,9 22,2"></polygon>
-                        </svg>
+                                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                                        <polygon points="22,2 15,22 11,13 2,9 22,2"></polygon>
+                                    </svg>
                                 </button>
                             </div>
 
@@ -932,7 +465,7 @@
         isActivelyViewingMessages = false;
         hasMarkedAsReadForCurrentEmployer = false;
 
-    
+
 
         const replyEmployerInput = document.getElementById('replyEmployerId');
         replyEmployerInput.value = employerId;
@@ -1013,18 +546,18 @@
         }
     }
 
-// ========================================
-// MESSAGE DISPLAY FUNCTIONS
-// ========================================
-function displayMessages(messages) {
-    const container = document.getElementById('messagesContainer');
-    const wrapper = document.getElementById('messagesWrapper');
+    // ========================================
+    // MESSAGE DISPLAY FUNCTIONS
+    // ========================================
+    function displayMessages(messages) {
+        const container = document.getElementById('messagesContainer');
+        const wrapper = document.getElementById('messagesWrapper');
 
-    // Show the container when displaying messages
-    container.style.display = 'block';
+        // Show the container when displaying messages
+        container.style.display = 'block';
 
-    if (messages.length === 0) {
-        wrapper.innerHTML = `
+        if (messages.length === 0) {
+            wrapper.innerHTML = `
             <div class="no-conversation">
                 <div class="no-conversation-icon">
                     <i class="bi bi-chat-square"></i>
@@ -1033,112 +566,112 @@ function displayMessages(messages) {
                 <p>Start the conversation by sending a message</p>
             </div>
         `;
-        return;
-    }
-
-    // Sort messages chronologically
-    messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-
-    wrapper.innerHTML = messages.map(msg => renderMessageHtml(msg)).join('');
-
-    if (isUserAtBottom) {
-        setTimeout(() => scrollToBottom(), 100);
-    }
-}
-
-// ========================================
-// REFRESH MESSAGES (uses same renderer)
-// ========================================
-function refreshMessages() {
-    if (!currentEmployerId || !isChatModalOpen) return;
-
-    fetch(`/applicant/messages/fetch/${currentEmployerId}`, {
-        method: 'GET',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Accept': 'application/json'
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (!(data && data.success && Array.isArray(data.messages))) return;
-
-        const wrapper = document.getElementById('messagesWrapper');
-        if (!wrapper) return;
-
-        const wasAtBottom = wrapper.scrollHeight - wrapper.scrollTop - wrapper.clientHeight < 100;
-
-        // Get existing message IDs
-        const existingIds = new Set();
-        wrapper.querySelectorAll('[data-message-id]').forEach(el => {
-            const id = el.getAttribute('data-message-id');
-            if (id) existingIds.add(parseInt(id));
-        });
-
-        let hasNewMessages = false;
-
-        // Update local store
-        messagesByEmployer[currentEmployerId] = data.messages;
-
-        // Append only NEW messages
-        data.messages.forEach(msg => {
-            if (existingIds.has(msg.id)) return;
-
-            const html = renderMessageHtml(msg);
-            if (html) {
-                wrapper.insertAdjacentHTML('beforeend', html);
-                hasNewMessages = true;
-            }
-        });
-
-        if (data.messages.length > 0) {
-            lastMessageId = data.messages[data.messages.length - 1].id;
+            return;
         }
 
-        // Auto-scroll if user was at bottom
-        if (hasNewMessages && wasAtBottom) {
-            setTimeout(() => {
-                wrapper.scrollTop = wrapper.scrollHeight;
-                isUserAtBottom = true;
-            }, 10);
+        // Sort messages chronologically
+        messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
-            if (isActivelyViewingMessages && isPageVisible && hasMarkedAsReadForCurrentEmployer) {
-                setTimeout(() => markMessagesAsRead(currentEmployerId), 1000);
-            }
+        wrapper.innerHTML = messages.map(msg => renderMessageHtml(msg)).join('');
+
+        if (isUserAtBottom) {
+            setTimeout(() => scrollToBottom(), 100);
         }
-
-        updateUnreadCountsInUI();
-    })
-    .catch(error => {
-        console.error('Error refreshing messages:', error);
-    });
-}
-
-// ========================================
-// HELPER: RENDER SINGLE MESSAGE
-// ========================================
-function renderMessageHtml(msg) {
-    const isFromEmployer = msg.sender_type === 'employer';
-    const bubbleClass = isFromEmployer ? 'received' : 'sent';
-
-    const hasValidText = msg.message &&
-        msg.message.trim() !== '' &&
-        msg.message !== 'Unable to decrypt message' &&
-        msg.message !== 'Cannot decrypt message' &&
-        !msg.message.includes('decrypt');
-
-    const hasAttachment = msg.attachment && msg.attachment.trim() !== '';
-
-    if (!hasValidText && !hasAttachment) return '';
-
-    let messageTextHtml = '';
-    if (hasValidText) {
-        messageTextHtml = `<div class="message-text"><p>${escapeHtml(msg.message)}</p></div>`;
     }
 
-    let attachmentHtml = '';
-    if (hasAttachment) {
-        attachmentHtml = `
+    // ========================================
+    // REFRESH MESSAGES (uses same renderer)
+    // ========================================
+    function refreshMessages() {
+        if (!currentEmployerId || !isChatModalOpen) return;
+
+        fetch(`/applicant/messages/fetch/${currentEmployerId}`, {
+                method: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!(data && data.success && Array.isArray(data.messages))) return;
+
+                const wrapper = document.getElementById('messagesWrapper');
+                if (!wrapper) return;
+
+                const wasAtBottom = wrapper.scrollHeight - wrapper.scrollTop - wrapper.clientHeight < 100;
+
+                // Get existing message IDs
+                const existingIds = new Set();
+                wrapper.querySelectorAll('[data-message-id]').forEach(el => {
+                    const id = el.getAttribute('data-message-id');
+                    if (id) existingIds.add(parseInt(id));
+                });
+
+                let hasNewMessages = false;
+
+                // Update local store
+                messagesByEmployer[currentEmployerId] = data.messages;
+
+                // Append only NEW messages
+                data.messages.forEach(msg => {
+                    if (existingIds.has(msg.id)) return;
+
+                    const html = renderMessageHtml(msg);
+                    if (html) {
+                        wrapper.insertAdjacentHTML('beforeend', html);
+                        hasNewMessages = true;
+                    }
+                });
+
+                if (data.messages.length > 0) {
+                    lastMessageId = data.messages[data.messages.length - 1].id;
+                }
+
+                // Auto-scroll if user was at bottom
+                if (hasNewMessages && wasAtBottom) {
+                    setTimeout(() => {
+                        wrapper.scrollTop = wrapper.scrollHeight;
+                        isUserAtBottom = true;
+                    }, 10);
+
+                    if (isActivelyViewingMessages && isPageVisible && hasMarkedAsReadForCurrentEmployer) {
+                        setTimeout(() => markMessagesAsRead(currentEmployerId), 1000);
+                    }
+                }
+
+                updateUnreadCountsInUI();
+            })
+            .catch(error => {
+                console.error('Error refreshing messages:', error);
+            });
+    }
+
+    // ========================================
+    // HELPER: RENDER SINGLE MESSAGE
+    // ========================================
+    function renderMessageHtml(msg) {
+        const isFromEmployer = msg.sender_type === 'employer';
+        const bubbleClass = isFromEmployer ? 'received' : 'sent';
+
+        const hasValidText = msg.message &&
+            msg.message.trim() !== '' &&
+            msg.message !== 'Unable to decrypt message' &&
+            msg.message !== 'Cannot decrypt message' &&
+            !msg.message.includes('decrypt');
+
+        const hasAttachment = msg.attachment && msg.attachment.trim() !== '';
+
+        if (!hasValidText && !hasAttachment) return '';
+
+        let messageTextHtml = '';
+        if (hasValidText) {
+            messageTextHtml = `<div class="message-text"><p>${escapeHtml(msg.message)}</p></div>`;
+        }
+
+        let attachmentHtml = '';
+        if (hasAttachment) {
+            attachmentHtml = `
             <div class="message-image">
                 <img src="/storage/${encodeURI(msg.attachment)}" 
                      alt="Attachment"
@@ -1147,20 +680,20 @@ function renderMessageHtml(msg) {
                      onclick="previewImage('/storage/${encodeURI(msg.attachment)}')">
             </div>
         `;
-    }
-
-    const timestamp = formatMessageTime(msg.created_at);
-
-    let statusHtml = '';
-    if (!isFromEmployer) {
-        if (msg.is_read === 1 || msg.is_read === true) {
-            statusHtml = `<span class="text-success ms-2"><i class="fas fa-check-double"></i> Seen</span>`;
-        } else {
-            statusHtml = `<span class="text-muted ms-2"><i class="fas fa-check"></i> Delivered</span>`;
         }
-    }
 
-    return `
+        const timestamp = formatMessageTime(msg.created_at);
+
+        let statusHtml = '';
+        if (!isFromEmployer) {
+            if (msg.is_read === 1 || msg.is_read === true) {
+                statusHtml = `<span class="text-success ms-2"><i class="fas fa-check-double"></i> Seen</span>`;
+            } else {
+                statusHtml = `<span class="text-muted ms-2"><i class="fas fa-check"></i> Delivered</span>`;
+            }
+        }
+
+        return `
         <div class="chat-wrapper ${bubbleClass}" data-message-id="${msg.id}">
             <div class="bubble-container">
                 ${messageTextHtml}
@@ -1172,7 +705,7 @@ function renderMessageHtml(msg) {
             </div>
         </div>
     `;
-}
+    }
 
 
     function formatMessageTime(dateString) {
@@ -1223,7 +756,7 @@ function renderMessageHtml(msg) {
     // ========================================
     // REAL-TIME MESSAGE REFRESH - FIXED VERSION
     // ========================================
-   
+
 
     function escapeHtml(str) {
         if (!str) return '';
@@ -1680,7 +1213,7 @@ function renderMessageHtml(msg) {
             // Create FormData
             const formData = new FormData();
             formData.append('employer_id', employerId);
-            
+
             // Auto-filter profanity from message
             if (messageText) {
                 const filteredMessage = filterProfanity(messageText);
@@ -1693,7 +1226,8 @@ function renderMessageHtml(msg) {
             }
 
             // Add CSRF token
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute(
+                'content');
             if (csrfToken) {
                 formData.append('_token', csrfToken);
             }
@@ -1704,7 +1238,8 @@ function renderMessageHtml(msg) {
             photoPreview.innerHTML = '';
 
             try {
-                const response = await fetch('{{ route('applicant.sendmessageemployer.store') }}', {
+                const response = await fetch(
+                '{{ route('applicant.sendmessageemployer.store') }}', {
                     method: 'POST',
                     body: formData,
                     headers: {
@@ -1748,9 +1283,11 @@ function renderMessageHtml(msg) {
                     messageReadTimer = null;
                 }
             } else if (previousVisibility === false && isPageVisible) {
-                if (isUserAtBottom && currentEmployerId && isChatModalOpen && !hasMarkedAsReadForCurrentEmployer) {
+                if (isUserAtBottom && currentEmployerId && isChatModalOpen && !
+                    hasMarkedAsReadForCurrentEmployer) {
                     messageReadTimer = setTimeout(() => {
-                        if (isUserAtBottom && isChatModalOpen && isPageVisible && !hasMarkedAsReadForCurrentEmployer) {
+                        if (isUserAtBottom && isChatModalOpen && isPageVisible && !
+                            hasMarkedAsReadForCurrentEmployer) {
                             isActivelyViewingMessages = true;
                             markMessagesAsRead(currentEmployerId);
                         }
@@ -1784,88 +1321,88 @@ function renderMessageHtml(msg) {
         console.log('✅ Real-time messaging active with auto profanity filter');
     });
     // -------------------------------
-// MOBILE MESSENGER-LIKE UI TOGGLE
-// -------------------------------
+    // MOBILE MESSENGER-LIKE UI TOGGLE
+    // -------------------------------
 
-// Make sure the toggle only applies on mobile width
-function isMobile() {
-    return window.innerWidth <= 768;
-}
-
-// Hide sidebar, show chat
-function showChatMobile() {
-    if (!isMobile()) return;
-
-    const sidebar = document.querySelector(".employers-sidebar");
-    const chat = document.querySelector(".chat-area");
-
-    if (sidebar) sidebar.classList.add("hidden");
-    if (chat) chat.classList.add("active");
-}
-
-// Show sidebar, hide chat
-function showSidebarMobile() {
-    if (!isMobile()) return;
-
-    const sidebar = document.querySelector(".employers-sidebar");
-    const chat = document.querySelector(".chat-area");
-
-    if (sidebar) sidebar.classList.remove("hidden");
-    if (chat) chat.classList.remove("active");
-}
-
-// Attach back button listener (triggered on mobile)
-document.addEventListener("DOMContentLoaded", () => {
-    const backBtn = document.getElementById("backToListBtn");
-
-    if (backBtn) {
-        backBtn.addEventListener("click", showSidebarMobile);
-    }
-});
-
-// Preserve the original loadConversation() function
-if (typeof window.loadConversation === "function") {
-    window._originalLoadConversation = window.loadConversation;
-}
-
-// Override loadConversation() with mobile-aware version
-window.loadConversation = function (employerId) {
-    // Call your original message loading logic
-    if (typeof window._originalLoadConversation === "function") {
-        window._originalLoadConversation(employerId);
+    // Make sure the toggle only applies on mobile width
+    function isMobile() {
+        return window.innerWidth <= 768;
     }
 
-    // Activate mobile chat toggle
-    showChatMobile();
-};
+    // Hide sidebar, show chat
+    function showChatMobile() {
+        if (!isMobile()) return;
 
-// Handle resizing (for dev tools testing)
-window.addEventListener("resize", () => {
-    if (!isMobile()) {
-        // Desktop reset
-        document.querySelector(".employers-sidebar")?.classList.remove("hidden");
-        document.querySelector(".chat-area")?.classList.remove("active");
-    }
-});
-function scrollChatToBottom() {
-    const container = document.getElementById("employerMessagesContainer");
-    if (!container) return;
+        const sidebar = document.querySelector(".employers-sidebar");
+        const chat = document.querySelector(".chat-area");
 
-    // Wait for DOM to update then scroll
-    setTimeout(() => {
-        container.scrollTop = container.scrollHeight;
-    }, 50);
-}
-window.loadConversation = function (employerId) {
-    if (typeof window._originalLoadConversation === "function") {
-        window._originalLoadConversation(employerId);
+        if (sidebar) sidebar.classList.add("hidden");
+        if (chat) chat.classList.add("active");
     }
 
-    // Force auto-scroll when switching to a conversation
-    scrollChatToBottom();
+    // Show sidebar, hide chat
+    function showSidebarMobile() {
+        if (!isMobile()) return;
 
-    // Mobile toggle
-    showChatMobile();
-};
+        const sidebar = document.querySelector(".employers-sidebar");
+        const chat = document.querySelector(".chat-area");
 
+        if (sidebar) sidebar.classList.remove("hidden");
+        if (chat) chat.classList.remove("active");
+    }
+
+    // Attach back button listener (triggered on mobile)
+    document.addEventListener("DOMContentLoaded", () => {
+        const backBtn = document.getElementById("backToListBtn");
+
+        if (backBtn) {
+            backBtn.addEventListener("click", showSidebarMobile);
+        }
+    });
+
+    // Preserve the original loadConversation() function
+    if (typeof window.loadConversation === "function") {
+        window._originalLoadConversation = window.loadConversation;
+    }
+
+    // Override loadConversation() with mobile-aware version
+    window.loadConversation = function(employerId) {
+        // Call your original message loading logic
+        if (typeof window._originalLoadConversation === "function") {
+            window._originalLoadConversation(employerId);
+        }
+
+        // Activate mobile chat toggle
+        showChatMobile();
+    };
+
+    // Handle resizing (for dev tools testing)
+    window.addEventListener("resize", () => {
+        if (!isMobile()) {
+            // Desktop reset
+            document.querySelector(".employers-sidebar")?.classList.remove("hidden");
+            document.querySelector(".chat-area")?.classList.remove("active");
+        }
+    });
+
+    function scrollChatToBottom() {
+        const container = document.getElementById("employerMessagesContainer");
+        if (!container) return;
+
+        // Wait for DOM to update then scroll
+        setTimeout(() => {
+            container.scrollTop = container.scrollHeight;
+        }, 50);
+    }
+    window.loadConversation = function(employerId) {
+        if (typeof window._originalLoadConversation === "function") {
+            window._originalLoadConversation(employerId);
+        }
+
+        // Force auto-scroll when switching to a conversation
+        scrollChatToBottom();
+
+        // Mobile toggle
+        showChatMobile();
+    };
 </script>

@@ -7,7 +7,7 @@
 body {
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     background: #f9fafb;
-    margin:0;
+    margin: 0;
 }
 :root {
     --primary-orange: #020180;
@@ -1564,7 +1564,7 @@ nav {
     flex-direction: column;
     justify-content: space-between;
     cursor: pointer;
-    background: none;
+    background: var(--primary-orange);
     border: none;
     padding: 0;
 }
