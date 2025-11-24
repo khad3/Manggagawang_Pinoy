@@ -1281,42 +1281,40 @@ public function sendMessage(Request $request)
     try {
         $applicantID = session('applicant_id');
 
-        // Ensure session is valid
         if (!$applicantID) {
             return redirect()->back()->with('error', 'You must be logged in to send a message.');
         }
 
-        // Validate input
         $validatedData = $request->validate([
             'message' => 'nullable|string|max:1000',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'receiver_id' => 'required|exists:applicants,id',
         ]);
 
-        // Prevent sending completely empty messages
         if (empty($validatedData['message']) && !$request->hasFile('photo')) {
             return redirect()->back()->with('error', 'Cannot send an empty message.');
         }
 
-        // Encrypt message if it exists
         $encryptedMessage = null;
         if (!empty($validatedData['message'])) {
             $encryptedMessage = Crypt::encryptString($validatedData['message']);
         }
 
-        // Create new message
         $message = new SendMessage();
         $message->sender_id = $applicantID;
         $message->receiver_id = $validatedData['receiver_id'];
         $message->message = $encryptedMessage;
         $message->is_read = false;
 
-        // Handle photo upload
+        // Use STORAGE 
         if ($request->hasFile('photo')) {
             $photo = $request->file('photo');
-            $photoName = time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
-            $photo->move(public_path('uploads/messages'), $photoName);
-            $message->image_path = 'uploads/messages/' . $photoName;
+
+            // Save to storage/app/public/messages/
+            $path = $photo->store('messages', 'public');
+
+            // Save the storage path
+            $message->image_path = 'storage/' . $path;
         }
 
         $message->save();
@@ -1329,6 +1327,7 @@ public function sendMessage(Request $request)
         return redirect()->back()->with('error', 'Failed to send message. ' . $e->getMessage());
     }
 }
+
 
 
 
